@@ -269,7 +269,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
             {/* Left Card */}
             <Card className="w-full">
-              <CardContent className="p-6">
+              <CardContent className="p-6 space-y-4">
                 <h2 className="text-2xl font-bold text-center mb-4">Ability Scores</h2>
                 <div className="flex flex-col items-center">
                   {/* Ability Score Inputs */}
@@ -291,7 +291,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
             {/* Center Card */}
             <Card className="w-full">
-              <CardContent className="p-4">
+              <CardContent className="p-4 space-y-4">
                 {/* HP */}
                 <HPSection
                   maxHp={characterWithDefaults.maxHp} setMaxHp={(maxHp) => handleChange("maxHp", maxHp)}
