@@ -89,14 +89,18 @@ export interface Currency {
   pp: number;
 }
 
+export interface CharacterClass {
+  name: string;
+  level: number;
+}
+
 export interface Character {
   id: number;
   name: string;
   maxHp: number;
   hp: number;
   tempHp: number;
-  level: number;
-  characterClass: string;
+  classes: CharacterClass[];
   abilityScores: AbilityScores;
   savingThrows?: SavingThrows;
   skills?: Skills;
