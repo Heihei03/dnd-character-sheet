@@ -43,7 +43,7 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ speed, setSpeed }) => {
                     onChange={(e) =>
                       handleChange(key, parseInt(e.target.value) || 0, data.from)
                     }
-                    className="w-20 text-center border rounded"
+                    className="w-15 text-center border rounded"
                   />
 
                   <input
@@ -57,7 +57,7 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ speed, setSpeed }) => {
                         e.target.value || undefined
                       )
                     }
-                    className="w-40 border rounded text-sm"
+                    className="w-32 border rounded text-sm"
                   />
                 </div>
               </div>
