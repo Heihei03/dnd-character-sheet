@@ -20,6 +20,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     const [newItemQuantity, setNewItemQuantity] = useState(1);
     const [newItemEquippable, setNewItemEquippable] = useState(false);
     const [newItemAttunable, setNewItemAttunable] = useState(false);
+    const [newItemType, setNewItemType] = useState<"weapon" | "armor" | "shield" | "other">("other");
     const [expandedItemIds, setExpandedItemIds] = useState<string[]>([]);
 
     const addItem = () => {
@@ -34,7 +35,9 @@ const InventorySection: React.FC<InventorySectionProps> = ({
             equipped: false,
             attuned: false,
             equippable: newItemEquippable,
+
             attunable: newItemAttunable,
+            itemType: newItemType,
             description: "",
         };
 
@@ -44,7 +47,9 @@ const InventorySection: React.FC<InventorySectionProps> = ({
         setNewItemCost(0);
         setNewItemQuantity(1);
         setNewItemEquippable(false);
+
         setNewItemAttunable(false);
+        setNewItemType("other");
     };
 
     const removeItem = (id: string) => {
@@ -228,6 +233,18 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                 />
                                 Equippable
                             </label>
+                            {newItemEquippable && (
+                                <select
+                                    value={newItemType}
+                                    onChange={(e) => setNewItemType(e.target.value as any)}
+                                    className="text-xs border border-gray-300 rounded p-0.5"
+                                >
+                                    <option value="other">Other</option>
+                                    <option value="weapon">Weapon</option>
+                                    <option value="armor">Armor</option>
+                                    <option value="shield">Shield</option>
+                                </select>
+                            )}
                             <label className="flex items-center gap-1 text-xs text-gray-500 cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -278,7 +295,10 @@ const InventoryTable: React.FC<{
                     <th className="p-2 w-20">Cost (gp)</th>
                     <th className="p-2 w-20">Wt (lbs)</th>
                     {section === "equipment" && (
-                        <th className="p-2 w-10 text-center">Eq</th>
+                        <>
+                            <th className="p-2 w-25">Type</th>
+                            <th className="p-2 w-10 text-center">Equipped</th>
+                        </>
                     )}
                     <th className="p-2 w-10"></th>
                 </tr>
@@ -331,14 +351,28 @@ const InventoryTable: React.FC<{
                                 />
                             </td>
                             {section === "equipment" && (
-                                <td className="p-2 text-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={item.equipped ?? false}
-                                        onChange={(e) => updateItem(item.id, "equipped", e.target.checked)}
-                                        className="w-4 h-4 cursor-pointer"
-                                    />
-                                </td>
+                                <>
+                                    <td className="p-2">
+                                        <select
+                                            value={item.itemType ?? "other"}
+                                            onChange={(e) => updateItem(item.id, "itemType", e.target.value)}
+                                            className="w-full p-1 border border-gray-200 rounded text-xs"
+                                        >
+                                            <option value="other">Other</option>
+                                            <option value="weapon">Weapon</option>
+                                            <option value="armor">Armor</option>
+                                            <option value="shield">Shield</option>
+                                        </select>
+                                    </td>
+                                    <td className="p-2 text-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={item.equipped ?? false}
+                                            onChange={(e) => updateItem(item.id, "equipped", e.target.checked)}
+                                            className="w-4 h-4 cursor-pointer"
+                                        />
+                                    </td>
+                                </>
                             )}
                             <td className="p-2 text-right">
                                 <button
@@ -352,7 +386,7 @@ const InventoryTable: React.FC<{
                         </tr>
                         {expandedItemIds.includes(item.id) && (
                             <tr className="bg-gray-50 border-b">
-                                <td colSpan={section === "equipment" ? 6 : 5} className="p-2 pl-12 pr-4 pb-4">
+                                <td colSpan={section === "equipment" ? 7 : 5} className="p-2 pl-12 pr-4 pb-4">
                                     <div className="flex flex-col gap-2">
                                         <label className="block text-xs font-semibold text-gray-500">Description</label>
                                         <textarea
@@ -386,6 +420,21 @@ const InventoryTable: React.FC<{
                                                 Attunable
                                             </label>
                                         </div>
+                                        {item.equippable && section !== "equipment" && (
+                                            <div className="flex items-center gap-2">
+                                                <label className="text-sm text-gray-600">Type:</label>
+                                                <select
+                                                    value={item.itemType ?? "other"}
+                                                    onChange={(e) => updateItem(item.id, "itemType", e.target.value)}
+                                                    className="p-1 border border-gray-300 rounded text-xs"
+                                                >
+                                                    <option value="other">Other</option>
+                                                    <option value="weapon">Weapon</option>
+                                                    <option value="armor">Armor</option>
+                                                    <option value="shield">Shield</option>
+                                                </select>
+                                            </div>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

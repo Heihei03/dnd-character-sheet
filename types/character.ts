@@ -66,6 +66,7 @@ export interface InventoryItem {
   attuned?: boolean;
   equippable?: boolean;
   attunable?: boolean;
+  itemType?: "weapon" | "armor" | "shield" | "other";
   description?: string;
 }
 
