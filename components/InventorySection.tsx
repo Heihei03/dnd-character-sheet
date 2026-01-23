@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
-import { InventoryItem } from "../types/character";
+import { InventoryItem, WeaponDetails } from "../types/character";
+import { WEAPON_DATA } from "../data/weapons";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import ExpandableSection from "./ui/ExpandableSection";
@@ -21,6 +22,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     const [newItemEquippable, setNewItemEquippable] = useState(false);
     const [newItemAttunable, setNewItemAttunable] = useState(false);
     const [newItemType, setNewItemType] = useState<"weapon" | "armor" | "shield" | "other">("other");
+    const [newItemWeaponDetails, setNewItemWeaponDetails] = useState<WeaponDetails | undefined>(undefined);
     const [expandedItemIds, setExpandedItemIds] = useState<string[]>([]);
 
     const addItem = () => {
@@ -38,6 +40,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
 
             attunable: newItemAttunable,
             itemType: newItemType,
+            weaponDetails: newItemWeaponDetails,
             description: "",
         };
 
@@ -50,32 +53,77 @@ const InventorySection: React.FC<InventorySectionProps> = ({
 
         setNewItemAttunable(false);
         setNewItemType("other");
+        setNewItemWeaponDetails(undefined);
+    };
+
+    const handleBaseWeaponSelect = (baseName: string) => {
+        if (baseName === "Custom") {
+            setNewItemName("Custom Weapon");
+            setNewItemWeaponDetails({
+                baseWeapon: "Custom",
+                category: "Simple",
+                rangeType: "Melee",
+                damageDice: "1d4",
+                damageType: "slashing",
+                properties: [],
+                mastery: ""
+            });
+        } else if (WEAPON_DATA[baseName]) {
+            const data = WEAPON_DATA[baseName];
+            setNewItemName(data.name);
+            setNewItemWeight(data.weight);
+            setNewItemCost(data.costGP);
+            setNewItemWeaponDetails({
+                baseWeapon: baseName,
+                category: data.category,
+                rangeType: data.rangeType,
+                damageDice: data.damageDice,
+                damageType: data.damageType,
+                properties: [...data.properties],
+                mastery: data.mastery
+            });
+        }
     };
 
     const removeItem = (id: string) => {
         setInventory(inventory.filter((item) => item.id !== id));
     };
 
-    const updateItem = (id: string, field: keyof InventoryItem, value: string | number | boolean) => {
+    const updateItemBatch = (id: string, updates: Partial<InventoryItem>) => {
         setInventory(
             inventory.map((item) => {
                 if (item.id !== id) return item;
 
-                const updatedItem = { ...item, [field]: value };
+                let updatedItem = { ...item, ...updates };
 
-                // If item is no longer attunable, it cannot be attuned
-                if (field === "attunable" && value === false) {
+                // Maintain consistency
+                if (updates.attunable === false) {
                     updatedItem.attuned = false;
                 }
-
-                // If item is no longer equippable, it cannot be equipped
-                if (field === "equippable" && value === false) {
+                if (updates.equippable === false) {
                     updatedItem.equipped = false;
+                }
+
+                // Initialize weapon details if switching to weapon type
+                if (updates.itemType === "weapon" && !item.weaponDetails && !updates.weaponDetails) {
+                    updatedItem.weaponDetails = {
+                        baseWeapon: "Custom",
+                        category: "Simple",
+                        rangeType: "Melee",
+                        damageDice: "1d4",
+                        damageType: "slashing",
+                        properties: [],
+                        mastery: ""
+                    };
                 }
 
                 return updatedItem;
             })
         );
+    };
+
+    const updateItem = (id: string, field: keyof InventoryItem, value: any) => {
+        updateItemBatch(id, { [field]: value });
     };
 
     const toggleExpand = (id: string) => {
@@ -108,6 +156,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                     items={inventory.filter(item => item.equippable)}
                                     section="equipment"
                                     updateItem={updateItem}
+                                    updateItemBatch={updateItemBatch}
                                     removeItem={removeItem}
                                     toggleExpand={toggleExpand}
                                     expandedItemIds={expandedItemIds}
@@ -181,6 +230,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                 items={inventory.filter(item => !item.equippable)}
                                 section="inventory"
                                 updateItem={updateItem}
+                                updateItemBatch={updateItemBatch}
                                 removeItem={removeItem}
                                 toggleExpand={toggleExpand}
                                 expandedItemIds={expandedItemIds}
@@ -234,16 +284,94 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                 Equippable
                             </label>
                             {newItemEquippable && (
-                                <select
-                                    value={newItemType}
-                                    onChange={(e) => setNewItemType(e.target.value as any)}
-                                    className="text-xs border border-gray-300 rounded p-0.5"
-                                >
-                                    <option value="other">Other</option>
-                                    <option value="weapon">Weapon</option>
-                                    <option value="armor">Armor</option>
-                                    <option value="shield">Shield</option>
-                                </select>
+                                <div className="space-y-2">
+                                    <select
+                                        value={newItemType}
+                                        onChange={(e) => {
+                                            const type = e.target.value as any;
+                                            setNewItemType(type);
+                                            if (type === "weapon" && !newItemWeaponDetails) {
+                                                // Default to custom if switching to weapon
+                                                handleBaseWeaponSelect("Custom");
+                                            } else if (type !== "weapon") {
+                                                setNewItemWeaponDetails(undefined);
+                                            }
+                                        }}
+                                        className="text-xs border border-gray-300 rounded p-0.5 w-full"
+                                    >
+                                        <option value="other">Other</option>
+                                        <option value="weapon">Weapon</option>
+                                        <option value="armor">Armor</option>
+                                        <option value="shield">Shield</option>
+                                    </select>
+
+                                    {newItemType === "weapon" && newItemWeaponDetails && (
+                                        <div className="flex flex-col gap-1 p-2 bg-gray-50 rounded border border-gray-200">
+                                            <select
+                                                value={newItemWeaponDetails.baseWeapon || "Custom"}
+                                                onChange={(e) => handleBaseWeaponSelect(e.target.value)}
+                                                className="text-xs border border-gray-300 rounded p-1 w-full"
+                                            >
+                                                <option value="Custom">Custom</option>
+                                                {Object.keys(WEAPON_DATA).sort().map(name => (
+                                                    <option key={name} value={name}>{name}</option>
+                                                ))}
+                                            </select>
+
+                                            <div className="flex gap-1">
+                                                <select
+                                                    value={newItemWeaponDetails.category}
+                                                    onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, category: e.target.value as any })}
+                                                    className="text-xs border border-gray-300 rounded p-1 flex-1"
+                                                >
+                                                    <option value="Simple">Simple</option>
+                                                    <option value="Martial">Martial</option>
+                                                </select>
+                                                <select
+                                                    value={newItemWeaponDetails.rangeType}
+                                                    onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, rangeType: e.target.value as any })}
+                                                    className="text-xs border border-gray-300 rounded p-1 flex-1"
+                                                >
+                                                    <option value="Melee">Melee</option>
+                                                    <option value="Ranged">Ranged</option>
+                                                </select>
+                                            </div>
+
+                                            <div className="flex gap-1">
+                                                <input
+                                                    type="text"
+                                                    value={newItemWeaponDetails.damageDice}
+                                                    onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, damageDice: e.target.value })}
+                                                    placeholder="Dmg (1d6)"
+                                                    className="text-xs border border-gray-300 rounded p-1 w-1/3"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={newItemWeaponDetails.damageType}
+                                                    onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, damageType: e.target.value })}
+                                                    placeholder="Type (piercing)"
+                                                    className="text-xs border border-gray-300 rounded p-1 w-2/3"
+                                                />
+                                            </div>
+
+                                            <input
+                                                type="text"
+                                                value={newItemWeaponDetails.mastery || ""}
+                                                onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, mastery: e.target.value })}
+                                                placeholder="Mastery (Nick, Vex...)"
+                                                className="text-xs border border-gray-300 rounded p-1 w-full"
+                                            />
+
+                                            <input
+                                                type="text"
+                                                value={newItemWeaponDetails.properties.join(", ")}
+                                                onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, properties: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}
+                                                placeholder="Properties (Light, Finesse...)"
+                                                className="text-xs border border-gray-300 rounded p-1 w-full"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                             )}
                             <label className="flex items-center gap-1 text-xs text-gray-500 cursor-pointer">
                                 <input
@@ -279,11 +407,12 @@ const InventorySection: React.FC<InventorySectionProps> = ({
 const InventoryTable: React.FC<{
     items: InventoryItem[];
     section: "equipment" | "inventory";
-    updateItem: (id: string, field: keyof InventoryItem, value: string | number | boolean) => void;
+    updateItem: (id: string, field: keyof InventoryItem, value: any) => void;
+    updateItemBatch: (id: string, updates: Partial<InventoryItem>) => void;
     removeItem: (id: string) => void;
     toggleExpand: (id: string) => void;
     expandedItemIds: string[];
-}> = ({ items, section, updateItem, removeItem, toggleExpand, expandedItemIds }) => {
+}> = ({ items, section, updateItem, updateItemBatch, removeItem, toggleExpand, expandedItemIds }) => {
     if (items.length === 0) return <div className="text-gray-500 italic text-sm p-2">No items</div>;
 
     return (
@@ -433,6 +562,122 @@ const InventoryTable: React.FC<{
                                                     <option value="armor">Armor</option>
                                                     <option value="shield">Shield</option>
                                                 </select>
+                                            </div>
+                                        )}
+
+                                        {/* Weapon Details Editor */}
+                                        {item.itemType === "weapon" && item.weaponDetails && (
+                                            <div className="mt-2 p-2 bg-gray-50 rounded border border-gray-200">
+                                                <label className="block text-xs font-semibold text-gray-500 mb-1">Weapon Details</label>
+                                                <div className="mb-2">
+                                                    <label className="block text-[10px] text-gray-400">Base Weapon</label>
+                                                    <select
+                                                        value={item.weaponDetails.baseWeapon || "Custom"}
+                                                        onChange={(e) => {
+                                                            const baseName = e.target.value;
+                                                            if (baseName === "Custom") {
+                                                                // keep existing details but switch base to custom
+                                                                updateItemBatch(item.id, {
+                                                                    weaponDetails: {
+                                                                        ...item.weaponDetails!,
+                                                                        baseWeapon: "Custom",
+                                                                    }
+                                                                });
+                                                            } else if (WEAPON_DATA[baseName]) {
+                                                                const data = WEAPON_DATA[baseName];
+                                                                // Batch update all fields
+                                                                updateItemBatch(item.id, {
+                                                                    weaponDetails: {
+                                                                        baseWeapon: baseName,
+                                                                        category: data.category,
+                                                                        rangeType: data.rangeType,
+                                                                        damageDice: data.damageDice,
+                                                                        damageType: data.damageType,
+                                                                        properties: [...data.properties],
+                                                                        mastery: data.mastery
+                                                                    },
+                                                                    weight: data.weight,
+                                                                    costGP: data.costGP
+                                                                });
+                                                            }
+                                                        }}
+                                                        className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                    >
+                                                        <option value="Custom">Custom</option>
+                                                        {Object.keys(WEAPON_DATA).sort().map(name => (
+                                                            <option key={name} value={name}>{name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 mb-2">
+                                                    <div>
+                                                        <label className="block text-[10px] text-gray-400">Category</label>
+                                                        <select
+                                                            value={item.weaponDetails.category}
+                                                            onChange={(e) => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, category: e.target.value as any })}
+                                                            className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                        >
+                                                            <option value="Simple">Simple</option>
+                                                            <option value="Martial">Martial</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] text-gray-400">Range</label>
+                                                        <select
+                                                            value={item.weaponDetails.rangeType}
+                                                            onChange={(e) => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, rangeType: e.target.value as any })}
+                                                            className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                        >
+                                                            <option value="Melee">Melee</option>
+                                                            <option value="Ranged">Ranged</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-2 mb-2">
+                                                    <div>
+                                                        <label className="block text-[10px] text-gray-400">Damage</label>
+                                                        <input
+                                                            type="text"
+                                                            value={item.weaponDetails.damageDice || ""}
+                                                            onChange={(e) => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageDice: e.target.value })}
+                                                            className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                            placeholder="1d6"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] text-gray-400">Type</label>
+                                                        <input
+                                                            type="text"
+                                                            value={item.weaponDetails.damageType || ""}
+                                                            onChange={(e) => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageType: e.target.value })}
+                                                            className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                            placeholder="slashing"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="mb-2">
+                                                    <label className="block text-[10px] text-gray-400">Mastery</label>
+                                                    <input
+                                                        type="text"
+                                                        value={item.weaponDetails.mastery || ""}
+                                                        onChange={(e) => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, mastery: e.target.value })}
+                                                        className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                        placeholder="Vex, Nick..."
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-[10px] text-gray-400">Properties</label>
+                                                    <input
+                                                        type="text"
+                                                        value={item.weaponDetails.properties.join(", ")}
+                                                        onChange={(e) => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, properties: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}
+                                                        className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                        placeholder="Light, Finesse..."
+                                                    />
+                                                </div>
                                             </div>
                                         )}
                                     </div>

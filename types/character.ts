@@ -56,6 +56,16 @@ export interface Skills {
   [key: string]: ProficiencyLevel;
 }
 
+export interface WeaponDetails {
+  baseWeapon?: string;
+  category: "Simple" | "Martial";
+  rangeType: "Melee" | "Ranged";
+  properties: string[];
+  mastery?: string;
+  damageDice?: string;
+  damageType?: string;
+}
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -67,6 +77,7 @@ export interface InventoryItem {
   equippable?: boolean;
   attunable?: boolean;
   itemType?: "weapon" | "armor" | "shield" | "other";
+  weaponDetails?: WeaponDetails;
   description?: string;
 }
 
