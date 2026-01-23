@@ -1,0 +1,99 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { loadCharacter, saveCharacter, deleteCharacter } from "../../../utils/db";
+import CharacterSheet from "../../../components/CharacterSheet";
+import { Character } from "../../../types/character";
+
+export const dynamic = "force-dynamic"; // Forces this page to be dynamic
+
+const CharacterPage = () => {
+  const [character, setCharacter] = useState<Character | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const params = useParams();
+  const router = useRouter();
+  const id = params?.id ? Number(params.id) : null; // Ensure it's a number
+
+  console.log("Inside the [id] route!");
+  console.log("params:", params);
+  console.log("params.id:", params.id);
+  console.log("parsed id:", id);
+
+
+  // Load character data
+  useEffect(() => {
+    const loadCharacterData = async () => {
+      console.log("Attempting to load character with id:", id);
+      if (id) {
+        setIsLoading(true);
+        try {
+          const fetchedCharacter = await loadCharacter(id);
+          console.log("Fetched character:", fetchedCharacter);
+          setCharacter(fetchedCharacter);
+        } catch (error) {
+          console.error("Error loading character:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        console.warn("No id provided; skipping loadCharacter.");
+        setIsLoading(false);
+      }
+    };
+
+    loadCharacterData();
+  }, [id]);
+
+
+  // Auto-save character whenever it changes
+  useEffect(() => {
+    if (character) {
+      const save = async () => {
+        try {
+          await saveCharacter(character);
+        } catch (error) {
+          console.error("Error saving character:", error);
+        }
+      };
+      save();
+    }
+  }, [character]);
+
+
+  const handleDelete = async () => {
+    if (character && window.confirm("Are you sure you want to delete this character?")) {
+      try {
+        await deleteCharacter(character.id);
+        router.push("/"); // Redirect after deletion
+      } catch (error) {
+        console.error("Error deleting character:", error);
+      }
+    }
+  };
+
+  if (isLoading) return <p>Loading...</p>;
+  if (!character) return <p>Character not found.</p>;
+
+  return (
+    <div className="flex flex-col items-center p-8">
+      <CharacterSheet character={character} setCharacter={setCharacter} />
+
+      <button
+        onClick={() => router.push("/")}
+        className="mt-4 py-2 px-4 bg-blue-500 text-white rounded-lg"
+      >
+        Return to Character Select
+      </button>
+
+      <button
+        onClick={handleDelete}
+        className="mt-4 py-2 px-4 bg-red-500 text-white rounded-lg"
+      >
+        Delete Character
+      </button>
+    </div>
+  );
+};
+
+export default CharacterPage;
