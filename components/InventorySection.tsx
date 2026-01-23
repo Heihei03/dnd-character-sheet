@@ -148,79 +148,75 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                     </div>
 
                     {/* Equipment Section */}
-                    {inventory.filter(item => item.equippable).length > 0 && (
-                        <div className="mb-6">
-                            <h3 className="font-semibold mb-2">Equipment</h3>
-                            <div className="space-y-2">
-                                <InventoryTable
-                                    items={inventory.filter(item => item.equippable)}
-                                    section="equipment"
-                                    updateItem={updateItem}
-                                    updateItemBatch={updateItemBatch}
-                                    removeItem={removeItem}
-                                    toggleExpand={toggleExpand}
-                                    expandedItemIds={expandedItemIds}
-                                />
-                            </div>
+                    <div className="mb-6">
+                        <h3 className="font-semibold mb-2">Equipment</h3>
+                        <div className="space-y-2">
+                            <InventoryTable
+                                items={inventory.filter(item => item.equippable)}
+                                section="equipment"
+                                updateItem={updateItem}
+                                updateItemBatch={updateItemBatch}
+                                removeItem={removeItem}
+                                toggleExpand={toggleExpand}
+                                expandedItemIds={expandedItemIds}
+                            />
                         </div>
-                    )}
+                    </div>
 
                     {/* Attunement Section */}
-                    {(attunedItems.length > 0 || attunableItems.length > 0) && (
-                        <div className="mb-6">
-                            <h3 className="font-semibold mb-2">Attunement ({attunedItems.length}/3)</h3>
+                    <div className="mb-6">
+                        <h3 className="font-semibold mb-2">Attunement ({attunedItems.length}/3)</h3>
 
-                            {/* Currently Attuned List */}
-                            {/* Attunement Slots */}
-                            <div className="grid grid-cols-3 gap-2 mb-3">
-                                {[0, 1, 2].map((index) => {
-                                    const item = attunedItems[index];
-                                    return (
-                                        <div
-                                            key={index}
-                                            className={`p-2 rounded border text-sm flex flex-col justify-center items-center h-10 ${item
-                                                ? "bg-purple-50 border-purple-200"
-                                                : "bg-gray-50 border-gray-200 text-gray-400 border-dashed"
-                                                }`}
-                                        >
-                                            {item ? (
-                                                <span className="font-medium text-center line-clamp-3 leading-tight">
-                                                    {item.name}
-                                                </span>
-                                            ) : (
-                                                <div className="flex items-center justify-center h-full">
-                                                    <span className="italic text-xs">Empty Slot</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            {/* Attunable Items Management */}
-                            <ExpandableSection title="Manage Attunement">
-                                <div className="space-y-2">
-                                    {attunableItems.map(item => (
-                                        <div key={item.id} className="flex justify-between items-center p-2 border-b last:border-0 hover:bg-gray-50">
-                                            <span>{item.name}</span>
-                                            <label className="flex items-center gap-2 text-sm cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={item.attuned ?? false}
-                                                    onChange={(e) => updateItem(item.id, "attuned", e.target.checked)}
-                                                    className="w-4 h-4 cursor-pointer"
-                                                />
-                                                {item.attuned ? "Attuned" : "Attune"}
-                                            </label>
-                                        </div>
-                                    ))}
-                                    {attunableItems.length === 0 && (
-                                        <p className="text-gray-500 italic text-sm">No attunable items found.</p>
-                                    )}
-                                </div>
-                            </ExpandableSection>
+                        {/* Currently Attuned List */}
+                        {/* Attunement Slots */}
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                            {[0, 1, 2].map((index) => {
+                                const item = attunedItems[index];
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`p-2 rounded border text-sm flex flex-col justify-center items-center h-10 ${item
+                                            ? "bg-purple-50 border-purple-200"
+                                            : "bg-gray-50 border-gray-200 text-gray-400 border-dashed"
+                                            }`}
+                                    >
+                                        {item ? (
+                                            <span className="font-medium text-center line-clamp-3 leading-tight">
+                                                {item.name}
+                                            </span>
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full">
+                                                <span className="italic text-xs">Empty Slot</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
-                    )}
+
+                        {/* Attunable Items Management */}
+                        <ExpandableSection title="Manage Attunement">
+                            <div className="space-y-2">
+                                {attunableItems.map(item => (
+                                    <div key={item.id} className="flex justify-between items-center p-2 border-b last:border-0 hover:bg-gray-50">
+                                        <span>{item.name}</span>
+                                        <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={item.attuned ?? false}
+                                                onChange={(e) => updateItem(item.id, "attuned", e.target.checked)}
+                                                className="w-4 h-4 cursor-pointer"
+                                            />
+                                            {item.attuned ? "Attuned" : "Attune"}
+                                        </label>
+                                    </div>
+                                ))}
+                                {attunableItems.length === 0 && (
+                                    <p className="text-gray-500 italic text-sm">No attunable items found.</p>
+                                )}
+                            </div>
+                        </ExpandableSection>
+                    </div>
 
                     {/* Inventory Section */}
                     <div>
