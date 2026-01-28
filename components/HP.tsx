@@ -208,22 +208,22 @@ const HPSection = ({
             <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-100">
               <span className="text-sm font-medium">{cls.name}</span>
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 font-mono text-sm">
+                <div className="flex items-center gap-1 text-sm font-medium">
                   <input
                     type="number"
                     value={available}
                     onChange={(e) => handleHitDiceChange(index, parseInt(e.target.value) || 0)}
                     min={0}
                     max={cls.level}
-                    className="w-10 p-1 border border-gray-300 rounded bg-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-10 p-1 border border-gray-300 rounded bg-white text-center font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
-                  <span>/ {cls.level} d{sides}</span>
+                  <span className="text-gray-600">/ {cls.level} d{sides}</span>
                 </div>
                 <button
                   onClick={() => handleRollHitDice(index)}
                   disabled={available <= 0}
-                  className={`text-xs px-2 py-1 rounded transition-colors ${available > 0
-                      ? "bg-blue-500 text-white hover:bg-blue-600"
+                  className={`text-xs px-2 py-1 rounded transition-colors font-semibold ${available > 0
+                      ? "bg-blue-500 text-white hover:bg-blue-600 shadow-sm"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
                 >
