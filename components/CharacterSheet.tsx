@@ -367,6 +367,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                   maxHp={characterWithDefaults.maxHp} setMaxHp={(maxHp) => handleChange("maxHp", maxHp)}
                   hp={characterWithDefaults.hp} setHp={(hp) => handleChange("hp", hp)}
                   tempHp={characterWithDefaults.tempHp} setTempHp={(tempHp) => handleChange("tempHp", tempHp)}
+                  classes={characterWithDefaults.classes}
+                  abilityScores={characterWithDefaults.abilityScores}
+                  onUpdateClasses={(classes) => handleChange("classes", classes)}
+                  rollDice={rollDice}
                 />
                 <SpeedSection
                   speed={characterWithDefaults.speed}

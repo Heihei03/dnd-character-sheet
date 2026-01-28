@@ -92,6 +92,7 @@ export interface Currency {
 export interface CharacterClass {
   name: string;
   level: number;
+  usedHitDice?: number;
 }
 
 export interface Character {

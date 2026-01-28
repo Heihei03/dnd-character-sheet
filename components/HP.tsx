@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Button from "./ui/button";
+import { CharacterClass, AbilityScores } from "../types/character";
+import { classHitDice } from "../utils/constants";
 
 interface HPSectionProps {
   maxHp: number;
@@ -10,9 +12,24 @@ interface HPSectionProps {
   setMaxHp: (maxHp: number) => void;
   setHp: (hp: number) => void;
   setTempHp: (tempHp: number) => void;
+  classes: CharacterClass[];
+  abilityScores: AbilityScores;
+  onUpdateClasses: (classes: CharacterClass[]) => void;
+  rollDice: (sides: number, modifier?: number, label?: string) => void;
 }
 
-const HPSection = ({ maxHp, hp, tempHp, setMaxHp, setHp, setTempHp }: HPSectionProps) => {
+const HPSection = ({
+  maxHp,
+  hp,
+  tempHp,
+  setMaxHp,
+  setHp,
+  setTempHp,
+  classes,
+  abilityScores,
+  onUpdateClasses,
+  rollDice
+}: HPSectionProps) => {
   const [hpDiff, setHpDiff] = useState(0);
   const [maxHpInput, setMaxHpInput] = useState<string>(String(maxHp));
   const [hpInput, setHpInput] = useState<string>(String(hp));
@@ -21,6 +38,8 @@ const HPSection = ({ maxHp, hp, tempHp, setMaxHp, setHp, setTempHp }: HPSectionP
   useEffect(() => setHpInput(String(hp)), [hp]);
   useEffect(() => setTempHpInput(String(tempHp)), [tempHp]);
   useEffect(() => setMaxHpInput(String(maxHp)), [maxHp]);
+
+  const getModifier = (score: number) => Math.floor((score - 10) / 2);
 
   const handleAction = (type: "damage" | "heal") => {
     if (type === "damage") {
@@ -41,6 +60,32 @@ const HPSection = ({ maxHp, hp, tempHp, setMaxHp, setHp, setTempHp }: HPSectionP
     } else {
       setHp(Math.min(maxHp, hp + hpDiff)); // Heal but not exceed max HP
     }
+  };
+
+  const handleRollHitDice = (index: number) => {
+    const cls = classes[index];
+    const available = cls.level - (cls.usedHitDice || 0);
+
+    if (available <= 0) return;
+
+    const sides = classHitDice[cls.name.toLowerCase()] || 8;
+    const conMod = getModifier(abilityScores.constitution);
+    const roll = Math.floor(Math.random() * sides) + 1;
+    const healAmount = Math.max(1, roll + conMod);
+
+    // Update HP
+    setHp(Math.min(maxHp, hp + healAmount));
+
+    // Update Used Hit Dice
+    const updatedClasses = [...classes];
+    updatedClasses[index] = {
+      ...cls,
+      usedHitDice: (cls.usedHitDice || 0) + 1
+    };
+    onUpdateClasses(updatedClasses);
+
+    // Show roll result using main dice roller
+    rollDice(sides, conMod, `Hit Die (${cls.name})`);
   };
 
   const handleMaxHpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,36 +130,51 @@ const HPSection = ({ maxHp, hp, tempHp, setMaxHp, setHp, setTempHp }: HPSectionP
     }
   };
 
+  const handleHitDiceChange = (index: number, newValue: number) => {
+    const cls = classes[index];
+    const updatedClasses = [...classes];
+    // available = level - usedHitDice => usedHitDice = level - available
+    const newUsed = Math.max(0, Math.min(cls.level, cls.level - newValue));
+    updatedClasses[index] = {
+      ...cls,
+      usedHitDice: newUsed
+    };
+    onUpdateClasses(updatedClasses);
+  };
+
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-start">
-        <label className="text-lg">Max HP:</label>
-        <input
-          type="number"
-          value={maxHpInput} // Use the string value for the input field
-          onChange={handleMaxHpChange}
-          className="w-20 mx-auto p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between px-2">
+          <label className="text-lg">Max HP:</label>
+          <input
+            type="number"
+            value={maxHpInput}
+            onChange={handleMaxHpChange}
+            className="w-20 p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="flex items-center justify-between px-2">
+          <label className="text-lg">HP:</label>
+          <input
+            type="number"
+            value={hpInput}
+            onChange={handleHpChange}
+            className="w-20 p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="flex items-center justify-between px-2">
+          <label className="text-lg">Temp HP:</label>
+          <input
+            type="number"
+            value={tempHpInput}
+            onChange={handleTempHpChange}
+            className="w-20 p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
-      <div className="flex items-center justify-start">
-        <label className="text-lg">HP:</label>
-        <input
-          type="number"
-          value={hpInput} // Use the string value for the input field
-          onChange={handleHpChange}
-          className="w-20 mx-auto p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div className="flex items-center justify-start">
-        <label className="text-lg">Temp HP:</label>
-        <input
-          type="number"
-          value={tempHpInput} // Use the string value for the input field
-          onChange={handleTempHpChange}
-          className="w-20 mx-auto p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div className="flex items-center justify-center gap-4 mt-2">
+
+      <div className="flex items-center justify-center gap-4 mt-2 border-t pt-4">
         <input
           type="number"
           value={hpDiff}
@@ -137,6 +197,42 @@ const HPSection = ({ maxHp, hp, tempHp, setMaxHp, setHp, setTempHp }: HPSectionP
             Heal
           </Button>
         </div>
+      </div>
+
+      <div className="border-t pt-4 space-y-2">
+        <h3 className="text-md font-semibold text-center">Hit Dice</h3>
+        {classes.map((cls, index) => {
+          const available = cls.level - (cls.usedHitDice || 0);
+          const sides = classHitDice[cls.name.toLowerCase()] || 8;
+          return (
+            <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-100">
+              <span className="text-sm font-medium">{cls.name}</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 font-mono text-sm">
+                  <input
+                    type="number"
+                    value={available}
+                    onChange={(e) => handleHitDiceChange(index, parseInt(e.target.value) || 0)}
+                    min={0}
+                    max={cls.level}
+                    className="w-10 p-1 border border-gray-300 rounded bg-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <span>/ {cls.level} d{sides}</span>
+                </div>
+                <button
+                  onClick={() => handleRollHitDice(index)}
+                  disabled={available <= 0}
+                  className={`text-xs px-2 py-1 rounded transition-colors ${available > 0
+                      ? "bg-blue-500 text-white hover:bg-blue-600"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    }`}
+                >
+                  Roll
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
