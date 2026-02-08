@@ -95,6 +95,11 @@ export interface CharacterClass {
   usedHitDice?: number;
 }
 
+export interface DeathSaves {
+  successes: number;
+  failures: number;
+}
+
 export interface Character {
   id: number;
   name: string;
@@ -108,4 +113,5 @@ export interface Character {
   speed?: Speed;
   inventory?: InventoryItem[];
   currency?: Currency;
+  deathSaves?: DeathSaves;
 }

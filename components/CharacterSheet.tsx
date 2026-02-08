@@ -7,11 +7,12 @@ import AbilityScoreSection from "./AbilityScoreSection";
 import SpeedSection from "./SpeedSection";
 import DiceRoller from "./DiceRoller";
 import { classOptions } from "../utils/constants";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass } from "../types/character";
+import CurrencySection from "./CurrencySection";
+import DeathSaves from "./DeathSaves";
+import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType } from "../types/character";
 import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
-import CurrencySection from "./CurrencySection";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -77,6 +78,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       ep: 0,
       gp: 0,
       pp: 0,
+    },
+    deathSaves: character.deathSaves ?? {
+      successes: 0,
+      failures: 0,
     },
   };
 
@@ -175,6 +180,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
   const handleCurrencyChange = (currency: Currency) => {
     setCharacter((prev) => (prev ? { ...prev, currency } : null));
+  };
+
+  const handleDeathSavesChange = (deathSaves: DeathSavesType) => {
+    setCharacter((prev) => (prev ? { ...prev, deathSaves } : null));
   };
 
 
@@ -371,6 +380,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                   abilityScores={characterWithDefaults.abilityScores}
                   onUpdateClasses={(classes) => handleChange("classes", classes)}
                   rollDice={rollDice}
+                />
+                <DeathSaves
+                  deathSaves={characterWithDefaults.deathSaves}
+                  onUpdate={handleDeathSavesChange}
                 />
                 <SpeedSection
                   speed={characterWithDefaults.speed}
