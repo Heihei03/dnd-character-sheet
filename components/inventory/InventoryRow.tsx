@@ -53,12 +53,28 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                                 className="w-full p-1 border border-transparent hover:border-gray-200 rounded text-sm font-medium focus:bg-white"
                             />
                             {/* Item Metadata Summary */}
-                            <div className="px-1 text-[10px] text-gray-500 flex gap-2">
+                            <div className="px-1 text-[10px] text-gray-500 flex flex-wrap gap-x-2 gap-y-0.5">
                                 {item.itemType === "weapon" && item.weaponDetails && (
-                                    <span>{item.weaponDetails.damageDice} {item.weaponDetails.damageType}</span>
+                                    <React.Fragment>
+                                        <span className="font-semibold text-red-700/70">{item.weaponDetails.damageDice} {item.weaponDetails.damageType}</span>
+                                        {item.weaponDetails.properties.length > 0 && (
+                                            <span className="italic">{item.weaponDetails.properties.join(", ")}</span>
+                                        )}
+                                        {item.weaponDetails.mastery && (
+                                            <span className="bg-red-50 text-red-600 px-1 rounded border border-red-100 font-bold uppercase text-[8px]">{item.weaponDetails.mastery}</span>
+                                        )}
+                                    </React.Fragment>
                                 )}
                                 {(item.itemType === "armor" || item.itemType === "shield") && item.armorDetails && (
-                                    <span>{item.itemType === "armor" ? item.armorDetails.category : "Shield"} • AC {item.armorDetails.ac}</span>
+                                    <React.Fragment>
+                                        <span className="font-semibold text-blue-700/70">{item.itemType === "armor" ? item.armorDetails.category : "Shield"} • AC {item.armorDetails.ac}</span>
+                                        {item.armorDetails.strengthRequirement && (
+                                            <span className="text-orange-600">Str {item.armorDetails.strengthRequirement}</span>
+                                        )}
+                                        {item.armorDetails.stealthDisadvantage && (
+                                            <span className="text-gray-400 italic">Stealth Disadv.</span>
+                                        )}
+                                    </React.Fragment>
                                 )}
                                 {item.isContainer && item.containerDetails && (
                                     <span className="text-green-600 font-medium">

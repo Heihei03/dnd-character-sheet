@@ -88,28 +88,74 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({ item, containers, updat
             {item.itemType === "weapon" && item.weaponDetails && (
                 <div className="md:col-span-2 mt-2 p-3 bg-red-50/30 rounded border border-red-100">
                     <label className="block text-[10px] font-bold text-red-800 uppercase mb-2">Weapon Stats</label>
-                    <div className="grid grid-cols-3 gap-2">
-                        <input
-                            type="text"
-                            value={item.weaponDetails.damageDice}
-                            onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageDice: e.target.value })}
-                            className="p-1 border rounded text-xs"
-                            placeholder="Damage Dice"
-                        />
-                        <input
-                            type="text"
-                            value={item.weaponDetails.damageType}
-                            onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageType: e.target.value })}
-                            className="p-1 border rounded text-xs"
-                            placeholder="Damage Type"
-                        />
-                        <input
-                            type="text"
-                            value={item.weaponDetails.mastery || ""}
-                            onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, mastery: e.target.value })}
-                            placeholder="Mastery"
-                            className="p-1 border rounded text-xs"
-                        />
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
+                        <div>
+                            <label className="block text-[9px] text-gray-500">Category</label>
+                            <select
+                                value={item.weaponDetails.category}
+                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, category: e.target.value as any })}
+                                className="w-full p-1 border rounded text-xs bg-white"
+                            >
+                                <option value="Simple">Simple</option>
+                                <option value="Martial">Martial</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-[9px] text-gray-500">Range</label>
+                            <select
+                                value={item.weaponDetails.rangeType}
+                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, rangeType: e.target.value as any })}
+                                className="w-full p-1 border rounded text-xs bg-white"
+                            >
+                                <option value="Melee">Melee</option>
+                                <option value="Ranged">Ranged</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-[9px] text-gray-500">Damage</label>
+                            <input
+                                type="text"
+                                value={item.weaponDetails.damageDice}
+                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageDice: e.target.value })}
+                                className="w-full p-1 border rounded text-xs"
+                                placeholder="1d6"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-[9px] text-gray-500">Type</label>
+                            <input
+                                type="text"
+                                value={item.weaponDetails.damageType}
+                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageType: e.target.value })}
+                                className="w-full p-1 border rounded text-xs"
+                                placeholder="slashing"
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div>
+                            <label className="block text-[9px] text-gray-500">Properties</label>
+                            <input
+                                type="text"
+                                value={item.weaponDetails.properties.join(", ")}
+                                onChange={e => updateItem(item.id, "weaponDetails", {
+                                    ...item.weaponDetails,
+                                    properties: e.target.value.split(",").map(p => p.trim()).filter(p => p !== "")
+                                })}
+                                className="w-full p-1 border rounded text-xs"
+                                placeholder="Finesse, Light, etc."
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-[9px] text-gray-500">Mastery</label>
+                            <input
+                                type="text"
+                                value={item.weaponDetails.mastery || ""}
+                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, mastery: e.target.value })}
+                                placeholder="Vex, Nick, etc."
+                                className="w-full p-1 border rounded text-xs"
+                            />
+                        </div>
                     </div>
                 </div>
             )}
@@ -117,7 +163,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({ item, containers, updat
             {(item.itemType === "armor" || item.itemType === "shield") && item.armorDetails && (
                 <div className="md:col-span-2 mt-2 p-3 bg-blue-50/30 rounded border border-blue-100">
                     <label className="block text-[10px] font-bold text-blue-800 uppercase mb-2">Armor Stats</label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
                         <div>
                             <label className="block text-[9px] text-gray-500">AC</label>
                             <input
@@ -128,16 +174,48 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({ item, containers, updat
                             />
                         </div>
                         <div>
+                            <label className="block text-[9px] text-gray-500">Category</label>
+                            <select
+                                value={item.armorDetails.category}
+                                onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, category: e.target.value as any })}
+                                className="w-full p-1 border rounded text-xs bg-white"
+                            >
+                                <option value="Light">Light</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Heavy">Heavy</option>
+                                <option value="Shield">Shield</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-[9px] text-gray-500">STR Req</label>
+                            <input
+                                type="number"
+                                value={item.armorDetails.strengthRequirement ?? ""}
+                                onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, strengthRequirement: parseInt(e.target.value) || undefined })}
+                                className="w-full p-1 border rounded text-xs"
+                                placeholder="None"
+                            />
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <label className="block text-[9px] text-gray-500">Stealth Dis</label>
+                            <input
+                                type="checkbox"
+                                checked={item.armorDetails.stealthDisadvantage}
+                                onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, stealthDisadvantage: e.target.checked })}
+                                className="w-4 h-4 mt-1"
+                            />
+                        </div>
+                        <div className="flex flex-col items-center">
                             <label className="block text-[9px] text-gray-500">DEX Bonus</label>
                             <input
                                 type="checkbox"
                                 checked={item.armorDetails.dexBonus}
                                 onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, dexBonus: e.target.checked })}
-                                className="w-4 h-4 ml-1 mt-1"
+                                className="w-4 h-4 mt-1"
                             />
                         </div>
                         {item.armorDetails.dexBonus && (
-                            <div>
+                            <div className="col-span-full md:col-start-5">
                                 <label className="block text-[9px] text-gray-500">DEX Cap</label>
                                 <input
                                     type="number"

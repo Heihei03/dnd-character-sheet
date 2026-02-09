@@ -229,6 +229,46 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd }) => {
                                                 <option value="Heavy">Heavy</option>
                                             </select>
                                         </div>
+                                        <div>
+                                            <label className="block text-[10px] text-gray-500 font-semibold uppercase">STR Req</label>
+                                            <input
+                                                type="number"
+                                                value={newItemArmorDetails.strengthRequirement || ""}
+                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, strengthRequirement: parseInt(e.target.value) || undefined })}
+                                                placeholder="None"
+                                                className="text-xs border border-gray-300 rounded p-1.5 w-full"
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-2 pt-4">
+                                            <input
+                                                type="checkbox"
+                                                checked={newItemArmorDetails.stealthDisadvantage}
+                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, stealthDisadvantage: e.target.checked })}
+                                                className="w-4 h-4"
+                                            />
+                                            <label className="text-[10px] text-gray-500 font-semibold uppercase">Stealth Disadv</label>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={newItemArmorDetails.dexBonus}
+                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, dexBonus: e.target.checked })}
+                                                className="w-4 h-4"
+                                            />
+                                            <label className="text-[10px] text-gray-500 font-semibold uppercase">DEX Bonus</label>
+                                        </div>
+                                        {newItemArmorDetails.dexBonus && (
+                                            <div>
+                                                <label className="block text-[10px] text-gray-500 font-semibold uppercase">DEX Cap</label>
+                                                <input
+                                                    type="number"
+                                                    value={newItemArmorDetails.dexCap || ""}
+                                                    onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, dexCap: parseInt(e.target.value) || undefined })}
+                                                    placeholder="None"
+                                                    className="text-xs border border-gray-300 rounded p-1.5 w-full"
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -318,19 +358,54 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd }) => {
                                     ))}
                                 </select>
                                 <div className="grid grid-cols-2 gap-2 mt-1">
+                                    <div className="col-span-2 grid grid-cols-2 gap-2">
+                                        <select
+                                            value={newItemWeaponDetails.category}
+                                            onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, category: e.target.value as any })}
+                                            className="text-xs border border-gray-300 rounded p-1.5 w-full bg-white"
+                                        >
+                                            <option value="Simple">Simple</option>
+                                            <option value="Martial">Martial</option>
+                                        </select>
+                                        <select
+                                            value={newItemWeaponDetails.rangeType}
+                                            onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, rangeType: e.target.value as any })}
+                                            className="text-xs border border-gray-300 rounded p-1.5 w-full bg-white"
+                                        >
+                                            <option value="Melee">Melee</option>
+                                            <option value="Ranged">Ranged</option>
+                                        </select>
+                                    </div>
                                     <input
                                         type="text"
                                         value={newItemWeaponDetails.damageDice}
                                         onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, damageDice: e.target.value })}
-                                        placeholder="1d6"
+                                        placeholder="Damage (e.g. 1d6)"
                                         className="text-xs border border-gray-300 rounded p-1.5"
                                     />
                                     <input
                                         type="text"
                                         value={newItemWeaponDetails.damageType}
                                         onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, damageType: e.target.value })}
-                                        placeholder="slashing"
+                                        placeholder="Type (e.g. slashing)"
                                         className="text-xs border border-gray-300 rounded p-1.5"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={newItemWeaponDetails.properties.join(", ")}
+                                        onChange={(e) => setNewItemWeaponDetails({
+                                            ...newItemWeaponDetails,
+                                            properties: e.target.value.split(",").map(p => p.trim()).filter(p => p !== "")
+                                        })}
+                                        placeholder="Properties (comma separated)"
+                                        className="text-xs border border-gray-300 rounded p-1.5 col-span-2"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={newItemWeaponDetails.mastery || ""}
+                                        onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, mastery: e.target.value })}
+                                        placeholder="Mastery (e.g. Vex)"
+                                        className="text-xs border border-gray-300 rounded p-1.5 col-span-2"
                                     />
                                 </div>
                             </div>
