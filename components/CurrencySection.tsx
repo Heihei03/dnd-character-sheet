@@ -87,7 +87,7 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                 <div className="grid grid-cols-5 gap-2 text-center">
                     {["cp", "sp", "ep", "gp", "pp"].map((key) => (
                         <div key={key} className="flex flex-col items-center">
-                            <label className="text-[10px] font-bold uppercase text-gray-500 mb-1">{key}</label>
+                            <label className="text-[16px] font-bold uppercase text-gray-500 mb-1">{key}</label>
                             <input
                                 type="number"
                                 value={currency[key as keyof Currency]}
