@@ -43,5 +43,86 @@ export const CONTAINER_DATA: Record<string, ContainerBaseData> = {
             capacityWeight: 300,
             contentsWeightMultiplier: 1
         }
+    },
+    "Sack": {
+        name: "Sack",
+        weight: 0.5,
+        costGP: 0.01,
+        details: {
+            capacityWeight: 30,
+            contentsWeightMultiplier: 1
+        }
+    },
+    "Basket": {
+        name: "Basket",
+        weight: 2,
+        costGP: 0.4,
+        details: {
+            capacityWeight: 40,
+            contentsWeightMultiplier: 1
+        }
+    },
+    "Barrel": {
+        name: "Barrel",
+        weight: 70,
+        costGP: 2,
+        details: {
+            capacityWeight: 500,
+            contentsWeightMultiplier: 1
+        }
+    },
+    "Quiver": {
+        name: "Quiver",
+        weight: 1,
+        costGP: 1,
+        details: {
+            capacityWeight: 5,
+            contentsWeightMultiplier: 1
+        }
+    },
+    "Case, Bolt": {
+        name: "Case, Bolt",
+        weight: 1,
+        costGP: 1,
+        details: {
+            capacityWeight: 5,
+            contentsWeightMultiplier: 1
+        }
+    },
+    "Case, Map/Scroll": {
+        name: "Case, Map/Scroll",
+        weight: 1,
+        costGP: 1,
+        details: {
+            capacityWeight: 5,
+            contentsWeightMultiplier: 1
+        }
+    },
+    "Waterskin": {
+        name: "Waterskin",
+        weight: 5,
+        costGP: 0.2,
+        details: {
+            capacityWeight: 4,
+            contentsWeightMultiplier: 1
+        }
+    },
+    "Handy Haversack": {
+        name: "Handy Haversack",
+        weight: 5,
+        costGP: 2000,
+        details: {
+            capacityWeight: 120,
+            contentsWeightMultiplier: 0
+        }
+    },
+    "Portable Hole": {
+        name: "Portable Hole",
+        weight: 0,
+        costGP: 20000,
+        details: {
+            capacityWeight: 1000, // Roughly, DM choice
+            contentsWeightMultiplier: 0
+        }
     }
 };
