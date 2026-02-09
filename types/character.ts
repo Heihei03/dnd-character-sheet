@@ -66,6 +66,16 @@ export interface WeaponDetails {
   damageType?: string;
 }
 
+export interface ArmorDetails {
+  baseArmor?: string;
+  category: "Light" | "Medium" | "Heavy" | "Shield";
+  ac: number;
+  dexBonus: boolean;
+  dexCap?: number;
+  strengthRequirement?: number;
+  stealthDisadvantage: boolean;
+}
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -78,6 +88,7 @@ export interface InventoryItem {
   attunable?: boolean;
   itemType?: "weapon" | "armor" | "shield" | "other";
   weaponDetails?: WeaponDetails;
+  armorDetails?: ArmorDetails;
   description?: string;
 }
 

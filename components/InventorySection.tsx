@@ -1,7 +1,8 @@
 
 import React, { useState } from "react";
-import { InventoryItem, WeaponDetails } from "../types/character";
+import { InventoryItem, WeaponDetails, ArmorDetails } from "../types/character";
 import { WEAPON_DATA } from "../data/weapons";
+import { ARMOR_DATA } from "../data/armor";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import ExpandableSection from "./ui/ExpandableSection";
@@ -23,6 +24,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     const [newItemAttunable, setNewItemAttunable] = useState(false);
     const [newItemType, setNewItemType] = useState<"weapon" | "armor" | "shield" | "other">("other");
     const [newItemWeaponDetails, setNewItemWeaponDetails] = useState<WeaponDetails | undefined>(undefined);
+    const [newItemArmorDetails, setNewItemArmorDetails] = useState<ArmorDetails | undefined>(undefined);
     const [expandedItemIds, setExpandedItemIds] = useState<string[]>([]);
 
     const addItem = () => {
@@ -41,6 +43,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
             attunable: newItemAttunable,
             itemType: newItemType,
             weaponDetails: newItemWeaponDetails,
+            armorDetails: newItemArmorDetails,
             description: "",
         };
 
@@ -54,6 +57,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
         setNewItemAttunable(false);
         setNewItemType("other");
         setNewItemWeaponDetails(undefined);
+        setNewItemArmorDetails(undefined);
     };
 
     const handleBaseWeaponSelect = (baseName: string) => {
@@ -68,11 +72,13 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                 properties: [],
                 mastery: ""
             });
+            setNewItemEquippable(true);
         } else if (WEAPON_DATA[baseName]) {
             const data = WEAPON_DATA[baseName];
             setNewItemName(data.name);
             setNewItemWeight(data.weight);
             setNewItemCost(data.costGP);
+            setNewItemEquippable(true);
             setNewItemWeaponDetails({
                 baseWeapon: baseName,
                 category: data.category,
@@ -81,6 +87,35 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                 damageType: data.damageType,
                 properties: [...data.properties],
                 mastery: data.mastery
+            });
+        }
+    };
+    const handleBaseArmorSelect = (baseName: string, typeOverride?: string) => {
+        if (baseName === "Custom") {
+            const isShield = (typeOverride || newItemType) === "shield";
+            setNewItemName(isShield ? "Custom Shield" : "Custom Armor");
+            setNewItemArmorDetails({
+                baseArmor: "Custom",
+                category: isShield ? "Shield" : "Light",
+                ac: isShield ? 2 : 10,
+                dexBonus: !isShield,
+                stealthDisadvantage: false
+            });
+            setNewItemEquippable(true);
+        } else if (ARMOR_DATA[baseName]) {
+            const data = ARMOR_DATA[baseName];
+            setNewItemName(data.name);
+            setNewItemWeight(data.weight);
+            setNewItemCost(data.costGP);
+            setNewItemEquippable(true);
+            setNewItemArmorDetails({
+                baseArmor: baseName,
+                category: data.category,
+                ac: data.ac,
+                dexBonus: data.dexBonus,
+                dexCap: data.dexCap,
+                strengthRequirement: data.strengthRequirement,
+                stealthDisadvantage: data.stealthDisadvantage
             });
         }
     };
@@ -115,6 +150,27 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                         properties: [],
                         mastery: ""
                     };
+                }
+
+                // Initialize/Reset armor details if switching to armor or shield type
+                if (updates.itemType === "armor" || updates.itemType === "shield") {
+                    const isShield = updates.itemType === "shield";
+                    const needsInitialization = !item.armorDetails && !updates.armorDetails;
+                    const categorySwitch = item.armorDetails && (
+                        (isShield && item.armorDetails.category !== "Shield") ||
+                        (!isShield && item.armorDetails.category === "Shield")
+                    );
+
+                    if (needsInitialization || categorySwitch) {
+                        updatedItem.armorDetails = {
+                            baseArmor: "Custom",
+                            category: isShield ? "Shield" : "Light",
+                            ac: isShield ? 2 : 10,
+                            dexBonus: !isShield,
+                            stealthDisadvantage: false
+                        };
+                        updatedItem.equippable = true;
+                    }
                 }
 
                 return updatedItem;
@@ -289,8 +345,12 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                             if (type === "weapon" && !newItemWeaponDetails) {
                                                 // Default to custom if switching to weapon
                                                 handleBaseWeaponSelect("Custom");
-                                            } else if (type !== "weapon") {
+                                            } else if (type === "armor" || type === "shield") {
+                                                handleBaseArmorSelect("Custom", type);
                                                 setNewItemWeaponDetails(undefined);
+                                            } else {
+                                                setNewItemWeaponDetails(undefined);
+                                                setNewItemArmorDetails(undefined);
                                             }
                                         }}
                                         className="text-xs border border-gray-300 rounded p-0.5 w-full"
@@ -300,6 +360,115 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                         <option value="armor">Armor</option>
                                         <option value="shield">Shield</option>
                                     </select>
+
+                                    {newItemType === "armor" && (
+                                        <div className="flex flex-col gap-1 p-2 bg-gray-50 rounded border border-gray-200">
+                                            <select
+                                                value={newItemArmorDetails?.baseArmor || "Custom"}
+                                                onChange={(e) => handleBaseArmorSelect(e.target.value)}
+                                                className="text-xs border border-gray-300 rounded p-1 w-full"
+                                            >
+                                                <option value="Custom">Custom</option>
+                                                {Object.keys(ARMOR_DATA)
+                                                    .filter(name => ARMOR_DATA[name].category !== "Shield")
+                                                    .sort()
+                                                    .map(name => (
+                                                        <option key={name} value={name}>{name}</option>
+                                                    ))}
+                                            </select>
+
+                                            {newItemArmorDetails && (
+                                                <div className="space-y-2 mt-2 pt-2 border-t border-gray-200">
+                                                    <div className="grid grid-cols-2 gap-1">
+                                                        <div>
+                                                            <label className="block text-[10px] text-gray-400 font-semibold">AC</label>
+                                                            <input
+                                                                type="number"
+                                                                value={newItemArmorDetails.ac}
+                                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, ac: parseInt(e.target.value) || 0 })}
+                                                                className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-[10px] text-gray-400 font-semibold">Category</label>
+                                                            <select
+                                                                value={newItemArmorDetails.category}
+                                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, category: e.target.value as any })}
+                                                                className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                            >
+                                                                <option value="Light">Light</option>
+                                                                <option value="Medium">Medium</option>
+                                                                <option value="Heavy">Heavy</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <label className="flex items-center gap-1 text-[10px] text-gray-500 cursor-pointer">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={newItemArmorDetails.dexBonus}
+                                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, dexBonus: e.target.checked })}
+                                                                className="w-3 h-3"
+                                                            />
+                                                            DEX Bonus
+                                                        </label>
+                                                        <label className="flex items-center gap-1 text-[10px] text-gray-500 cursor-pointer">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={newItemArmorDetails.stealthDisadvantage}
+                                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, stealthDisadvantage: e.target.checked })}
+                                                                className="w-3 h-3"
+                                                            />
+                                                            Stealth Disadv.
+                                                        </label>
+                                                    </div>
+                                                    {newItemArmorDetails.dexBonus && (
+                                                        <div>
+                                                            <label className="block text-[10px] text-gray-400 font-semibold">DEX Cap</label>
+                                                            <input
+                                                                type="number"
+                                                                value={newItemArmorDetails.dexCap ?? ""}
+                                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, dexCap: e.target.value === "" ? undefined : parseInt(e.target.value) })}
+                                                                placeholder="None"
+                                                                className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {newItemType === "shield" && (
+                                        <div className="flex flex-col gap-1 p-2 bg-gray-50 rounded border border-gray-200">
+                                            <select
+                                                value={newItemArmorDetails?.baseArmor || "Shield"}
+                                                onChange={(e) => handleBaseArmorSelect(e.target.value)}
+                                                className="text-xs border border-gray-300 rounded p-1 w-full"
+                                            >
+                                                {Object.keys(ARMOR_DATA)
+                                                    .filter(name => ARMOR_DATA[name].category === "Shield")
+                                                    .sort()
+                                                    .map(name => (
+                                                        <option key={name} value={name}>{name}</option>
+                                                    ))}
+                                            </select>
+
+                                            {newItemArmorDetails && (
+                                                <div className="space-y-2 mt-2 pt-2 border-t border-gray-200">
+                                                    <div>
+                                                        <label className="block text-[10px] text-gray-400 font-semibold">Shield AC Bonus</label>
+                                                        <input
+                                                            type="number"
+                                                            value={newItemArmorDetails.ac}
+                                                            onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, ac: parseInt(e.target.value) || 0 })}
+                                                            className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
                                     {newItemType === "weapon" && newItemWeaponDetails && (
                                         <div className="flex flex-col gap-1 p-2 bg-gray-50 rounded border border-gray-200">
@@ -674,6 +843,109 @@ const InventoryTable: React.FC<{
                                                         placeholder="Light, Finesse..."
                                                     />
                                                 </div>
+                                            </div>
+                                        )}
+                                        {/* Armor/Shield Details Editor */}
+                                        {(item.itemType === "armor" || item.itemType === "shield") && item.armorDetails && (
+                                            <div className="mt-2 p-2 bg-gray-50 rounded border border-gray-200">
+                                                <label className="block text-xs font-semibold text-gray-500 mb-1">Armor Details</label>
+                                                <div className="mb-2">
+                                                    <label className="block text-[10px] text-gray-400">Base Armor</label>
+                                                    <select
+                                                        value={item.armorDetails.baseArmor || "Custom"}
+                                                        onChange={(e) => {
+                                                            const baseName = e.target.value;
+                                                            if (baseName === "Custom") {
+                                                                updateItemBatch(item.id, {
+                                                                    armorDetails: {
+                                                                        ...item.armorDetails!,
+                                                                        baseArmor: "Custom",
+                                                                    }
+                                                                });
+                                                            } else if (ARMOR_DATA[baseName]) {
+                                                                const data = ARMOR_DATA[baseName];
+                                                                updateItemBatch(item.id, {
+                                                                    armorDetails: {
+                                                                        baseArmor: baseName,
+                                                                        category: data.category,
+                                                                        ac: data.ac,
+                                                                        dexBonus: data.dexBonus,
+                                                                        dexCap: data.dexCap,
+                                                                        strengthRequirement: data.strengthRequirement,
+                                                                        stealthDisadvantage: data.stealthDisadvantage
+                                                                    },
+                                                                    weight: data.weight,
+                                                                    costGP: data.costGP
+                                                                });
+                                                            }
+                                                        }}
+                                                        className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                    >
+                                                        <option value="Custom">Custom</option>
+                                                        {Object.keys(ARMOR_DATA)
+                                                            .filter(name => (item.itemType === "shield") ? ARMOR_DATA[name].category === "Shield" : ARMOR_DATA[name].category !== "Shield")
+                                                            .sort()
+                                                            .map(name => (
+                                                                <option key={name} value={name}>{name}</option>
+                                                            ))}
+                                                    </select>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 mb-2">
+                                                    <div>
+                                                        <label className="block text-[10px] text-gray-400">AC</label>
+                                                        <input
+                                                            type="number"
+                                                            value={item.armorDetails.ac}
+                                                            onChange={(e) => updateItem(item.id, "armorDetails", { ...item.armorDetails, ac: parseInt(e.target.value) || 0 })}
+                                                            className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] text-gray-400">Category</label>
+                                                        <select
+                                                            value={item.armorDetails.category}
+                                                            onChange={(e) => updateItem(item.id, "armorDetails", { ...item.armorDetails, category: e.target.value as any })}
+                                                            className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                        >
+                                                            <option value="Light">Light</option>
+                                                            <option value="Medium">Medium</option>
+                                                            <option value="Heavy">Heavy</option>
+                                                            <option value="Shield">Shield</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-4 mb-2">
+                                                    <label className="flex items-center gap-1 text-[10px] text-gray-500 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={item.armorDetails.dexBonus}
+                                                            onChange={(e) => updateItem(item.id, "armorDetails", { ...item.armorDetails, dexBonus: e.target.checked })}
+                                                            className="w-3 h-3"
+                                                        />
+                                                        DEX Bonus
+                                                    </label>
+                                                    <label className="flex items-center gap-1 text-[10px] text-gray-500 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={item.armorDetails.stealthDisadvantage}
+                                                            onChange={(e) => updateItem(item.id, "armorDetails", { ...item.armorDetails, stealthDisadvantage: e.target.checked })}
+                                                            className="w-3 h-3"
+                                                        />
+                                                        Stealth Disadv.
+                                                    </label>
+                                                </div>
+                                                {item.armorDetails.dexBonus && (
+                                                    <div className="mb-2">
+                                                        <label className="block text-[10px] text-gray-400">DEX Cap</label>
+                                                        <input
+                                                            type="number"
+                                                            value={item.armorDetails.dexCap ?? ""}
+                                                            onChange={(e) => updateItem(item.id, "armorDetails", { ...item.armorDetails, dexCap: e.target.value === "" ? undefined : parseInt(e.target.value) })}
+                                                            placeholder="None"
+                                                            className="text-xs border border-gray-300 rounded p-1 w-full"
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>

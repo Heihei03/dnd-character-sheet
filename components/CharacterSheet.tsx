@@ -182,7 +182,45 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   };
 
   const handleInventoryChange = (inventory: InventoryItem[]) => {
-    setCharacter((prev) => (prev ? { ...prev, inventory } : null));
+    setCharacter((prev) => {
+      if (!prev) return null;
+
+      const equippedArmor = inventory.find(item => item.equipped && item.itemType === "armor" && item.armorDetails);
+      const equippedShield = inventory.find(item => item.equipped && item.itemType === "shield" && item.armorDetails);
+
+      const updatedArmorClass: ArmorClass = prev.armorClass ?? {
+        baseAC: 10,
+        hasDexBonus: true,
+        shieldBonus: 0,
+        miscBonus: 0
+      };
+
+      if (equippedArmor && equippedArmor.armorDetails) {
+        updatedArmorClass.baseAC = equippedArmor.armorDetails.ac;
+        updatedArmorClass.hasDexBonus = equippedArmor.armorDetails.dexBonus;
+        updatedArmorClass.dexCap = equippedArmor.armorDetails.dexCap;
+      } else {
+        // Only reset if character HAD armor equipped before but doesn't now
+        const hadArmor = (prev.inventory ?? []).some(item => item.equipped && item.itemType === "armor");
+        if (hadArmor) {
+          updatedArmorClass.baseAC = 10;
+          updatedArmorClass.hasDexBonus = true;
+          updatedArmorClass.dexCap = undefined;
+        }
+      }
+
+      if (equippedShield && equippedShield.armorDetails) {
+        updatedArmorClass.shieldBonus = equippedShield.armorDetails.ac;
+      } else {
+        // Only reset if character HAD shield equipped before but doesn't now
+        const hadShield = (prev.inventory ?? []).some(item => item.equipped && item.itemType === "shield");
+        if (hadShield) {
+          updatedArmorClass.shieldBonus = 0;
+        }
+      }
+
+      return { ...prev, inventory, armorClass: updatedArmorClass };
+    });
   };
 
   const handleCurrencyChange = (currency: Currency) => {
