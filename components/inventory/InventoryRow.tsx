@@ -1,0 +1,125 @@
+import React from "react";
+import { InventoryItem } from "../../types/character";
+import ItemDetailView from "./ItemDetailView";
+
+interface InventoryRowProps {
+    item: InventoryItem;
+    allInventory: InventoryItem[];
+    section: "equipment" | "inventory";
+    updateItem: (id: string, field: keyof InventoryItem, value: any) => void;
+    removeItem: (id: string) => void;
+    isExpanded: boolean;
+    onToggleExpand: () => void;
+}
+
+const InventoryRow: React.FC<InventoryRowProps> = ({
+    item,
+    allInventory,
+    section,
+    updateItem,
+    removeItem,
+    isExpanded,
+    onToggleExpand
+}) => {
+    const isNested = !!item.parentId;
+    const containers = allInventory.filter(i => i.isContainer && i.itemType === "container");
+
+    return (
+        <React.Fragment>
+            <tr className={`border-b hover:bg-gray-50 transition-colors ${isNested ? "bg-gray-50/30" : ""}`}>
+                <td className="p-2">
+                    <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) => updateItem(item.id, "quantity", Number(e.target.value))}
+                        className="w-10 p-1 border rounded text-xs text-center"
+                        min="0"
+                    />
+                </td>
+                <td className="p-2">
+                    <div className="flex items-center gap-1">
+                        {isNested && <span className="text-gray-300 ml-2">↳</span>}
+                        <button
+                            onClick={onToggleExpand}
+                            className="text-gray-400 hover:text-gray-600 w-4 text-[10px]"
+                        >
+                            {isExpanded ? "▼" : "▶"}
+                        </button>
+                        <div className="flex-1">
+                            <input
+                                type="text"
+                                value={item.name}
+                                onChange={(e) => updateItem(item.id, "name", e.target.value)}
+                                className="w-full p-1 border border-transparent hover:border-gray-200 rounded text-sm font-medium focus:bg-white"
+                            />
+                            {/* Item Metadata Summary */}
+                            <div className="px-1 text-[10px] text-gray-500 flex gap-2">
+                                {item.itemType === "weapon" && item.weaponDetails && (
+                                    <span>{item.weaponDetails.damageDice} {item.weaponDetails.damageType}</span>
+                                )}
+                                {(item.itemType === "armor" || item.itemType === "shield") && item.armorDetails && (
+                                    <span>{item.itemType === "armor" ? item.armorDetails.category : "Shield"} • AC {item.armorDetails.ac}</span>
+                                )}
+                                {item.isContainer && item.containerDetails && (
+                                    <span className="text-green-600 font-medium">
+                                        {(item.containerDetails.capacityWeight ?? 0) > 0 ? `Cap: ${item.containerDetails.capacityWeight} lbs` : "Unlimited"}
+                                        {item.containerDetails.contentsWeightMultiplier !== 1 && ` • x${item.containerDetails.contentsWeightMultiplier} Wt`}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td className="p-2">
+                    <input
+                        type="number"
+                        value={item.costGP ?? 0}
+                        onChange={(e) => updateItem(item.id, "costGP", Number(e.target.value))}
+                        className="w-14 p-1 border rounded text-xs text-center"
+                        min="0"
+                    />
+                </td>
+                <td className="p-2">
+                    <input
+                        type="number"
+                        value={item.weight}
+                        onChange={(e) => updateItem(item.id, "weight", Number(e.target.value))}
+                        className="w-14 p-1 border rounded text-xs text-center"
+                        min="0"
+                    />
+                </td>
+                {section === "equipment" && (
+                    <td className="p-2 text-center">
+                        <input
+                            type="checkbox"
+                            checked={item.equipped ?? false}
+                            onChange={(e) => updateItem(item.id, "equipped", e.target.checked)}
+                            className="w-4 h-4 cursor-pointer"
+                        />
+                    </td>
+                )}
+                <td className="p-2">
+                    <button
+                        onClick={() => removeItem(item.id)}
+                        className="text-gray-300 hover:text-red-500 font-bold transition-colors"
+                    >
+                        &times;
+                    </button>
+                </td>
+            </tr>
+            {isExpanded && (
+                <tr className="bg-gray-50/50">
+                    <td colSpan={section === "equipment" ? 6 : 5} className="p-4 pt-2">
+                        <ItemDetailView
+                            item={item}
+                            containers={containers}
+                            updateItem={updateItem}
+                        />
+                    </td>
+                </tr>
+            )}
+        </React.Fragment>
+    );
+};
+
+export default InventoryRow;

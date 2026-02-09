@@ -14,6 +14,7 @@ import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
 import ArmorClassSection from "./ArmorClassSection";
+import ClassLevelSection from "./ClassLevelSection";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -302,68 +303,14 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           className="flex mx-auto p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        <div className="space-y-4 w-full max-w-md mx-auto">
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center px-4">
-              <label className="text-lg font-semibold">Classes</label>
-              <button
-                onClick={addClass}
-                className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition-colors"
-                title="Add Class"
-              >
-                + Add Class
-              </button>
-            </div>
-            {characterWithDefaults.classes.map((cls, index) => (
-              <div key={index} className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-200 shadow-sm relative group">
-                <select
-                  value={cls.name}
-                  onChange={(e) => handleClassChange(index, "name", e.target.value)}
-                  className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                >
-                  {classOptions.map((charClass) => (
-                    <option key={charClass} value={charClass}>
-                      {charClass}
-                    </option>
-                  ))}
-                </select>
-                <div className="flex items-center gap-1">
-                  <label className="text-xs text-gray-500">Lvl</label>
-                  <input
-                    type="number"
-                    value={cls.level}
-                    min={1}
-                    max={20}
-                    onChange={(e) => handleClassChange(index, "level", parseInt(e.target.value, 10))}
-                    className="w-16 p-2 border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-                {characterWithDefaults.classes.length > 1 && (
-                  <button
-                    onClick={() => removeClass(index)}
-                    className="text-red-500 hover:text-red-700 font-bold px-2"
-                    title="Remove Class"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2">
-            <label className="text-lg">Total Level:</label>
-            <span className="font-semibold text-xl">{totalLevel}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="text-lg text-gray-500">Proficiency Bonus:</label>
-            <span className="font-semibold text-xl text-gray-600">
-              +{proficiencyBonus}
-            </span>
-          </div>
-        </div>
+        <ClassLevelSection
+          classes={characterWithDefaults.classes}
+          onClassChange={handleClassChange}
+          onAddClass={addClass}
+          onRemoveClass={removeClass}
+          totalLevel={totalLevel}
+          proficiencyBonus={proficiencyBonus}
+        />
 
         <div className="flex space-x-4 mb-6">
           <button

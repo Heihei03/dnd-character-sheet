@@ -76,6 +76,11 @@ export interface ArmorDetails {
   stealthDisadvantage: boolean;
 }
 
+export interface ContainerDetails {
+  capacityWeight?: number;
+  contentsWeightMultiplier: number; // 0 for Bag of Holding, 1 for normal backpack
+}
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -86,9 +91,12 @@ export interface InventoryItem {
   attuned?: boolean;
   equippable?: boolean;
   attunable?: boolean;
-  itemType?: "weapon" | "armor" | "shield" | "other";
+  itemType?: "weapon" | "armor" | "shield" | "container" | "other";
   weaponDetails?: WeaponDetails;
   armorDetails?: ArmorDetails;
+  containerDetails?: ContainerDetails;
+  isContainer?: boolean;
+  parentId?: string;
   description?: string;
 }
 
