@@ -5,12 +5,14 @@ import { ARMOR_DATA } from "../../data/armor";
 import { CONTAINER_DATA } from "../../data/containers";
 import { CardContent } from "../ui/card";
 import Button from "../ui/button";
+import LoadSummary from "./LoadSummary";
 
 interface AddItemFormProps {
     onAdd: (item: InventoryItem) => void;
+    totalWeight: number;
 }
 
-const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd }) => {
+const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
     const [newItemName, setNewItemName] = useState("");
     const [newItemWeight, setNewItemWeight] = useState(0);
     const [newItemCost, setNewItemCost] = useState(0);
@@ -138,7 +140,10 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd }) => {
 
     return (
         <CardContent className="p-4 space-y-4">
-            <h2 className="text-xl font-bold border-b pb-2">Inventory Management</h2>
+            <div className="flex justify-between items-center border-b pb-2">
+                <h2 className="text-xl font-bold">Inventory Management</h2>
+                <LoadSummary totalWeight={totalWeight} />
+            </div>
             <div className="space-y-4">
                 <div className="flex gap-2 items-end">
                     <div className="flex-1">

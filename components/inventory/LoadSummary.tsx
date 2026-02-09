@@ -1,5 +1,4 @@
 import React from "react";
-import { CardContent } from "../ui/card";
 
 interface LoadSummaryProps {
     totalWeight: number;
@@ -7,17 +6,11 @@ interface LoadSummaryProps {
 
 const LoadSummary: React.FC<LoadSummaryProps> = ({ totalWeight }) => {
     return (
-        <CardContent className="p-4 space-y-4">
-            <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-800 pb-2">
-                Load Summary
-            </h3>
-            <div className="flex justify-between items-baseline">
-                <span className="text-gray-400 text-xs">Total Weight</span>
-                <span className="text-3xl font-black text-blue-400">
-                    {totalWeight.toFixed(1)} <span className="text-xs font-normal">lbs</span>
-                </span>
-            </div>
-        </CardContent>
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gray-900 text-white text-[10px] font-bold tracking-tight shadow-sm border border-gray-700">
+            <span className="text-gray-400 font-medium uppercase text-[8px] tracking-widest">Weight:</span>
+            <span className="text-blue-400">{totalWeight.toFixed(1)}</span>
+            <span className="text-gray-500 font-normal">lbs</span>
+        </span>
     );
 };
 

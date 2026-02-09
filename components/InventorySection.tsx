@@ -4,7 +4,6 @@ import { Card, CardContent } from "./ui/card";
 import AddItemForm from "./inventory/AddItemForm";
 import InventoryTable from "./inventory/InventoryTable";
 import AttunementSection from "./inventory/AttunementSection";
-import LoadSummary from "./inventory/LoadSummary";
 
 interface InventorySectionProps {
     inventory: InventoryItem[];
@@ -121,10 +120,10 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     return (
         <div className="space-y-6">
             <Card>
-                <AddItemForm onAdd={onAddItem} />
+                <AddItemForm onAdd={onAddItem} totalWeight={totalWeight} />
             </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
                 <Card>
                     <CardContent className="p-4 space-y-4">
                         <AttunementSection
@@ -133,9 +132,6 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                             updateItem={updateItem}
                         />
                     </CardContent>
-                </Card>
-                <Card className="bg-gray-900 text-white">
-                    <LoadSummary totalWeight={totalWeight} />
                 </Card>
             </div>
 
