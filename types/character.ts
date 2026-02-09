@@ -100,6 +100,16 @@ export interface DeathSaves {
   failures: number;
 }
 
+export interface ArmorClass {
+  baseAC: number;
+  hasDexBonus: boolean;
+  dexCap?: number;
+  secondaryAbility?: keyof AbilityScores;
+  shieldBonus: number;
+  miscBonus: number;
+  manualOverride?: number;
+}
+
 export interface Character {
   id: number;
   name: string;
@@ -114,4 +124,5 @@ export interface Character {
   inventory?: InventoryItem[];
   currency?: Currency;
   deathSaves?: DeathSaves;
+  armorClass?: ArmorClass;
 }

@@ -9,10 +9,11 @@ import DiceRoller from "./DiceRoller";
 import { classOptions } from "../utils/constants";
 import CurrencySection from "./CurrencySection";
 import DeathSaves from "./DeathSaves";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType } from "../types/character";
+import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass } from "../types/character";
 import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
+import ArmorClassSection from "./ArmorClassSection";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -82,6 +83,12 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     deathSaves: character.deathSaves ?? {
       successes: 0,
       failures: 0,
+    },
+    armorClass: character.armorClass ?? {
+      baseAC: 10,
+      hasDexBonus: true,
+      shieldBonus: 0,
+      miscBonus: 0,
     },
   };
 
@@ -184,6 +191,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
   const handleDeathSavesChange = (deathSaves: DeathSavesType) => {
     setCharacter((prev) => (prev ? { ...prev, deathSaves } : null));
+  };
+
+  const handleArmorClassChange = (armorClass: ArmorClass) => {
+    setCharacter((prev) => (prev ? { ...prev, armorClass } : null));
   };
 
 
@@ -371,6 +382,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             {/* Center Card */}
             <Card className="w-full">
               <CardContent className="p-4 space-y-4">
+                <ArmorClassSection
+                  armorClass={characterWithDefaults.armorClass}
+                  setArmorClass={handleArmorClassChange}
+                  abilityScores={characterWithDefaults.abilityScores}
+                />
                 {/* HP */}
                 <HPSection
                   maxHp={characterWithDefaults.maxHp} setMaxHp={(maxHp) => handleChange("maxHp", maxHp)}
