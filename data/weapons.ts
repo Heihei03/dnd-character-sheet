@@ -55,5 +55,4 @@ export const WEAPON_DATA: Record<string, WeaponBaseData> = {
     "Hand Crossbow": { name: "Hand Crossbow", category: "Martial", rangeType: "Ranged", damageDice: "1d6", damageType: "piercing", properties: ["Ammunition (30/120)", "Light", "Loading"], mastery: "Vex", weight: 3, costGP: 75 },
     "Heavy Crossbow": { name: "Heavy Crossbow", category: "Martial", rangeType: "Ranged", damageDice: "1d10", damageType: "piercing", properties: ["Ammunition (100/400)", "Heavy", "Loading", "Two-handed"], mastery: "Push", weight: 18, costGP: 50 },
     "Longbow": { name: "Longbow", category: "Martial", rangeType: "Ranged", damageDice: "1d8", damageType: "piercing", properties: ["Ammunition (150/600)", "Heavy", "Two-handed"], mastery: "Slow", weight: 2, costGP: 50 },
-    "Net": { name: "Net", category: "Martial", rangeType: "Ranged", damageDice: "", damageType: "", properties: ["Special", "Thrown (5/15)"], mastery: "Slow", weight: 3, costGP: 1 },
 };
