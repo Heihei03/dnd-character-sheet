@@ -164,6 +164,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({ item, containers, updat
                 <div className="md:col-span-2 mt-2 p-3 bg-blue-50/30 rounded border border-blue-100">
                     <label className="block text-[10px] font-bold text-blue-800 uppercase mb-2">Armor Stats</label>
                     <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
+                        {/* ... armor inputs ... */}
                         <div>
                             <label className="block text-[9px] text-gray-500">AC</label>
                             <input
@@ -226,6 +227,59 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({ item, containers, updat
                                 />
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {item.itemType === "tool" && item.toolDetails && (
+                <div className="md:col-span-2 mt-2 p-3 bg-purple-50/30 rounded border border-purple-100">
+                    <label className="block text-[10px] font-bold text-purple-800 uppercase mb-2">Tool Details</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="block text-[9px] text-gray-500">Category</label>
+                                <select
+                                    value={item.toolDetails.category}
+                                    onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, category: e.target.value as any })}
+                                    className="w-full p-1 border rounded text-xs bg-white"
+                                >
+                                    <option value="Artisan Tool">Artisan Tool</option>
+                                    <option value="Other Tool">Other Tool</option>
+                                    <option value="Gaming Set">Gaming Set</option>
+                                    <option value="Musical Instrument">Musical Instrument</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-[9px] text-gray-500">Ability</label>
+                                <input
+                                    type="text"
+                                    value={item.toolDetails.ability}
+                                    onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, ability: e.target.value })}
+                                    className="w-full p-1 border rounded text-xs"
+                                    placeholder="Dexterity"
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-[9px] text-gray-500">Utilize (2024 Rule)</label>
+                                <textarea
+                                    value={item.toolDetails.utilize}
+                                    onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, utilize: e.target.value })}
+                                    className="w-full p-1 border rounded text-xs bg-white"
+                                    rows={2}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[9px] text-gray-500">Craft (2024 Rule)</label>
+                                <textarea
+                                    value={item.toolDetails.craft}
+                                    onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, craft: e.target.value })}
+                                    className="w-full p-1 border rounded text-xs bg-white"
+                                    rows={2}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

@@ -82,6 +82,12 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                                         {item.containerDetails.contentsWeightMultiplier !== 1 && ` • x${item.containerDetails.contentsWeightMultiplier} Wt`}
                                     </span>
                                 )}
+                                {item.itemType === "tool" && item.toolDetails && (
+                                    <React.Fragment>
+                                        <span className="font-semibold text-purple-700/70">{item.toolDetails.category}</span>
+                                        <span className="text-gray-400 italic">• {item.toolDetails.ability}</span>
+                                    </React.Fragment>
+                                )}
                             </div>
                         </div>
                     </div>

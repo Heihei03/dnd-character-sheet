@@ -81,6 +81,14 @@ export interface ContainerDetails {
   contentsWeightMultiplier: number; // 0 for Bag of Holding, 1 for normal backpack
 }
 
+export interface ToolDetails {
+  baseTool?: string;
+  category: "Artisan Tool" | "Other Tool" | "Gaming Set" | "Musical Instrument";
+  ability: string; // e.g., "Dexterity", "Intelligence"
+  utilize: string; // Action descriptions from 2024 rules
+  craft: string;   // Crafting descriptions from 2024 rules
+}
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -91,10 +99,11 @@ export interface InventoryItem {
   attuned?: boolean;
   equippable?: boolean;
   attunable?: boolean;
-  itemType?: "weapon" | "armor" | "shield" | "container" | "other";
+  itemType?: "weapon" | "armor" | "shield" | "container" | "tool" | "other";
   weaponDetails?: WeaponDetails;
   armorDetails?: ArmorDetails;
   containerDetails?: ContainerDetails;
+  toolDetails?: ToolDetails;
   isContainer?: boolean;
   parentId?: string;
   description?: string;

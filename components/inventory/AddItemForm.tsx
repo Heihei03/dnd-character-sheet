@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { InventoryItem, WeaponDetails, ArmorDetails, ContainerDetails } from "../../types/character";
+import { InventoryItem, WeaponDetails, ArmorDetails, ContainerDetails, ToolDetails } from "../../types/character";
 import { WEAPON_DATA } from "../../data/weapons";
 import { ARMOR_DATA } from "../../data/armor";
 import { CONTAINER_DATA } from "../../data/containers";
+import { TOOL_DATA } from "../../data/tools";
 import { CardContent } from "../ui/card";
 import Button from "../ui/button";
 import LoadSummary from "./LoadSummary";
@@ -19,10 +20,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
     const [newItemQuantity, setNewItemQuantity] = useState(1);
     const [newItemEquippable, setNewItemEquippable] = useState(false);
     const [newItemAttunable, setNewItemAttunable] = useState(false);
-    const [newItemType, setNewItemType] = useState<"weapon" | "armor" | "shield" | "container" | "other">("other");
+    const [newItemType, setNewItemType] = useState<"weapon" | "armor" | "shield" | "container" | "tool" | "other">("other");
     const [newItemWeaponDetails, setNewItemWeaponDetails] = useState<WeaponDetails | undefined>(undefined);
     const [newItemArmorDetails, setNewItemArmorDetails] = useState<ArmorDetails | undefined>(undefined);
     const [newItemContainerDetails, setNewItemContainerDetails] = useState<ContainerDetails | undefined>(undefined);
+    const [newItemToolDetails, setNewItemToolDetails] = useState<ToolDetails | undefined>(undefined);
 
     const handleBaseWeaponSelect = (baseName: string) => {
         if (baseName === "Custom") {
@@ -104,6 +106,31 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
         }
     };
 
+    const handleBaseToolSelect = (baseName: string) => {
+        if (baseName === "Custom") {
+            setNewItemName("Custom Tool");
+            setNewItemToolDetails({
+                baseTool: "Custom",
+                category: "Artisan Tool",
+                ability: "Dexterity",
+                utilize: "",
+                craft: ""
+            });
+        } else if (TOOL_DATA[baseName]) {
+            const data = TOOL_DATA[baseName];
+            setNewItemName(data.name);
+            setNewItemWeight(data.weight);
+            setNewItemCost(data.costGP);
+            setNewItemToolDetails({
+                baseTool: baseName,
+                category: data.category,
+                ability: data.ability,
+                utilize: data.utilize,
+                craft: data.craft
+            });
+        }
+    };
+
     const addItem = () => {
         if (newItemName.trim() === "") return;
 
@@ -121,6 +148,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
             weaponDetails: newItemWeaponDetails,
             armorDetails: newItemArmorDetails,
             containerDetails: newItemContainerDetails,
+            toolDetails: newItemToolDetails,
             isContainer: newItemType === "container",
             description: "",
         };
@@ -136,6 +164,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
         setNewItemWeaponDetails(undefined);
         setNewItemArmorDetails(undefined);
         setNewItemContainerDetails(undefined);
+        setNewItemToolDetails(undefined);
     };
 
     return (
@@ -182,12 +211,14 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
                             if (type === "weapon") handleBaseWeaponSelect("Custom");
                             else if (type === "armor" || type === "shield") handleBaseArmorSelect("Custom", type);
                             else if (type === "container") handleBaseContainerSelect("Custom");
+                            else if (type === "tool") handleBaseToolSelect("Custom");
                         }} className="text-xs border rounded p-1 min-w-[100px]">
                             <option value="other">Other</option>
                             <option value="weapon">Weapon</option>
                             <option value="armor">Armor</option>
                             <option value="shield">Shield</option>
                             <option value="container">Container</option>
+                            <option value="tool">Tool</option>
                         </select>
                     </div>
                 </div>
@@ -412,6 +443,67 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
                                         placeholder="Mastery (e.g. Vex)"
                                         className="text-xs border border-gray-300 rounded p-1.5 col-span-2"
                                     />
+                                </div>
+                            </div>
+                        )}
+
+                        {newItemType === "tool" && newItemToolDetails && (
+                            <div className="flex flex-col gap-2 p-3 bg-purple-50/30 rounded border border-purple-100">
+                                <label className="text-[10px] font-bold text-purple-800 uppercase">Tool Selection</label>
+                                <select
+                                    value={newItemToolDetails.baseTool || "Custom"}
+                                    onChange={(e) => handleBaseToolSelect(e.target.value)}
+                                    className="text-xs border border-purple-200 rounded p-2 w-full bg-white"
+                                >
+                                    <option value="Custom">Custom Tool</option>
+                                    {Object.keys(TOOL_DATA).sort().map(name => (
+                                        <option key={name} value={name}>{name}</option>
+                                    ))}
+                                </select>
+                                <div className="grid grid-cols-1 gap-2 mt-1">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="flex flex-col gap-1">
+                                            <label className="text-[10px] font-bold text-gray-500 uppercase">Category</label>
+                                            <select
+                                                value={newItemToolDetails.category}
+                                                onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, category: e.target.value as any })}
+                                                className="text-xs border border-gray-300 rounded p-1.5 w-full bg-white"
+                                            >
+                                                <option value="Artisan Tool">Artisan Tool</option>
+                                                <option value="Other Tool">Other Tool</option>
+                                                <option value="Gaming Set">Gaming Set</option>
+                                                <option value="Musical Instrument">Musical Instrument</option>
+                                            </select>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <label className="text-[10px] font-bold text-gray-500 uppercase">Ability</label>
+                                            <input
+                                                type="text"
+                                                value={newItemToolDetails.ability}
+                                                onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, ability: e.target.value })}
+                                                placeholder="e.g. Dexterity"
+                                                className="text-xs border border-gray-300 rounded p-1.5"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase">Utilize (2024 Rule)</label>
+                                        <textarea
+                                            value={newItemToolDetails.utilize}
+                                            onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, utilize: e.target.value })}
+                                            placeholder="Utilize action details..."
+                                            className="text-xs border border-gray-300 rounded p-1.5 min-h-[60px]"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase">Craft (2024 Rule)</label>
+                                        <textarea
+                                            value={newItemToolDetails.craft}
+                                            onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, craft: e.target.value })}
+                                            placeholder="Crafting details..."
+                                            className="text-xs border border-gray-300 rounded p-1.5 min-h-[60px]"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         )}
