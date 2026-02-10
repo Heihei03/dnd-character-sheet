@@ -61,7 +61,7 @@ const ClassLevelSection = ({
                             {classes.length > 1 && (
                                 <button
                                     onClick={() => onRemoveClass(index)}
-                                    className="text-red-500 hover:text-red-700 font-bold px-2"
+                                    className="text-red-500 hover:text-red-700 font-bold text-[20px] px-2"
                                     title="Remove Class"
                                 >
                                     ×
