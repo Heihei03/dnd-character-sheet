@@ -377,11 +377,6 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             {/* Center Card */}
             <Card className="w-full">
               <CardContent className="p-4 space-y-4">
-                <ArmorClassSection
-                  armorClass={characterWithDefaults.armorClass}
-                  setArmorClass={handleArmorClassChange}
-                  abilityScores={characterWithDefaults.abilityScores}
-                />
                 <InitiativeSection
                   initiative={characterWithDefaults.initiative}
                   dexModifier={Math.floor(((characterWithDefaults.abilityScores.dexterity ?? 10) - 10) / 2)}
@@ -389,6 +384,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                   onUpdate={handleInitiativeChange}
                   rollDice={rollDice}
                   dexScore={characterWithDefaults.abilityScores.dexterity ?? 10}
+                />
+                <ArmorClassSection
+                  armorClass={characterWithDefaults.armorClass}
+                  setArmorClass={handleArmorClassChange}
+                  abilityScores={characterWithDefaults.abilityScores}
                 />
                 {/* HP */}
                 <HPSection
