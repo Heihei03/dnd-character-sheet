@@ -15,6 +15,7 @@ import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
 import ArmorClassSection from "./ArmorClassSection";
 import ClassLevelSection from "./ClassLevelSection";
+import InitiativeSection from "./InitiativeSection";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -90,6 +91,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       hasDexBonus: true,
       shieldBonus: 0,
       miscBonus: 0,
+    },
+    initiative: character.initiative ?? {
+      miscBonus: 0,
+      useJackOfAllTrades: false,
+      showDexTiebreaker: false,
     },
   };
 
@@ -236,6 +242,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setCharacter((prev) => (prev ? { ...prev, armorClass } : null));
   };
 
+  const handleInitiativeChange = (initiative: any) => {
+    setCharacter((prev) => (prev ? { ...prev, initiative } : null));
+  };
+
 
   const handleClassChange = (index: number, field: keyof CharacterClass, value: any) => {
     setCharacter((prev) => {
@@ -371,6 +381,14 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                   armorClass={characterWithDefaults.armorClass}
                   setArmorClass={handleArmorClassChange}
                   abilityScores={characterWithDefaults.abilityScores}
+                />
+                <InitiativeSection
+                  initiative={characterWithDefaults.initiative}
+                  dexModifier={Math.floor(((characterWithDefaults.abilityScores.dexterity ?? 10) - 10) / 2)}
+                  proficiencyBonus={proficiencyBonus}
+                  onUpdate={handleInitiativeChange}
+                  rollDice={rollDice}
+                  dexScore={characterWithDefaults.abilityScores.dexterity ?? 10}
                 />
                 {/* HP */}
                 <HPSection

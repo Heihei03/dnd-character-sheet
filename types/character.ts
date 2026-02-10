@@ -129,6 +129,12 @@ export interface ArmorClass {
   manualOverride?: number;
 }
 
+export interface Initiative {
+  miscBonus: number;
+  useJackOfAllTrades: boolean;
+  showDexTiebreaker: boolean;
+}
+
 export interface Character {
   id: number;
   name: string;
@@ -144,4 +150,5 @@ export interface Character {
   currency?: Currency;
   deathSaves?: DeathSaves;
   armorClass?: ArmorClass;
+  initiative?: Initiative;
 }
