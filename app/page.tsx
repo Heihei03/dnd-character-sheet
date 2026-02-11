@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Character, loadAllCharacters, deleteCharacter, saveCharacter } from "../utils/db"; // Import saveCharacter and deleteCharacter functions
+import { Character } from "../types/character";
+import { loadAllCharacters, deleteCharacter, saveCharacter } from "../utils/db"; // Import saveCharacter and deleteCharacter functions
 
 const HomePage = () => {
   // Specify the type of characters as an array of Character objects
@@ -38,7 +39,10 @@ const HomePage = () => {
     const newCharacter: Character = {
       id: Date.now(), // Unique ID based on timestamp
       name: "New Character", // Default name
-      hp: 100, // Default HP
+      maxHp: 10,
+      hp: 10,
+      tempHp: 0,
+      classes: [{ name: "Fighter", level: 1 }],
       abilityScores: {
         strength: 10,
         dexterity: 10,
@@ -47,6 +51,10 @@ const HomePage = () => {
         wisdom: 10,
         charisma: 10,
       },
+      weaponProficiencies: [],
+      armorProficiencies: [],
+      toolProficiencies: [],
+      languages: ["Common"],
     };
 
     // Save new character to IndexedDB

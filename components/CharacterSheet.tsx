@@ -9,7 +9,10 @@ import DiceRoller from "./DiceRoller";
 import { classOptions } from "../utils/constants";
 import CurrencySection from "./CurrencySection";
 import DeathSaves from "./DeathSaves";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass } from "../types/character";
+import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
+import ToolChecksSection from "./ToolChecksSection";
+import { TOOL_DATA } from "../data/tools";
+import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency } from "../types/character";
 import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
@@ -97,6 +100,20 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       useJackOfAllTrades: false,
       showDexTiebreaker: false,
     },
+    weaponProficiencies: character.weaponProficiencies ?? [],
+    armorProficiencies: character.armorProficiencies ?? [],
+    toolProficiencies: (character.toolProficiencies ?? []).map((tool: any) => {
+      if (typeof tool === "string") {
+        const toolData = TOOL_DATA[tool];
+        return {
+          name: tool,
+          ability: toolData?.ability || "Intelligence",
+          level: "proficient"
+        } as ToolProficiency;
+      }
+      return tool;
+    }),
+    languages: character.languages ?? ["Common"],
   };
 
 
@@ -350,7 +367,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         </div>
 
         {activeTab === "coreStats" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-8xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
 
             {/* Left Card */}
             <Card className="w-full">
@@ -411,14 +428,30 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               </CardContent>
             </Card>
 
-            {/* Right Card */}
-            <SkillsSection
-              skills={characterWithDefaults.skills}
-              setSkills={handleSkillChange}
-              abilityScores={characterWithDefaults.abilityScores}
-              proficiencyBonus={proficiencyBonus}
-              rollDice={rollDice}
-            />
+            {/* Right Card / Column */}
+            <div className="space-y-6">
+              <SkillsSection
+                skills={characterWithDefaults.skills}
+                setSkills={handleSkillChange}
+                abilityScores={characterWithDefaults.abilityScores}
+                proficiencyBonus={proficiencyBonus}
+                rollDice={rollDice}
+              />
+              <ToolChecksSection
+                toolProficiencies={characterWithDefaults.toolProficiencies}
+                onUpdate={(value) => handleChange("toolProficiencies", value)}
+                abilityScores={characterWithDefaults.abilityScores}
+                proficiencyBonus={proficiencyBonus}
+                rollDice={rollDice}
+              />
+              <ProficienciesLanguagesSection
+                weaponProficiencies={characterWithDefaults.weaponProficiencies}
+                armorProficiencies={characterWithDefaults.armorProficiencies}
+                toolProficiencies={characterWithDefaults.toolProficiencies}
+                languages={characterWithDefaults.languages}
+                onUpdate={(field, value) => handleChange(field as keyof Character, value)}
+              />
+            </div>
           </div>
         )}
 

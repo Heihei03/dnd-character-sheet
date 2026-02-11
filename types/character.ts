@@ -89,6 +89,12 @@ export interface ToolDetails {
   craft: string;   // Crafting descriptions from 2024 rules
 }
 
+export interface ToolProficiency {
+  name: string;
+  ability: string;
+  level: ProficiencyLevel;
+}
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -160,4 +166,8 @@ export interface Character {
   deathSaves?: DeathSaves;
   armorClass?: ArmorClass;
   initiative?: Initiative;
+  weaponProficiencies?: string[];
+  armorProficiencies?: string[];
+  toolProficiencies?: ToolProficiency[];
+  languages?: string[];
 }

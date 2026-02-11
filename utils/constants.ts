@@ -53,3 +53,22 @@ export const SKILL_LIST = [
   { name: "Stealth", key: "stealth", ability: "dexterity" },
   { name: "Survival", key: "survival", ability: "wisdom" },
 ];
+
+export const LANGUAGES = [
+  "Common",
+  "Dwarvish",
+  "Elvish",
+  "Giant",
+  "Gnomish",
+  "Goblin",
+  "Halfling",
+  "Orc",
+  "Abyssal",
+  "Celestial",
+  "Draconic",
+  "Deep Speech",
+  "Infernal",
+  "Primordial",
+  "Sylvan",
+  "Undercommon",
+];
