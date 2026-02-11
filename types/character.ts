@@ -150,6 +150,17 @@ export interface Initiative {
   showDexTiebreaker: boolean;
 }
 
+export interface Sense {
+  name: string;
+  value: string;
+}
+
+export interface Defenses {
+  resistances: string[];
+  vulnerabilities: string[];
+  immunities: string[];
+}
+
 import { FeatureModifier } from "./modifiers";
 
 export interface Feature {
@@ -184,4 +195,6 @@ export interface Character {
   toolProficiencies?: ToolProficiency[];
   languages?: string[];
   features?: Feature[];
+  senses?: Sense[];
+  defenses?: Defenses;
 }

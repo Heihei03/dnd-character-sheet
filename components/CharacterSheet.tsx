@@ -20,6 +20,9 @@ import InventorySection from "./InventorySection";
 import ArmorClassSection from "./ArmorClassSection";
 import ClassLevelSection from "./ClassLevelSection";
 import InitiativeSection from "./InitiativeSection";
+import SensesSection from "./SensesSection";
+import DefensesSection from "./DefensesSection";
+import { Sense, Defenses } from "../types/character";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -124,6 +127,12 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         value: ""
       }))
     })),
+    senses: character.senses ?? [],
+    defenses: character.defenses ?? {
+      resistances: [],
+      vulnerabilities: [],
+      immunities: []
+    },
   };
 
 
@@ -317,6 +326,14 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setCharacter((prev) => (prev ? { ...prev, [field]: value } : null));
   };
 
+  const handleUpdateSenses = (senses: Sense[]) => {
+    setCharacter(prev => prev ? { ...prev, senses } : null);
+  };
+
+  const handleUpdateDefenses = (defenses: Defenses) => {
+    setCharacter(prev => prev ? { ...prev, defenses } : null);
+  };
+
   const rollDice = (sides: number, modifier: number = 0, label: string = "") => {
     const baseRoll = Math.floor(Math.random() * sides) + 1;
     const total = baseRoll + modifier;
@@ -440,6 +457,14 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                 <SpeedSection
                   speed={characterWithDefaults.speed}
                   setSpeed={handleSpeedChange}
+                />
+                <SensesSection
+                  senses={characterWithDefaults.senses}
+                  onUpdateSenses={handleUpdateSenses}
+                />
+                <DefensesSection
+                  defenses={characterWithDefaults.defenses}
+                  onUpdateDefenses={handleUpdateDefenses}
                 />
               </CardContent>
             </Card>

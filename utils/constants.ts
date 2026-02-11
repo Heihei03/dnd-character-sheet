@@ -72,3 +72,47 @@ export const LANGUAGES = [
   "Sylvan",
   "Undercommon",
 ];
+
+export const SENSES_LIST = [
+  "Darkvision",
+  "Blindsight",
+  "Tremorsense",
+  "Truesight",
+];
+
+export const DAMAGE_TYPES = [
+  "Acid",
+  "Bludgeoning",
+  "Cold",
+  "Fire",
+  "Force",
+  "Lightning",
+  "Necrotic",
+  "Piercing",
+  "Poison",
+  "Psychic",
+  "Radiant",
+  "Slashing",
+  "Thunder",
+  "Non-magical Bludgeoning",
+  "Non-magical Piercing",
+  "Non-magical Slashing",
+];
+
+export const CONDITION_TYPES = [
+  "Blinded",
+  "Charmed",
+  "Deafened",
+  "Exhaustion",
+  "Frightened",
+  "Grappled",
+  "Incapacitated",
+  "Invisible",
+  "Paralyzed",
+  "Petrified",
+  "Poisoned",
+  "Prone",
+  "Restrained",
+  "Stunned",
+  "Unconscious",
+];

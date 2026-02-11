@@ -1,0 +1,132 @@
+"use client";
+
+import React, { useState } from "react";
+import { Defenses } from "../types/character";
+import { DAMAGE_TYPES, CONDITION_TYPES } from "../utils/constants";
+
+interface DefensesSectionProps {
+    defenses: Defenses;
+    onUpdateDefenses: (defenses: Defenses) => void;
+}
+
+const DefensesSection: React.FC<DefensesSectionProps> = ({
+    defenses = { resistances: [], vulnerabilities: [], immunities: [] },
+    onUpdateDefenses
+}) => {
+    const [newResistance, setNewResistance] = useState("");
+    const [newVulnerability, setNewVulnerability] = useState("");
+    const [newImmunity, setNewImmunity] = useState("");
+
+    const ALL_DEFENSE_TYPES = [...DAMAGE_TYPES, ...CONDITION_TYPES].sort();
+
+    const addDefense = (category: keyof Defenses, value: string, setter: (val: string) => void) => {
+        if (value) {
+            onUpdateDefenses({
+                ...defenses,
+                [category]: [...defenses[category], value]
+            });
+            setter("");
+        }
+    };
+
+    const removeDefense = (category: keyof Defenses, index: number) => {
+        onUpdateDefenses({
+            ...defenses,
+            [category]: defenses[category].filter((_, i) => i !== index)
+        });
+    };
+
+    const DefenseList = ({
+        title,
+        items,
+        category,
+        newValue,
+        setNewValue,
+        colorClass
+    }: {
+        title: string,
+        items: string[],
+        category: keyof Defenses,
+        newValue: string,
+        setNewValue: (val: string) => void,
+        colorClass: string
+    }) => (
+        <div className="space-y-2">
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{title}</h4>
+            <div className="flex flex-wrap gap-1.5 min-h-[1.5rem]">
+                {items.length === 0 && <span className="text-sm text-gray-400 italic">None</span>}
+                {items.map((item, idx) => (
+                    <span
+                        key={idx}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${colorClass} group animate-in zoom-in-50 duration-200`}
+                    >
+                        {item}
+                        <button
+                            onClick={() => removeDefense(category, idx)}
+                            className="text-current opacity-60 hover:opacity-100 transition-opacity"
+                        >
+                            ✕
+                        </button>
+                    </span>
+                ))}
+            </div>
+            <div className="flex gap-1 relative">
+                <input
+                    type="text"
+                    list="defense-types-list"
+                    value={newValue}
+                    onChange={(e) => setNewValue(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && addDefense(category, newValue, setNewValue)}
+                    placeholder={`Add ${title.toLowerCase()}...`}
+                    className="flex-1 text-sm p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all font-sans min-w-0"
+                />
+                <button
+                    onClick={() => addDefense(category, newValue, setNewValue)}
+                    className="px-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold"
+                >
+                    +
+                </button>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="border p-3 rounded bg-white dark:bg-gray-950 shadow-sm transition-all font-sans space-y-4">
+            <div className="flex justify-between items-center border-b pb-2">
+                <span className="font-bold text-lg">Defenses</span>
+            </div>
+
+            <div className="space-y-5 px-1">
+                <datalist id="defense-types-list">
+                    {ALL_DEFENSE_TYPES.map(type => <option key={type} value={type} />)}
+                </datalist>
+                <DefenseList
+                    title="Resistances"
+                    items={defenses.resistances}
+                    category="resistances"
+                    newValue={newResistance}
+                    setNewValue={setNewResistance}
+                    colorClass="bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-100 dark:border-blue-800/50 shadow-sm"
+                />
+                <DefenseList
+                    title="Immunities"
+                    items={defenses.immunities}
+                    category="immunities"
+                    newValue={newImmunity}
+                    setNewValue={setNewImmunity}
+                    colorClass="bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-100 dark:border-purple-800/50 shadow-sm"
+                />
+                <DefenseList
+                    title="Vulnerabilities"
+                    items={defenses.vulnerabilities}
+                    category="vulnerabilities"
+                    newValue={newVulnerability}
+                    setNewValue={setNewVulnerability}
+                    colorClass="bg-orange-50 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border border-orange-100 dark:border-orange-800/50 shadow-sm"
+                />
+            </div>
+        </div>
+    );
+};
+
+export default DefensesSection;
