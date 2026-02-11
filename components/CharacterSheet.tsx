@@ -11,6 +11,7 @@ import CurrencySection from "./CurrencySection";
 import DeathSaves from "./DeathSaves";
 import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
 import ToolChecksSection from "./ToolChecksSection";
+import FeaturesSection from "./FeaturesSection";
 import { TOOL_DATA } from "../data/tools";
 import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency } from "../types/character";
 import SavingThrowsSection from "./SavingThrowsSection";
@@ -114,6 +115,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       return tool;
     }),
     languages: character.languages ?? ["Common"],
+    features: character.features ?? [],
   };
 
 
@@ -364,6 +366,12 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           >
             Spells
           </button>
+          <button
+            onClick={() => setActiveTab("features")}
+            className={`py-2 px-4 rounded-lg ${activeTab === "features" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+          >
+            Features
+          </button>
         </div>
 
         {activeTab === "coreStats" && (
@@ -484,6 +492,16 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               <p>List your character's spells and their details here.</p>
             </CardContent>
           </Card>
+        )}
+
+        {activeTab === "features" && (
+          <div className="w-full max-w-4xl mx-auto">
+            <FeaturesSection
+              features={characterWithDefaults.features}
+              onUpdate={(value) => handleChange("features", value)}
+              availableClasses={characterWithDefaults.classes.map(c => c.name)}
+            />
+          </div>
         )}
       </div>
 

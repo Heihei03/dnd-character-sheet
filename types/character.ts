@@ -150,6 +150,17 @@ export interface Initiative {
   showDexTiebreaker: boolean;
 }
 
+export interface Feature {
+  id: string;
+  name: string;
+  description: string;
+  origin: string; // "Class", "Background", "Item", "Feat", "Species", "Other"
+  subOrigin?: string; // Specific class name, background name, etc.
+  tags?: string[];
+  effects?: string[];
+  source?: string;
+}
+
 export interface Character {
   id: number;
   name: string;
@@ -170,4 +181,5 @@ export interface Character {
   armorProficiencies?: string[];
   toolProficiencies?: ToolProficiency[];
   languages?: string[];
+  features?: Feature[];
 }
