@@ -1,4 +1,4 @@
-export type ModifierType = "Sense" | "Speed" | "Proficiency" | "Bonus" | "Action" | "Other";
+export type ModifierType = "Sense" | "Speed" | "Proficiency" | "Bonus" | "Action" | "Resistance" | "Immunity" | "Vulnerability" | "Other";
 
 export interface FeatureModifier {
     id: string;
@@ -7,4 +7,4 @@ export interface FeatureModifier {
     value?: string | number;
 }
 
-export const MODIFIER_TYPES: ModifierType[] = ["Sense", "Speed", "Proficiency", "Bonus", "Action", "Other"];
+export const MODIFIER_TYPES: ModifierType[] = ["Sense", "Speed", "Proficiency", "Bonus", "Action", "Resistance", "Immunity", "Vulnerability", "Other"];

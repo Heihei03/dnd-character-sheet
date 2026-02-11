@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Defenses } from "../types/character";
+import { Defenses, DefenseEntry } from "../types/character";
 import { DAMAGE_TYPES, CONDITION_TYPES } from "../utils/constants";
 
 interface DefensesSectionProps {
@@ -21,18 +21,21 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
 
     const addDefense = (category: keyof Defenses, value: string, setter: (val: string) => void) => {
         if (value) {
+            const manualDefenses = defenses[category].filter(d => !d.fromFeature);
             onUpdateDefenses({
                 ...defenses,
-                [category]: [...defenses[category], value]
+                [category]: [...manualDefenses, { name: value }]
             });
             setter("");
         }
     };
 
-    const removeDefense = (category: keyof Defenses, index: number) => {
+    const removeDefense = (category: keyof Defenses, entry: DefenseEntry) => {
+        if (entry.fromFeature) return;
+        const manualDefenses = defenses[category].filter(d => !d.fromFeature);
         onUpdateDefenses({
             ...defenses,
-            [category]: defenses[category].filter((_, i) => i !== index)
+            [category]: manualDefenses.filter(d => d.name !== entry.name)
         });
     };
 
@@ -45,7 +48,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
         colorClass
     }: {
         title: string,
-        items: string[],
+        items: DefenseEntry[],
         category: keyof Defenses,
         newValue: string,
         setNewValue: (val: string) => void,
@@ -58,15 +61,20 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                 {items.map((item, idx) => (
                     <span
                         key={idx}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${colorClass} group animate-in zoom-in-50 duration-200`}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${colorClass} group animate-in zoom-in-50 duration-200 ${item.fromFeature ? 'opacity-85 border-dashed' : ''}`}
                     >
-                        {item}
-                        <button
-                            onClick={() => removeDefense(category, idx)}
-                            className="text-current opacity-60 hover:opacity-100 transition-opacity"
-                        >
-                            ✕
-                        </button>
+                        {item.name}
+                        {item.fromFeature && (
+                            <span className="text-[8px] font-bold uppercase px-1 bg-current/10 rounded tracking-tighter">Feature</span>
+                        )}
+                        {!item.fromFeature && (
+                            <button
+                                onClick={() => removeDefense(category, item)}
+                                className="text-current opacity-60 hover:opacity-100 transition-opacity"
+                            >
+                                ✕
+                            </button>
+                        )}
                     </span>
                 ))}
             </div>

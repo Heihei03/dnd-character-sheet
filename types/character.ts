@@ -153,12 +153,18 @@ export interface Initiative {
 export interface Sense {
   name: string;
   value: string;
+  fromFeature?: boolean;
+}
+
+export interface DefenseEntry {
+  name: string;
+  fromFeature?: boolean;
 }
 
 export interface Defenses {
-  resistances: string[];
-  vulnerabilities: string[];
-  immunities: string[];
+  resistances: DefenseEntry[];
+  vulnerabilities: DefenseEntry[];
+  immunities: DefenseEntry[];
 }
 
 import { FeatureModifier } from "./modifiers";

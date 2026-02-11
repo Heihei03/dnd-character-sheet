@@ -23,6 +23,7 @@ import InitiativeSection from "./InitiativeSection";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
 import { Sense, Defenses } from "../types/character";
+import { getEffectiveSenses, getEffectiveDefenses } from "../utils/character-utils";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -459,11 +460,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                   setSpeed={handleSpeedChange}
                 />
                 <SensesSection
-                  senses={characterWithDefaults.senses}
+                  senses={getEffectiveSenses(characterWithDefaults)}
                   onUpdateSenses={handleUpdateSenses}
                 />
                 <DefensesSection
-                  defenses={characterWithDefaults.defenses}
+                  defenses={getEffectiveDefenses(characterWithDefaults)}
                   onUpdateDefenses={handleUpdateDefenses}
                 />
               </CardContent>
