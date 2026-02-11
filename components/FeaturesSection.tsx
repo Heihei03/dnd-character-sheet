@@ -2,8 +2,10 @@
 
 import React, { useState } from "react";
 import { Feature } from "../types/character";
+import { FeatureModifier } from "../types/modifiers";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
+import FeatureModifierEditor from "./FeatureModifierEditor";
 
 interface FeaturesSectionProps {
     features: Feature[];
@@ -23,7 +25,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
         description: "",
         origin: "Class",
         subOrigin: "",
-        tags: [],
+        modifiers: [],
         effects: [],
         source: "",
     });
@@ -45,7 +47,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
             description: formData.description || "",
             origin: formData.origin || "Other",
             subOrigin: formData.origin === "Class" ? (formData.subOrigin || availableClasses[0] || "") : "",
-            tags: formData.tags || [],
+            modifiers: formData.modifiers || [],
             effects: formData.effects || [],
             source: formData.source || "",
         };
@@ -84,15 +86,10 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
             description: "",
             origin: "Class",
             subOrigin: "",
-            tags: [],
+            modifiers: [],
             effects: [],
             source: "",
         });
-    };
-
-    const handleTagChange = (tagString: string) => {
-        const tags = tagString.split(",").map(t => t.trim()).filter(t => t !== "");
-        setFormData({ ...formData, tags });
     };
 
     const handleEffectChange = (effectString: string) => {
@@ -120,7 +117,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
                                     placeholder="Feature name..."
                                 />
                             </div>
@@ -157,17 +154,12 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
                             />
                         </div>
 
+                        <FeatureModifierEditor
+                            modifiers={formData.modifiers || []}
+                            onUpdate={(modifiers) => setFormData({ ...formData, modifiers })}
+                        />
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-gray-500">Tags (comma separated)</label>
-                                <input
-                                    type="text"
-                                    value={formData.tags?.join(", ")}
-                                    onChange={(e) => handleTagChange(e.target.value)}
-                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                    placeholder="Action, Combat, Passive..."
-                                />
-                            </div>
                             <div className="space-y-1">
                                 <label className="text-xs font-bold uppercase text-gray-500">Source / Link</label>
                                 <input
@@ -178,16 +170,15 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
                                     placeholder="PHB pg. 123..."
                                 />
                             </div>
-                        </div>
-
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold uppercase text-gray-500">Effects (one per line)</label>
-                            <textarea
-                                value={formData.effects?.join("\n")}
-                                onChange={(e) => handleEffectChange(e.target.value)}
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-20"
-                                placeholder="+1 to AC while active..."
-                            />
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold uppercase text-gray-500">Active Effects (one per line)</label>
+                                <textarea
+                                    value={formData.effects?.join("\n")}
+                                    onChange={(e) => handleEffectChange(e.target.value)}
+                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-20"
+                                    placeholder="+1 to AC while active..."
+                                />
+                            </div>
                         </div>
 
                         <div className="flex justify-end gap-2 pt-2">
@@ -226,11 +217,15 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
                                             {feature.origin}{feature.subOrigin ? `: ${feature.subOrigin}` : ""}
                                         </div>
                                         <h4 className="font-bold truncate">{feature.name}</h4>
-                                        {feature.tags && feature.tags.length > 0 && (
+                                        {feature.modifiers && feature.modifiers.length > 0 && (
                                             <div className="hidden sm:flex gap-1 overflow-hidden">
-                                                {feature.tags.map(tag => (
-                                                    <span key={tag} className="text-[10px] bg-blue-50 text-blue-600 px-1 rounded dark:bg-blue-900/20 dark:text-blue-400">
-                                                        {tag}
+                                                {feature.modifiers.map(mod => (
+                                                    <span key={mod.id} className={`text-[9px] font-bold px-1.5 rounded uppercase tracking-tighter ${mod.type === "Sense" ? "bg-amber-100 text-amber-700" :
+                                                            mod.type === "Speed" ? "bg-emerald-100 text-emerald-700" :
+                                                                mod.type === "Bonus" ? "bg-rose-100 text-rose-700" :
+                                                                    "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
+                                                        }`}>
+                                                        {mod.subType || mod.type}
                                                     </span>
                                                 ))}
                                             </div>
@@ -256,15 +251,31 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
                                 </div>
 
                                 {expandedIds.has(feature.id) && (
-                                    <div className="p-4 pt-0 border-t border-gray-100 dark:border-gray-800 space-y-3 bg-gray-50/50 dark:bg-gray-900/50 text-sm animate-in slide-in-from-top-2 duration-200">
+                                    <div className="p-4 pt-0 border-t border-gray-100 dark:border-gray-800 space-y-4 bg-gray-50/50 dark:bg-gray-900/50 text-sm animate-in slide-in-from-top-2 duration-200">
                                         <div className="whitespace-pre-wrap pt-3 leading-relaxed text-gray-700 dark:text-gray-300">
                                             {feature.description}
                                         </div>
 
+                                        {(feature.modifiers && feature.modifiers.length > 0) && (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 pt-1">
+                                                {feature.modifiers.map((mod) => (
+                                                    <div key={mod.id} className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-1">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[10px] uppercase font-bold text-gray-400 leading-tight">{mod.type}</span>
+                                                            <span className="font-semibold text-gray-700 dark:text-gray-200">{mod.subType}</span>
+                                                        </div>
+                                                        <div className="font-mono bg-white dark:bg-gray-800 px-2 py-0.5 rounded border border-gray-100 dark:border-gray-700 shadow-sm text-blue-600 dark:text-blue-400">
+                                                            {mod.value}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
                                         {(feature.effects && feature.effects.length > 0) && (
                                             <div className="space-y-1">
-                                                <div className="text-[10px] font-bold uppercase text-gray-400">Active Effects</div>
-                                                <ul className="list-disc list-inside space-y-0.5 text-blue-700 dark:text-blue-400 font-medium">
+                                                <div className="text-[10px] font-bold uppercase text-gray-400">Additional Effects</div>
+                                                <ul className="list-disc list-inside space-y-0.5 text-gray-600 dark:text-gray-400">
                                                     {feature.effects.map((effect, idx) => (
                                                         <li key={idx}>{effect}</li>
                                                     ))}
@@ -273,19 +284,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
                                         )}
 
                                         {feature.source && (
-                                            <div className="text-xs text-gray-500 italic">
+                                            <div className="text-xs text-gray-400 italic pt-2">
                                                 Source: {feature.source}
-                                            </div>
-                                        )}
-
-                                        {/* Mobile tags */}
-                                        {feature.tags && feature.tags.length > 0 && (
-                                            <div className="flex sm:hidden flex-wrap gap-1 pt-2">
-                                                {feature.tags.map(tag => (
-                                                    <span key={tag} className="text-[10px] bg-blue-50 text-blue-600 px-1 rounded dark:bg-blue-900/20 dark:text-blue-400">
-                                                        {tag}
-                                                    </span>
-                                                ))}
                                             </div>
                                         )}
                                     </div>

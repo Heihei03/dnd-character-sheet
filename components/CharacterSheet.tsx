@@ -115,7 +115,15 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       return tool;
     }),
     languages: character.languages ?? ["Common"],
-    features: character.features ?? [],
+    features: (character.features ?? []).map((f: any) => ({
+      ...f,
+      modifiers: f.modifiers ?? (f.tags ?? []).map((tag: string) => ({
+        id: `migrated-${tag}-${Math.random().toString(36).substr(2, 9)}`,
+        type: "Other",
+        subType: tag,
+        value: ""
+      }))
+    })),
   };
 
 

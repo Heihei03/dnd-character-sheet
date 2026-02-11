@@ -150,13 +150,15 @@ export interface Initiative {
   showDexTiebreaker: boolean;
 }
 
+import { FeatureModifier } from "./modifiers";
+
 export interface Feature {
   id: string;
   name: string;
   description: string;
   origin: string; // "Class", "Background", "Item", "Feat", "Species", "Other"
   subOrigin?: string; // Specific class name, background name, etc.
-  tags?: string[];
+  modifiers?: FeatureModifier[];
   effects?: string[];
   source?: string;
 }
