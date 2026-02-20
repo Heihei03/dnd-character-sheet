@@ -1,4 +1,4 @@
-import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel } from "../types/character";
+import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 
 export const getAbilityModifier = (score: number) => Math.floor((score - 10) / 2);
@@ -73,4 +73,75 @@ export const getEffectiveDefenses = (character: Character): Defenses => {
         immunities: merge(manual.immunities, featureImmunities),
         vulnerabilities: merge(manual.vulnerabilities, featureVulnerabilities),
     };
+};
+
+export const getEffectiveActions = (character: Character): Action[] => {
+    const manualActions = character.actions || [];
+
+    const weaponActions: Action[] = (character.inventory || [])
+        .filter(item => item.equipped && item.itemType === "weapon" && item.weaponDetails)
+        .map(weapon => {
+            const details = weapon.weaponDetails!;
+            const totalLevel = (character.classes || []).reduce((sum, cls) => sum + cls.level, 0);
+            const proficiencyBonus = Math.ceil(totalLevel / 4) + 1;
+
+            // Determine which ability to use (Finesse logic simplified for now)
+            const isFinesse = details.properties?.includes("Finesse");
+            const strMod = getAbilityModifier(character.abilityScores.strength ?? 10);
+            const dexMod = getAbilityModifier(character.abilityScores.dexterity ?? 10);
+
+            let ability = details.rangeType === "Ranged" ? "dexterity" : "strength";
+            if (isFinesse && dexMod > strMod) {
+                ability = "dexterity";
+            }
+
+            const abilityModifier = getAbilityModifier(character.abilityScores[ability] ?? 10);
+            const attackBonus = proficiencyBonus + abilityModifier;
+            const damageBonus = abilityModifier;
+
+            // Handle Versatile property
+            const versatileProp = details.properties?.find(p => p.startsWith("Versatile"));
+            let versatileDamage = undefined;
+            let versatileDice = undefined;
+            if (versatileProp) {
+                const match = versatileProp.match(/\(([^)]+)\)/);
+                if (match) {
+                    versatileDice = match[1];
+                    versatileDamage = `${match[1]}${damageBonus >= 0 ? "+" : ""}${damageBonus}`;
+                }
+            }
+
+            return {
+                id: `weapon-${weapon.id}`,
+                name: weapon.name,
+                type: "Attack",
+                description: `A ${details.category.toLowerCase()} ${details.rangeType.toLowerCase()} weapon attack. Properties: ${details.properties?.join(", ") || "None"}.`,
+                damage: `${details.damageDice}${damageBonus >= 0 ? "+" : ""}${damageBonus}`,
+                damageType: details.damageType,
+                versatileDamage: versatileDamage,
+                range: details.rangeType === "Ranged" ? "80/320" : "5 ft", // default ranges, ideally should be in weaponDetails
+                reach: details.rangeType === "Melee" ? "5 ft" : undefined,
+                activation: "1 Action",
+                fromWeapon: true,
+                ability: ability as any,
+                // Structured fields
+                proficient: true,
+                attackAbility: ability as any,
+                attackBonus: 0,
+                damageDice: details.damageDice,
+                damageAbility: ability as any,
+                damageBonus: 0,
+                versatileDice: versatileDice
+            };
+        });
+
+    // Merge manual and weapon actions, prioritizing manual if IDs conflict (though they shouldn't)
+    const combined = [...manualActions];
+    weaponActions.forEach(wa => {
+        if (!combined.some(a => a.id === wa.id)) {
+            combined.push(wa);
+        }
+    });
+
+    return combined;
 };

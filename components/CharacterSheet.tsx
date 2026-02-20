@@ -13,7 +13,7 @@ import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
 import ToolChecksSection from "./ToolChecksSection";
 import FeaturesSection from "./FeaturesSection";
 import { TOOL_DATA } from "../data/tools";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency } from "../types/character";
+import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action } from "../types/character";
 import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
@@ -23,7 +23,8 @@ import CharacterHeader from "./CharacterHeader";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
 import { Sense, Defenses } from "../types/character";
-import { getEffectiveSenses, getEffectiveDefenses } from "../utils/character-utils";
+import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions } from "../utils/character-utils";
+import ActionsSection from "./ActionsSection";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -134,6 +135,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       vulnerabilities: [],
       immunities: []
     },
+    actions: character.actions ?? [],
     species: character.species ?? "",
     background: character.background ?? "",
     exp: character.exp ?? 0,
@@ -343,6 +345,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setCharacter(prev => prev ? { ...prev, defenses } : null);
   };
 
+  const handleUpdateActions = (actions: Action[]) => {
+    setCharacter(prev => prev ? { ...prev, actions } : null);
+  };
+
   const rollDice = (sides: number, modifier: number = 0, label: string = "") => {
     const baseRoll = Math.floor(Math.random() * sides) + 1;
     const total = baseRoll + modifier;
@@ -407,6 +413,12 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             className={`py-2 px-4 rounded-lg ${activeTab === "features" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
           >
             Features
+          </button>
+          <button
+            onClick={() => setActiveTab("actions")}
+            className={`py-2 px-4 rounded-lg ${activeTab === "actions" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+          >
+            Actions
           </button>
         </div>
 
@@ -544,6 +556,16 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               features={characterWithDefaults.features}
               onUpdate={(value) => handleChange("features", value)}
               availableClasses={characterWithDefaults.classes.map(c => c.name)}
+            />
+          </div>
+        )}
+        {activeTab === "actions" && (
+          <div className="w-full max-w-4xl mx-auto">
+            <ActionsSection
+              actions={getEffectiveActions(characterWithDefaults)}
+              onUpdate={handleUpdateActions}
+              abilityScores={characterWithDefaults.abilityScores}
+              proficiencyBonus={getProficiencyBonus(characterWithDefaults.classes.reduce((sum, cls) => sum + cls.level, 0))}
             />
           </div>
         )}

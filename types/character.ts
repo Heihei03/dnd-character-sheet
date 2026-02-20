@@ -180,6 +180,33 @@ export interface Feature {
   source?: string;
 }
 
+export type ActionType = "Action" | "Bonus Action" | "Reaction" | "Free Action" | "Attack";
+
+export interface Action {
+  id: string;
+  name: string;
+  type: ActionType;
+  description: string;
+  activation?: string;
+  range?: string;
+  target?: string;
+  reach?: string;
+  damage?: string;
+  damageType?: string;
+  versatileDamage?: string;
+  ability?: keyof AbilityScores;
+  // Structured fields
+  proficient?: boolean;
+  attackAbility?: keyof AbilityScores;
+  attackBonus?: number;
+  damageDice?: string;
+  damageAbility?: keyof AbilityScores;
+  damageBonus?: number;
+  versatileDice?: string;
+  fromFeature?: boolean;
+  fromWeapon?: boolean;
+}
+
 export interface Character {
   id: number;
   name: string;
@@ -203,6 +230,7 @@ export interface Character {
   features?: Feature[];
   senses?: Sense[];
   defenses?: Defenses;
+  actions?: Action[];
   species: string;
   background: string;
   exp?: number;
