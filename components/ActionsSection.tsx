@@ -176,7 +176,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                 <label className="text-xs font-bold uppercase text-gray-500">Name</label>
                                 <input
                                     type="text"
-                                    value={formData.name}
+                                    value={formData.name || ""}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
                                     placeholder="Action name..."
@@ -185,7 +185,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                             <div className="space-y-1">
                                 <label className="text-xs font-bold uppercase text-gray-500">Type</label>
                                 <select
-                                    value={formData.type}
+                                    value={formData.type || "Action"}
                                     onChange={(e) => setFormData({ ...formData, type: e.target.value as ActionType })}
                                     className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                 >
@@ -201,7 +201,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                         <input
                                             type="checkbox"
                                             id="proficient"
-                                            checked={formData.proficient}
+                                            checked={!!formData.proficient}
                                             onChange={(e) => setFormData({ ...formData, proficient: e.target.checked })}
                                             className="w-4 h-4"
                                         />
@@ -214,6 +214,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                             onChange={(e) => setFormData({ ...formData, attackAbility: (e.target.value as keyof AbilityScores) || undefined })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                         >
+                                            <option value="">None</option>
                                             <option value="strength">Strength</option>
                                             <option value="dexterity">Dexterity</option>
                                             <option value="constitution">Constitution</option>
@@ -226,7 +227,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                         <label className="text-xs font-bold uppercase text-gray-500">Attack Bonus</label>
                                         <input
                                             type="number"
-                                            value={formData.attackBonus}
+                                            value={formData.attackBonus ?? 0}
                                             onChange={(e) => setFormData({ ...formData, attackBonus: parseInt(e.target.value) || 0 })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                             placeholder="0"
@@ -235,7 +236,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold uppercase text-gray-500">Damage Type</label>
                                         <select
-                                            value={formData.damageType}
+                                            value={formData.damageType || "Slashing"}
                                             onChange={(e) => setFormData({ ...formData, damageType: e.target.value })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                         >
@@ -249,7 +250,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                         <label className="text-xs font-bold uppercase text-gray-500">Damage Dice</label>
                                         <input
                                             type="text"
-                                            value={formData.damageDice}
+                                            value={formData.damageDice || ""}
                                             onChange={(e) => setFormData({ ...formData, damageDice: e.target.value })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                             placeholder="1d8"
@@ -259,7 +260,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                         <label className="text-xs font-bold uppercase text-gray-500">Versatile Dice</label>
                                         <input
                                             type="text"
-                                            value={formData.versatileDice}
+                                            value={formData.versatileDice || ""}
                                             onChange={(e) => setFormData({ ...formData, versatileDice: e.target.value })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                             placeholder="1d10"
@@ -285,7 +286,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                         <label className="text-xs font-bold uppercase text-gray-500">Damage Bonus</label>
                                         <input
                                             type="number"
-                                            value={formData.damageBonus}
+                                            value={formData.damageBonus ?? 0}
                                             onChange={(e) => setFormData({ ...formData, damageBonus: parseInt(e.target.value) || 0 })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                             placeholder="0"
@@ -298,7 +299,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                         <label className="text-xs font-bold uppercase text-gray-500">Reach</label>
                                         <input
                                             type="text"
-                                            value={formData.reach}
+                                            value={formData.reach || ""}
                                             onChange={(e) => setFormData({ ...formData, reach: e.target.value })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                             placeholder="5 ft"
@@ -308,7 +309,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                         <label className="text-xs font-bold uppercase text-gray-500">Range</label>
                                         <input
                                             type="text"
-                                            value={formData.range}
+                                            value={formData.range || ""}
                                             onChange={(e) => setFormData({ ...formData, range: e.target.value })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                             placeholder="20/60 ft"
@@ -318,7 +319,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                         <label className="text-xs font-bold uppercase text-gray-500">Activation</label>
                                         <input
                                             type="text"
-                                            value={formData.activation}
+                                            value={formData.activation || ""}
                                             onChange={(e) => setFormData({ ...formData, activation: e.target.value })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                             placeholder="1 Action..."
@@ -328,7 +329,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                         <label className="text-xs font-bold uppercase text-gray-500">Target</label>
                                         <input
                                             type="text"
-                                            value={formData.target}
+                                            value={formData.target || ""}
                                             onChange={(e) => setFormData({ ...formData, target: e.target.value })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
                                             placeholder="One creature..."
@@ -341,7 +342,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase text-gray-500">Description</label>
                             <textarea
-                                value={formData.description}
+                                value={formData.description || ""}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                 className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-24"
                                 placeholder="Describe the action..."

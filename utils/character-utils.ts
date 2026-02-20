@@ -52,16 +52,23 @@ export const getAllActiveFeatures = (character: Character): Feature[] => {
             if (!item.features || item.features.length === 0) return false;
             // Must be equipped if equippable
             if (item.equippable && !item.equipped) return false;
-            // Must be attuned if attunable
-            if (item.attunable && !item.attuned) return false;
             return true;
         })
-        .flatMap(item => (item.features || []).map(f => ({
-            ...f,
-            origin: "Item",
-            subOrigin: item.name,
-            sourceItemId: item.id
-        })));
+        .flatMap(item => (item.features || []).map(f => {
+            // Filter modifiers based on attunement requirement
+            const activeModifiers = (f.modifiers || []).filter(mod => {
+                if (!mod.requiresAttunement) return true;
+                return item.attuned;
+            });
+
+            return {
+                ...f,
+                modifiers: activeModifiers,
+                origin: "Item",
+                subOrigin: item.name,
+                sourceItemId: item.id
+            };
+        }));
 
     return [...characterFeatures, ...itemFeatures];
 };

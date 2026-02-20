@@ -90,7 +90,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                 <input
                                     type="text"
                                     list={listId}
-                                    value={mod.subType}
+                                    value={mod.subType || ""}
                                     onChange={(e) => updateModifier(mod.id, { subType: e.target.value })}
                                     className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
                                     placeholder="e.g. AC, Speed..."
@@ -101,14 +101,26 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                     </datalist>
                                 )}
                             </div>
-                            <div className="col-span-4">
+                            <div className="col-span-3">
                                 <input
                                     type="text"
-                                    value={mod.value}
+                                    value={mod.value || ""}
                                     onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
                                     className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
                                     placeholder="Value..."
                                 />
+                            </div>
+                            <div className="col-span-2 flex items-center gap-1.5 pt-1.5">
+                                <input
+                                    type="checkbox"
+                                    id={`attune-${mod.id}`}
+                                    checked={!!mod.requiresAttunement}
+                                    onChange={(e) => updateModifier(mod.id, { requiresAttunement: e.target.checked })}
+                                    className="w-3 h-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <label htmlFor={`attune-${mod.id}`} className="text-[10px] font-bold text-gray-400 uppercase cursor-pointer select-none">
+                                    Attunement Required
+                                </label>
                             </div>
                             <div className="col-span-1 flex justify-center pt-1.5">
                                 <button
