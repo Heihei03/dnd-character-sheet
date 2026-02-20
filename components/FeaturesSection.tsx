@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Search, X, Pencil, Trash2, ChevronDown } from "lucide-react";
 import { Feature } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 import { Card, CardContent } from "./ui/card";
@@ -29,6 +30,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedOrigin, setSelectedOrigin] = useState("All");
 
     const [formData, setFormData] = useState<Partial<Feature>>({
         name: "",
@@ -114,7 +117,12 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
         setFormData({ ...formData, effects });
     };
 
-    const allFeatures = [...features, ...itemFeatures];
+    const allFeatures = [...features, ...itemFeatures].filter(feature => {
+        const matchesOrigin = selectedOrigin === "All" || feature.origin === selectedOrigin;
+        const matchesSearch = feature.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            feature.description.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesOrigin && matchesSearch;
+    });
 
     return (
         <div className="space-y-6">
@@ -123,6 +131,41 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                 <Button onClick={() => { setIsAdding(true); setEditingId(null); resetForm(); }}>
                     + Add Feature
                 </Button>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                        <Search className="w-4 h-4" />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Search features..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery("")}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    )}
+                </div>
+                <div className="w-full md:w-48">
+                    <select
+                        value={selectedOrigin}
+                        onChange={(e) => setSelectedOrigin(e.target.value)}
+                        className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm appearance-none"
+                    >
+                        <option value="All">All Origins</option>
+                        {ORIGIN_OPTIONS.map(opt => (
+                            <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             {(isAdding || editingId) && (
@@ -246,17 +289,15 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                             onClick={(e) => { e.stopPropagation(); startEdit(feature); }}
                                             className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                                         >
-                                            ✎
+                                            <Pencil className="w-4 h-4" />
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); handleDelete(feature.id); }}
                                             className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                                         >
-                                            ✕
+                                            <Trash2 className="w-4 h-4" />
                                         </button>
-                                        <div className={`transform transition-transform ${expandedIds.has(feature.id) ? "rotate-180" : ""}`}>
-                                            ▼
-                                        </div>
+                                        <ChevronDown className={`w-4 h-4 text-gray-400 transform transition-transform ${expandedIds.has(feature.id) ? "rotate-180" : ""}`} />
                                     </div>
                                 </div>
 

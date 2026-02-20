@@ -3,6 +3,7 @@
 import React from "react";
 import { Feature } from "../../types/character";
 import FeatureModifierEditor from "../FeatureModifierEditor";
+import { Trash2 } from "lucide-react";
 
 interface ItemFeaturesEditorProps {
     features: Feature[];
@@ -65,7 +66,7 @@ const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ features, onUpd
                                 onClick={() => removeFeature(feature.id)}
                                 className="text-gray-400 hover:text-red-500 transition-colors"
                             >
-                                ✕
+                                <Trash2 className="w-4 h-4" />
                             </button>
                         </div>
 
