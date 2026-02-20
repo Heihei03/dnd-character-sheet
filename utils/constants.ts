@@ -94,9 +94,9 @@ export const DAMAGE_TYPES = [
   "Radiant",
   "Slashing",
   "Thunder",
-  "Non-magical Bludgeoning",
-  "Non-magical Piercing",
-  "Non-magical Slashing",
+  "Magical Bludgeoning",
+  "Magical Piercing",
+  "Magical Slashing",
 ];
 
 export const CONDITION_TYPES = [

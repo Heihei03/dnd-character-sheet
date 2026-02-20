@@ -73,6 +73,10 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
         };
     };
 
+    const handleActionsUpdate = (allActions: Action[]) => {
+        onUpdate(allActions);
+    };
+
     const handleAdd = () => {
         const processedData = calculateFinalStrings(formData);
         const newAction: Action = {
@@ -96,7 +100,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
             damageBonus: processedData.damageBonus,
             versatileDice: processedData.versatileDice,
         };
-        onUpdate([...actions, newAction]);
+        handleActionsUpdate([...actions, newAction]);
         setIsAdding(false);
         resetForm();
     };
@@ -107,13 +111,13 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
         const updatedActions = actions.map((a) =>
             a.id === editingId ? { ...a, ...processedData } as Action : a
         );
-        onUpdate(updatedActions);
+        handleActionsUpdate(updatedActions);
         setEditingId(null);
         resetForm();
     };
 
     const handleDelete = (id: string) => {
-        onUpdate(actions.filter((a) => a.id !== id));
+        handleActionsUpdate(actions.filter((a) => a.id !== id));
     };
 
     const startEdit = (action: Action) => {
@@ -285,15 +289,25 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
                                     <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Range/Reach</label>
+                                        <label className="text-xs font-bold uppercase text-gray-500">Reach</label>
                                         <input
                                             type="text"
-                                            value={formData.range || formData.reach}
+                                            value={formData.reach}
+                                            onChange={(e) => setFormData({ ...formData, reach: e.target.value })}
+                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                            placeholder="5 ft"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold uppercase text-gray-500">Range</label>
+                                        <input
+                                            type="text"
+                                            value={formData.range}
                                             onChange={(e) => setFormData({ ...formData, range: e.target.value })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                            placeholder="5 ft or 60/120..."
+                                            placeholder="20/60 ft"
                                         />
                                     </div>
                                     <div className="space-y-1">
@@ -384,23 +398,33 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                                                     {action.damage}{action.versatileDamage ? ` / ${action.versatileDamage}` : ""} {action.damageType}
                                                                 </span>
                                                             )}
-                                                            {action.range && <span>{action.range}</span>}
+                                                            {(action.range || action.reach) && (
+                                                                <span>
+                                                                    {action.reach}
+                                                                    {action.reach && action.range && ", "}
+                                                                    {action.range}
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); startEdit(action); }}
-                                                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                                                    >
-                                                        ✎
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleDelete(action.id); }}
-                                                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                                                    >
-                                                        ✕
-                                                    </button>
+                                                    {!action.fromFeature && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); startEdit(action); }}
+                                                            className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                                        >
+                                                            ✎
+                                                        </button>
+                                                    )}
+                                                    {!action.fromWeapon && !action.fromFeature && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDelete(action.id); }}
+                                                            className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    )}
                                                     <div className={`transform transition-transform ${expandedIds.has(action.id) ? "rotate-180" : ""}`}>
                                                         ▼
                                                     </div>
@@ -427,7 +451,11 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                                             {(action.range || action.reach) && (
                                                                 <div>
                                                                     <div className="text-[10px] font-bold uppercase text-gray-400">Range/Reach</div>
-                                                                    <div className="font-medium">{action.range || action.reach}</div>
+                                                                    <div className="font-medium">
+                                                                        {action.reach}
+                                                                        {action.reach && action.range && " / "}
+                                                                        {action.range}
+                                                                    </div>
                                                                 </div>
                                                             )}
                                                             {action.target && (

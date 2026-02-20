@@ -76,7 +76,12 @@ export const getEffectiveDefenses = (character: Character): Defenses => {
 };
 
 export const getEffectiveActions = (character: Character): Action[] => {
-    const manualActions = character.actions || [];
+    const manualActions = (character.actions || []).filter(a =>
+        !a.fromWeapon &&
+        !a.fromFeature &&
+        !a.id.startsWith("weapon-") &&
+        !a.id.startsWith("feature-")
+    );
 
     const weaponActions: Action[] = (character.inventory || [])
         .filter(item => item.equipped && item.itemType === "weapon" && item.weaponDetails)
@@ -111,16 +116,53 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 }
             }
 
+            // Handle Thrown or Ammunition property for range
+            const rangeProp = details.properties?.find(p => p.startsWith("Thrown") || p.startsWith("Ammunition"));
+            let range = undefined;
+            if (rangeProp) {
+                const match = rangeProp.match(/\(([^)]+)\)/);
+                if (match) {
+                    const rawRange = match[1];
+                    range = rawRange.endsWith("ft") ? rawRange : rawRange + " ft";
+                }
+            } else if (details.rangeType === "Ranged") {
+                range = "80/320 ft";
+            }
+
+            // Handle Reach property
+            let reach = undefined;
+            if (details.rangeType === "Melee") {
+                reach = details.properties?.some(p => p === "Reach") ? "10 ft" : "5 ft";
+            }
+
+            // Suppress range if it's identical to reach (fixes stale "5 ft" range defaults)
+            if (range === reach) {
+                range = undefined;
+            }
+
+            // Normalize damage type and check for magical status
+            let damageType = details.damageType || "Slashing";
+            // Capitalize (e.g. "slashing" -> "Slashing")
+            damageType = damageType.charAt(0).toUpperCase() + damageType.slice(1).toLowerCase();
+
+            const isMagical = weapon.name.includes("+") ||
+                details.properties?.some(p => p.toLowerCase().includes("magical")) ||
+                weapon.description?.toLowerCase().includes("magical");
+
+            if (isMagical && ["Bludgeoning", "Piercing", "Slashing"].includes(damageType)) {
+                damageType = `Magical ${damageType}`;
+            }
+
             return {
                 id: `weapon-${weapon.id}`,
                 name: weapon.name,
                 type: "Attack",
                 description: `A ${details.category.toLowerCase()} ${details.rangeType.toLowerCase()} weapon attack. Properties: ${details.properties?.join(", ") || "None"}.`,
                 damage: `${details.damageDice}${damageBonus >= 0 ? "+" : ""}${damageBonus}`,
-                damageType: details.damageType,
+                damageType: damageType,
                 versatileDamage: versatileDamage,
-                range: details.rangeType === "Ranged" ? "80/320" : "5 ft", // default ranges, ideally should be in weaponDetails
-                reach: details.rangeType === "Melee" ? "5 ft" : undefined,
+                range: range,
+                reach: reach,
                 activation: "1 Action",
                 fromWeapon: true,
                 ability: ability as any,

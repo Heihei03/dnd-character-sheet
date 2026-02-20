@@ -345,8 +345,84 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setCharacter(prev => prev ? { ...prev, defenses } : null);
   };
 
-  const handleUpdateActions = (actions: Action[]) => {
-    setCharacter(prev => prev ? { ...prev, actions } : null);
+  const handleUpdateActions = (allActions: Action[]) => {
+    setCharacter(prev => {
+      if (!prev) return null;
+
+      // 1. Separate manual actions from weapon updates
+      const manualActions = allActions.filter(a =>
+        !a.fromWeapon &&
+        !a.fromFeature &&
+        !a.id.startsWith("weapon-") &&
+        !a.id.startsWith("feature-")
+      );
+      const weaponUpdates = allActions.filter(a => a.fromWeapon && a.id.startsWith("weapon-"));
+
+      // 2. Update inventory if any weapon-derived actions were changed
+      let newInventory = [...(prev.inventory || [])];
+      let inventoryChanged = false;
+
+      weaponUpdates.forEach(update => {
+        const weaponId = update.id.replace("weapon-", "");
+        newInventory = newInventory.map(item => {
+          if (item.id === weaponId && item.weaponDetails) {
+            inventoryChanged = true;
+
+            // Handle Versatile property update if versatileDice changed
+            let newProperties = [...(item.weaponDetails.properties || [])];
+            if (update.versatileDice) {
+              const vIdx = newProperties.findIndex(p => p.startsWith("Versatile"));
+              if (vIdx >= 0) {
+                newProperties[vIdx] = `Versatile (${update.versatileDice})`;
+              } else {
+                newProperties.push(`Versatile (${update.versatileDice})`);
+              }
+            }
+
+            // Handle Reach property update
+            if (update.reach !== undefined) {
+              if (update.reach === "10 ft") {
+                if (!newProperties.includes("Reach")) newProperties.push("Reach");
+              } else {
+                newProperties = newProperties.filter(p => p !== "Reach");
+              }
+            }
+
+            // Handle Range property update (Thrown or Ammunition)
+            if (update.range) {
+              const cleanedRange = update.range.replace(/\s*ft$/, "");
+              const isRanged = item.weaponDetails.rangeType === "Ranged";
+              const propertyPrefix = isRanged ? "Ammunition" : "Thrown";
+              const rIdx = newProperties.findIndex(p => p.startsWith(propertyPrefix));
+
+              if (rIdx >= 0) {
+                newProperties[rIdx] = `${propertyPrefix} (${cleanedRange})`;
+              } else if (cleanedRange !== "80/320" && cleanedRange !== "5") {
+                newProperties.push(`${propertyPrefix} (${cleanedRange})`);
+              }
+            }
+
+            return {
+              ...item,
+              name: update.name,
+              weaponDetails: {
+                ...item.weaponDetails,
+                damageDice: update.damageDice || item.weaponDetails.damageDice,
+                damageType: update.damageType || item.weaponDetails.damageType,
+                properties: newProperties
+              }
+            };
+          }
+          return item;
+        });
+      });
+
+      return {
+        ...prev,
+        actions: manualActions,
+        inventory: inventoryChanged ? newInventory : prev.inventory
+      };
+    });
   };
 
   const rollDice = (sides: number, modifier: number = 0, label: string = "") => {
