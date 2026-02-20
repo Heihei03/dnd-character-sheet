@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Button from "./ui/button";
 import { CharacterClass, AbilityScores } from "../types/character";
 import { classHitDice } from "../utils/constants";
+import { Plus, Minus } from "lucide-react";
 
 interface HPSectionProps {
   maxHp: number;
@@ -186,15 +187,15 @@ const HPSection = ({
         <div className="flex gap-2">
           <Button
             onClick={() => handleAction("damage")}
-            className="bg-red-500 hover:bg-red-600 text-white"
+            className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
           >
-            Damage
+            <Minus className="w-4 h-4" /> Damage
           </Button>
           <Button
             onClick={() => handleAction("heal")}
-            className="bg-green-500 hover:bg-green-600 text-white"
+            className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
           >
-            Heal
+            <Plus className="w-4 h-4" /> Heal
           </Button>
         </div>
       </div>
@@ -223,8 +224,8 @@ const HPSection = ({
                   onClick={() => handleRollHitDice(index)}
                   disabled={available <= 0}
                   className={`text-xs px-2 py-1 rounded transition-colors font-semibold ${available > 0
-                      ? "bg-blue-500 text-white hover:bg-blue-600 shadow-sm"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    ? "bg-blue-500 text-white hover:bg-blue-600 shadow-sm"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
                 >
                   Roll

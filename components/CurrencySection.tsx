@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Currency } from "../types/character";
 import { Card, CardContent } from "./ui/card";
+import { Settings, X, ArrowLeftRight } from "lucide-react";
 
 interface CurrencySectionProps {
     currency: Currency;
@@ -78,10 +79,7 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                         className="p-1 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
                         title="Currency Converter"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
+                        <Settings className="w-4 h-4" />
                     </button>
                 </div>
                 <div className="grid grid-cols-5 gap-2 text-center">
@@ -101,68 +99,86 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
             </CardContent>
 
             {/* Conversion Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-sm overflow-hidden border border-gray-200 relative">
-                        <div className="p-4 border-b flex justify-between items-center bg-gray-50">
-                            <h3 className="font-bold text-gray-800">Currency Tools</h3>
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full transition-all shadow-inner group"
-                                aria-label="Close"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div className="p-4 space-y-6">
-                            {/* Current Balances */}
-                            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2 text-center">Current Total Balance</label>
-                                <div className="grid grid-cols-5 gap-1">
-                                    {["cp", "sp", "ep", "gp", "pp"].map(k => (
-                                        <div key={k} className="text-center">
-                                            <div className="text-[8px] font-bold text-gray-500 uppercase">{k}</div>
-                                            <div className="text-xs font-black text-gray-800">{currency[k as keyof Currency]}</div>
-                                        </div>
-                                    ))}
-                                </div>
+            {
+                isModalOpen && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg shadow-xl w-full max-w-sm overflow-hidden border border-gray-200 relative">
+                            <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+                                <h3 className="font-bold text-gray-800">Currency Tools</h3>
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full transition-all shadow-inner group"
+                                    aria-label="Close"
+                                >
+                                    <X className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                </button>
                             </div>
 
-                            {/* Auto Consolidation */}
-                            <section className="space-y-2">
-                                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Wealth Management</label>
-                                <button
-                                    onClick={consolidateCurrencies}
-                                    className="w-full py-3 bg-blue-600 text-white rounded-md font-bold text-sm shadow-md hover:bg-blue-700 transition-colors flex flex-col items-center group"
-                                >
-                                    <span>Consolidate into Gold</span>
-                                    <span className="text-[9px] font-normal opacity-70 group-hover:opacity-100 transition-opacity">Converts cp/sp/ep to gp • Leaves pp intact</span>
-                                </button>
-                            </section>
+                            <div className="p-4 space-y-6">
+                                {/* Current Balances */}
+                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2 text-center">Current Total Balance</label>
+                                    <div className="grid grid-cols-5 gap-1">
+                                        {["cp", "sp", "ep", "gp", "pp"].map(k => (
+                                            <div key={k} className="text-center">
+                                                <div className="text-[8px] font-bold text-gray-500 uppercase">{k}</div>
+                                                <div className="text-xs font-black text-gray-800">{currency[k as keyof Currency]}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
 
-                            <div className="border-t pt-4">
-                                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3">Manual Exchange</label>
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex-1">
-                                            <label className="block text-[9px] text-gray-400 uppercase font-bold mb-1">Exchange</label>
-                                            <input
-                                                type="number"
-                                                value={convertAmount || ""}
-                                                onChange={(e) => setConvertAmount(Number(e.target.value))}
-                                                className="w-full p-2 border rounded text-center text-sm"
-                                                placeholder="Amount"
-                                            />
+                                {/* Auto Consolidation */}
+                                <section className="space-y-2">
+                                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Wealth Management</label>
+                                    <button
+                                        onClick={consolidateCurrencies}
+                                        className="w-full py-3 bg-blue-600 text-white rounded-md font-bold text-sm shadow-md hover:bg-blue-700 transition-colors flex flex-col items-center group"
+                                    >
+                                        <span>Consolidate into Gold</span>
+                                        <span className="text-[9px] font-normal opacity-70 group-hover:opacity-100 transition-opacity">Converts cp/sp/ep to gp • Leaves pp intact</span>
+                                    </button>
+                                </section>
+
+                                <div className="border-t pt-4">
+                                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3">Manual Exchange</label>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex-1">
+                                                <label className="block text-[9px] text-gray-400 uppercase font-bold mb-1">Exchange</label>
+                                                <input
+                                                    type="number"
+                                                    value={convertAmount || ""}
+                                                    onChange={(e) => setConvertAmount(Number(e.target.value))}
+                                                    className="w-full p-2 border rounded text-center text-sm"
+                                                    placeholder="Amount"
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <label className="block text-[9px] text-gray-400 uppercase font-bold mb-1">From</label>
+                                                <select
+                                                    value={convertFrom}
+                                                    onChange={(e) => setConvertFrom(e.target.value as keyof Currency)}
+                                                    className="w-full p-2 border rounded text-sm bg-white"
+                                                >
+                                                    {["cp", "sp", "ep", "gp", "pp"].map(k => (
+                                                        <option key={k} value={k}>{k.toUpperCase()}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div className="flex-1">
-                                            <label className="block text-[9px] text-gray-400 uppercase font-bold mb-1">From</label>
+
+                                        <div className="flex items-center justify-center">
+                                            <div className="bg-gray-100 p-1.5 rounded-full text-gray-400">
+                                                <ArrowLeftRight className="w-4 h-4" />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[9px] text-gray-400 uppercase font-bold mb-1">Into</label>
                                             <select
-                                                value={convertFrom}
-                                                onChange={(e) => setConvertFrom(e.target.value as keyof Currency)}
+                                                value={convertTo}
+                                                onChange={(e) => setConvertTo(e.target.value as keyof Currency)}
                                                 className="w-full p-2 border rounded text-sm bg-white"
                                             >
                                                 {["cp", "sp", "ep", "gp", "pp"].map(k => (
@@ -170,41 +186,22 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                                                 ))}
                                             </select>
                                         </div>
-                                    </div>
 
-                                    <div className="flex items-center justify-center">
-                                        <div className="bg-gray-100 p-1.5 rounded-full text-gray-400">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-[9px] text-gray-400 uppercase font-bold mb-1">Into</label>
-                                        <select
-                                            value={convertTo}
-                                            onChange={(e) => setConvertTo(e.target.value as keyof Currency)}
-                                            className="w-full p-2 border rounded text-sm bg-white"
+                                        <button
+                                            onClick={manualConvert}
+                                            disabled={convertAmount <= 0 || currency[convertFrom] < convertAmount}
+                                            className="w-full py-2 border-2 border-blue-600 text-blue-600 rounded-md font-bold text-sm hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400"
                                         >
-                                            {["cp", "sp", "ep", "gp", "pp"].map(k => (
-                                                <option key={k} value={k}>{k.toUpperCase()}</option>
-                                            ))}
-                                        </select>
+                                            Exchange
+                                        </button>
                                     </div>
-
-                                    <button
-                                        onClick={manualConvert}
-                                        disabled={convertAmount <= 0 || currency[convertFrom] < convertAmount}
-                                        className="w-full py-2 border-2 border-blue-600 text-blue-600 rounded-md font-bold text-sm hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400"
-                                    >
-                                        Exchange
-                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </Card>
+                )
+            }
+        </Card >
     );
 };
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { InventoryItem } from "../../types/character";
 import ItemDetailView from "./ItemDetailView";
+import { ChevronDown, ChevronRight, Trash2, CornerDownRight } from "lucide-react";
 
 interface InventoryRowProps {
     item: InventoryItem;
@@ -38,12 +39,12 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                 </td>
                 <td className="p-2">
                     <div className="flex items-center gap-1">
-                        {isNested && <span className="text-gray-300 ml-2">↳</span>}
+                        {isNested && <CornerDownRight className="w-3 h-3 text-gray-300 ml-2" />}
                         <button
                             onClick={onToggleExpand}
-                            className="text-gray-400 hover:text-gray-600 w-4 text-[10px]"
+                            className="text-gray-400 hover:text-gray-600 w-4 flex items-center justify-center"
                         >
-                            {isExpanded ? "▼" : "▶"}
+                            {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                         </button>
                         <div className="flex-1">
                             <input
@@ -123,9 +124,9 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                 <td className="p-2">
                     <button
                         onClick={() => removeItem(item.id)}
-                        className="text-gray-300 hover:text-red-500 font-bold transition-colors"
+                        className="text-gray-300 hover:text-red-500 transition-colors flex items-center justify-center w-full"
                     >
-                        &times;
+                        <Trash2 className="w-4 h-4" />
                     </button>
                 </td>
             </tr>

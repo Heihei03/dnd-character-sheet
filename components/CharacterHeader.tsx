@@ -3,7 +3,7 @@
 import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
-import { Trophy, GraduationCap, User, BookOpen, Star } from "lucide-react";
+import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2 } from "lucide-react";
 
 interface CharacterHeaderProps {
     name: string;
@@ -73,9 +73,9 @@ const CharacterHeader = ({
                             </label>
                             <button
                                 onClick={onAddClass}
-                                className="text-[10px] font-bold uppercase bg-blue-50 text-blue-600 px-2 py-0.5 rounded hover:bg-blue-100 transition-colors"
+                                className="text-[10px] font-bold uppercase bg-blue-50 text-blue-600 px-2 py-0.5 rounded hover:bg-blue-100 transition-colors flex items-center gap-1"
                             >
-                                + Add Class
+                                <Plus size={10} /> Add Class
                             </button>
                         </div>
                         <div className="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
@@ -104,9 +104,9 @@ const CharacterHeader = ({
                                     {classes.length > 1 && (
                                         <button
                                             onClick={() => onRemoveClass(index)}
-                                            className="text-gray-300 hover:text-red-500 transition-colors"
+                                            className="text-gray-300 hover:text-red-500 transition-colors p-1"
                                         >
-                                            <span className="text-xl leading-none">×</span>
+                                            <Trash2 size={14} />
                                         </button>
                                     )}
                                 </div>

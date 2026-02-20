@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Sense } from "../types/character";
 import { SENSES_LIST } from "../utils/constants";
+import { Trash2, Plus } from "lucide-react";
 
 interface SensesSectionProps {
     senses: Sense[];
@@ -53,7 +54,7 @@ const SensesSection: React.FC<SensesSectionProps> = ({
                                         onClick={() => removeSense(sense)}
                                         className="text-gray-400 hover:text-red-500 transition-colors"
                                     >
-                                        ✕
+                                        <Trash2 className="w-4 h-4" />
                                     </button>
                                 )}
                             </div>
@@ -84,9 +85,9 @@ const SensesSection: React.FC<SensesSectionProps> = ({
                     />
                     <button
                         onClick={addSense}
-                        className="px-3 py-2 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700 transition-colors shadow-sm shrink-0"
+                        className="px-3 py-2 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700 transition-colors shadow-sm shrink-0 flex items-center justify-center min-w-[34px]"
                     >
-                        +
+                        <Plus className="w-4 h-4" />
                     </button>
                 </div>
             </div>

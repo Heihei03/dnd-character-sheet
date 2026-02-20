@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Action, ActionType, AbilityScores } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
+import { Pencil, Trash2, ChevronDown, Plus } from "lucide-react";
 import { DAMAGE_TYPES } from "../utils/constants";
 import { getAbilityModifier } from "../utils/character-utils";
 
@@ -161,8 +162,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Actions & Attacks</h2>
-                <Button onClick={() => { setIsAdding(true); setEditingId(null); resetForm(); }}>
-                    + Add Action
+                <Button onClick={() => { setIsAdding(true); setEditingId(null); resetForm(); }} className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" /> Add Action
                 </Button>
             </div>
 
@@ -456,7 +457,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                                             onClick={(e) => { e.stopPropagation(); startEdit(action); }}
                                                             className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                                                         >
-                                                            ✎
+                                                            <Pencil className="w-4 h-4" />
                                                         </button>
                                                     )}
                                                     {!action.fromWeapon && !action.fromFeature && (
@@ -464,12 +465,10 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                                             onClick={(e) => { e.stopPropagation(); handleDelete(action.id); }}
                                                             className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                                                         >
-                                                            ✕
+                                                            <Trash2 className="w-4 h-4" />
                                                         </button>
                                                     )}
-                                                    <div className={`transform transition-transform ${expandedIds.has(action.id) ? "rotate-180" : ""}`}>
-                                                        ▼
-                                                    </div>
+                                                    <ChevronDown className={`w-4 h-4 text-gray-400 transform transition-transform ${expandedIds.has(action.id) ? "rotate-180" : ""}`} />
                                                 </div>
                                             </div>
                                             {expandedIds.has(action.id) && (

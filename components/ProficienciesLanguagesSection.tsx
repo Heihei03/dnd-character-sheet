@@ -7,6 +7,7 @@ import { WEAPON_DATA } from "../data/weapons";
 import { ARMOR_DATA } from "../data/armor";
 import { TOOL_DATA } from "../data/tools";
 import { AbilityScores, ToolProficiency, ProficiencyLevel } from "../types/character";
+import { Plus, X } from "lucide-react";
 
 interface ProficiencyListProps {
     title: string;
@@ -58,9 +59,9 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-tight">{title}</h3>
                 <button
                     onClick={() => setShowAdd(!showAdd)}
-                    className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
+                    className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors flex items-center gap-1"
                 >
-                    {showAdd ? "Cancel" : "+ Add"}
+                    {showAdd ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />} {showAdd ? "Cancel" : "Add"}
                 </button>
             </div>
             <div className="flex flex-wrap gap-1.5 max-w-full">
@@ -77,10 +78,10 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                                 </span>
                                 <button
                                     onClick={() => removeItem(index)}
-                                    className="text-blue-300 hover:text-red-500 dark:text-blue-700 dark:hover:text-red-400 transition-colors px-0.5 ml-0.5"
+                                    className="text-blue-300 hover:text-red-500 dark:text-blue-700 dark:hover:text-red-400 transition-colors px-0.5 ml-0.5 flex items-center justify-center font-bold"
                                     title="Remove"
                                 >
-                                    ×
+                                    <X className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                         );

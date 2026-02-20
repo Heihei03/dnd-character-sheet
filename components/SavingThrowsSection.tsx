@@ -1,6 +1,7 @@
 
 import React from "react";
 import { SavingThrows } from "../types/character";
+import ProficiencyIcon from "./ui/ProficiencyIcon";
 
 interface SavingThrowsSectionProps {
     savingThrows: SavingThrows;
@@ -25,41 +26,6 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
     rollDice,
 }) => {
 
-    const ProficiencyIcon = ({ isProficient }: { isProficient: boolean }) => {
-        const baseClasses = "w-5 h-5 text-current";
-
-        if (isProficient) {
-            return (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={baseClasses}
-                >
-                    <circle cx="12" cy="12" r="10" />
-                </svg>
-            );
-        }
-
-        return (
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={baseClasses}
-            >
-                <circle cx="12" cy="12" r="10" />
-            </svg>
-        );
-    };
 
     return (
         <div className="space-y-2">
@@ -77,7 +43,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                                 className="w-6 h-6 flex items-center justify-center focus:outline-none hover:text-blue-600 transition-transform active:scale-95"
                                 title={isProficient ? "Proficient" : "Not Proficient"}
                             >
-                                <ProficiencyIcon isProficient={isProficient} />
+                                <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-4 h-4" />
                             </button>
                             <span
                                 className="capitalize cursor-pointer font-medium"

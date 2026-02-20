@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Plus, Trash2 } from "lucide-react";
 import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../types/modifiers";
 import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES } from "../utils/constants";
 import { TOOL_DATA } from "../data/tools";
@@ -61,9 +62,9 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                 <label className="text-xs font-bold uppercase text-gray-500">Modifiers</label>
                 <button
                     onClick={addModifier}
-                    className="text-[11px] font-bold text-blue-600 hover:text-blue-800 uppercase tracking-wider"
+                    className="text-[11px] font-bold text-blue-600 hover:text-blue-800 uppercase tracking-wider flex items-center gap-1"
                 >
-                    + Add Modifier
+                    <Plus className="w-3 h-3" /> Add Modifier
                 </button>
             </div>
             <div className="space-y-2">
@@ -109,9 +110,9 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                             <div className="col-span-1 flex justify-center pt-1.5">
                                 <button
                                     onClick={() => removeModifier(mod.id)}
-                                    className="text-gray-400 hover:text-red-500 text-sm"
+                                    className="text-gray-400 hover:text-red-500 flex items-center justify-center pt-1"
                                 >
-                                    ✕
+                                    <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>

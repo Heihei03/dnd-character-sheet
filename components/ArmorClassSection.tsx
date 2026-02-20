@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArmorClass, AbilityScores } from "../types/character";
 import { calculateAC } from "../utils/acUtils";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
 interface ArmorClassSectionProps {
     armorClass: ArmorClass;
@@ -45,7 +46,7 @@ const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
                     <span className="text-2xl font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg border-2 border-blue-100">
                         {currentAC}
                     </span>
-                    <span className="text-gray-400 text-sm">{isExpanded ? "▲" : "▼"}</span>
+                    {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
                 </div>
             </div>
 

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Defenses, DefenseEntry } from "../types/character";
 import { DAMAGE_TYPES, CONDITION_TYPES } from "../utils/constants";
+import { Trash2, Plus } from "lucide-react";
 
 interface DefensesSectionProps {
     defenses: Defenses;
@@ -72,7 +73,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                                 onClick={() => removeDefense(category, item)}
                                 className="text-current opacity-60 hover:opacity-100 transition-opacity"
                             >
-                                ✕
+                                <Trash2 className="w-4 h-4" />
                             </button>
                         )}
                     </span>
@@ -90,9 +91,9 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                 />
                 <button
                     onClick={() => addDefense(category, newValue, setNewValue)}
-                    className="px-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold"
+                    className="px-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold flex items-center justify-center min-w-[34px]"
                 >
-                    +
+                    <Plus className="w-4 h-4" />
                 </button>
             </div>
         </div>
