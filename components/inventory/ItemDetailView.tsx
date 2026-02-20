@@ -10,6 +10,24 @@ interface ItemDetailViewProps {
 const ItemDetailView: React.FC<ItemDetailViewProps> = ({ item, containers, updateItem }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2 flex items-center gap-4 bg-gray-50 dark:bg-gray-900/50 p-2 rounded border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase whitespace-nowrap">Item Type:</label>
+                    <select
+                        value={item.itemType || "other"}
+                        onChange={(e) => updateItem(item.id, "itemType", e.target.value)}
+                        className="text-xs border rounded p-1 bg-white dark:bg-gray-950 min-w-[120px]"
+                    >
+                        <option value="other">Other</option>
+                        <option value="weapon">Weapon</option>
+                        <option value="armor">Armor</option>
+                        <option value="shield">Shield</option>
+                        <option value="container">Container</option>
+                        <option value="tool">Tool</option>
+                    </select>
+                </div>
+            </div>
+
             <div className="space-y-2">
                 <label className="block text-[10px] font-bold text-gray-400 uppercase">Description</label>
                 <textarea

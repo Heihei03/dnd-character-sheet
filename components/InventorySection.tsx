@@ -21,9 +21,13 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     };
 
     const updateItemBatch = (id: string, updates: Partial<InventoryItem>) => {
-        setInventory(
-            inventory.map((item) => {
-                if (item.id !== id) return item;
+        // Find if the item being updated was a container and is now changing type
+        const targetItem = inventory.find((i: InventoryItem) => i.id === id);
+        const isChangingFromContainer = Boolean(targetItem?.isContainer) && updates.itemType !== undefined && updates.itemType !== "container";
+
+        const newInventory = inventory.map((item: InventoryItem) => {
+            // If this is the item being updated
+            if (item.id === id) {
                 let updatedItem = { ...item, ...updates };
                 if (updates.attunable === false) updatedItem.attuned = false;
                 if (updates.equippable === false) updatedItem.equipped = false;
@@ -62,13 +66,30 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                     };
                     updatedItem.isContainer = true;
                 }
+                if (updates.itemType === "tool" && !item.toolDetails && !updates.toolDetails) {
+                    updatedItem.toolDetails = {
+                        baseTool: "Custom",
+                        category: "Artisan Tool",
+                        ability: "Dexterity",
+                        utilize: "",
+                        craft: ""
+                    };
+                }
                 if (updates.itemType !== "container" && updates.itemType !== undefined) {
                     updatedItem.isContainer = false;
                 }
 
                 return updatedItem;
-            })
-        );
+            }
+
+            // If this is a child item and its parent just stopped being a container
+            if (isChangingFromContainer && item.parentId === id) {
+                return { ...item, parentId: undefined };
+            }
+
+            return item;
+        });
+        setInventory(newInventory);
     };
 
     const updateItem = (id: string, field: keyof InventoryItem, value: any) => {
@@ -80,7 +101,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     };
 
     const removeItem = (id: string) => {
-        setInventory(inventory.filter((item) => item.id !== id));
+        setInventory(inventory.filter((item) => item.id !== id).map((item) => item.parentId === id ? { ...item, parentId: undefined } : item));
     };
 
     const calculateItemTotalWeight = (item: InventoryItem): number => {
@@ -99,13 +120,14 @@ const InventorySection: React.FC<InventorySectionProps> = ({
 
     const sortItemsHierarchically = (items: InventoryItem[]): InventoryItem[] => {
         const result: InventoryItem[] = [];
+        const itemsById = new Set(items.map(i => i.id));
         const addChildren = (parentId: string) => {
             items.filter(i => i.parentId === parentId).forEach(child => {
                 result.push({ ...child });
                 addChildren(child.id);
             });
         };
-        items.filter(i => !i.parentId).forEach(root => {
+        items.filter(i => !i.parentId || !itemsById.has(i.parentId)).forEach(root => {
             result.push({ ...root });
             addChildren(root.id);
         });

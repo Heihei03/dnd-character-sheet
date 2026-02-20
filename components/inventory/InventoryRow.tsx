@@ -22,7 +22,8 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
     isExpanded,
     onToggleExpand
 }) => {
-    const isNested = !!item.parentId;
+    const isParentValidContainer = item.parentId ? allInventory.some(i => i.id === item.parentId && Boolean(i.isContainer)) : false;
+    const isNested = !!item.parentId && isParentValidContainer;
     const containers = allInventory.filter(i => i.isContainer && i.itemType === "container");
 
     return (
