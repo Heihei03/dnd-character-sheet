@@ -1,5 +1,6 @@
 import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
+import { STANDARD_ACTIONS } from "../data/standard-actions";
 
 export const getAbilityModifier = (score: number) => Math.floor((score - 10) / 2);
 
@@ -177,8 +178,8 @@ export const getEffectiveActions = (character: Character): Action[] => {
             };
         });
 
-    // Merge manual and weapon actions, prioritizing manual if IDs conflict (though they shouldn't)
-    const combined = [...manualActions];
+    // Merge manual, weapon, and standard actions
+    const combined = [...STANDARD_ACTIONS, ...manualActions];
     weaponActions.forEach(wa => {
         if (!combined.some(a => a.id === wa.id)) {
             combined.push(wa);
