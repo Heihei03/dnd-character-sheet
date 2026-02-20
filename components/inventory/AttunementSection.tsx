@@ -23,8 +23,8 @@ const AttunementSection: React.FC<AttunementSectionProps> = ({
                     <div
                         key={i}
                         className={`p-2 rounded border text-[10px] text-center h-10 flex items-center justify-center ${attunedItems[i]
-                                ? "bg-purple-50 border-purple-200 font-bold"
-                                : "bg-gray-50 border-gray-200 text-gray-400 border-dashed"
+                            ? "bg-purple-50 border-purple-200 font-bold"
+                            : "bg-gray-50 border-gray-200 text-gray-400 border-dashed"
                             }`}
                     >
                         {attunedItems[i]?.name || "Empty"}
@@ -39,11 +39,11 @@ const AttunementSection: React.FC<AttunementSectionProps> = ({
                             <button
                                 onClick={() => updateItem(item.id, "attuned", !item.attuned)}
                                 className={`px-2 py-1 rounded text-[10px] font-bold transition-colors ${item.attuned
-                                        ? "bg-purple-600 text-white"
-                                        : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                                    ? "bg-purple-600 text-white"
+                                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                                     }`}
                             >
-                                {item.attuned ? "YES" : "NO"}
+                                {item.attuned ? "ATTUNED" : "NOT ATTUNED"}
                             </button>
                         </div>
                     ))}
