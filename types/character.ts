@@ -203,4 +203,7 @@ export interface Character {
   features?: Feature[];
   senses?: Sense[];
   defenses?: Defenses;
+  species: string;
+  background: string;
+  exp?: number;
 }

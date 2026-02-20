@@ -18,8 +18,8 @@ import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
 import ArmorClassSection from "./ArmorClassSection";
-import ClassLevelSection from "./ClassLevelSection";
 import InitiativeSection from "./InitiativeSection";
+import CharacterHeader from "./CharacterHeader";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
 import { Sense, Defenses } from "../types/character";
@@ -134,6 +134,9 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       vulnerabilities: [],
       immunities: []
     },
+    species: character.species ?? "",
+    background: character.background ?? "",
+    exp: character.exp ?? 0,
   };
 
 
@@ -327,6 +330,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setCharacter((prev) => (prev ? { ...prev, [field]: value } : null));
   };
 
+  const handleNameChange = (value: string) => handleChange("name", value);
+  const handleSpeciesChange = (value: string) => handleChange("species", value);
+  const handleBackgroundChange = (value: string) => handleChange("background", value);
+  const handleExpChange = (value: number | undefined) => handleChange("exp", value);
+
   const handleUpdateSenses = (senses: Sense[]) => {
     setCharacter(prev => prev ? { ...prev, senses } : null);
   };
@@ -348,24 +356,26 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
   return (
     <div className="flex flex-col items-center p-8">
-      <h1 className="text-3xl font-bold mb-6">Character Details</h1>
-
-      <div className="space-y-4">
-        <input
-          type="text"
-          value={characterWithDefaults.name}
-          onChange={(e) => handleChange("name", e.target.value as any)}
-          className="flex mx-auto p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
-        <ClassLevelSection
+      <div className="w-full mb-8">
+        <CharacterHeader
+          name={characterWithDefaults.name}
+          species={characterWithDefaults.species}
+          background={characterWithDefaults.background}
+          exp={characterWithDefaults.exp}
           classes={characterWithDefaults.classes}
+          proficiencyBonus={proficiencyBonus}
+          totalLevel={totalLevel}
+          onNameChange={handleNameChange}
+          onSpeciesChange={handleSpeciesChange}
+          onBackgroundChange={handleBackgroundChange}
+          onExpChange={handleExpChange}
           onClassChange={handleClassChange}
           onAddClass={addClass}
           onRemoveClass={removeClass}
-          totalLevel={totalLevel}
-          proficiencyBonus={proficiencyBonus}
         />
+      </div>
+
+      <div className="space-y-4">
 
         <div className="flex space-x-4 mb-6">
           <button
