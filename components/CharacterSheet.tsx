@@ -345,6 +345,43 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setCharacter(prev => prev ? { ...prev, defenses } : null);
   };
 
+  const handleUpdateItemFeature = (updatedFeature: Feature) => {
+    setCharacter(prev => {
+      if (!prev) return null;
+      const itemId = updatedFeature.sourceItemId;
+      if (!itemId) return prev;
+
+      const newInventory = (prev.inventory || []).map(item => {
+        if (item.id === itemId) {
+          const newFeatures = (item.features || []).map(f =>
+            f.id === updatedFeature.id ? updatedFeature : f
+          );
+          return { ...item, features: newFeatures };
+        }
+        return item;
+      });
+
+      return { ...prev, inventory: newInventory };
+    });
+  };
+
+  const handleDeleteItemFeature = (featureId: string, itemId: string) => {
+    setCharacter(prev => {
+      if (!prev) return null;
+      if (!itemId) return prev;
+
+      const newInventory = (prev.inventory || []).map(item => {
+        if (item.id === itemId) {
+          const newFeatures = (item.features || []).filter(f => f.id !== featureId);
+          return { ...item, features: newFeatures };
+        }
+        return item;
+      });
+
+      return { ...prev, inventory: newInventory };
+    });
+  };
+
   const handleUpdateActions = (allActions: Action[]) => {
     setCharacter(prev => {
       if (!prev) return null;
@@ -632,6 +669,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               features={characterWithDefaults.features}
               itemFeatures={getAllActiveFeatures(characterWithDefaults).filter((f: Feature) => f.origin === "Item")}
               onUpdate={(value) => handleChange("features", value)}
+              onUpdateItemFeature={handleUpdateItemFeature}
+              onDeleteItemFeature={handleDeleteItemFeature}
               availableClasses={characterWithDefaults.classes.map(c => c.name)}
             />
           </div>

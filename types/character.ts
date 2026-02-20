@@ -178,7 +178,7 @@ export interface Feature {
   subOrigin?: string; // Specific class name, background name, etc.
   modifiers?: FeatureModifier[];
   effects?: string[];
-  source?: string;
+  sourceItemId?: string;
 }
 
 export type ActionType = "Action" | "Bonus Action" | "Reaction" | "Free Action" | "Attack";

@@ -41,7 +41,7 @@ export const getAllActiveFeatures = (character: Character): Feature[] => {
             ...f,
             origin: "Item",
             subOrigin: item.name,
-            source: item.name
+            sourceItemId: item.id
         })));
 
     return [...characterFeatures, ...itemFeatures];

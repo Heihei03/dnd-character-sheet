@@ -11,12 +11,21 @@ interface FeaturesSectionProps {
     features: Feature[];
     itemFeatures?: Feature[];
     onUpdate: (features: Feature[]) => void;
+    onUpdateItemFeature?: (feature: Feature) => void;
+    onDeleteItemFeature?: (featureId: string, itemId: string) => void;
     availableClasses?: string[];
 }
 
 const ORIGIN_OPTIONS = ["Class", "Species", "Background", "Feat", "Item", "Other"];
 
-const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], itemFeatures = [], onUpdate, availableClasses = [] }) => {
+const FeaturesSection: React.FC<FeaturesSectionProps> = ({
+    features = [],
+    itemFeatures = [],
+    onUpdate,
+    onUpdateItemFeature,
+    onDeleteItemFeature,
+    availableClasses = []
+}) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -28,7 +37,6 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], itemFe
         subOrigin: "",
         modifiers: [],
         effects: [],
-        source: "",
     });
 
     const toggleExpand = (id: string) => {
@@ -50,7 +58,6 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], itemFe
             subOrigin: formData.origin === "Class" ? (formData.subOrigin || availableClasses[0] || "") : "",
             modifiers: formData.modifiers || [],
             effects: formData.effects || [],
-            source: formData.source || "",
         };
         onUpdate([...features, newFeature]);
         setIsAdding(false);
@@ -62,17 +69,27 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], itemFe
         const updatedData = {
             ...formData,
             subOrigin: formData.origin === "Class" ? (formData.subOrigin || availableClasses[0] || "") : ""
-        };
-        const updatedFeatures = features.map((f) =>
-            f.id === editingId ? { ...f, ...updatedData } as Feature : f
-        );
-        onUpdate(updatedFeatures);
+        } as Feature;
+
+        if (formData.origin === "Item" && onUpdateItemFeature) {
+            onUpdateItemFeature(updatedData);
+        } else {
+            const updatedFeatures = features.map((f) =>
+                f.id === editingId ? { ...f, ...updatedData } as Feature : f
+            );
+            onUpdate(updatedFeatures);
+        }
         setEditingId(null);
         resetForm();
     };
 
     const handleDelete = (id: string) => {
-        onUpdate(features.filter((f) => f.id !== id));
+        const featureToDelete = allFeatures.find(f => f.id === id);
+        if (featureToDelete?.origin === "Item" && onDeleteItemFeature) {
+            onDeleteItemFeature(id, featureToDelete.sourceItemId || "");
+        } else {
+            onUpdate(features.filter((f) => f.id !== id));
+        }
     };
 
     const startEdit = (feature: Feature) => {
@@ -89,7 +106,6 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], itemFe
             subOrigin: "",
             modifiers: [],
             effects: [],
-            source: "",
         });
     };
 
@@ -162,17 +178,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], itemFe
                             onUpdate={(modifiers) => setFormData({ ...formData, modifiers })}
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-gray-500">Source / Link</label>
-                                <input
-                                    type="text"
-                                    value={formData.source}
-                                    onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                    placeholder="PHB pg. 123..."
-                                />
-                            </div>
+                        <div className="grid grid-cols-1 gap-4">
                             <div className="space-y-1">
                                 <label className="text-xs font-bold uppercase text-gray-500">Active Effects (one per line)</label>
                                 <textarea
@@ -236,22 +242,18 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], itemFe
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        {feature.origin !== "Item" && (
-                                            <>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); startEdit(feature); }}
-                                                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                                                >
-                                                    ✎
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDelete(feature.id); }}
-                                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                                                >
-                                                    ✕
-                                                </button>
-                                            </>
-                                        )}
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); startEdit(feature); }}
+                                            className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                        >
+                                            ✎
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleDelete(feature.id); }}
+                                            className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                        >
+                                            ✕
+                                        </button>
                                         <div className={`transform transition-transform ${expandedIds.has(feature.id) ? "rotate-180" : ""}`}>
                                             ▼
                                         </div>
@@ -288,12 +290,6 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], itemFe
                                                         <li key={idx}>{effect}</li>
                                                     ))}
                                                 </ul>
-                                            </div>
-                                        )}
-
-                                        {feature.source && (
-                                            <div className="text-xs text-gray-400 italic pt-2">
-                                                Source: {feature.source}
                                             </div>
                                         )}
                                     </div>
