@@ -5,6 +5,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../types/modifiers";
 import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES } from "../utils/constants";
 import { TOOL_DATA } from "../data/tools";
+import { ABILITY_NAMES } from "../utils/character-utils";
 
 interface FeatureModifierEditorProps {
     modifiers: FeatureModifier[];
@@ -51,6 +52,8 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                 ].sort();
             case "Bonus":
                 return ["AC", "Initiative", "Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma", "Saving Throws", "Global Bonus"].sort();
+            case "Override":
+                return ABILITY_NAMES;
             default:
                 return [];
         }

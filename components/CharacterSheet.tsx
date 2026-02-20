@@ -23,7 +23,7 @@ import CharacterHeader from "./CharacterHeader";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
 import { Sense, Defenses } from "../types/character";
-import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures } from "../utils/character-utils";
+import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores } from "../utils/character-utils";
 import ActionsSection from "./ActionsSection";
 
 interface CharacterSheetProps {
@@ -140,6 +140,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     background: character.background ?? "",
     exp: character.exp ?? 0,
   };
+
+  const effectiveAbilityScores = getEffectiveAbilityScores(characterWithDefaults);
 
 
   // Function to calculate proficiency bonus based on level
@@ -546,6 +548,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                   {/* Ability Score Inputs */}
                   <AbilityScoreSection
                     abilityScores={characterWithDefaults.abilityScores}
+                    effectiveAbilityScores={effectiveAbilityScores}
                     setAbilityScore={handleAbilityScoreChange}
                     rollDice={rollDice}
                   />
@@ -553,7 +556,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                     savingThrows={characterWithDefaults.savingThrows}
                     proficiencyBonus={proficiencyBonus}
                     setSavingThrows={handleSavingThrowChange}
-                    abilityScores={characterWithDefaults.abilityScores}
+                    abilityScores={effectiveAbilityScores}
                     rollDice={rollDice}
                   />
                 </div>
@@ -565,16 +568,16 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               <CardContent className="p-4 space-y-4">
                 <InitiativeSection
                   initiative={characterWithDefaults.initiative}
-                  dexModifier={Math.floor(((characterWithDefaults.abilityScores.dexterity ?? 10) - 10) / 2)}
+                  dexModifier={Math.floor(((effectiveAbilityScores.dexterity ?? 10) - 10) / 2)}
                   proficiencyBonus={proficiencyBonus}
                   onUpdate={handleInitiativeChange}
                   rollDice={rollDice}
-                  dexScore={characterWithDefaults.abilityScores.dexterity ?? 10}
+                  dexScore={effectiveAbilityScores.dexterity ?? 10}
                 />
                 <ArmorClassSection
                   armorClass={characterWithDefaults.armorClass}
                   setArmorClass={handleArmorClassChange}
-                  abilityScores={characterWithDefaults.abilityScores}
+                  abilityScores={effectiveAbilityScores}
                 />
                 {/* HP */}
                 <HPSection
@@ -582,7 +585,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                   hp={characterWithDefaults.hp} setHp={(hp) => handleChange("hp", hp)}
                   tempHp={characterWithDefaults.tempHp} setTempHp={(tempHp) => handleChange("tempHp", tempHp)}
                   classes={characterWithDefaults.classes}
-                  abilityScores={characterWithDefaults.abilityScores}
+                  abilityScores={effectiveAbilityScores}
                   onUpdateClasses={(classes) => handleChange("classes", classes)}
                   rollDice={rollDice}
                 />
@@ -610,14 +613,14 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               <SkillsSection
                 skills={characterWithDefaults.skills}
                 setSkills={handleSkillChange}
-                abilityScores={characterWithDefaults.abilityScores}
+                abilityScores={effectiveAbilityScores}
                 proficiencyBonus={proficiencyBonus}
                 rollDice={rollDice}
               />
               <ToolChecksSection
                 toolProficiencies={characterWithDefaults.toolProficiencies}
                 onUpdate={(value) => handleChange("toolProficiencies", value)}
-                abilityScores={characterWithDefaults.abilityScores}
+                abilityScores={effectiveAbilityScores}
                 proficiencyBonus={proficiencyBonus}
                 rollDice={rollDice}
               />
@@ -680,7 +683,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             <ActionsSection
               actions={getEffectiveActions(characterWithDefaults)}
               onUpdate={handleUpdateActions}
-              abilityScores={characterWithDefaults.abilityScores}
+              abilityScores={effectiveAbilityScores}
               proficiencyBonus={getProficiencyBonus(characterWithDefaults.classes.reduce((sum, cls) => sum + cls.level, 0))}
             />
           </div>

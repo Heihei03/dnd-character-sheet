@@ -26,6 +26,25 @@ export const getFeatureModifiersByType = (features: Feature[] = [], type: string
     return features.flatMap(f => (f.modifiers || []).filter(m => m.type === type));
 };
 
+export const getEffectiveAbilityScores = (character: Character) => {
+    const scores = { ...character.abilityScores };
+    const activeFeatures = getAllActiveFeatures(character);
+    const overrides = getFeatureModifiersByType(activeFeatures, "Override");
+
+    overrides.forEach(mod => {
+        const ability = mod.subType.toLowerCase();
+        const value = Number(mod.value);
+        if (!isNaN(value) && scores[ability] !== undefined) {
+            // Override only applies if it's higher than the current score
+            if (value > scores[ability]) {
+                scores[ability] = value;
+            }
+        }
+    });
+
+    return scores;
+};
+
 export const getAllActiveFeatures = (character: Character): Feature[] => {
     const characterFeatures = character.features || [];
     const itemFeatures = (character.inventory || [])
@@ -100,6 +119,7 @@ export const getEffectiveDefenses = (character: Character): Defenses => {
 };
 
 export const getEffectiveActions = (character: Character): Action[] => {
+    const effectiveAbilityScores = getEffectiveAbilityScores(character);
     const manualActions = (character.actions || []).filter(a =>
         !a.fromWeapon &&
         !a.fromFeature &&
@@ -116,15 +136,15 @@ export const getEffectiveActions = (character: Character): Action[] => {
 
             // Determine which ability to use (Finesse logic simplified for now)
             const isFinesse = details.properties?.includes("Finesse");
-            const strMod = getAbilityModifier(character.abilityScores.strength ?? 10);
-            const dexMod = getAbilityModifier(character.abilityScores.dexterity ?? 10);
+            const strMod = getAbilityModifier(effectiveAbilityScores.strength ?? 10);
+            const dexMod = getAbilityModifier(effectiveAbilityScores.dexterity ?? 10);
 
             let ability = details.rangeType === "Ranged" ? "dexterity" : "strength";
             if (isFinesse && dexMod > strMod) {
                 ability = "dexterity";
             }
 
-            const abilityModifier = getAbilityModifier(character.abilityScores[ability] ?? 10);
+            const abilityModifier = getAbilityModifier(effectiveAbilityScores[ability] ?? 10);
             const attackBonus = proficiencyBonus + abilityModifier;
             const damageBonus = abilityModifier;
 
