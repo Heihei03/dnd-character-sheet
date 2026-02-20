@@ -13,7 +13,7 @@ import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
 import ToolChecksSection from "./ToolChecksSection";
 import FeaturesSection from "./FeaturesSection";
 import { TOOL_DATA } from "../data/tools";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action } from "../types/character";
+import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature } from "../types/character";
 import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
@@ -23,7 +23,7 @@ import CharacterHeader from "./CharacterHeader";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
 import { Sense, Defenses } from "../types/character";
-import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions } from "../utils/character-utils";
+import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures } from "../utils/character-utils";
 import ActionsSection from "./ActionsSection";
 
 interface CharacterSheetProps {
@@ -630,6 +630,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           <div className="w-full max-w-4xl mx-auto">
             <FeaturesSection
               features={characterWithDefaults.features}
+              itemFeatures={getAllActiveFeatures(characterWithDefaults).filter((f: Feature) => f.origin === "Item")}
               onUpdate={(value) => handleChange("features", value)}
               availableClasses={characterWithDefaults.classes.map(c => c.name)}
             />

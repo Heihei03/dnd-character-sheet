@@ -1,0 +1,97 @@
+"use client";
+
+import React from "react";
+import { Feature } from "../../types/character";
+import FeatureModifierEditor from "../FeatureModifierEditor";
+
+interface ItemFeaturesEditorProps {
+    features: Feature[];
+    onUpdate: (features: Feature[]) => void;
+}
+
+const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ features, onUpdate }) => {
+    const addFeature = () => {
+        const newFeature: Feature = {
+            id: `item-feature-${Date.now()}`,
+            name: "New Item Feature",
+            description: "",
+            origin: "Item",
+            modifiers: [],
+            effects: []
+        };
+        onUpdate([...features, newFeature]);
+    };
+
+    const updateFeature = (id: string, updates: Partial<Feature>) => {
+        onUpdate(features.map(f => f.id === id ? { ...f, ...updates } : f));
+    };
+
+    const removeFeature = (id: string) => {
+        onUpdate(features.filter(f => f.id !== id));
+    };
+
+    return (
+        <div className="md:col-span-2 mt-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
+            <div className="flex justify-between items-center">
+                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Item Features & Modifiers</h4>
+                <button
+                    onClick={addFeature}
+                    className="text-[10px] bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-2 py-1 rounded font-bold uppercase transition-colors"
+                >
+                    + Add Feature
+                </button>
+            </div>
+
+            <div className="space-y-4">
+                {features.map((feature) => (
+                    <div key={feature.id} className="p-3 bg-white dark:bg-gray-950 rounded-lg border border-gray-100 dark:border-gray-800 space-y-3 shadow-sm">
+                        <div className="flex justify-between items-start gap-2">
+                            <div className="flex-1 space-y-2">
+                                <input
+                                    type="text"
+                                    value={feature.name}
+                                    onChange={e => updateFeature(feature.id, { name: e.target.value })}
+                                    className="w-full text-sm font-bold bg-transparent border-b border-transparent hover:border-gray-200 focus:border-blue-500 focus:ring-0 p-0"
+                                    placeholder="Feature Name"
+                                />
+                                <textarea
+                                    value={feature.description}
+                                    onChange={e => updateFeature(feature.id, { description: e.target.value })}
+                                    className="w-full text-xs text-gray-500 bg-transparent border-none focus:ring-0 p-0 resize-none h-12"
+                                    placeholder="Description of the feature/effect..."
+                                />
+                            </div>
+                            <button
+                                onClick={() => removeFeature(feature.id)}
+                                className="text-gray-400 hover:text-red-500 transition-colors"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div className="pt-2 border-t border-gray-50 dark:border-gray-900">
+                            <FeatureModifierEditor
+                                modifiers={feature.modifiers || []}
+                                onUpdate={(mods) => updateFeature(feature.id, { modifiers: mods })}
+                            />
+                        </div>
+                    </div>
+                ))}
+
+                {features.length === 0 && (
+                    <div className="text-center py-6 border-2 border-dashed border-gray-50 dark:border-gray-900 rounded-xl">
+                        <p className="text-[10px] text-gray-400 italic font-medium uppercase tracking-tight">No active features or modifiers for this item</p>
+                        <button
+                            onClick={addFeature}
+                            className="mt-1 text-[10px] text-blue-600 font-bold uppercase hover:underline"
+                        >
+                            + Add One Now
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default ItemFeaturesEditor;

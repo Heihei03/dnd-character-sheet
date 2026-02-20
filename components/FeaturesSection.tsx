@@ -9,13 +9,14 @@ import FeatureModifierEditor from "./FeatureModifierEditor";
 
 interface FeaturesSectionProps {
     features: Feature[];
+    itemFeatures?: Feature[];
     onUpdate: (features: Feature[]) => void;
     availableClasses?: string[];
 }
 
 const ORIGIN_OPTIONS = ["Class", "Species", "Background", "Feat", "Item", "Other"];
 
-const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpdate, availableClasses = [] }) => {
+const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], itemFeatures = [], onUpdate, availableClasses = [] }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -96,6 +97,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
         const effects = effectString.split("\n").map(e => e.trim()).filter(e => e !== "");
         setFormData({ ...formData, effects });
     };
+
+    const allFeatures = [...features, ...itemFeatures];
 
     return (
         <div className="space-y-6">
@@ -194,14 +197,14 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
             )}
 
             <div className="grid grid-cols-1 gap-4">
-                {features.length === 0 ? (
+                {allFeatures.length === 0 ? (
                     <Card className="border-dashed">
                         <CardContent className="p-12 text-center text-gray-500 italic">
                             No features added yet. Click "+ Add Feature" to begin.
                         </CardContent>
                     </Card>
                 ) : (
-                    features.map((feature) => (
+                    allFeatures.map((feature) => (
                         <Card key={feature.id} className="overflow-hidden group hover:border-blue-400 transition-colors">
                             <CardContent className="p-0">
                                 <div
@@ -212,7 +215,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
                                         <div className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded whitespace-nowrap ${feature.origin === "Class" ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300" :
                                             feature.origin === "Species" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" :
                                                 feature.origin === "Background" ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300" :
-                                                    "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                                    feature.origin === "Item" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" :
+                                                        "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                                             }`}>
                                             {feature.origin}{feature.subOrigin ? `: ${feature.subOrigin}` : ""}
                                         </div>
@@ -221,9 +225,9 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
                                             <div className="hidden sm:flex gap-1 overflow-hidden">
                                                 {feature.modifiers.map(mod => (
                                                     <span key={mod.id} className={`text-[9px] font-bold px-1.5 rounded uppercase tracking-tighter ${mod.type === "Sense" ? "bg-amber-100 text-amber-700" :
-                                                            mod.type === "Speed" ? "bg-emerald-100 text-emerald-700" :
-                                                                mod.type === "Bonus" ? "bg-rose-100 text-rose-700" :
-                                                                    "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
+                                                        mod.type === "Speed" ? "bg-emerald-100 text-emerald-700" :
+                                                            mod.type === "Bonus" ? "bg-rose-100 text-rose-700" :
+                                                                "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
                                                         }`}>
                                                         {mod.subType || mod.type}
                                                     </span>
@@ -232,18 +236,22 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features = [], onUpda
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); startEdit(feature); }}
-                                            className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                                        >
-                                            ✎
-                                        </button>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleDelete(feature.id); }}
-                                            className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                                        >
-                                            ✕
-                                        </button>
+                                        {feature.origin !== "Item" && (
+                                            <>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); startEdit(feature); }}
+                                                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                                >
+                                                    ✎
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleDelete(feature.id); }}
+                                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </>
+                                        )}
                                         <div className={`transform transition-transform ${expandedIds.has(feature.id) ? "rotate-180" : ""}`}>
                                             ▼
                                         </div>

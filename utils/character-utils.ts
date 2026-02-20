@@ -26,9 +26,31 @@ export const getFeatureModifiersByType = (features: Feature[] = [], type: string
     return features.flatMap(f => (f.modifiers || []).filter(m => m.type === type));
 };
 
+export const getAllActiveFeatures = (character: Character): Feature[] => {
+    const characterFeatures = character.features || [];
+    const itemFeatures = (character.inventory || [])
+        .filter(item => {
+            if (!item.features || item.features.length === 0) return false;
+            // Must be equipped if equippable
+            if (item.equippable && !item.equipped) return false;
+            // Must be attuned if attunable
+            if (item.attunable && !item.attuned) return false;
+            return true;
+        })
+        .flatMap(item => (item.features || []).map(f => ({
+            ...f,
+            origin: "Item",
+            subOrigin: item.name,
+            source: item.name
+        })));
+
+    return [...characterFeatures, ...itemFeatures];
+};
+
 export const getEffectiveSenses = (character: Character): Sense[] => {
     const manualSenses = character.senses || [];
-    const featureSenses = getFeatureModifiersByType(character.features, "Sense").map(m => ({
+    const activeFeatures = getAllActiveFeatures(character);
+    const featureSenses = getFeatureModifiersByType(activeFeatures, "Sense").map(m => ({
         name: m.subType,
         value: typeof m.value === 'string' ? m.value : `${m.value}ft`,
         fromFeature: true
@@ -50,14 +72,15 @@ export const getEffectiveSenses = (character: Character): Sense[] => {
 
 export const getEffectiveDefenses = (character: Character): Defenses => {
     const manual = character.defenses || { resistances: [], vulnerabilities: [], immunities: [] };
+    const activeFeatures = getAllActiveFeatures(character);
 
     // Helper to ensure we're working with DefenseEntry objects
     const toEntry = (d: string | DefenseEntry): DefenseEntry =>
         typeof d === 'string' ? { name: d } : d;
 
-    const featureResistances = getFeatureModifiersByType(character.features, "Resistance").map(m => ({ name: m.subType, fromFeature: true }));
-    const featureImmunities = getFeatureModifiersByType(character.features, "Immunity").map(m => ({ name: m.subType, fromFeature: true }));
-    const featureVulnerabilities = getFeatureModifiersByType(character.features, "Vulnerability").map(m => ({ name: m.subType, fromFeature: true }));
+    const featureResistances = getFeatureModifiersByType(activeFeatures, "Resistance").map(m => ({ name: m.subType, fromFeature: true }));
+    const featureImmunities = getFeatureModifiersByType(activeFeatures, "Immunity").map(m => ({ name: m.subType, fromFeature: true }));
+    const featureVulnerabilities = getFeatureModifiersByType(activeFeatures, "Vulnerability").map(m => ({ name: m.subType, fromFeature: true }));
 
     const merge = (manualList: (string | DefenseEntry)[], featureList: DefenseEntry[]): DefenseEntry[] => {
         const combined = manualList.map(toEntry);

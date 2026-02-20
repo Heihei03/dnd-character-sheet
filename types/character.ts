@@ -113,6 +113,7 @@ export interface InventoryItem {
   isContainer?: boolean;
   parentId?: string;
   description?: string;
+  features?: Feature[];
 }
 
 export interface Currency {

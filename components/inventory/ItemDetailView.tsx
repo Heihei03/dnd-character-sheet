@@ -1,5 +1,5 @@
-import React from "react";
 import { InventoryItem } from "../../types/character";
+import ItemFeaturesEditor from "./ItemFeaturesEditor";
 
 interface ItemDetailViewProps {
     item: InventoryItem;
@@ -283,6 +283,11 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({ item, containers, updat
                     </div>
                 </div>
             )}
+
+            <ItemFeaturesEditor
+                features={item.features || []}
+                onUpdate={features => updateItem(item.id, "features", features)}
+            />
         </div>
     );
 };
