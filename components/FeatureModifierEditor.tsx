@@ -6,6 +6,7 @@ import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../types/modifier
 import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES } from "../utils/constants";
 import { TOOL_DATA } from "../data/tools";
 import { ABILITY_NAMES } from "../utils/character-utils";
+import { ACTION_TYPES } from "../types/character";
 
 interface FeatureModifierEditorProps {
     modifiers: FeatureModifier[];
@@ -41,7 +42,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
             case "Resistance":
             case "Immunity":
             case "Vulnerability":
-                return [...DAMAGE_TYPES, ...CONDITION_TYPES].sort();
+                return [...DAMAGE_TYPES, ...CONDITION_TYPES];
             case "Speed":
                 return speedTypes;
             case "Proficiency":
@@ -54,6 +55,8 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                 return ["AC", "Initiative", "Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma", "Saving Throws", "Global Bonus"].sort();
             case "Override":
                 return ABILITY_NAMES;
+            case "New Action":
+                return [...ACTION_TYPES];
             default:
                 return [];
         }
@@ -93,7 +96,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                     value={mod.subType || ""}
                                     onChange={(e) => updateModifier(mod.id, { subType: e.target.value })}
                                     className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
-                                    placeholder="e.g. AC, Speed..."
+                                    placeholder="Type..."
                                 />
                                 {suggestions.length > 0 && (
                                     <datalist id={listId}>

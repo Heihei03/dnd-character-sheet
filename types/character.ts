@@ -181,7 +181,8 @@ export interface Feature {
   sourceItemId?: string;
 }
 
-export type ActionType = "Action" | "Bonus Action" | "Reaction" | "Free Action" | "Attack";
+export const ACTION_TYPES = ["Action", "Bonus Action", "Reaction", "Free Action", "Attack"] as const;
+export type ActionType = typeof ACTION_TYPES[number];
 
 export interface Action {
   id: string;

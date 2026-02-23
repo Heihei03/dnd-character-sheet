@@ -221,18 +221,6 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                             onUpdate={(modifiers) => setFormData({ ...formData, modifiers })}
                         />
 
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-gray-500">Active Effects (one per line)</label>
-                                <textarea
-                                    value={formData.effects?.join("\n")}
-                                    onChange={(e) => handleEffectChange(e.target.value)}
-                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-20"
-                                    placeholder="+1 to AC while active..."
-                                />
-                            </div>
-                        </div>
-
                         <div className="flex justify-end gap-2 pt-2">
                             <Button onClick={() => { setIsAdding(false); setEditingId(null); }}>
                                 Cancel
