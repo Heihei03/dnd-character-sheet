@@ -209,6 +209,30 @@ export interface Action {
   fromWeapon?: boolean;
 }
 
+export interface SpellSlot {
+  level: number;
+  max: number;
+  expended: number;
+}
+
+export interface Spell {
+  id: string;
+  name: string;
+  level: number; // 0 for cantrip
+  school: string;
+  castingTime: string;
+  range: string;
+  components: string[]; // e.g. ["V", "S", "M"]
+  material?: string;
+  duration: string;
+  description: string;
+  prepared: boolean;
+  source?: string;
+  attackBonus?: number;
+  saveDc?: number;
+  damage?: string;
+}
+
 export interface Character {
   id: number;
   name: string;
@@ -233,6 +257,8 @@ export interface Character {
   senses?: Sense[];
   defenses?: Defenses;
   actions?: Action[];
+  spells?: Spell[];
+  spellSlots?: SpellSlot[];
   species: string;
   background: string;
   exp?: number;

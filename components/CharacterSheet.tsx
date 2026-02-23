@@ -25,6 +25,8 @@ import DefensesSection from "./DefensesSection";
 import { Sense, Defenses } from "../types/character";
 import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores } from "../utils/character-utils";
 import ActionsSection from "./ActionsSection";
+import SpellsSection from "./SpellsSection";
+import { Spell, SpellSlot } from "../types/character";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -136,6 +138,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       immunities: []
     },
     actions: character.actions ?? [],
+    spells: character.spells ?? [],
+    spellSlots: character.spellSlots ?? [],
     species: character.species ?? "",
     background: character.background ?? "",
     exp: character.exp ?? 0,
@@ -464,6 +468,14 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     });
   };
 
+  const handleUpdateSpells = (spells: Spell[]) => {
+    setCharacter(prev => prev ? { ...prev, spells } : null);
+  };
+
+  const handleUpdateSpellSlots = (spellSlots: SpellSlot[]) => {
+    setCharacter(prev => prev ? { ...prev, spellSlots } : null);
+  };
+
   const rollDice = (sides: number, modifier: number = 0, label: string = "") => {
     const baseRoll = Math.floor(Math.random() * sides) + 1;
     const total = baseRoll + modifier;
@@ -658,12 +670,16 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         )}
 
         {activeTab === "spells" && (
-          <Card>
-            <CardContent className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-center">Character Spells</h2>
-              <p>List your character's spells and their details here.</p>
-            </CardContent>
-          </Card>
+          <div className="w-full max-w-4xl mx-auto">
+            <SpellsSection
+              spells={characterWithDefaults.spells || []}
+              spellSlots={characterWithDefaults.spellSlots || []}
+              onUpdateSpells={handleUpdateSpells}
+              onUpdateSpellSlots={handleUpdateSpellSlots}
+              abilityScores={effectiveAbilityScores}
+              proficiencyBonus={proficiencyBonus}
+            />
+          </div>
         )}
 
         {activeTab === "features" && (
