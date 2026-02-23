@@ -672,6 +672,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         {activeTab === "spells" && (
           <div className="w-full max-w-4xl mx-auto">
             <SpellsSection
+              classes={characterWithDefaults.classes || []}
               spells={characterWithDefaults.spells || []}
               spellSlots={characterWithDefaults.spellSlots || []}
               onUpdateSpells={handleUpdateSpells}

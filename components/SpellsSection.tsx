@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
-import { Spell, SpellSlot, AbilityScores } from "../types/character";
-import { Plus, Trash2, Edit2 } from "lucide-react";
+import { Plus, Trash2, Edit2, Calculator } from "lucide-react";
+import { CharacterClass, Spell, SpellSlot, AbilityScores } from "../types/character";
+import { calculateSpellSlots } from "../utils/spell-utils";
 
 interface SpellsSectionProps {
+    classes: CharacterClass[];
     spells: Spell[];
     spellSlots: SpellSlot[];
     onUpdateSpells: (spells: Spell[]) => void;
@@ -14,6 +16,7 @@ interface SpellsSectionProps {
 }
 
 const SpellsSection: React.FC<SpellsSectionProps> = ({
+    classes,
     spells,
     spellSlots,
     onUpdateSpells,
@@ -22,9 +25,16 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     proficiencyBonus
 }) => {
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
+    const [autoCalculateSlots, setAutoCalculateSlots] = useState(true);
+
+    const calculatedSlots = calculateSpellSlots(classes);
 
     // Initialize Slots (1-9) if missing
     const slots = Array.from({ length: 9 }, (_, i) => i + 1).map(level => {
+        if (autoCalculateSlots) {
+            const calculated = calculatedSlots[level - 1];
+            return spellSlots.find(s => s.level === level) || { level, max: calculated ? calculated.max : 0, expended: 0 };
+        }
         return spellSlots.find(s => s.level === level) || { level, max: 0, expended: 0 };
     });
 
@@ -73,8 +83,31 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     return (
         <div className="space-y-6">
             <Card>
-                <div className="p-4 border-b">
+                <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-xl font-semibold">Spell Slots</h3>
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={autoCalculateSlots}
+                            onChange={(e) => {
+                                setAutoCalculateSlots(e.target.checked);
+                                if (e.target.checked) {
+                                    // Update max slots based on calculation
+                                    const updatedSlots = slots.map(slot => {
+                                        const calc = calculatedSlots[slot.level - 1];
+                                        return { ...slot, max: calc ? calc.max : 0 };
+                                    });
+                                    onUpdateSpellSlots(updatedSlots.filter(s => s.max > 0 || s.expended > 0));
+                                }
+                            }}
+                            className="w-4 h-4 cursor-pointer"
+                            id="auto-calc-slots"
+                        />
+                        <label htmlFor="auto-calc-slots" className="text-sm font-medium cursor-pointer flex items-center">
+                            <Calculator className="w-4 h-4 mr-1" />
+                            Auto-calculate Max Slots
+                        </label>
+                    </div>
                 </div>
                 <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -87,9 +120,14 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                         <input
                                             type="number"
                                             min="0"
-                                            value={slot.max || ""}
-                                            onChange={(e) => handleUpdateSlot(slot.level, "max", parseInt(e.target.value) || 0)}
-                                            className="h-8 text-center border rounded px-2 w-full"
+                                            value={autoCalculateSlots ? (calculatedSlots[slot.level - 1]?.max || 0) : (slot.max || "")}
+                                            onChange={(e) => {
+                                                if (!autoCalculateSlots) {
+                                                    handleUpdateSlot(slot.level, "max", parseInt(e.target.value) || 0);
+                                                }
+                                            }}
+                                            disabled={autoCalculateSlots}
+                                            className={`h-8 text-center border rounded px-2 w-full ${autoCalculateSlots ? 'bg-gray-100 text-gray-500' : ''}`}
                                         />
                                     </div>
                                     <div className="flex flex-col w-1/2">
