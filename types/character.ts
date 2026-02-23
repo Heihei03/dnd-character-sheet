@@ -222,11 +222,18 @@ export interface Spell {
   school: string;
   castingTime: string;
   range: string;
-  components: string[]; // e.g. ["V", "S", "M"]
+  components: {
+    v: boolean;
+    s: boolean;
+    m: boolean;
+  };
   material?: string;
   duration: string;
   description: string;
   prepared: boolean;
+  isRitual: boolean;
+  requiresConcentration: boolean;
+  spellcastingAbility?: keyof AbilityScores;
   source?: string;
   attackBonus?: number;
   saveDc?: number;

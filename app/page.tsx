@@ -55,6 +55,8 @@ const HomePage = () => {
       armorProficiencies: [],
       toolProficiencies: [],
       languages: ["Common"],
+      species: "",
+      background: "",
     };
 
     // Save new character to IndexedDB

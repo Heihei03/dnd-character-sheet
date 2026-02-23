@@ -56,10 +56,12 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
             school: "Evocation",
             castingTime: "1 Action",
             range: "60 ft",
-            components: ["V", "S"],
+            components: { v: true, s: true, m: false },
             duration: "Instantaneous",
             description: "A new spell.",
             prepared: false,
+            isRitual: false,
+            requiresConcentration: false,
         };
         onUpdateSpells([...spells, newSpell]);
         setEditingSpellId(newSpell.id);
@@ -200,6 +202,65 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                                                 <input className="border rounded px-3 py-2 w-full" value={spell.duration} onChange={(e) => handleUpdateSpell(spell.id, "duration", e.target.value)} />
                                                             </div>
                                                         </div>
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div className="space-y-2">
+                                                                <label className="block text-sm mb-1 font-semibold">Components</label>
+                                                                <div className="flex gap-4">
+                                                                    <label className="flex items-center gap-1 text-sm">
+                                                                        <input type="checkbox" checked={!Array.isArray(spell.components as any) && (spell.components as any)?.v || Array.isArray(spell.components as any) && (spell.components as any).includes("V")} onChange={(e) => {
+                                                                            const newComp = Array.isArray(spell.components as any) ? { v: (spell.components as any).includes("V"), s: (spell.components as any).includes("S"), m: (spell.components as any).includes("M") } : { ...spell.components } as any;
+                                                                            handleUpdateSpell(spell.id, "components", { ...newComp, v: e.target.checked });
+                                                                        }} /> V
+                                                                    </label>
+                                                                    <label className="flex items-center gap-1 text-sm">
+                                                                        <input type="checkbox" checked={!Array.isArray(spell.components as any) && (spell.components as any)?.s || Array.isArray(spell.components as any) && (spell.components as any).includes("S")} onChange={(e) => {
+                                                                            const newComp = Array.isArray(spell.components as any) ? { v: (spell.components as any).includes("V"), s: (spell.components as any).includes("S"), m: (spell.components as any).includes("M") } : { ...spell.components } as any;
+                                                                            handleUpdateSpell(spell.id, "components", { ...newComp, s: e.target.checked });
+                                                                        }} /> S
+                                                                    </label>
+                                                                    <label className="flex items-center gap-1 text-sm">
+                                                                        <input type="checkbox" checked={!Array.isArray(spell.components as any) && (spell.components as any)?.m || Array.isArray(spell.components as any) && (spell.components as any).includes("M")} onChange={(e) => {
+                                                                            const newComp = Array.isArray(spell.components as any) ? { v: (spell.components as any).includes("V"), s: (spell.components as any).includes("S"), m: (spell.components as any).includes("M") } : { ...spell.components } as any;
+                                                                            handleUpdateSpell(spell.id, "components", { ...newComp, m: e.target.checked });
+                                                                        }} /> M
+                                                                    </label>
+                                                                </div>
+                                                                {(!Array.isArray(spell.components as any) && (spell.components as any)?.m || Array.isArray(spell.components as any) && (spell.components as any).includes("M")) && (
+                                                                    <input className="border rounded px-3 py-1 w-full mt-1 text-sm" placeholder="Material..." value={spell.material || ""} onChange={(e) => handleUpdateSpell(spell.id, "material", e.target.value)} />
+                                                                )}
+                                                            </div>
+                                                            <div className="space-y-2">
+                                                                <label className="block text-sm mb-1 font-semibold">Tags</label>
+                                                                <div className="flex flex-col gap-2">
+                                                                    <label className="flex items-center gap-2 text-sm">
+                                                                        <input type="checkbox" checked={spell.isRitual || false} onChange={(e) => handleUpdateSpell(spell.id, "isRitual", e.target.checked)} /> Ritual
+                                                                    </label>
+                                                                    <label className="flex items-center gap-2 text-sm">
+                                                                        <input type="checkbox" checked={spell.requiresConcentration || false} onChange={(e) => handleUpdateSpell(spell.id, "requiresConcentration", e.target.checked)} /> Concentration
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label className="block text-sm mb-1">Spellcasting Ability</label>
+                                                                <select
+                                                                    className="border rounded px-3 py-2 w-full text-sm"
+                                                                    value={spell.spellcastingAbility || ""}
+                                                                    onChange={(e) => handleUpdateSpell(spell.id, "spellcastingAbility", e.target.value || undefined)}
+                                                                >
+                                                                    <option value="">None</option>
+                                                                    <option value="strength">Strength</option>
+                                                                    <option value="dexterity">Dexterity</option>
+                                                                    <option value="constitution">Constitution</option>
+                                                                    <option value="intelligence">Intelligence</option>
+                                                                    <option value="wisdom">Wisdom</option>
+                                                                    <option value="charisma">Charisma</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
                                                         <div className="space-y-2">
                                                             <label className="block text-sm mb-1">Description</label>
                                                             <textarea className="border rounded px-3 py-2 w-full min-h-[100px]" value={spell.description} onChange={(e) => handleUpdateSpell(spell.id, "description", e.target.value)} />
@@ -232,15 +293,43 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                                                 </div>
                                                             )}
                                                             <h3 className="font-bold text-lg">{spell.name}</h3>
-                                                            <span className="text-sm text-gray-500 italic">{spell.school}</span>
+                                                            {spell.isRitual && <span className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full border border-purple-200">Ritual</span>}
+                                                            {spell.requiresConcentration && <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full border border-amber-200">Concentration</span>}
+                                                            <span className="text-sm text-gray-500 italic ml-2">{spell.school}</span>
                                                         </div>
                                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-700">
                                                             <div><strong>Time:</strong> {spell.castingTime}</div>
                                                             <div><strong>Range:</strong> {spell.range}</div>
-                                                            <div><strong>Components:</strong> {spell.components?.join(", ")}</div>
+                                                            <div className="col-span-2">
+                                                                <strong>Components:</strong> {
+                                                                    Array.isArray(spell.components as any)
+                                                                        ? (spell.components as any).join(", ")
+                                                                        : [
+                                                                            (spell.components as any)?.v ? 'V' : null,
+                                                                            (spell.components as any)?.s ? 'S' : null,
+                                                                            (spell.components as any)?.m ? 'M' : null
+                                                                        ].filter(Boolean).join(", ")
+                                                                } {(!Array.isArray(spell.components as any) && (spell.components as any)?.m || Array.isArray(spell.components as any) && (spell.components as any).includes("M")) && spell.material ? `(${spell.material})` : ""}
+                                                            </div>
                                                             <div><strong>Duration:</strong> {spell.duration}</div>
+                                                            {spell.spellcastingAbility && (
+                                                                <>
+                                                                    {(() => {
+                                                                        const abilityScore = abilityScores[spell.spellcastingAbility] || 10;
+                                                                        const abilityModifier = Math.floor((abilityScore - 10) / 2);
+                                                                        const attackBonus = abilityModifier + proficiencyBonus;
+                                                                        const saveDC = 8 + abilityModifier + proficiencyBonus;
+                                                                        return (
+                                                                            <>
+                                                                                <div><strong>Attack:</strong> {attackBonus >= 0 ? `+${attackBonus}` : attackBonus}</div>
+                                                                                <div><strong>Save DC:</strong> {saveDC}</div>
+                                                                            </>
+                                                                        )
+                                                                    })()}
+                                                                </>
+                                                            )}
                                                         </div>
-                                                        <p className="text-sm whitespace-pre-wrap">{spell.description}</p>
+                                                        <p className="text-sm whitespace-pre-wrap mt-2">{spell.description}</p>
                                                     </div>
                                                 )}
                                             </div>
