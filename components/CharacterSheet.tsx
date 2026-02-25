@@ -6,14 +6,13 @@ import HPSection from "./HP";
 import AbilityScoreSection from "./AbilityScoreSection";
 import SpeedSection from "./SpeedSection";
 import DiceRoller from "./DiceRoller";
-import { classOptions } from "../utils/constants";
 import CurrencySection from "./CurrencySection";
 import DeathSaves from "./DeathSaves";
 import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
 import ToolChecksSection from "./ToolChecksSection";
 import FeaturesSection from "./FeaturesSection";
 import { TOOL_DATA } from "../data/tools";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature } from "../types/character";
+import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature, Sense, Defenses, Spell, SpellSlot } from "../types/character";
 import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
@@ -22,11 +21,9 @@ import InitiativeSection from "./InitiativeSection";
 import CharacterHeader from "./CharacterHeader";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
-import { Sense, Defenses } from "../types/character";
 import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores } from "../utils/character-utils";
 import ActionsSection from "./ActionsSection";
 import SpellsSection from "./SpellsSection";
-import { Spell, SpellSlot } from "../types/character";
 
 interface CharacterSheetProps {
   character: Character | null;
