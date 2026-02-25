@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { Search, X, Pencil, Trash2, ChevronDown } from "lucide-react";
 import { Feature } from "../types/character";
-import { FeatureModifier } from "../types/modifiers";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import FeatureModifierEditor from "./FeatureModifierEditor";

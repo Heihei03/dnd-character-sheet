@@ -2,11 +2,10 @@
 
 import React, { useState } from "react";
 import { Card, CardContent } from "./ui/card";
-import ExpandableSection from "./ui/ExpandableSection";
 import { WEAPON_DATA } from "../data/weapons";
 import { ARMOR_DATA } from "../data/armor";
 import { TOOL_DATA } from "../data/tools";
-import { AbilityScores, ToolProficiency, ProficiencyLevel } from "../types/character";
+import { ToolProficiency } from "../types/character";
 import { Plus, X } from "lucide-react";
 
 interface ProficiencyListProps {
