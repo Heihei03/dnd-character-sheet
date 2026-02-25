@@ -13,11 +13,13 @@ interface ActionsSectionProps {
     onUpdate: (actions: Action[]) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
+    rollDice?: (sides: number, modifier?: number, label?: string) => void;
+    rollDamage?: (damageString: string, label?: string, damageType?: string) => void;
 }
 
 const ACTION_TYPES: ActionType[] = ["Attack", "Action", "Bonus Action", "Reaction", "Free Action"];
 
-const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate, abilityScores, proficiencyBonus }) => {
+const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate, abilityScores, proficiencyBonus, rollDice, rollDamage }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -429,7 +431,16 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                                                 {(() => {
                                                                     const atkAbilityMod = getAbilityModifier(abilityScores[action.attackAbility as keyof AbilityScores] || 10);
                                                                     const total = (action.proficient ? proficiencyBonus : 0) + atkAbilityMod + (action.attackBonus || 0);
-                                                                    return `${total >= 0 ? "+" : ""}${total}`;
+                                                                    return (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => { e.stopPropagation(); if (rollDice) rollDice(20, total, `${action.name} Attack`); }}
+                                                                            title="Roll Attack"
+                                                                            className="hover:underline flex items-center gap-1"
+                                                                        >
+                                                                            {total >= 0 ? "+" : ""}{total}
+                                                                        </button>
+                                                                    );
                                                                 })()}
                                                             </span>
                                                         )}
@@ -438,9 +449,14 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                                         <div className="hidden sm:flex gap-3 text-xs text-gray-500">
                                                             {action.activation && <span className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">{action.activation}</span>}
                                                             {action.damage && (
-                                                                <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => { e.stopPropagation(); if (rollDamage) rollDamage(action.damage || "", `${action.name} Damage`, action.damageType); }}
+                                                                    title="Roll Damage"
+                                                                    className="font-mono text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
+                                                                >
                                                                     {action.damage}{action.versatileDamage ? ` / ${action.versatileDamage}` : ""} {action.damageType}
-                                                                </span>
+                                                                </button>
                                                             )}
                                                             {(action.range || action.reach) && (
                                                                 <span>
@@ -486,7 +502,15 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                                                 <div>
                                                                     <div className="text-[10px] font-bold uppercase text-gray-400">Damage</div>
                                                                     <div className="font-medium">
-                                                                        {action.damage}{action.versatileDamage ? ` (${action.versatileDamage} 2-handed)` : ""} {action.damageType}
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => { e.stopPropagation(); if (rollDamage) rollDamage(action.damage || "", `${action.name} Damage`, action.damageType); }}
+                                                                            title="Roll Damage"
+                                                                            className="hover:underline cursor-pointer text-blue-600 dark:text-blue-400"
+                                                                        >
+                                                                            {action.damage}
+                                                                        </button>
+                                                                        {action.versatileDamage ? ` (${action.versatileDamage} 2-handed)` : ""} {action.damageType}
                                                                     </div>
                                                                 </div>
                                                             )}

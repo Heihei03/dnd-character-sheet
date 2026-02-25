@@ -487,6 +487,38 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setRollResult(formatted);
   };
 
+  const rollDamage = (damageString: string, label: string = "", damageType?: string) => {
+    if (!damageString) return;
+
+    const match = damageString.trim().match(/^(\d+)[dD](\d+)(?:\s*([+-])\s*(\d+))?/);
+    if (!match) {
+      setRollResult(`${label ? label + ": " : ""} ${damageString} ${damageType ? damageType : ""}`.trim());
+      return;
+    }
+
+    const count = parseInt(match[1], 10);
+    const sides = parseInt(match[2], 10);
+    const sign = match[3];
+    const mod = match[4] ? parseInt(match[4], 10) : 0;
+
+    let total = 0;
+    const rolls = [];
+    for (let i = 0; i < count; i++) {
+      const r = Math.floor(Math.random() * sides) + 1;
+      total += r;
+      rolls.push(r);
+    }
+
+    let modifierTotal = 0;
+    if (sign && mod) {
+      modifierTotal = sign === "-" ? -mod : mod;
+      total += modifierTotal;
+    }
+
+    const formatted = `${label ? label + ": " : ""}${damageString} (${rolls.join(" + ")}${modifierTotal !== 0 ? ` ${sign} ${mod}` : ""}) = ${total} ${damageType ? damageType : ""}`.trim();
+    setRollResult(formatted);
+  };
+
   return (
     <div className="flex flex-col items-center p-8">
       <div className="w-full mb-8">
@@ -702,6 +734,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               onUpdate={handleUpdateActions}
               abilityScores={effectiveAbilityScores}
               proficiencyBonus={getProficiencyBonus(characterWithDefaults.classes.reduce((sum, cls) => sum + cls.level, 0))}
+              rollDice={rollDice}
+              rollDamage={rollDamage}
             />
           </div>
         )}
