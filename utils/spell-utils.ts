@@ -20,9 +20,6 @@ export function calculateCasterLevel(classes: CharacterClass[]): number {
         }
     }
 
-    // Artificers round up, but only if they are the only half caster, or we just round the artificer part up before adding.
-    // Standard multiclassing rules: Add full, half/2 (round down), third/3 (round down).
-    // Artificer multiclassing: Add artificer/2 (round up).
 
     let totalLevel = 0;
 

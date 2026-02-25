@@ -228,11 +228,56 @@ export const getEffectiveActions = (character: Character): Action[] => {
             };
         });
 
-    // Merge manual, weapon, and standard actions
+    // Spell actions
+    const spellActions: Action[] = (character.spells || [])
+        .filter(spell => {
+            if (spell.level > 0 && !spell.prepared) return false;
+            const ct = spell.castingTime.toLowerCase();
+            return ct.includes("1 action") || ct.includes("bonus action") || ct.includes("reaction");
+        })
+        .map(spell => {
+            const ct = spell.castingTime.toLowerCase();
+            let type: "Action" | "Bonus Action" | "Reaction" | "Free Action" | "Attack" = "Action";
+            if (ct.includes("bonus action")) type = "Bonus Action";
+            else if (ct.includes("reaction")) type = "Reaction";
+
+            let description = `Level: ${spell.level > 0 ? spell.level : "Cantrip"} (${spell.school})\n`;
+            description += `Range: ${spell.range}\n`;
+
+            description += `Duration: ${spell.duration}\n\n`;
+            description += spell.description;
+
+            const isAttack = spell.hasAttack;
+            const actionType = isAttack ? "Attack" : type;
+
+            return {
+                id: `spell-${spell.id}`,
+                name: spell.name,
+                type: actionType,
+                description: description,
+                activation: spell.castingTime,
+                range: spell.range,
+                damage: spell.damage,
+                damageType: spell.damageType,
+                fromFeature: true,
+                proficient: true,
+                attackAbility: spell.spellcastingAbility as any,
+                damageDice: spell.damage,
+                attackBonus: 0,
+                damageBonus: 0,
+            } as Action;
+        });
+
+    // Merge manual, weapon, standard actions, and spell actions
     const combined = [...STANDARD_ACTIONS, ...manualActions];
     weaponActions.forEach(wa => {
         if (!combined.some(a => a.id === wa.id)) {
             combined.push(wa);
+        }
+    });
+    spellActions.forEach(sa => {
+        if (!combined.some(a => a.id === sa.id)) {
+            combined.push(sa);
         }
     });
 

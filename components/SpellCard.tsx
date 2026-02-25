@@ -43,7 +43,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         value={spell.level}
                                         onChange={(e) => handleUpdateSpell(spell.id, "level", parseInt(e.target.value) || 0)}
                                     >
-                                        <option value={0}>Cantrip (0)</option>
+                                        <option value={0}>Cantrip</option>
                                         <option value={1}>Level 1</option>
                                         <option value={2}>Level 2</option>
                                         <option value={3}>Level 3</option>
