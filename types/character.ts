@@ -238,6 +238,13 @@ export interface Spell {
   attackBonus?: number;
   saveDc?: number;
   damage?: string;
+  hasAttack?: boolean;
+  hasSave?: boolean;
+  hasHeal?: boolean;
+  damageOnly?: boolean;
+  saveType?: string;
+  healing?: string;
+  damageType?: string;
 }
 
 export interface Character {

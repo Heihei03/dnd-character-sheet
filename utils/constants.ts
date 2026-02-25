@@ -97,7 +97,18 @@ export const DAMAGE_TYPES = [
   "Magical Bludgeoning",
   "Magical Piercing",
   "Magical Slashing",
-];
+] as const;
+
+export const SPELL_SCHOOLS = [
+  "Abjuration",
+  "Conjuration",
+  "Divination",
+  "Enchantment",
+  "Evocation",
+  "Illusion",
+  "Necromancy",
+  "Transmutation",
+] as const;
 
 export const CONDITION_TYPES = [
   "Blinded",
