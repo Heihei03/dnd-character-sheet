@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { InventoryItem, WeaponDetails, ArmorDetails, ContainerDetails, ToolDetails } from "../../types/character";
 import { WEAPON_DATA } from "../../data/weapons";
 import { ARMOR_DATA } from "../../data/armor";
 import { CONTAINER_DATA } from "../../data/containers";
 import { TOOL_DATA } from "../../data/tools";
+import { Feature, InventoryItem, WeaponDetails, ArmorDetails, ContainerDetails, ToolDetails } from "../../types/character";
+import ItemFeaturesEditor from "./ItemFeaturesEditor";
 import { CardContent } from "../ui/card";
 import Button from "../ui/button";
 import LoadSummary from "./LoadSummary";
@@ -25,6 +26,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
     const [newItemArmorDetails, setNewItemArmorDetails] = useState<ArmorDetails | undefined>(undefined);
     const [newItemContainerDetails, setNewItemContainerDetails] = useState<ContainerDetails | undefined>(undefined);
     const [newItemToolDetails, setNewItemToolDetails] = useState<ToolDetails | undefined>(undefined);
+    const [newItemFeatures, setNewItemFeatures] = useState<Feature[]>([]);
 
     const handleBaseWeaponSelect = (baseName: string) => {
         if (baseName === "Custom") {
@@ -151,6 +153,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
             toolDetails: newItemToolDetails,
             isContainer: newItemType === "container",
             description: "",
+            features: newItemFeatures,
         };
 
         onAdd(newItem);
@@ -165,6 +168,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
         setNewItemArmorDetails(undefined);
         setNewItemContainerDetails(undefined);
         setNewItemToolDetails(undefined);
+        setNewItemFeatures([]);
     };
 
     return (
@@ -509,6 +513,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
                         )}
                     </div>
                 )}
+
+                <ItemFeaturesEditor
+                    features={newItemFeatures}
+                    onUpdate={setNewItemFeatures}
+                />
             </div>
         </CardContent>
     );
