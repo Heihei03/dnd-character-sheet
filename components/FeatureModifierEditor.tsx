@@ -90,28 +90,92 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                 </select>
                             </div>
                             <div className="col-span-4 relative group">
-                                <input
-                                    type="text"
-                                    list={listId}
-                                    value={mod.subType || ""}
-                                    onChange={(e) => updateModifier(mod.id, { subType: e.target.value })}
-                                    className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
-                                    placeholder="Type..."
-                                />
-                                {suggestions.length > 0 && (
-                                    <datalist id={listId}>
-                                        {suggestions.map(s => <option key={s} value={s} />)}
-                                    </datalist>
+                                {mod.type !== "Spell" && (
+                                    <>
+                                        <input
+                                            type="text"
+                                            list={listId}
+                                            value={mod.subType || ""}
+                                            onChange={(e) => updateModifier(mod.id, { subType: e.target.value })}
+                                            className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
+                                            placeholder="Type..."
+                                        />
+                                        {suggestions.length > 0 && (
+                                            <datalist id={listId}>
+                                                {suggestions.map(s => <option key={s} value={s} />)}
+                                            </datalist>
+                                        )}
+                                    </>
                                 )}
                             </div>
                             <div className="col-span-3">
-                                <input
-                                    type="text"
-                                    value={mod.value || ""}
-                                    onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
-                                    className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
-                                    placeholder="Value..."
-                                />
+                                {mod.type === "Spell" ? (
+                                    <div className="space-y-1">
+                                        <div className="flex flex-wrap gap-2">
+                                            {((mod.value as string) || "").split(",").filter(s => s.trim()).map((spellName, idx) => (
+                                                <div key={idx} className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-sm px-3 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm transition-all hover:bg-blue-100 dark:hover:bg-blue-900/50">
+                                                    <span className="font-semibold text-blue-900 dark:text-blue-100">{spellName.trim()}</span>
+                                                    <button
+                                                        onClick={() => {
+                                                            const currentSpells = ((mod.value as string) || "").split(",").filter(s => s.trim());
+                                                            const newSpells = currentSpells.filter((_, i) => i !== idx);
+                                                            updateModifier(mod.id, { value: newSpells.join(",") });
+                                                        }}
+                                                        className="text-blue-400 hover:text-red-500 transition-colors ml-1"
+                                                        title="Remove spell"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="flex gap-2 mt-2">
+                                            <input
+                                                type="text"
+                                                className="flex-1 text-xs p-2 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-medium"
+                                                placeholder="Add spell name (e.g. Fireball)..."
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        const target = e.target as HTMLInputElement;
+                                                        const val = target.value.trim();
+                                                        if (val) {
+                                                            const currentSpells = ((mod.value as string) || "").split(",").filter(s => s.trim());
+                                                            if (!currentSpells.includes(val)) {
+                                                                updateModifier(mod.id, { value: [...currentSpells, val].join(",") });
+                                                            }
+                                                            target.value = "";
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                            <button
+                                                onClick={(e) => {
+                                                    const input = (e.currentTarget.previousSibling as HTMLInputElement);
+                                                    const val = input.value.trim();
+                                                    if (val) {
+                                                        const currentSpells = ((mod.value as string) || "").split(",").filter(s => s.trim());
+                                                        if (!currentSpells.includes(val)) {
+                                                            updateModifier(mod.id, { value: [...currentSpells, val].join(",") });
+                                                        }
+                                                        input.value = "";
+                                                    }
+                                                }}
+                                                className="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/40 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 p-2 rounded transition-colors"
+                                            >
+                                                <Plus className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        value={mod.value || ""}
+                                        onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
+                                        className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
+                                        placeholder="Value..."
+                                    />
+                                )}
                             </div>
                             <div className="col-span-2 flex items-center gap-1.5 pt-1.5">
                                 <input

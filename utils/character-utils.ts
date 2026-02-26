@@ -1,4 +1,4 @@
-import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action } from "../types/character";
+import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 import { STANDARD_ACTIONS } from "../data/standard-actions";
 
@@ -125,8 +125,68 @@ export const getEffectiveDefenses = (character: Character): Defenses => {
     };
 };
 
+export const getEffectiveSpells = (character: Character): Spell[] => {
+    const rawManualSpells = character.spells || [];
+    // Separate purely manual spells from potential feature overrides/stale feature spells
+    const purelyManualSpells = rawManualSpells.filter(s => !s.fromFeature);
+    const manualOverrides = rawManualSpells.filter(s => s.fromFeature);
+
+    const activeFeatures = getAllActiveFeatures(character);
+    const featureSpells: Spell[] = [];
+
+    activeFeatures.forEach(f => {
+        const spellModifiers = (f.modifiers || []).filter(m => m.type === "Spell");
+        spellModifiers.forEach(m => {
+            if (m.value && typeof m.value === 'string') {
+                const spellNames = m.value.split(",").map(s => s.trim()).filter(Boolean);
+                spellNames.forEach((spellName, idx) => {
+                    // Check if this spell name is already in ANY list to avoid duplicates from DIFFERENT features
+                    const alreadyFound = featureSpells.find(s => s.name.toLowerCase() === spellName.toLowerCase());
+                    if (alreadyFound) return;
+
+                    // Check if there's a manual override for this feature spell
+                    const override = manualOverrides.find(s => s.name.toLowerCase() === spellName.toLowerCase());
+
+                    if (override) {
+                        // Use the override but ensure fromFeature is true and unique ID
+                        featureSpells.push({
+                            ...override,
+                            id: `feature-spell-${m.id}-${idx}`,
+                            fromFeature: true
+                        });
+                    } else {
+                        // Create default
+                        featureSpells.push({
+                            id: `feature-spell-${m.id}-${idx}`,
+                            name: spellName,
+                            level: 0,
+                            school: "Evocation",
+                            castingTime: "1 Action",
+                            range: "60 ft",
+                            components: { v: true, s: true, m: false },
+                            duration: "Instantaneous",
+                            description: `Added by feature: ${f.name}`,
+                            prepared: true,
+                            isRitual: false,
+                            requiresConcentration: false,
+                            fromFeature: true
+                        } as Spell);
+                    }
+                });
+            }
+        });
+    });
+
+    return [...purelyManualSpells, ...featureSpells];
+};
+
 export const getEffectiveActions = (character: Character): Action[] => {
     const effectiveAbilityScores = getEffectiveAbilityScores(character);
+    const activeFeatures = getAllActiveFeatures(character);
+    const totalLevel = (character.classes || []).reduce((sum, cls) => sum + cls.level, 0);
+    const proficiencyBonus = Math.ceil(totalLevel / 4) + 1;
+
+    // 1. Purely manual actions (no weapons, no features)
     const manualActions = (character.actions || []).filter(a =>
         !a.fromWeapon &&
         !a.fromFeature &&
@@ -134,12 +194,11 @@ export const getEffectiveActions = (character: Character): Action[] => {
         !a.id.startsWith("feature-")
     );
 
+    // 2. Weapon actions (dynamic)
     const weaponActions: Action[] = (character.inventory || [])
         .filter(item => item.equipped && item.itemType === "weapon" && item.weaponDetails)
         .map(weapon => {
             const details = weapon.weaponDetails!;
-            const totalLevel = (character.classes || []).reduce((sum, cls) => sum + cls.level, 0);
-            const proficiencyBonus = Math.ceil(totalLevel / 4) + 1;
 
             // Determine which ability to use (Finesse logic simplified for now)
             const isFinesse = details.properties?.includes("Finesse");
@@ -228,8 +287,9 @@ export const getEffectiveActions = (character: Character): Action[] => {
             };
         });
 
-    // Spell actions
-    const spellActions: Action[] = (character.spells || [])
+    // 3. Spell actions (dynamic from effective spells)
+    const effectiveSpells = getEffectiveSpells(character);
+    const spellActions: Action[] = effectiveSpells
         .filter(spell => {
             if (spell.level > 0 && !spell.prepared) return false;
             const ct = spell.castingTime.toLowerCase();
@@ -268,16 +328,44 @@ export const getEffectiveActions = (character: Character): Action[] => {
             } as Action;
         });
 
-    // Merge manual, weapon, standard actions, and spell actions
-    const combined = [...STANDARD_ACTIONS, ...manualActions];
-    weaponActions.forEach(wa => {
-        if (!combined.some(a => a.id === wa.id)) {
-            combined.push(wa);
-        }
+    // 4. Feature "New Action" modifiers (dynamic)
+    const extraActions: Action[] = [];
+    activeFeatures.forEach(f => {
+        const actionModifiers = (f.modifiers || []).filter(m => m.type === "New Action");
+        actionModifiers.forEach((m, idx) => {
+            if (m.value && typeof m.value === 'string') {
+                // Check if value is JSON (advanced usage) or simple name
+                let action: Action;
+                try {
+                    const data = JSON.parse(m.value);
+                    action = {
+                        ...data,
+                        id: `feature-action-${m.id}-${idx}`,
+                        fromFeature: true
+                    };
+                } catch (e) {
+                    action = {
+                        id: `feature-action-${m.id}-${idx}`,
+                        name: m.value,
+                        type: m.subType as any || "Action",
+                        description: `Action granted by feature: ${f.name}`,
+                        activation: "1 Action",
+                        fromFeature: true
+                    } as Action;
+                }
+                extraActions.push(action);
+            }
+        });
     });
-    spellActions.forEach(sa => {
-        if (!combined.some(a => a.id === sa.id)) {
-            combined.push(sa);
+
+    // Merge manual, weapon, standard actions, spell actions, and feature actions
+    const combined = [...STANDARD_ACTIONS, ...manualActions];
+
+    // Use a map to ensure unique IDs for weapon/spell/feature actions
+    const dynamicActions = [...weaponActions, ...spellActions, ...extraActions];
+    dynamicActions.forEach(da => {
+        if (!combined.some(a => a.id === da.id)) {
+            combined.push(da);
         }
     });
 

@@ -245,6 +245,7 @@ export interface Spell {
   saveType?: string;
   healing?: string;
   damageType?: string;
+  fromFeature?: boolean;
 }
 
 export interface Character {

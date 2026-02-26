@@ -237,6 +237,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     </div>
                                 )}
                                 <h3 className="font-bold text-lg">{spell.name}</h3>
+                                {spell.fromFeature && <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full border border-blue-200 font-bold uppercase tracking-tight">From Feature</span>}
                                 {spell.isRitual && <span className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full border border-purple-200">Ritual</span>}
                                 {spell.requiresConcentration && <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full border border-amber-200">Concentration</span>}
                                 {spell.hasAttack && <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full border border-red-200">Attack</span>}
@@ -293,9 +294,11 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             <Edit2 className="w-5 h-5" />
                         </button>
                     )}
-                    <button className="text-red-500 hover:text-red-700" onClick={() => handleDeleteSpell(spell.id)}>
-                        <Trash2 className="w-5 h-5" />
-                    </button>
+                    {!spell.fromFeature && (
+                        <button className="text-red-500 hover:text-red-700" onClick={() => handleDeleteSpell(spell.id)}>
+                            <Trash2 className="w-5 h-5" />
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

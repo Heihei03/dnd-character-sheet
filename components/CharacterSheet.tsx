@@ -21,7 +21,7 @@ import InitiativeSection from "./InitiativeSection";
 import CharacterHeader from "./CharacterHeader";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
-import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores } from "../utils/character-utils";
+import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells } from "../utils/character-utils";
 import ActionsSection from "./ActionsSection";
 import SpellsSection from "./SpellsSection";
 
@@ -702,7 +702,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           <div className="w-full max-w-4xl mx-auto">
             <SpellsSection
               classes={characterWithDefaults.classes || []}
-              spells={characterWithDefaults.spells || []}
+              spells={getEffectiveSpells(characterWithDefaults)}
               spellSlots={characterWithDefaults.spellSlots || []}
               onUpdateSpells={handleUpdateSpells}
               onUpdateSpellSlots={handleUpdateSpellSlots}
