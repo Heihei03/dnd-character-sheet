@@ -30,14 +30,23 @@ const ResourcePipTracker: React.FC<ResourcePipTrackerProps> = ({
 
     return (
         <div className={`relative group ${compact ? 'p-2' : 'p-3'} bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all w-full`}>
-            <div className="flex justify-between items-start mb-1.5">
-                <div>
-                    <h4 className={`${compact ? 'text-[11px]' : 'text-sm'} font-bold text-gray-900 dark:text-gray-100`}>{resource.name}</h4>
+            <div className="flex justify-between items-start mb-1.5 gap-2">
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className={`${compact ? 'text-[11px]' : 'text-sm'} font-bold text-gray-900 dark:text-gray-100 truncate`}>
+                            {resource.name}
+                        </h4>
+                        {resource.fromFeature && !compact && (
+                            <span className="text-[8px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 py-0.5 rounded font-bold uppercase tracking-tighter whitespace-nowrap">
+                                Feature
+                            </span>
+                        )}
+                    </div>
                     {!compact && <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{resource.regain}</span>}
                 </div>
                 <button
                     onClick={handleReset}
-                    className="p-1 text-gray-400 hover:text-blue-500 transition-colors"
+                    className="p-1 text-gray-400 hover:text-blue-500 transition-colors shrink-0"
                     title="Reset to max"
                 >
                     <RotateCcw className={compact ? "w-2.5 h-2.5" : "w-3 h-3"} />
@@ -88,11 +97,6 @@ const ResourcePipTracker: React.FC<ResourcePipTrackerProps> = ({
                 </div>
             </div>
 
-            {resource.fromFeature && !compact && (
-                <div className="absolute top-2 right-8 pointer-events-none">
-                    <span className="text-[8px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 py-0.5 rounded font-bold uppercase tracking-tighter">Feature</span>
-                </div>
-            )}
         </div>
     );
 };

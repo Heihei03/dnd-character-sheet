@@ -185,9 +185,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                         Configure below...
                                     </div>
                                 ) : mod.type === "Advantage" || mod.type === "Disadvantage" ? (
-                                    <div className="flex items-center h-full px-1.5 italic text-gray-400 text-[10px]">
-                                        Automatic
-                                    </div>
+                                    <div className="col-span-3" />
                                 ) : (
                                     <input
                                         type="text"
