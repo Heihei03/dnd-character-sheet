@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
-import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2 } from "lucide-react";
+import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, Settings, X, Shield } from "lucide-react";
 
 interface CharacterHeaderProps {
     name: string;
@@ -47,6 +48,7 @@ const CharacterHeader = ({
     onAddClass,
     onRemoveClass,
 }: CharacterHeaderProps) => {
+    const [isEditingClasses, setIsEditingClasses] = useState(false);
     const nextLevelExp = totalLevel < 20 ? EXP_THRESHOLDS[totalLevel] : null;
 
     return (
@@ -70,64 +72,109 @@ const CharacterHeader = ({
                     </div>
 
                     {/* Classes and Levels */}
-                    <div className="md:col-span-4 p-6 space-y-4">
+                    <div className="md:col-span-4 p-6 space-y-3 relative group">
                         <div className="flex justify-between items-center mb-1">
                             <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
                                 <GraduationCap size={12} /> Class & Level
                             </label>
                             <button
-                                onClick={onAddClass}
-                                className="text-[10px] font-bold uppercase bg-blue-50 text-blue-600 px-2 py-0.5 rounded hover:bg-blue-100 transition-colors flex items-center gap-1"
+                                onClick={() => setIsEditingClasses(true)}
+                                className="p-1 px-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-400 hover:text-blue-600 focus:outline-none"
+                                title="Edit Classes"
                             >
-                                <Plus size={10} /> Add Class
+                                <Settings size={20} className="group-hover:rotate-90 transition-transform duration-300" />
                             </button>
                         </div>
-                        <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="space-y-2">
                             {classes.map((cls, index) => (
-                                <div key={index} className="space-y-2 p-3 bg-white border border-gray-100 rounded-lg shadow-sm group relative">
-                                    <div className="flex items-center gap-2">
-                                        <select
-                                            value={cls.name}
-                                            onChange={(e) => onClassChange(index, "name", e.target.value)}
-                                            className="flex-1 text-sm font-semibold bg-white border border-gray-200 rounded-md p-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                                        >
-                                            {classOptions.map((opt) => (
-                                                <option key={opt} value={opt}>{opt}</option>
-                                            ))}
-                                        </select>
-                                        <div className="flex items-center gap-1 bg-gray-100 rounded-md px-2 py-1.5 border border-gray-200">
-                                            <span className="text-[10px] font-bold text-gray-500 uppercase">Lv</span>
-                                            <input
-                                                type="number"
-                                                value={cls.level}
-                                                min={1}
-                                                max={20}
-                                                onChange={(e) => onClassChange(index, "level", parseInt(e.target.value, 10) || 1)}
-                                                className="w-8 text-sm font-bold bg-transparent focus:outline-none text-center"
-                                            />
-                                        </div>
-                                        {classes.length > 1 && (
-                                            <button
-                                                onClick={() => onRemoveClass(index)}
-                                                className="text-gray-300 hover:text-red-500 transition-colors p-1"
-                                            >
-                                                <Trash2 size={14} />
-                                            </button>
-                                        )}
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[9px] uppercase font-bold text-gray-400">Subclass</label>
-                                        <input
-                                            type="text"
-                                            value={cls.subclass || ""}
-                                            onChange={(e) => onClassChange(index, "subclass", e.target.value)}
-                                            className="w-full text-xs font-medium bg-gray-50/50 border border-gray-100 rounded px-2 py-1 focus:border-blue-300 focus:outline-none transition-all"
-                                            placeholder="Enter Subclass..."
-                                        />
+                                <div key={index} className="flex flex-col">
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-xl font-black text-gray-900 dark:text-gray-100 italic">
+                                            {cls.subclass ? `${cls.subclass} ` : ""}{cls.name}
+                                        </span>
+                                        <span className="text-[10px] font-black bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800">
+                                            LV {cls.level}
+                                        </span>
                                     </div>
                                 </div>
                             ))}
                         </div>
+
+                        {/* Class Editor Popup */}
+                        {isEditingClasses && (
+                            <div className="absolute inset-0 z-50 bg-white dark:bg-gray-950 p-6 shadow-2xl animate-in fade-in zoom-in duration-200 rounded-lg border-2 border-blue-500 overflow-y-auto">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-blue-600">Modify Classes</h3>
+                                    <button
+                                        onClick={() => setIsEditingClasses(false)}
+                                        className="p-1 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full transition-colors"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {classes.map((cls, index) => (
+                                        <div key={index} className="space-y-2 p-3 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-lg group relative">
+                                            <div className="flex items-center gap-2">
+                                                <select
+                                                    value={cls.name}
+                                                    onChange={(e) => onClassChange(index, "name", e.target.value)}
+                                                    className="flex-1 text-sm font-semibold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                                                >
+                                                    {classOptions.map((opt) => (
+                                                        <option key={opt} value={opt}>{opt}</option>
+                                                    ))}
+                                                </select>
+                                                <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded-md px-2 py-1.5 border border-gray-200 dark:border-gray-700">
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">Lv</span>
+                                                    <input
+                                                        type="number"
+                                                        value={cls.level}
+                                                        min={1}
+                                                        max={20}
+                                                        onChange={(e) => onClassChange(index, "level", parseInt(e.target.value, 10) || 1)}
+                                                        className="w-8 text-sm font-bold bg-transparent focus:outline-none text-center dark:text-gray-100"
+                                                    />
+                                                </div>
+                                                {classes.length > 1 && (
+                                                    <button
+                                                        onClick={() => onRemoveClass(index)}
+                                                        className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col gap-1">
+                                                <label className="text-[9px] uppercase font-bold text-gray-400 ml-1">Subclass</label>
+                                                <input
+                                                    type="text"
+                                                    value={cls.subclass || ""}
+                                                    onChange={(e) => onClassChange(index, "subclass", e.target.value)}
+                                                    className="w-full text-xs font-semibold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5 focus:border-blue-400 focus:outline-none transition-all dark:text-gray-100"
+                                                    placeholder="Enter Subclass..."
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    <button
+                                        onClick={onAddClass}
+                                        className="w-full py-2 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-colors border border-blue-100 dark:border-blue-800/50 mt-2"
+                                    >
+                                        <Plus size={12} /> Add Multiclass
+                                    </button>
+
+                                    <button
+                                        onClick={() => setIsEditingClasses(false)}
+                                        className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm transition-all active:scale-[0.98] mt-4"
+                                    >
+                                        Save & Close
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Meta Info (Species, Background, EXP) */}
