@@ -708,6 +708,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             <InventorySection
               inventory={characterWithDefaults.inventory}
               setInventory={handleInventoryChange}
+              resources={effectiveResources}
+              onUpdateResources={handleUpdateResources}
             />
           </div>
         )}
@@ -758,6 +760,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               proficiencyBonus={getProficiencyBonus(characterWithDefaults.classes.reduce((sum, cls) => sum + cls.level, 0))}
               rollDice={rollDice}
               rollDamage={rollDamage}
+              resources={effectiveResources}
+              onUpdateResources={handleUpdateResources}
             />
           </div>
         )}

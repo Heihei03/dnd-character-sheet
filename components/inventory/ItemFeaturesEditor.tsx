@@ -74,6 +74,7 @@ const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ features, onUpd
                             <FeatureModifierEditor
                                 modifiers={feature.modifiers || []}
                                 onUpdate={(mods) => updateFeature(feature.id, { modifiers: mods })}
+                                parentName={feature.name}
                             />
                         </div>
                     </div>

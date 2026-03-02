@@ -1,5 +1,5 @@
 import React from "react";
-import { InventoryItem } from "../../types/character";
+import { InventoryItem, Resource } from "../../types/character";
 import ItemDetailView from "./ItemDetailView";
 import { ChevronDown, ChevronRight, Trash2, CornerDownRight } from "lucide-react";
 
@@ -11,6 +11,8 @@ interface InventoryRowProps {
     removeItem: (id: string) => void;
     isExpanded: boolean;
     onToggleExpand: () => void;
+    resources?: Resource[];
+    onUpdateResources?: (resources: Resource[]) => void;
 }
 
 const InventoryRow: React.FC<InventoryRowProps> = ({
@@ -20,7 +22,9 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
     updateItem,
     removeItem,
     isExpanded,
-    onToggleExpand
+    onToggleExpand,
+    resources = [],
+    onUpdateResources
 }) => {
     const isParentValidContainer = item.parentId ? allInventory.some(i => i.id === item.parentId && Boolean(i.isContainer)) : false;
     const isNested = !!item.parentId && isParentValidContainer;
@@ -138,6 +142,8 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                             item={item}
                             containers={containers}
                             updateItem={updateItem}
+                            resources={resources}
+                            onUpdateResources={onUpdateResources}
                         />
                     </td>
                 </tr>

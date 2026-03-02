@@ -1,13 +1,45 @@
-import { InventoryItem } from "../../types/character";
+import { InventoryItem, Resource } from "../../types/character";
 import ItemFeaturesEditor from "./ItemFeaturesEditor";
+import ResourcePipTracker from "../ResourcePipTracker";
 
 interface ItemDetailViewProps {
     item: InventoryItem;
     containers: InventoryItem[];
     updateItem: (id: string, field: keyof InventoryItem, value: any) => void;
+    resources?: Resource[];
+    onUpdateResources?: (resources: Resource[]) => void;
 }
 
-const ItemDetailView: React.FC<ItemDetailViewProps> = ({ item, containers, updateItem }) => {
+const ItemDetailView: React.FC<ItemDetailViewProps> = ({
+    item,
+    containers,
+    updateItem,
+    resources = [],
+    onUpdateResources
+}) => {
+    const handleUpdateResourceValue = (id: string, newValue: number) => {
+        if (!onUpdateResources) return;
+        const newResources = resources.map(r => r.id === id ? { ...r, value: newValue } : r);
+        onUpdateResources(newResources);
+    };
+
+    // Find all resources associated with this item's features
+    const itemResources = (item.features || []).flatMap(f =>
+        (f.modifiers || [])
+            .filter(m => m.type === "Resource")
+            .map(m => {
+                let name = "";
+                try {
+                    const data = JSON.parse(m.value as string);
+                    name = data.name || f.name;
+                } catch {
+                    name = m.value as string || f.name;
+                }
+                return resources.find(r => r.name === name);
+            })
+            .filter((r): r is Resource => !!r)
+    );
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2 flex items-center gap-4 bg-gray-50 dark:bg-gray-900/50 p-2 rounded border border-gray-100 dark:border-gray-800">
@@ -306,6 +338,21 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({ item, containers, updat
                 features={item.features || []}
                 onUpdate={features => updateItem(item.id, "features", features)}
             />
+
+            {itemResources.length > 0 && (
+                <div className="md:col-span-2 space-y-3 mt-2 border-t pt-4">
+                    <label className="block text-[10px] font-bold text-blue-800 uppercase">Item Resources</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {itemResources.map(resource => (
+                            <ResourcePipTracker
+                                key={resource.id}
+                                resource={resource}
+                                onUpdate={(val) => handleUpdateResourceValue(resource.id, val)}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

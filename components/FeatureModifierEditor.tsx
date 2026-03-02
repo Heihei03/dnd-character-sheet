@@ -11,9 +11,10 @@ import { ACTION_TYPES } from "../types/character";
 interface FeatureModifierEditorProps {
     modifiers: FeatureModifier[];
     onUpdate: (modifiers: FeatureModifier[]) => void;
+    parentName?: string;
 }
 
-const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers, onUpdate }) => {
+const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers, onUpdate, parentName }) => {
     const addModifier = () => {
         const newModifier: FeatureModifier = {
             id: Date.now().toString(),
@@ -25,9 +26,18 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
     };
 
     const updateModifier = (id: string, updates: Partial<FeatureModifier>) => {
-        const newModifiers = modifiers.map(m =>
-            m.id === id ? { ...m, ...updates } : m
-        );
+        const newModifiers = modifiers.map(m => {
+            if (m.id === id) {
+                const updated = { ...m, ...updates };
+                // If type changed to New Action and value is empty, default to parentName
+                // value is the name for New Action
+                if (updates.type === "New Action" && !updated.value && parentName) {
+                    updated.value = parentName;
+                }
+                return updated;
+            }
+            return m;
+        });
         onUpdate(newModifiers);
     };
 
@@ -177,7 +187,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                         value={mod.value || ""}
                                         onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
                                         className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
-                                        placeholder="Value..."
+                                        placeholder={mod.type === "New Action" && parentName ? parentName : "Value..."}
                                     />
                                 )}
                             </div>
@@ -190,7 +200,8 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                                 type="text"
                                                 value={(() => {
                                                     try {
-                                                        return JSON.parse(mod.value as string || "{}").name || "";
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return data.name || "";
                                                     } catch {
                                                         return mod.value as string || "";
                                                     }
@@ -201,7 +212,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                                     updateModifier(mod.id, { value: JSON.stringify({ ...current, name: e.target.value }) });
                                                 }}
                                                 className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
-                                                placeholder="e.g. Ki Points"
+                                                placeholder={parentName || "e.g. Ki Points"}
                                             />
                                         </div>
                                         <div className="space-y-1">
@@ -252,12 +263,12 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                                     updateModifier(mod.id, { value: JSON.stringify({ ...current, max: parseInt(e.target.value) || 0 }) });
                                                 }}
                                                 className={`w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900 ${(() => {
-                                                        try {
-                                                            return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
-                                                        } catch {
-                                                            return false;
-                                                        }
-                                                    })() ? "bg-gray-100 text-gray-400" : ""
+                                                    try {
+                                                        return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
+                                                    } catch {
+                                                        return false;
+                                                    }
+                                                })() ? "bg-gray-100 text-gray-400" : ""
                                                     }`}
                                                 placeholder={
                                                     (() => {

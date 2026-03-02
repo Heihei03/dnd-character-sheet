@@ -332,25 +332,55 @@ export const getEffectiveActions = (character: Character): Action[] => {
     const extraActions: Action[] = [];
     activeFeatures.forEach(f => {
         const actionModifiers = (f.modifiers || []).filter(m => m.type === "New Action");
+        const resourceModifiers = (f.modifiers || []).filter(m => m.type === "Resource");
+
         actionModifiers.forEach((m, idx) => {
             if (m.value && typeof m.value === 'string') {
                 // Check if value is JSON (advanced usage) or simple name
                 let action: Action;
                 try {
                     const data = JSON.parse(m.value);
+                    const actionName = data.name || f.name;
+
+                    // Try to link to a resource in the same feature
+                    let resourceName = data.resourceName;
+                    if (!resourceName && resourceModifiers.length > 0) {
+                        // Default to the first resource in the same feature if not specified
+                        try {
+                            const firstRes = JSON.parse(resourceModifiers[0].value as string);
+                            resourceName = firstRes.name || f.name;
+                        } catch {
+                            resourceName = resourceModifiers[0].value || f.name;
+                        }
+                    }
+
                     action = {
+                        name: actionName,
                         ...data,
+                        resourceName,
                         id: `feature-action-${m.id}-${idx}`,
                         fromFeature: true
                     };
                 } catch (e) {
+                    // Try to link to a resource in the same feature even for simple actions
+                    let resourceName = undefined;
+                    if (resourceModifiers.length > 0) {
+                        try {
+                            const firstRes = JSON.parse(resourceModifiers[0].value as string);
+                            resourceName = firstRes.name || f.name;
+                        } catch {
+                            resourceName = resourceModifiers[0].value || f.name;
+                        }
+                    }
+
                     action = {
                         id: `feature-action-${m.id}-${idx}`,
-                        name: m.value,
+                        name: m.value || f.name,
                         type: m.subType as any || "Action",
                         description: `Action granted by feature: ${f.name}`,
                         activation: "1 Action",
-                        fromFeature: true
+                        fromFeature: true,
+                        resourceName
                     } as Action;
                 }
                 extraActions.push(action);
@@ -383,8 +413,9 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
             if (m.value && typeof m.value === 'string') {
                 try {
                     const data = JSON.parse(m.value);
+                    const resourceName = data.name || f.name; // Fallback to feature name
                     // Check if this resource is already in featureResources to avoid duplicates from DIFFERENT features
-                    const alreadyFound = featureResources.find(r => r.name.toLowerCase() === data.name.toLowerCase());
+                    const alreadyFound = featureResources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
                     if (alreadyFound) return;
 
                     let max = data.max || 0;
@@ -394,6 +425,7 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
 
                     featureResources.push({
                         ...data,
+                        name: resourceName,
                         id: `feature-resource-${m.id}-${idx}`,
                         fromFeature: true,
                         max: max,
@@ -401,7 +433,7 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
                     });
                 } catch (e) {
                     // If not JSON, it might just be a link or simple name
-                    const val = m.value?.toString() || "";
+                    const val = m.value?.toString() || f.name; // Fallback to feature name
                     const alreadyFound = featureResources.find(r => r.name.toLowerCase() === val.toLowerCase());
                     if (alreadyFound) return;
 

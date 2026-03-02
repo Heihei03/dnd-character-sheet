@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { InventoryItem } from "../types/character";
+import { InventoryItem, Resource } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import AddItemForm from "./inventory/AddItemForm";
 import InventoryTable from "./inventory/InventoryTable";
@@ -8,11 +8,15 @@ import AttunementSection from "./inventory/AttunementSection";
 interface InventorySectionProps {
     inventory: InventoryItem[];
     setInventory: (inventory: InventoryItem[]) => void;
+    resources?: Resource[];
+    onUpdateResources?: (resources: Resource[]) => void;
 }
 
 const InventorySection: React.FC<InventorySectionProps> = ({
     inventory,
     setInventory,
+    resources = [],
+    onUpdateResources
 }) => {
     const [expandedItemIds, setExpandedItemIds] = useState<string[]>([]);
 
@@ -171,6 +175,8 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                         removeItem={removeItem}
                         toggleExpand={toggleExpand}
                         expandedItemIds={expandedItemIds}
+                        resources={resources}
+                        onUpdateResources={onUpdateResources}
                     />
                 </CardContent>
             </Card>
@@ -189,6 +195,8 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                         removeItem={removeItem}
                         toggleExpand={toggleExpand}
                         expandedItemIds={expandedItemIds}
+                        resources={resources}
+                        onUpdateResources={onUpdateResources}
                     />
                 </CardContent>
             </Card>

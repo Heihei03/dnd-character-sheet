@@ -1,5 +1,5 @@
 import React from "react";
-import { InventoryItem } from "../../types/character";
+import { InventoryItem, Resource } from "../../types/character";
 import InventoryRow from "./InventoryRow";
 
 interface InventoryTableProps {
@@ -10,6 +10,8 @@ interface InventoryTableProps {
     removeItem: (id: string) => void;
     toggleExpand: (id: string) => void;
     expandedItemIds: string[];
+    resources?: Resource[];
+    onUpdateResources?: (resources: Resource[]) => void;
 }
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
@@ -19,7 +21,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     updateItem,
     removeItem,
     toggleExpand,
-    expandedItemIds
+    expandedItemIds,
+    resources = [],
+    onUpdateResources
 }) => {
     if (items.length === 0) return <div className="text-gray-500 italic text-sm p-2">No items</div>;
 
@@ -46,6 +50,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                         removeItem={removeItem}
                         isExpanded={expandedItemIds.includes(item.id)}
                         onToggleExpand={() => toggleExpand(item.id)}
+                        resources={resources}
+                        onUpdateResources={onUpdateResources}
                     />
                 ))}
             </tbody>

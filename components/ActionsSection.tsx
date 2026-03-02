@@ -7,6 +7,8 @@ import Button from "./ui/button";
 import { Pencil, Trash2, ChevronDown, Plus } from "lucide-react";
 import { DAMAGE_TYPES } from "../utils/constants";
 import { getAbilityModifier } from "../utils/character-utils";
+import ResourcePipTracker from "./ResourcePipTracker";
+import { Resource } from "../types/character";
 
 interface ActionsSectionProps {
     actions: Action[];
@@ -15,11 +17,22 @@ interface ActionsSectionProps {
     proficiencyBonus: number;
     rollDice?: (sides: number, modifier?: number, label?: string) => void;
     rollDamage?: (damageString: string, label?: string, damageType?: string) => void;
+    resources?: Resource[];
+    onUpdateResources?: (resources: Resource[]) => void;
 }
 
 const ACTION_TYPES: ActionType[] = ["Attack", "Action", "Bonus Action", "Reaction", "Free Action"];
 
-const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate, abilityScores, proficiencyBonus, rollDice, rollDamage }) => {
+const ActionsSection: React.FC<ActionsSectionProps> = ({
+    actions = [],
+    onUpdate,
+    abilityScores,
+    proficiencyBonus,
+    rollDice,
+    rollDamage,
+    resources = [],
+    onUpdateResources
+}) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -127,6 +140,12 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
         setFormData(action);
         setEditingId(action.id);
         setIsAdding(false);
+    };
+
+    const handleUpdateResourceValue = (id: string, newValue: number) => {
+        if (!onUpdateResources) return;
+        const newResources = resources.map(r => r.id === id ? { ...r, value: newValue } : r);
+        onUpdateResources(newResources);
     };
 
     const resetForm = () => {
@@ -535,6 +554,24 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ actions = [], onUpdate,
                                                     <div className={`whitespace-pre-wrap leading-relaxed text-gray-700 dark:text-gray-300 ${action.type === "Attack" ? "" : "pt-3"}`}>
                                                         {action.description}
                                                     </div>
+
+                                                    {action.resourceName && (
+                                                        <div className="pt-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
+                                                            {(() => {
+                                                                const resource = resources.find(r => r.name === action.resourceName);
+                                                                if (!resource) return null;
+                                                                return (
+                                                                    <div className="max-w-sm">
+                                                                        <ResourcePipTracker
+                                                                            resource={resource}
+                                                                            onUpdate={(val) => handleUpdateResourceValue(resource.id, val)}
+                                                                            compact
+                                                                        />
+                                                                    </div>
+                                                                );
+                                                            })()}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </CardContent>

@@ -6,6 +6,7 @@ import { Feature, Resource } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import FeatureModifierEditor from "./FeatureModifierEditor";
+import ResourcePipTracker from "./ResourcePipTracker";
 
 interface FeaturesSectionProps {
     features: Feature[];
@@ -115,31 +116,9 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
         });
     };
 
-    const handleEffectChange = (effectString: string) => {
-        const effects = effectString.split("\n").map(e => e.trim()).filter(e => e !== "");
-        setFormData({ ...formData, effects });
-    };
-
-    const handleUpdateResourceValue = (resourceName: string, delta: number) => {
+    const handleUpdateResourceValue = (id: string, newValue: number) => {
         if (!onUpdateResources) return;
-        const newResources = resources.map(r => {
-            if (r.name.toLowerCase() === resourceName.toLowerCase()) {
-                const newValue = Math.max(0, Math.min(r.max, r.value + delta));
-                return { ...r, value: newValue };
-            }
-            return r;
-        });
-        onUpdateResources(newResources);
-    };
-
-    const handleResetResource = (resourceName: string) => {
-        if (!onUpdateResources) return;
-        const newResources = resources.map(r => {
-            if (r.name.toLowerCase() === resourceName.toLowerCase()) {
-                return { ...r, value: r.max };
-            }
-            return r;
-        });
+        const newResources = resources.map(r => r.id === id ? { ...r, value: newValue } : r);
         onUpdateResources(newResources);
     };
 
@@ -245,6 +224,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                         <FeatureModifierEditor
                             modifiers={formData.modifiers || []}
                             onUpdate={(modifiers) => setFormData({ ...formData, modifiers })}
+                            parentName={formData.name}
                         />
 
                         <div className="flex justify-end gap-2 pt-2">
@@ -352,58 +332,14 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                                     </div>
                                                                 )}
                                                                 {isResource && relevantResource && (
-                                                                    <button
-                                                                        onClick={() => handleResetResource(resourceName)}
-                                                                        className="p-1 text-gray-400 hover:text-blue-500 transition-colors"
-                                                                        title="Reset to max"
-                                                                    >
-                                                                        <RotateCcw className="w-3 h-3" />
-                                                                    </button>
+                                                                    <div className="mt-1">
+                                                                        <ResourcePipTracker
+                                                                            resource={relevantResource}
+                                                                            onUpdate={(val) => handleUpdateResourceValue(relevantResource.id, val)}
+                                                                        />
+                                                                    </div>
                                                                 )}
                                                             </div>
-
-                                                            {isResource && relevantResource && (
-                                                                <div className="flex items-center gap-3 bg-white dark:bg-gray-800/50 p-2 rounded-lg border border-gray-100 dark:border-gray-700">
-                                                                    <div className="flex-1">
-                                                                        <div className="flex justify-between text-[10px] mb-1.5">
-                                                                            <span className="font-mono font-bold text-gray-900 dark:text-gray-100 italic">{relevantResource.value} / {relevantResource.max}</span>
-                                                                            <span className="text-gray-400 uppercase tracking-tighter">{relevantResource.regain}</span>
-                                                                        </div>
-                                                                        <div className="flex flex-wrap gap-1">
-                                                                            {Array.from({ length: relevantResource.max }).map((_, i) => {
-                                                                                const isAvailable = i < relevantResource!.value;
-                                                                                return (
-                                                                                    <button
-                                                                                        key={i}
-                                                                                        onClick={() => handleUpdateResourceValue(resourceName, isAvailable ? -(relevantResource!.value - i) : (i + 1 - relevantResource!.value))}
-                                                                                        className={`w-2.5 h-2.5 rounded-full border transition-all duration-200 ${isAvailable
-                                                                                            ? "bg-blue-500 border-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.3)]"
-                                                                                            : "bg-transparent border-gray-200 dark:border-gray-600 hover:border-blue-300"
-                                                                                            }`}
-                                                                                        title={isAvailable ? `Use charge ${i + 1}` : `Restore to ${i + 1} charges`}
-                                                                                    />
-                                                                                );
-                                                                            })}
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="flex gap-1">
-                                                                        <button
-                                                                            onClick={() => handleUpdateResourceValue(resourceName, -1)}
-                                                                            disabled={relevantResource.value <= 0}
-                                                                            className="w-6 h-6 flex items-center justify-center bg-gray-50 dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded border border-gray-100 dark:border-gray-600 transition-all disabled:opacity-20"
-                                                                        >
-                                                                            <Minus className="w-3 h-3" />
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={() => handleUpdateResourceValue(resourceName, 1)}
-                                                                            disabled={relevantResource.value >= relevantResource.max}
-                                                                            className="w-6 h-6 flex items-center justify-center bg-gray-50 dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/20 text-gray-400 hover:text-green-500 rounded border border-gray-100 dark:border-gray-600 transition-all disabled:opacity-20"
-                                                                        >
-                                                                            <Plus className="w-3 h-3" />
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     );
                                                 })}

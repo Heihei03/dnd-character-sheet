@@ -217,6 +217,7 @@ export interface Action {
   versatileDice?: string;
   fromFeature?: boolean;
   fromWeapon?: boolean;
+  resourceName?: string;
 }
 
 export interface SpellSlot {
