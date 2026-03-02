@@ -138,6 +138,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     spells: character.spells ?? [],
     spellSlots: character.spellSlots ?? [],
     species: character.species ?? "",
+    subSpecies: character.subSpecies ?? "",
     background: character.background ?? "",
     exp: character.exp ?? 0,
   };
@@ -337,6 +338,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
   const handleNameChange = (value: string) => handleChange("name", value);
   const handleSpeciesChange = (value: string) => handleChange("species", value);
+  const handleSubSpeciesChange = (value: string) => handleChange("subSpecies", value);
   const handleBackgroundChange = (value: string) => handleChange("background", value);
   const handleExpChange = (value: number | undefined) => handleChange("exp", value);
 
@@ -522,6 +524,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         <CharacterHeader
           name={characterWithDefaults.name}
           species={characterWithDefaults.species}
+          subSpecies={characterWithDefaults.subSpecies}
           background={characterWithDefaults.background}
           exp={characterWithDefaults.exp}
           classes={characterWithDefaults.classes}
@@ -529,6 +532,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           totalLevel={totalLevel}
           onNameChange={handleNameChange}
           onSpeciesChange={handleSpeciesChange}
+          onSubSpeciesChange={handleSubSpeciesChange}
           onBackgroundChange={handleBackgroundChange}
           onExpChange={handleExpChange}
           onClassChange={handleClassChange}

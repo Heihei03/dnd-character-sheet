@@ -8,6 +8,7 @@ import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2 } from "lucid
 interface CharacterHeaderProps {
     name: string;
     species: string;
+    subSpecies?: string;
     background: string;
     exp?: number;
     classes: CharacterClass[];
@@ -15,6 +16,7 @@ interface CharacterHeaderProps {
     totalLevel: number;
     onNameChange: (value: string) => void;
     onSpeciesChange: (value: string) => void;
+    onSubSpeciesChange: (value: string) => void;
     onBackgroundChange: (value: string) => void;
     onExpChange: (value: number | undefined) => void;
     onClassChange: (index: number, field: keyof CharacterClass, value: any) => void;
@@ -30,6 +32,7 @@ const EXP_THRESHOLDS = [
 const CharacterHeader = ({
     name,
     species,
+    subSpecies,
     background,
     exp,
     classes,
@@ -37,6 +40,7 @@ const CharacterHeader = ({
     totalLevel,
     onNameChange,
     onSpeciesChange,
+    onSubSpeciesChange,
     onBackgroundChange,
     onExpChange,
     onClassChange,
@@ -78,37 +82,49 @@ const CharacterHeader = ({
                                 <Plus size={10} /> Add Class
                             </button>
                         </div>
-                        <div className="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                             {classes.map((cls, index) => (
-                                <div key={index} className="flex items-center gap-2 group">
-                                    <select
-                                        value={cls.name}
-                                        onChange={(e) => onClassChange(index, "name", e.target.value)}
-                                        className="flex-1 text-sm font-semibold bg-white border border-gray-200 rounded-md p-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                                    >
-                                        {classOptions.map((opt) => (
-                                            <option key={opt} value={opt}>{opt}</option>
-                                        ))}
-                                    </select>
-                                    <div className="flex items-center gap-1 bg-gray-100 rounded-md px-2 py-1.5 border border-gray-200">
-                                        <span className="text-[10px] font-bold text-gray-500 uppercase">Lv</span>
+                                <div key={index} className="space-y-2 p-3 bg-white border border-gray-100 rounded-lg shadow-sm group relative">
+                                    <div className="flex items-center gap-2">
+                                        <select
+                                            value={cls.name}
+                                            onChange={(e) => onClassChange(index, "name", e.target.value)}
+                                            className="flex-1 text-sm font-semibold bg-white border border-gray-200 rounded-md p-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                                        >
+                                            {classOptions.map((opt) => (
+                                                <option key={opt} value={opt}>{opt}</option>
+                                            ))}
+                                        </select>
+                                        <div className="flex items-center gap-1 bg-gray-100 rounded-md px-2 py-1.5 border border-gray-200">
+                                            <span className="text-[10px] font-bold text-gray-500 uppercase">Lv</span>
+                                            <input
+                                                type="number"
+                                                value={cls.level}
+                                                min={1}
+                                                max={20}
+                                                onChange={(e) => onClassChange(index, "level", parseInt(e.target.value, 10) || 1)}
+                                                className="w-8 text-sm font-bold bg-transparent focus:outline-none text-center"
+                                            />
+                                        </div>
+                                        {classes.length > 1 && (
+                                            <button
+                                                onClick={() => onRemoveClass(index)}
+                                                className="text-gray-300 hover:text-red-500 transition-colors p-1"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-[9px] uppercase font-bold text-gray-400">Subclass</label>
                                         <input
-                                            type="number"
-                                            value={cls.level}
-                                            min={1}
-                                            max={20}
-                                            onChange={(e) => onClassChange(index, "level", parseInt(e.target.value, 10) || 1)}
-                                            className="w-8 text-sm font-bold bg-transparent focus:outline-none text-center"
+                                            type="text"
+                                            value={cls.subclass || ""}
+                                            onChange={(e) => onClassChange(index, "subclass", e.target.value)}
+                                            className="w-full text-xs font-medium bg-gray-50/50 border border-gray-100 rounded px-2 py-1 focus:border-blue-300 focus:outline-none transition-all"
+                                            placeholder="Enter Subclass..."
                                         />
                                     </div>
-                                    {classes.length > 1 && (
-                                        <button
-                                            onClick={() => onRemoveClass(index)}
-                                            className="text-gray-300 hover:text-red-500 transition-colors p-1"
-                                        >
-                                            <Trash2 size={14} />
-                                        </button>
-                                    )}
                                 </div>
                             ))}
                         </div>
@@ -116,18 +132,32 @@ const CharacterHeader = ({
 
                     {/* Meta Info (Species, Background, EXP) */}
                     <div className="md:col-span-4 p-6 bg-gray-50/50 border-l border-gray-100 grid grid-cols-1 gap-4">
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1">
-                                <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                    <BookOpen size={10} /> Species
-                                </label>
-                                <input
-                                    type="text"
-                                    value={species}
-                                    onChange={(e) => onSpeciesChange(e.target.value)}
-                                    className="w-full text-sm font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-blue-500 focus:outline-none transition-all py-0.5"
-                                    placeholder="Human..."
-                                />
+                        <div className="grid grid-cols-1 gap-3">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                        <BookOpen size={10} /> Species
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={species}
+                                        onChange={(e) => onSpeciesChange(e.target.value)}
+                                        className="w-full text-sm font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-blue-500 focus:outline-none transition-all py-0.5"
+                                        placeholder="Human..."
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                        <BookOpen size={10} /> Sub Species
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={subSpecies || ""}
+                                        onChange={(e) => onSubSpeciesChange(e.target.value)}
+                                        className="w-full text-sm font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-blue-500 focus:outline-none transition-all py-0.5"
+                                        placeholder="Wood Elf..."
+                                    />
+                                </div>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">

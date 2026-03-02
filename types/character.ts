@@ -127,6 +127,7 @@ export interface Currency {
 export interface CharacterClass {
   name: string;
   level: number;
+  subclass?: string;
   usedHitDice?: number;
 }
 
@@ -275,6 +276,7 @@ export interface Character {
   spells?: Spell[];
   spellSlots?: SpellSlot[];
   species: string;
+  subSpecies?: string;
   background: string;
   exp?: number;
 }
