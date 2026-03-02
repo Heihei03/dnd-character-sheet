@@ -3,7 +3,8 @@ import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import { Plus, Calculator } from "lucide-react";
 import SpellCard from "./SpellCard";
-import { CharacterClass, Spell, SpellSlot, AbilityScores } from "../types/character";
+import ResourcePipTracker from "./ResourcePipTracker";
+import { CharacterClass, Spell, SpellSlot, AbilityScores, Resource } from "../types/character";
 import { calculateSpellSlots } from "../utils/spell-utils";
 
 interface SpellsSectionProps {
@@ -116,14 +117,33 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                         </label>
                     </div>
                 </div>
-                <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        {slots.map((slot) => (
-                            <div key={slot.level} className="flex flex-col items-center bg-gray-50 p-2 rounded-lg border">
-                                <span className="font-semibold mb-2">Level {slot.level}</span>
-                                <div className="flex gap-2 w-full">
-                                    <div className="flex flex-col w-1/2">
-                                        <label className="text-xs text-center mb-1">Max</label>
+                <CardContent className="p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {slots.map((slot) => {
+                            // Map SpellSlot to Resource for the tracker
+                            // Tracking "Available" slots (Max - Expended)
+                            const availableValue = Math.max(0, slot.max - slot.expended);
+                            const resourceProxy: Resource = {
+                                id: `spell-slot-lvl-${slot.level}`,
+                                name: `Level ${slot.level}`,
+                                max: slot.max,
+                                value: availableValue,
+                                regain: "Long Rest"
+                            };
+
+                            return (
+                                <div key={slot.level} className="space-y-2">
+                                    <ResourcePipTracker
+                                        resource={resourceProxy}
+                                        compact={true}
+                                        onUpdate={(newAvailable) => {
+                                            // newAvailable is current count (Available)
+                                            // expended = max - available
+                                            handleUpdateSlot(slot.level, "expended", slot.max - newAvailable);
+                                        }}
+                                    />
+                                    <div className="flex items-center justify-end gap-2 px-2">
+                                        <label className="text-[10px] font-bold uppercase text-gray-400">Total Max:</label>
                                         <input
                                             type="number"
                                             min="0"
@@ -134,23 +154,12 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                                 }
                                             }}
                                             disabled={autoCalculateSlots}
-                                            className={`h-8 text-center border rounded px-2 w-full ${autoCalculateSlots ? 'bg-gray-100 text-gray-500' : ''}`}
-                                        />
-                                    </div>
-                                    <div className="flex flex-col w-1/2">
-                                        <label className="text-xs text-center mb-1">Used</label>
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            max={slot.max || 0}
-                                            value={slot.expended || ""}
-                                            onChange={(e) => handleUpdateSlot(slot.level, "expended", parseInt(e.target.value) || 0)}
-                                            className="h-8 text-center border rounded px-2 w-full"
+                                            className={`w-12 h-6 text-center text-xs border rounded ${autoCalculateSlots ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-gray-800'}`}
                                         />
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </CardContent>
             </Card>
