@@ -129,3 +129,13 @@ export const CONDITION_TYPES = [
 ];
 
 export const REGAIN_TYPES = ["Short Rest", "Long Rest", "Short or Long Rest", "Dawn", "Other"] as const;
+
+export const SPELL_AOE_SHAPES = [
+  "Cone",
+  "Cube",
+  "Cylinder",
+  "Line",
+  "Sphere",
+  "Square",
+  "Wall",
+] as const;

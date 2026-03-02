@@ -257,6 +257,9 @@ export interface Spell {
   saveType?: string;
   healing?: string;
   damageType?: string;
+  hasAoe?: boolean;
+  aoeShape?: string;
+  aoeSize?: string;
   fromFeature?: boolean;
 }
 

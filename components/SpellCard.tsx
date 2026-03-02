@@ -2,7 +2,7 @@ import React from "react";
 import Button from "./ui/button";
 import { Edit2, Trash2 } from "lucide-react";
 import { Spell, AbilityScores } from "../types/character";
-import { DAMAGE_TYPES, SPELL_SCHOOLS } from "../utils/constants";
+import { DAMAGE_TYPES, SPELL_SCHOOLS, SPELL_AOE_SHAPES } from "../utils/constants";
 
 interface SpellCardProps {
     spell: Spell;
@@ -112,29 +112,59 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     )}
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="block text-sm mb-1 font-semibold">Tags</label>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="flex items-center gap-2 text-sm">
+                                    <label className="block text-sm mb-1 font-semibold">Flags & AoE</label>
+                                    <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+                                        <label className="flex items-center gap-2 text-xs">
                                             <input type="checkbox" checked={spell.isRitual || false} onChange={(e) => handleUpdateSpell(spell.id, "isRitual", e.target.checked)} /> Ritual
                                         </label>
-                                        <label className="flex items-center gap-2 text-sm">
+                                        <label className="flex items-center gap-2 text-xs">
                                             <input type="checkbox" checked={spell.requiresConcentration || false} onChange={(e) => handleUpdateSpell(spell.id, "requiresConcentration", e.target.checked)} /> Concentration
                                         </label>
-                                        <label className="flex items-center gap-2 text-sm">
+                                        <label className="flex items-center gap-2 text-xs">
                                             <input type="checkbox" checked={spell.hasAttack || false} onChange={(e) => handleUpdateSpell(spell.id, "hasAttack", e.target.checked)} /> Attack
                                         </label>
-                                        <label className="flex items-center gap-2 text-sm">
+                                        <label className="flex items-center gap-2 text-xs">
                                             <input type="checkbox" checked={spell.hasSave || false} onChange={(e) => handleUpdateSpell(spell.id, "hasSave", e.target.checked)} /> Save
                                         </label>
-                                        <label className="flex items-center gap-2 text-sm">
+                                        <label className="flex items-center gap-2 text-xs">
                                             <input type="checkbox" checked={spell.hasHeal || false} onChange={(e) => handleUpdateSpell(spell.id, "hasHeal", e.target.checked)} /> Heal
                                         </label>
-                                        <label className="flex items-center gap-2 text-sm">
+                                        <label className="flex items-center gap-2 text-xs">
                                             <input type="checkbox" checked={spell.damageOnly || false} onChange={(e) => handleUpdateSpell(spell.id, "damageOnly", e.target.checked)} /> Damage Only
+                                        </label>
+                                        <label className="flex items-center gap-2 text-xs font-bold text-blue-600">
+                                            <input type="checkbox" checked={spell.hasAoe || false} onChange={(e) => handleUpdateSpell(spell.id, "hasAoe", e.target.checked)} /> AoE
                                         </label>
                                     </div>
                                 </div>
                             </div>
+
+                            {spell.hasAoe && (
+                                <div className="grid grid-cols-2 gap-4 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase text-blue-700 dark:text-blue-300 mb-1">AoE Shape</label>
+                                        <select
+                                            className="border rounded px-2 py-1 w-full text-sm dark:bg-gray-800"
+                                            value={spell.aoeShape || ""}
+                                            onChange={(e) => handleUpdateSpell(spell.id, "aoeShape", e.target.value)}
+                                        >
+                                            <option value="">Select Shape...</option>
+                                            {SPELL_AOE_SHAPES.map(shape => (
+                                                <option key={shape} value={shape}>{shape}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase text-blue-700 dark:text-blue-300 mb-1">AoE Size</label>
+                                        <input
+                                            className="border rounded px-2 py-1 w-full text-sm dark:bg-gray-800"
+                                            placeholder="e.g. 15 ft"
+                                            value={spell.aoeSize || ""}
+                                            onChange={(e) => handleUpdateSpell(spell.id, "aoeSize", e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
@@ -261,6 +291,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     } {(!Array.isArray(spell.components as any) && (spell.components as any)?.m || Array.isArray(spell.components as any) && (spell.components as any).includes("M")) && spell.material ? `(${spell.material})` : ""}
                                 </div>
                                 <div><strong>Duration:</strong> {spell.duration}</div>
+                                {spell.hasAoe && (
+                                    <div><strong>AoE:</strong> {spell.aoeSize} {spell.aoeShape}</div>
+                                )}
                                 {spell.spellcastingAbility && (
                                     <>
                                         {(() => {
