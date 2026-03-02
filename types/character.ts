@@ -219,6 +219,11 @@ export interface Action {
   fromFeature?: boolean;
   fromWeapon?: boolean;
   resourceName?: string;
+  // Upcasting
+  baseLevel?: number;
+  atHigherLevels?: string;
+  higherLevelDamage?: string;
+  higherLevelHealing?: string;
 }
 
 export interface SpellSlot {
@@ -260,6 +265,9 @@ export interface Spell {
   hasAoe?: boolean;
   aoeShape?: string;
   aoeSize?: string;
+  atHigherLevels?: string;
+  higherLevelDamage?: string;
+  higherLevelHealing?: string;
   fromFeature?: boolean;
 }
 

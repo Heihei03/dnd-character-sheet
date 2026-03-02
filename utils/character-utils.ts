@@ -292,7 +292,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
     const spellActions: Action[] = effectiveSpells
         .filter(spell => {
             if (spell.level > 0 && !spell.prepared) return false;
-            const ct = spell.castingTime.toLowerCase();
+            const ct = spell.castingTime.toLowerCase().trim();
             return ct.includes("1 action") || ct.includes("bonus action") || ct.includes("reaction");
         })
         .map(spell => {
@@ -319,7 +319,10 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 range: spell.range,
                 damage: spell.damage,
                 damageType: spell.damageType,
-                fromFeature: true,
+                atHigherLevels: spell.atHigherLevels,
+                higherLevelDamage: spell.higherLevelDamage,
+                higherLevelHealing: spell.higherLevelHealing,
+                baseLevel: spell.level,
                 proficient: true,
                 attackAbility: spell.spellcastingAbility as any,
                 damageDice: spell.damage,
