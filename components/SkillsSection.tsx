@@ -1,14 +1,12 @@
-"use client";
-
 import React from "react";
-import { Skills, AbilityScores, ProficiencyLevel } from "../types/character";
+import { Skills, AbilityScores, ProficiencyLevel, Character } from "../types/character";
 import { SKILL_LIST } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
-import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency } from "../utils/character-utils";
+import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, getAdvantageDisadvantage } from "../utils/character-utils";
 
 interface SkillsSectionProps {
-    skills: Skills;
+    character: Character;
     setSkills: (key: string, value: string) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
@@ -16,12 +14,14 @@ interface SkillsSectionProps {
 }
 
 const SkillsSection: React.FC<SkillsSectionProps> = ({
-    skills,
+    character,
     setSkills,
     abilityScores,
     proficiencyBonus,
     rollDice,
 }) => {
+    const skills = character.skills || {} as Skills;
+
     return (
         <Card className="w-full">
             <CardContent className="p-6">
@@ -38,6 +38,8 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
 
                         const sign = totalBonus >= 0 ? "+" : "";
 
+                        const { advantage, disadvantage } = getAdvantageDisadvantage(character, `${skill.name} Checks`);
+
                         return (
                             <div
                                 key={skill.key}
@@ -51,9 +53,19 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     >
                                         <ProficiencyIcon level={proficiencyLevel} />
                                     </button>
-                                    <span className="font-medium cursor-pointer" onClick={() => rollDice(20, totalBonus, skill.name)}>
-                                        {skill.name} <span className="text-gray-500 text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
-                                    </span>
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-medium cursor-pointer" onClick={() => rollDice(20, totalBonus, skill.name)}>
+                                                {skill.name} <span className="text-gray-500 text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
+                                            </span>
+                                            {advantage && (
+                                                <span className="text-[10px] font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV</span>
+                                            )}
+                                            {disadvantage && (
+                                                <span className="text-[10px] font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DIS</span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                                 <button
                                     onClick={() => rollDice(20, totalBonus, skill.name)}

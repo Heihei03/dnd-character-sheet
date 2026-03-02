@@ -617,7 +617,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                     rollDice={rollDice}
                   />
                   <SavingThrowsSection
-                    savingThrows={characterWithDefaults.savingThrows}
+                    character={characterWithDefaults}
                     proficiencyBonus={proficiencyBonus}
                     setSavingThrows={handleSavingThrowChange}
                     abilityScores={effectiveAbilityScores}
@@ -631,7 +631,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             <Card className="w-full">
               <CardContent className="p-4 space-y-4">
                 <InitiativeSection
-                  initiative={characterWithDefaults.initiative}
+                  character={characterWithDefaults}
                   dexModifier={Math.floor(((effectiveAbilityScores.dexterity ?? 10) - 10) / 2)}
                   proficiencyBonus={proficiencyBonus}
                   onUpdate={handleInitiativeChange}
@@ -675,7 +675,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             {/* Right Card / Column */}
             <div className="space-y-6">
               <SkillsSection
-                skills={characterWithDefaults.skills}
+                character={characterWithDefaults}
                 setSkills={handleSkillChange}
                 abilityScores={effectiveAbilityScores}
                 proficiencyBonus={proficiencyBonus}

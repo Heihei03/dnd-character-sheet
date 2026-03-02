@@ -139,3 +139,27 @@ export const SPELL_AOE_SHAPES = [
   "Square",
   "Wall",
 ] as const;
+
+export const ROLL_TYPES = [
+  "Initiative",
+  "Concentration",
+  "Death Saves",
+  "Strength Saves",
+  "Dexterity Saves",
+  "Constitution Saves",
+  "Intelligence Saves",
+  "Wisdom Saves",
+  "Charisma Saves",
+  "Strength Checks",
+  "Dexterity Checks",
+  "Constitution Checks",
+  "Intelligence Checks",
+  "Wisdom Checks",
+  "Charisma Checks",
+  "Attack Rolls",
+  "Saves against Charms",
+  "Saves against Frightened",
+  "Saves against Poison",
+  "Perception Checks",
+  "Stealth Checks",
+].sort();

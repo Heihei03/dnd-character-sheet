@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { Settings, X } from "lucide-react";
-import { Initiative } from "../types/character";
+import { Initiative, Character } from "../types/character";
+import { getAdvantageDisadvantage } from "../utils/character-utils";
 
 interface InitiativeSectionProps {
-    initiative: Initiative;
+    character: Character;
     dexModifier: number;
     proficiencyBonus: number;
     onUpdate: (initiative: Initiative) => void;
@@ -14,7 +15,7 @@ interface InitiativeSectionProps {
 }
 
 const InitiativeSection: React.FC<InitiativeSectionProps> = ({
-    initiative,
+    character,
     dexModifier,
     proficiencyBonus,
     onUpdate,
@@ -22,12 +23,19 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
     dexScore,
 }) => {
     const [showSettings, setShowSettings] = useState(false);
+    const initiative = character.initiative || {
+        miscBonus: 0,
+        useJackOfAllTrades: false,
+        showDexTiebreaker: false,
+    };
 
     const jackOfAllTradesBonus = initiative.useJackOfAllTrades ? Math.floor(proficiencyBonus / 2) : 0;
     const totalModifier = dexModifier + jackOfAllTradesBonus + initiative.miscBonus;
 
     const tiebreakerValue = initiative.showDexTiebreaker ? dexScore / 100 : 0;
     const displayModifier = totalModifier + tiebreakerValue;
+
+    const { advantage, disadvantage } = getAdvantageDisadvantage(character, "Initiative");
 
     const handleMiscChange = (val: string) => {
         const num = parseInt(val) || 0;
@@ -58,7 +66,17 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
             </button>
 
             {/* Header */}
-            <h2 className="text-2xl font-bold text-center mb-4">Initiative</h2>
+            <div className="flex flex-col items-center mb-4">
+                <h2 className="text-2xl font-bold text-center">Initiative</h2>
+                <div className="flex gap-1 mt-1">
+                    {advantage && (
+                        <span className="text-[10px] font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded border border-green-200 dark:border-green-800" title="Advantage">ADVANTAGE</span>
+                    )}
+                    {disadvantage && (
+                        <span className="text-[10px] font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DISADVANTAGE</span>
+                    )}
+                </div>
+            </div>
 
             {/* Main Die View */}
             <div className="flex flex-col items-center">

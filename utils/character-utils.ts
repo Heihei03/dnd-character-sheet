@@ -471,3 +471,54 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
 
     return combined;
 };
+
+export const getAdvantageDisadvantage = (character: Character, key: string): { advantage: boolean, disadvantage: boolean, notes: string[] } => {
+    const activeFeatures = getAllActiveFeatures(character);
+    const advMods = getFeatureModifiersByType(activeFeatures, "Advantage");
+    const disMods = getFeatureModifiersByType(activeFeatures, "Disadvantage");
+
+    const matches = (mod: FeatureModifier, target: string) => {
+        const sub = mod.subType.toLowerCase();
+        const t = target.toLowerCase();
+
+        // Exact match
+        if (sub === t) return true;
+
+        // "Saving Throws" matches specific saves (e.g. "Wisdom Saves")
+        if (sub === "saving throws" && t.endsWith("saves")) return true;
+
+        // "Checks" or "Ability Checks" matches specific checks (e.g. "Perception Checks")
+        if ((sub === "checks" || sub === "ability checks") && t.endsWith("checks")) return true;
+
+        return false;
+    };
+
+    const relevantAdv = advMods.filter(m => matches(m, key));
+    const relevantDis = disMods.filter(m => matches(m, key));
+
+    // Notes for more specific or contextual modifiers
+    const notes = [...advMods, ...disMods]
+        .filter(m => {
+            const sub = m.subType.toLowerCase();
+            const t = key.toLowerCase();
+
+            // If checking a broad category, include specific notes
+            if (t === "saving throws" && (sub.endsWith("saves") || sub === "concentration")) return true;
+            if (t === "ability checks" && sub.endsWith("checks")) return true;
+
+            // If checking a specific save, include contextual saves (e.g. "Saves against Charms")
+            if (t.endsWith("saves") && (sub.startsWith("saves against") || (t === "constitution saves" && sub === "concentration"))) return true;
+
+            // If checking broad "adv/dis" like "Initiative", don't add redundant notes if already matched
+            if (sub === t) return false;
+
+            return false;
+        })
+        .map(m => `${m.type === "Advantage" ? "ADV" : "DIS"}: ${m.subType}${m.value ? ` (${m.value})` : ""}`);
+
+    return {
+        advantage: relevantAdv.length > 0,
+        disadvantage: relevantDis.length > 0,
+        notes: notes
+    };
+};

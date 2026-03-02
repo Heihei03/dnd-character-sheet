@@ -3,7 +3,7 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../types/modifiers";
-import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES, REGAIN_TYPES } from "../utils/constants";
+import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES, REGAIN_TYPES, ROLL_TYPES } from "../utils/constants";
 import { TOOL_DATA } from "../data/tools";
 import { ABILITY_NAMES } from "../utils/character-utils";
 import { ACTION_TYPES } from "../types/character";
@@ -67,6 +67,9 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                 return ABILITY_NAMES;
             case "New Action":
                 return [...ACTION_TYPES];
+            case "Advantage":
+            case "Disadvantage":
+                return ROLL_TYPES;
             default:
                 return [];
         }
@@ -180,6 +183,10 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                 ) : mod.type === "Resource" ? (
                                     <div className="flex items-center h-full px-1.5 italic text-gray-400 text-[10px]">
                                         Configure below...
+                                    </div>
+                                ) : mod.type === "Advantage" || mod.type === "Disadvantage" ? (
+                                    <div className="flex items-center h-full px-1.5 italic text-gray-400 text-[10px]">
+                                        Automatic
                                     </div>
                                 ) : (
                                     <input
