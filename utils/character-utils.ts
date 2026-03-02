@@ -1,4 +1,4 @@
-import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell } from "../types/character";
+import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 import { STANDARD_ACTIONS } from "../data/standard-actions";
 
@@ -366,6 +366,71 @@ export const getEffectiveActions = (character: Character): Action[] => {
     dynamicActions.forEach(da => {
         if (!combined.some(a => a.id === da.id)) {
             combined.push(da);
+        }
+    });
+
+    return combined;
+};
+
+export const getEffectiveResources = (character: Character, proficiencyBonus: number): Resource[] => {
+    const manualResources = character.resources || [];
+    const activeFeatures = getAllActiveFeatures(character);
+    const featureResources: Resource[] = [];
+
+    activeFeatures.forEach(f => {
+        const resourceModifiers = (f.modifiers || []).filter(m => m.type === "Resource");
+        resourceModifiers.forEach((m, idx) => {
+            if (m.value && typeof m.value === 'string') {
+                try {
+                    const data = JSON.parse(m.value);
+                    // Check if this resource is already in featureResources to avoid duplicates from DIFFERENT features
+                    const alreadyFound = featureResources.find(r => r.name.toLowerCase() === data.name.toLowerCase());
+                    if (alreadyFound) return;
+
+                    let max = data.max || 0;
+                    if (data.useProficiencyBonus) {
+                        max = proficiencyBonus;
+                    }
+
+                    featureResources.push({
+                        ...data,
+                        id: `feature-resource-${m.id}-${idx}`,
+                        fromFeature: true,
+                        max: max,
+                        value: data.value ?? max // Default value to max if not specified
+                    });
+                } catch (e) {
+                    // If not JSON, it might just be a link or simple name
+                    const val = m.value?.toString() || "";
+                    const alreadyFound = featureResources.find(r => r.name.toLowerCase() === val.toLowerCase());
+                    if (alreadyFound) return;
+
+                    featureResources.push({
+                        id: `feature-resource-${m.id}-${idx}`,
+                        name: val,
+                        max: 1,
+                        value: 1,
+                        regain: m.subType || "Long Rest",
+                        fromFeature: true
+                    });
+                }
+            }
+        });
+    });
+
+    // Merge manual and feature resources
+    const combined = [...manualResources];
+    featureResources.forEach(fr => {
+        const existingIdx = combined.findIndex(r => r.name.toLowerCase() === fr.name.toLowerCase());
+        if (existingIdx >= 0) {
+            // Keep manual value if it exists, but update max/regain from feature if they are linking
+            // For now, let's treat feature resources as authoritative if they have the same name
+            combined[existingIdx] = {
+                ...fr,
+                value: combined[existingIdx].value // Keep current usage
+            };
+        } else {
+            combined.push(fr);
         }
     });
 

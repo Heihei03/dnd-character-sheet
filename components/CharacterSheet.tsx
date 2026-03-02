@@ -11,8 +11,9 @@ import DeathSaves from "./DeathSaves";
 import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
 import ToolChecksSection from "./ToolChecksSection";
 import FeaturesSection from "./FeaturesSection";
+import ResourcesSection from "./ResourcesSection";
 import { TOOL_DATA } from "../data/tools";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature, Sense, Defenses, Spell, SpellSlot } from "../types/character";
+import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature, Sense, Defenses, Spell, SpellSlot, Resource } from "../types/character";
 import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
@@ -21,7 +22,7 @@ import InitiativeSection from "./InitiativeSection";
 import CharacterHeader from "./CharacterHeader";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
-import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells } from "../utils/character-utils";
+import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells, getEffectiveResources } from "../utils/character-utils";
 import ActionsSection from "./ActionsSection";
 import SpellsSection from "./SpellsSection";
 
@@ -518,6 +519,24 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setRollResult(formatted);
   };
 
+  const handleUpdateResources = (resources: Resource[]) => {
+    setCharacter(prev => {
+      if (!prev) return null;
+      // Save values for all resources by name to persist them
+      // We map to a clean version to avoid persisting dynamic flags like fromFeature permanently if not needed
+      const resourcesToSave = resources.map(r => ({
+        id: r.id,
+        name: r.name,
+        value: r.value,
+        max: r.max,
+        regain: r.regain
+      }));
+      return { ...prev, resources: resourcesToSave };
+    });
+  };
+
+  const effectiveResources = getEffectiveResources(characterWithDefaults, proficiencyBonus);
+
   return (
     <div className="flex flex-col items-center p-8">
       <div className="w-full mb-8">
@@ -721,9 +740,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             <FeaturesSection
               features={characterWithDefaults.features}
               itemFeatures={getAllActiveFeatures(characterWithDefaults).filter((f: Feature) => f.origin === "Item")}
+              resources={effectiveResources}
               onUpdate={(value) => handleChange("features", value)}
               onUpdateItemFeature={handleUpdateItemFeature}
               onDeleteItemFeature={handleDeleteItemFeature}
+              onUpdateResources={handleUpdateResources}
               availableClasses={characterWithDefaults.classes.map(c => c.name)}
             />
           </div>

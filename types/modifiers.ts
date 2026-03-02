@@ -1,4 +1,4 @@
-export type ModifierType = "Sense" | "Speed" | "Proficiency" | "Bonus" | "New Action" | "Spell" | "Resistance" | "Immunity" | "Vulnerability" | "Override" | "Other";
+export type ModifierType = "Sense" | "Speed" | "Proficiency" | "Bonus" | "New Action" | "Spell" | "Resource" | "Resistance" | "Immunity" | "Vulnerability" | "Override" | "Other";
 
 export interface FeatureModifier {
     id: string;
@@ -8,4 +8,4 @@ export interface FeatureModifier {
     requiresAttunement?: boolean;
 }
 
-export const MODIFIER_TYPES: ModifierType[] = ["Sense", "Speed", "Proficiency", "Bonus", "New Action", "Spell", "Resistance", "Immunity", "Vulnerability", "Override", "Other"];
+export const MODIFIER_TYPES: ModifierType[] = ["Sense", "Speed", "Proficiency", "Bonus", "New Action", "Spell", "Resource", "Resistance", "Immunity", "Vulnerability", "Override", "Other"];

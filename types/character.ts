@@ -131,6 +131,15 @@ export interface CharacterClass {
   usedHitDice?: number;
 }
 
+export interface Resource {
+  id: string;
+  name: string;
+  max: number;
+  value: number;
+  regain: string; // e.g., "Short Rest", "Long Rest", "Dawn"
+  fromFeature?: boolean;
+}
+
 export interface DeathSaves {
   successes: number;
   failures: number;
@@ -275,6 +284,7 @@ export interface Character {
   actions?: Action[];
   spells?: Spell[];
   spellSlots?: SpellSlot[];
+  resources?: Resource[];
   species: string;
   subSpecies?: string;
   background: string;

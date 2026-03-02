@@ -3,7 +3,7 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../types/modifiers";
-import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES } from "../utils/constants";
+import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES, REGAIN_TYPES } from "../utils/constants";
 import { TOOL_DATA } from "../data/tools";
 import { ABILITY_NAMES } from "../utils/character-utils";
 import { ACTION_TYPES } from "../types/character";
@@ -90,7 +90,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                 </select>
                             </div>
                             <div className="col-span-4 relative group">
-                                {mod.type !== "Spell" && (
+                                {mod.type !== "Spell" && mod.type !== "Resource" && (
                                     <>
                                         <input
                                             type="text"
@@ -167,6 +167,10 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             </button>
                                         </div>
                                     </div>
+                                ) : mod.type === "Resource" ? (
+                                    <div className="flex items-center h-full px-1.5 italic text-gray-400 text-[10px]">
+                                        Configure below...
+                                    </div>
                                 ) : (
                                     <input
                                         type="text"
@@ -175,6 +179,123 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                         className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
                                         placeholder="Value..."
                                     />
+                                )}
+                            </div>
+                            <div className="col-span-12">
+                                {mod.type === "Resource" && (
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 mt-1 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-top-1">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Resource Name</label>
+                                            <input
+                                                type="text"
+                                                value={(() => {
+                                                    try {
+                                                        return JSON.parse(mod.value as string || "{}").name || "";
+                                                    } catch {
+                                                        return mod.value as string || "";
+                                                    }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { /* ignore */ }
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, name: e.target.value }) });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                                                placeholder="e.g. Ki Points"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <div className="flex justify-between items-center">
+                                                <label className="text-[10px] uppercase font-bold text-gray-400">Max Amount</label>
+                                                <div className="flex items-center gap-1">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`prof-bonus-${mod.id}`}
+                                                        checked={(() => {
+                                                            try {
+                                                                return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
+                                                            } catch {
+                                                                return false;
+                                                            }
+                                                        })()}
+                                                        onChange={(e) => {
+                                                            let current = {};
+                                                            try { current = JSON.parse(mod.value as string || "{}"); } catch { /* ignore */ }
+                                                            updateModifier(mod.id, { value: JSON.stringify({ ...current, useProficiencyBonus: e.target.checked }) });
+                                                        }}
+                                                        className="w-3 h-3"
+                                                    />
+                                                    <label htmlFor={`prof-bonus-${mod.id}`} className="text-[9px] text-gray-500 whitespace-nowrap">Prof. Bonus</label>
+                                                </div>
+                                            </div>
+                                            <input
+                                                type="number"
+                                                value={(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        if (data.useProficiencyBonus) return "";
+                                                        return data.max || 0;
+                                                    } catch {
+                                                        return 0;
+                                                    }
+                                                })()}
+                                                disabled={(() => {
+                                                    try {
+                                                        return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
+                                                    } catch {
+                                                        return false;
+                                                    }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { /* ignore */ }
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, max: parseInt(e.target.value) || 0 }) });
+                                                }}
+                                                className={`w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900 ${(() => {
+                                                        try {
+                                                            return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
+                                                        } catch {
+                                                            return false;
+                                                        }
+                                                    })() ? "bg-gray-100 text-gray-400" : ""
+                                                    }`}
+                                                placeholder={
+                                                    (() => {
+                                                        try {
+                                                            return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
+                                                        } catch {
+                                                            return false;
+                                                        }
+                                                    })() ? "Dynamic" : "Max"
+                                                }
+                                                min="0"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Regain On</label>
+                                            <select
+                                                value={(() => {
+                                                    try {
+                                                        return JSON.parse(mod.value as string || "{}").regain || "Long Rest";
+                                                    } catch {
+                                                        return mod.subType || "Long Rest";
+                                                    }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { /* ignore */ }
+                                                    const regain = e.target.value;
+                                                    updateModifier(mod.id, {
+                                                        subType: regain,
+                                                        value: JSON.stringify({ ...current, regain })
+                                                    });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                                            >
+                                                {REGAIN_TYPES.map(r => <option key={r} value={r}>{r}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                             <div className="col-span-2 flex items-center gap-1.5 pt-1.5">

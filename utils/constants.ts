@@ -127,3 +127,5 @@ export const CONDITION_TYPES = [
   "Stunned",
   "Unconscious",
 ];
+
+export const REGAIN_TYPES = ["Short Rest", "Long Rest", "Short or Long Rest", "Dawn", "Other"] as const;

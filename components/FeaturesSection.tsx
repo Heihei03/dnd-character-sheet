@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, X, Pencil, Trash2, ChevronDown } from "lucide-react";
-import { Feature } from "../types/character";
+import { Search, X, Pencil, Trash2, ChevronDown, Plus, Minus, RotateCcw } from "lucide-react";
+import { Feature, Resource } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import FeatureModifierEditor from "./FeatureModifierEditor";
@@ -13,6 +13,8 @@ interface FeaturesSectionProps {
     onUpdate: (features: Feature[]) => void;
     onUpdateItemFeature?: (feature: Feature) => void;
     onDeleteItemFeature?: (featureId: string, itemId: string) => void;
+    resources?: Resource[];
+    onUpdateResources?: (resources: Resource[]) => void;
     availableClasses?: string[];
 }
 
@@ -24,6 +26,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     onUpdate,
     onUpdateItemFeature,
     onDeleteItemFeature,
+    resources = [],
+    onUpdateResources,
     availableClasses = []
 }) => {
     const [isAdding, setIsAdding] = useState(false);
@@ -114,6 +118,29 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     const handleEffectChange = (effectString: string) => {
         const effects = effectString.split("\n").map(e => e.trim()).filter(e => e !== "");
         setFormData({ ...formData, effects });
+    };
+
+    const handleUpdateResourceValue = (resourceName: string, delta: number) => {
+        if (!onUpdateResources) return;
+        const newResources = resources.map(r => {
+            if (r.name.toLowerCase() === resourceName.toLowerCase()) {
+                const newValue = Math.max(0, Math.min(r.max, r.value + delta));
+                return { ...r, value: newValue };
+            }
+            return r;
+        });
+        onUpdateResources(newResources);
+    };
+
+    const handleResetResource = (resourceName: string) => {
+        if (!onUpdateResources) return;
+        const newResources = resources.map(r => {
+            if (r.name.toLowerCase() === resourceName.toLowerCase()) {
+                return { ...r, value: r.max };
+            }
+            return r;
+        });
+        onUpdateResources(newResources);
     };
 
     const allFeatures = [...features, ...itemFeatures].filter(feature => {
@@ -296,17 +323,90 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
 
                                         {(feature.modifiers && feature.modifiers.length > 0) && (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 pt-1">
-                                                {feature.modifiers.map((mod) => (
-                                                    <div key={mod.id} className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-1">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[10px] uppercase font-bold text-gray-400 leading-tight">{mod.type}</span>
-                                                            <span className="font-semibold text-gray-700 dark:text-gray-200">{mod.subType}</span>
+                                                {feature.modifiers.map((mod) => {
+                                                    const isResource = mod.type === "Resource";
+                                                    let resourceName = "";
+                                                    let relevantResource: Resource | undefined;
+
+                                                    if (isResource) {
+                                                        try {
+                                                            const data = JSON.parse(mod.value as string || "{}");
+                                                            resourceName = data.name || mod.subType || "";
+                                                            relevantResource = resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
+                                                        } catch {
+                                                            resourceName = (mod.value as string) || mod.subType || "";
+                                                            relevantResource = resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
+                                                        }
+                                                    }
+
+                                                    return (
+                                                        <div key={mod.id} className={`flex flex-col border-b border-gray-100 dark:border-gray-800 pb-2 ${isResource ? "sm:col-span-2" : ""}`}>
+                                                            <div className="flex items-center justify-between mb-1">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] uppercase font-bold text-gray-400 leading-tight">{mod.type}</span>
+                                                                    <span className="font-semibold text-gray-700 dark:text-gray-200">{isResource ? resourceName : mod.subType}</span>
+                                                                </div>
+                                                                {!isResource && (
+                                                                    <div className="font-mono bg-white dark:bg-gray-800 px-2 py-0.5 rounded border border-gray-100 dark:border-gray-700 shadow-sm text-blue-600 dark:text-blue-400 text-xs">
+                                                                        {mod.value}
+                                                                    </div>
+                                                                )}
+                                                                {isResource && relevantResource && (
+                                                                    <button
+                                                                        onClick={() => handleResetResource(resourceName)}
+                                                                        className="p-1 text-gray-400 hover:text-blue-500 transition-colors"
+                                                                        title="Reset to max"
+                                                                    >
+                                                                        <RotateCcw className="w-3 h-3" />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+
+                                                            {isResource && relevantResource && (
+                                                                <div className="flex items-center gap-3 bg-white dark:bg-gray-800/50 p-2 rounded-lg border border-gray-100 dark:border-gray-700">
+                                                                    <div className="flex-1">
+                                                                        <div className="flex justify-between text-[10px] mb-1.5">
+                                                                            <span className="font-mono font-bold text-gray-900 dark:text-gray-100 italic">{relevantResource.value} / {relevantResource.max}</span>
+                                                                            <span className="text-gray-400 uppercase tracking-tighter">{relevantResource.regain}</span>
+                                                                        </div>
+                                                                        <div className="flex flex-wrap gap-1">
+                                                                            {Array.from({ length: relevantResource.max }).map((_, i) => {
+                                                                                const isAvailable = i < relevantResource!.value;
+                                                                                return (
+                                                                                    <button
+                                                                                        key={i}
+                                                                                        onClick={() => handleUpdateResourceValue(resourceName, isAvailable ? -(relevantResource!.value - i) : (i + 1 - relevantResource!.value))}
+                                                                                        className={`w-2.5 h-2.5 rounded-full border transition-all duration-200 ${isAvailable
+                                                                                            ? "bg-blue-500 border-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.3)]"
+                                                                                            : "bg-transparent border-gray-200 dark:border-gray-600 hover:border-blue-300"
+                                                                                            }`}
+                                                                                        title={isAvailable ? `Use charge ${i + 1}` : `Restore to ${i + 1} charges`}
+                                                                                    />
+                                                                                );
+                                                                            })}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex gap-1">
+                                                                        <button
+                                                                            onClick={() => handleUpdateResourceValue(resourceName, -1)}
+                                                                            disabled={relevantResource.value <= 0}
+                                                                            className="w-6 h-6 flex items-center justify-center bg-gray-50 dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded border border-gray-100 dark:border-gray-600 transition-all disabled:opacity-20"
+                                                                        >
+                                                                            <Minus className="w-3 h-3" />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => handleUpdateResourceValue(resourceName, 1)}
+                                                                            disabled={relevantResource.value >= relevantResource.max}
+                                                                            className="w-6 h-6 flex items-center justify-center bg-gray-50 dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/20 text-gray-400 hover:text-green-500 rounded border border-gray-100 dark:border-gray-600 transition-all disabled:opacity-20"
+                                                                        >
+                                                                            <Plus className="w-3 h-3" />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                        <div className="font-mono bg-white dark:bg-gray-800 px-2 py-0.5 rounded border border-gray-100 dark:border-gray-700 shadow-sm text-blue-600 dark:text-blue-400">
-                                                            {mod.value}
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
                                         )}
 
