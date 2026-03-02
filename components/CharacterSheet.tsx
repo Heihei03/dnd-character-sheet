@@ -747,7 +747,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               onUpdateItemFeature={handleUpdateItemFeature}
               onDeleteItemFeature={handleDeleteItemFeature}
               onUpdateResources={handleUpdateResources}
-              availableClasses={characterWithDefaults.classes.map(c => c.name)}
+              classes={characterWithDefaults.classes}
+              species={characterWithDefaults.species}
+              subSpecies={characterWithDefaults.subSpecies}
+              background={characterWithDefaults.background}
             />
           </div>
         )}

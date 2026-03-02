@@ -186,6 +186,7 @@ export interface Feature {
   description: string;
   origin: string; // "Class", "Background", "Item", "Feat", "Species", "Other"
   subOrigin?: string; // Specific class name, background name, etc.
+  subclass?: string; // Optional subclass name
   modifiers?: FeatureModifier[];
   effects?: string[];
   sourceItemId?: string;

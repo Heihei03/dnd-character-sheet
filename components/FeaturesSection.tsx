@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Search, X, Pencil, Trash2, ChevronDown, Plus, Minus, RotateCcw } from "lucide-react";
-import { Feature, Resource } from "../types/character";
+import { Feature, Resource, CharacterClass } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import FeatureModifierEditor from "./FeatureModifierEditor";
@@ -16,10 +16,14 @@ interface FeaturesSectionProps {
     onDeleteItemFeature?: (featureId: string, itemId: string) => void;
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
-    availableClasses?: string[];
+    classes?: CharacterClass[];
+    species?: string;
+    subSpecies?: string;
+    background?: string;
 }
 
 const ORIGIN_OPTIONS = ["Class", "Species", "Background", "Feat", "Item", "Other"];
+const FILTER_OPTIONS = ["All", "Class", "Subclass", "Species", "Background", "Feat", "Item", "Other"];
 
 const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     features = [],
@@ -29,7 +33,10 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     onDeleteItemFeature,
     resources = [],
     onUpdateResources,
-    availableClasses = []
+    classes = [],
+    species = "",
+    subSpecies = "",
+    background = ""
 }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -42,6 +49,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
         description: "",
         origin: "Class",
         subOrigin: "",
+        subclass: "",
         modifiers: [],
         effects: [],
     });
@@ -57,12 +65,17 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     };
 
     const handleAdd = () => {
+        const currentClass = classes.find(c => c.name === (formData.subOrigin || classes[0]?.name));
+
         const newFeature: Feature = {
             id: Date.now().toString(),
             name: formData.name || "New Feature",
             description: formData.description || "",
             origin: formData.origin || "Other",
-            subOrigin: formData.origin === "Class" ? (formData.subOrigin || availableClasses[0] || "") : "",
+            subOrigin: formData.origin === "Class" ? (formData.subOrigin || classes[0]?.name || "") :
+                formData.origin === "Species" ? (formData.subOrigin || subSpecies || species || "") :
+                    formData.origin === "Background" ? (formData.subOrigin || background || "") : "",
+            subclass: formData.origin === "Class" ? formData.subclass : "",
             modifiers: formData.modifiers || [],
             effects: formData.effects || [],
         };
@@ -75,7 +88,10 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
         if (!editingId) return;
         const updatedData = {
             ...formData,
-            subOrigin: formData.origin === "Class" ? (formData.subOrigin || availableClasses[0] || "") : ""
+            subOrigin: formData.origin === "Class" ? (formData.subOrigin || classes[0]?.name || "") :
+                formData.origin === "Species" ? (formData.subOrigin || subSpecies || species || "") :
+                    formData.origin === "Background" ? (formData.subOrigin || background || "") : "",
+            subclass: formData.origin === "Class" ? formData.subclass : ""
         } as Feature;
 
         if (formData.origin === "Item" && onUpdateItemFeature) {
@@ -111,6 +127,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
             description: "",
             origin: "Class",
             subOrigin: "",
+            subclass: "",
             modifiers: [],
             effects: [],
         });
@@ -123,7 +140,15 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     };
 
     const allFeatures = [...features, ...itemFeatures].filter(feature => {
-        const matchesOrigin = selectedOrigin === "All" || feature.origin === selectedOrigin;
+        let matchesOrigin = true;
+        if (selectedOrigin === "All") {
+            matchesOrigin = true;
+        } else if (selectedOrigin === "Subclass") {
+            matchesOrigin = feature.origin === "Class" && !!feature.subclass;
+        } else {
+            matchesOrigin = feature.origin === selectedOrigin;
+        }
+
         const matchesSearch = feature.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             feature.description.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesOrigin && matchesSearch;
@@ -165,9 +190,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                         onChange={(e) => setSelectedOrigin(e.target.value)}
                         className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm appearance-none"
                     >
-                        <option value="All">All Origins</option>
-                        {ORIGIN_OPTIONS.map(opt => (
-                            <option key={opt} value={opt}>{opt}</option>
+                        {FILTER_OPTIONS.map(opt => (
+                            <option key={opt} value={opt}>{opt === "All" ? "All Origins" : opt}</option>
                         ))}
                     </select>
                 </div>
@@ -198,14 +222,54 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                     >
                                         {ORIGIN_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                     </select>
-                                    {formData.origin === "Class" && availableClasses.length > 0 && (
+
+                                    {formData.origin === "Class" && classes.length > 0 && (
+                                        <div className="flex flex-col gap-2 w-full">
+                                            <select
+                                                value={formData.subOrigin || (classes.length > 0 ? classes[0].name : "")}
+                                                onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value, subclass: "" })}
+                                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
+                                            >
+                                                {classes.map(cls => <option key={cls.name} value={cls.name}>{cls.name}</option>)}
+                                            </select>
+
+                                            {/* Subclass Selection */}
+                                            {classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass && (
+                                                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                                                    <label className="text-[10px] font-bold uppercase text-gray-400 whitespace-nowrap">Subclass Feature?</label>
+                                                    <select
+                                                        value={formData.subclass || ""}
+                                                        onChange={(e) => setFormData({ ...formData, subclass: e.target.value })}
+                                                        className="flex-1 p-1 text-xs border rounded dark:bg-gray-900 dark:border-gray-700"
+                                                    >
+                                                        <option value="">None (Base Class)</option>
+                                                        <option value={classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass}>
+                                                            {classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                    {formData.origin === "Species" && (
                                         <select
-                                            value={formData.subOrigin || (availableClasses.length > 0 ? availableClasses[0] : "")}
+                                            value={formData.subOrigin || (subSpecies || species || "")}
                                             onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value })}
                                             className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
                                         >
-                                            {availableClasses.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                                            <option value={species}>{species}</option>
+                                            {subSpecies && <option value={subSpecies}>{subSpecies}</option>}
+                                            <option value="">Other...</option>
                                         </select>
+                                    )}
+                                    {formData.origin === "Background" && (
+                                        <input
+                                            type="text"
+                                            value={formData.subOrigin || background || ""}
+                                            onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value })}
+                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
+                                            placeholder="Background name..."
+                                        />
                                     )}
                                 </div>
                             </div>
@@ -261,7 +325,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                     feature.origin === "Item" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" :
                                                         "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                                             }`}>
-                                            {feature.origin}{feature.subOrigin ? `: ${feature.subOrigin}` : ""}
+                                            {feature.origin}: {feature.subclass ? `${feature.subclass} ` : ""}{feature.subOrigin || ""}
                                         </div>
                                         <h4 className="font-bold truncate">{feature.name}</h4>
                                         {feature.modifiers && feature.modifiers.length > 0 && (
