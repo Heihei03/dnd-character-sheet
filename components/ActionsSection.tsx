@@ -213,7 +213,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Actions & Attacks</h2>
-                <Button onClick={() => { setIsAdding(true); setEditingId(null); resetForm(); }} className="flex items-center gap-2">
+                <Button onClick={() => { setIsAdding(true); setEditingId(null); resetForm(); }} className="flex items-center gap-2 whitespace-nowrap">
                     <Plus className="w-4 h-4" /> Add Action
                 </Button>
             </div>

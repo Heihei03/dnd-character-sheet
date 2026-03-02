@@ -166,7 +166,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
 
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Spells List</h2>
-                <Button onClick={handleAddSpell}><Plus className="w-4 h-4 mr-2" /> Add Spell</Button>
+                <Button onClick={handleAddSpell} className="flex items-center whitespace-nowrap"><Plus className="w-4 h-4 mr-2" /> Add Spell</Button>
             </div>
 
             {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => {
