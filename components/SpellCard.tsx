@@ -13,6 +13,7 @@ interface SpellCardProps {
     handleDeleteSpell: (id: string) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
+    totalLevel: number;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -23,7 +24,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
     handleUpdateSpell,
     handleDeleteSpell,
     abilityScores,
-    proficiencyBonus
+    proficiencyBonus,
+    totalLevel
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
 
@@ -61,8 +63,41 @@ const SpellCard: React.FC<SpellCardProps> = ({
         return `${baseValue} (+${diff}x ${higherLevelValue})`;
     };
 
-    const upcastedDamage = spell.damage ? calculateUpcastedValue(spell.damage, spell.higherLevelDamage || "", castLevel, spell.level) : "";
-    const upcastedHealing = spell.healing ? calculateUpcastedValue(spell.healing, spell.higherLevelHealing || "", castLevel, spell.level) : "";
+    const calculateScaledCantripValue = (baseValue: string, currentLevel: number) => {
+        if (!baseValue) return "";
+
+        // 5e Cantrip scaling: 2 dice at 5th, 3 at 11th, 4 at 17th
+        let multiplier = 1;
+        if (currentLevel >= 17) multiplier = 4;
+        else if (currentLevel >= 11) multiplier = 3;
+        else if (currentLevel >= 5) multiplier = 2;
+
+        if (multiplier === 1) return baseValue;
+
+        const diceRegex = /(\d+)?d(\d+)(\s*[\+\-]\s*\d+)?/i;
+        const match = baseValue.match(diceRegex);
+
+        if (match) {
+            const numDice = parseInt(match[1] || "1");
+            const sides = match[2];
+            const mod = match[3] || "";
+            return `${numDice * multiplier}d${sides}${mod}`;
+        }
+
+        return `${baseValue} (x${multiplier})`;
+    };
+
+    const upcastedDamage = spell.damage
+        ? (spell.level === 0 && spell.scalesWithCharacterLevel
+            ? calculateScaledCantripValue(spell.damage, totalLevel)
+            : calculateUpcastedValue(spell.damage, spell.higherLevelDamage || "", castLevel, spell.level))
+        : "";
+
+    const upcastedHealing = spell.healing
+        ? (spell.level === 0 && spell.scalesWithCharacterLevel
+            ? calculateScaledCantripValue(spell.healing, totalLevel)
+            : calculateUpcastedValue(spell.healing, spell.higherLevelHealing || "", castLevel, spell.level))
+        : "";
 
     return (
         <div className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/20 transition-colors">
@@ -73,7 +108,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Name</label>
-                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.name} onChange={(e) => handleUpdateSpell(spell.id, "name", e.target.value)} />
+                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.name || ""} onChange={(e) => handleUpdateSpell(spell.id, "name", e.target.value)} />
                                 </div>
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Level</label>
@@ -92,7 +127,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     <label className="block text-sm mb-1 font-semibold">School</label>
                                     <select
                                         className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700"
-                                        value={spell.school}
+                                        value={spell.school || "Evocation"}
                                         onChange={(e) => handleUpdateSpell(spell.id, "school", e.target.value)}
                                     >
                                         {SPELL_SCHOOLS.map((school: string) => (
@@ -102,17 +137,17 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 </div>
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Casting Time</label>
-                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.castingTime} onChange={(e) => handleUpdateSpell(spell.id, "castingTime", e.target.value)} />
+                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.castingTime || ""} onChange={(e) => handleUpdateSpell(spell.id, "castingTime", e.target.value)} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Range</label>
-                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.range} onChange={(e) => handleUpdateSpell(spell.id, "range", e.target.value)} />
+                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.range || ""} onChange={(e) => handleUpdateSpell(spell.id, "range", e.target.value)} />
                                 </div>
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Duration</label>
-                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.duration} onChange={(e) => handleUpdateSpell(spell.id, "duration", e.target.value)} />
+                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.duration || ""} onChange={(e) => handleUpdateSpell(spell.id, "duration", e.target.value)} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -212,6 +247,22 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     </select>
                                 </div>
                             </div>
+                            {spell.level === 0 && (
+                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50 space-y-1 mb-4">
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-sm font-bold text-blue-700 dark:text-blue-300">Scales with Character Level</label>
+                                        <input
+                                            type="checkbox"
+                                            checked={spell.scalesWithCharacterLevel || false}
+                                            onChange={(e) => handleUpdateSpell(spell.id, "scalesWithCharacterLevel", e.target.checked)}
+                                            className="w-5 h-5 cursor-pointer accent-blue-600"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-blue-600/70 dark:text-blue-400/70 italic leading-tight">
+                                        Cantrip damage/healing will increase at levels 5, 11, and 17.
+                                    </p>
+                                </div>
+                            )}
 
                             {(spell.hasAttack || spell.hasSave || spell.damageOnly || spell.hasHeal) && (
                                 <div className="space-y-4 p-3 bg-gray-50 dark:bg-gray-900/40 rounded-lg border dark:border-gray-800">
@@ -286,7 +337,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
 
                             <div className="space-y-2">
                                 <label className="block text-sm mb-1 font-semibold">Description</label>
-                                <textarea className="border rounded px-3 py-2 w-full min-h-[100px] dark:bg-gray-900 dark:border-gray-700 font-serif" value={spell.description} onChange={(e) => handleUpdateSpell(spell.id, "description", e.target.value)} />
+                                <textarea className="border rounded px-3 py-2 w-full min-h-[100px] dark:bg-gray-900 dark:border-gray-700 font-serif" value={spell.description || ""} onChange={(e) => handleUpdateSpell(spell.id, "description", e.target.value)} />
                             </div>
                             <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50 space-y-2">
                                 <div className="flex items-center justify-between">
@@ -295,7 +346,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     </div>
                                     <input
                                         type="checkbox"
-                                        checked={spell.prepared}
+                                        checked={spell.prepared || false}
                                         onChange={(e) => handleUpdateSpell(spell.id, "prepared", e.target.checked)}
                                         className="w-5 h-5 cursor-pointer accent-blue-600 rounded border-gray-300"
                                     />
@@ -394,16 +445,20 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 )}
                                 {(spell.hasAttack || spell.hasSave || spell.damageOnly) && spell.damage && (
                                     <div className="flex flex-col col-span-2">
-                                        <span className="text-[10px] uppercase font-bold text-red-500 leading-tight">Damage {castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : ""}</span>
-                                        <span className={`font-mono font-bold ${castLevel > spell.level ? "text-blue-600 dark:text-blue-400" : ""}`}>
+                                        <span className="text-[10px] uppercase font-bold text-red-500 leading-tight">
+                                            Damage {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
+                                        </span>
+                                        <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-blue-600 dark:text-blue-400" : ""}`}>
                                             {upcastedDamage} {spell.damageType}
                                         </span>
                                     </div>
                                 )}
                                 {spell.hasHeal && spell.healing && (
                                     <div className="flex flex-col col-span-2">
-                                        <span className="text-[10px] uppercase font-bold text-green-500 leading-tight">Healing {castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : ""}</span>
-                                        <span className={`font-mono font-bold ${castLevel > spell.level ? "text-blue-600 dark:text-blue-400" : ""}`}>
+                                        <span className="text-[10px] uppercase font-bold text-green-500 leading-tight">
+                                            Healing {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
+                                        </span>
+                                        <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-blue-600 dark:text-blue-400" : ""}`}>
                                             {upcastedHealing}
                                         </span>
                                     </div>

@@ -68,6 +68,18 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
             hasSave: false,
             hasHeal: false,
             damageOnly: false,
+            scalesWithCharacterLevel: false,
+            damage: "",
+            higherLevelDamage: "",
+            damageType: "",
+            healing: "",
+            higherLevelHealing: "",
+            atHigherLevels: "",
+            material: "",
+            aoeShape: "",
+            aoeSize: "",
+            hasAoe: false,
+            spellcastingAbility: undefined
         };
         onUpdateSpells([...spells, newSpell]);
         setEditingSpellId(newSpell.id);
@@ -180,19 +192,23 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                         </div>
                         <CardContent className="p-0">
                             <div className="divide-y">
-                                {levelSpells.map((spell) => (
-                                    <SpellCard
-                                        key={spell.id}
-                                        spell={spell}
-                                        level={level}
-                                        editingSpellId={editingSpellId}
-                                        setEditingSpellId={setEditingSpellId}
-                                        handleUpdateSpell={handleUpdateSpell}
-                                        handleDeleteSpell={handleDeleteSpell}
-                                        abilityScores={abilityScores}
-                                        proficiencyBonus={proficiencyBonus}
-                                    />
-                                ))}
+                                {levelSpells.map((spell) => {
+                                    const totalLevel = classes.reduce((sum, cls) => sum + cls.level, 0);
+                                    return (
+                                        <SpellCard
+                                            key={spell.id}
+                                            spell={spell}
+                                            level={level}
+                                            editingSpellId={editingSpellId}
+                                            setEditingSpellId={setEditingSpellId}
+                                            handleUpdateSpell={handleUpdateSpell}
+                                            handleDeleteSpell={handleDeleteSpell}
+                                            abilityScores={abilityScores}
+                                            proficiencyBonus={proficiencyBonus}
+                                            totalLevel={totalLevel}
+                                        />
+                                    );
+                                })}
                             </div>
                         </CardContent>
                     </Card>
