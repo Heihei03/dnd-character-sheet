@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Minus, Plus } from "lucide-react";
 
 // Define types for props
 interface AbilityScoreSectionProps {
@@ -49,7 +50,7 @@ const AbilityScoreSection = ({
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-2 w-full items-center">
       {Object.keys(abilityScores).map((key) => {
         const score = abilityScores[key];
         const effectiveScore = effectiveAbilityScores[key];
@@ -59,47 +60,68 @@ const AbilityScoreSection = ({
         return (
           <div
             key={key}
-            className={`flex items-center justify-between border rounded-lg p-2 shadow w-full transition-colors ${isOverridden
+            className={`flex flex-col items-center h-[110px] w-32 border rounded-lg p-2 shadow-sm transition-all hover:shadow-lg relative ${isOverridden
               ? "bg-purple-50 border-purple-200 dark:bg-purple-900/10 dark:border-purple-800"
               : "bg-gray-50 border-gray-300 dark:bg-gray-900 dark:border-gray-800"
               }`}
           >
-            {/* Ability Name */}
-            <div
-              className={`uppercase font-semibold text-sm w-20 cursor-pointer transition-colors ${isOverridden ? "text-purple-600 dark:text-purple-400" : "hover:text-blue-500"
-                }`}
-              onClick={() => rollDice(20, modifier, key)}
-              title={isOverridden ? "Overridden by item/feature" : ""}
-            >
-              {key}
-            </div>
-
-            {/* Score Input */}
-            <div className="flex flex-col items-center">
-              <div className="relative">
-                {isOverridden ? (
-                  <div className="flex flex-col items-center">
-                    <span className="text-2xl font-bold text-purple-600 animate-in fade-in zoom-in duration-300">
-                      {effectiveScore}
-                    </span>
-                    <span className="text-[10px] text-gray-400 line-through decoration-purple-400/50 -mt-1" title={`Base Score: ${score}`}>
-                      Base: {score}
-                    </span>
-                  </div>
-                ) : (
-                  <input
-                    type="number"
-                    value={abilityScoresInput[key] ?? ""}
-                    onChange={(e) => handleAbilityScoreChange(key, e)}
-                    className="w-16 text-2xl font-bold text-center border-none bg-transparent focus:outline-none"
-                  />
-                )}
+            {/* Ability Name Slot - Fixed Height */}
+            <div className="h-8 flex items-center justify-center w-full px-2">
+              <div
+                className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${isOverridden ? "text-purple-600 dark:text-purple-400" : "text-gray-400 hover:text-blue-500"
+                  }`}
+                onClick={() => rollDice(20, modifier, key)}
+                title={isOverridden ? "Overridden by item/feature" : ""}
+              >
+                {key}
               </div>
             </div>
 
-            {/* Modifier */}
-            <div className="text-lg font-semibold w-16 text-center">
-              {formattedModifier}
+            {/* Modifier Slot - Taking remaining space */}
+            <div className="flex-1 flex items-center justify-center w-full">
+              <button
+                onClick={() => rollDice(20, modifier, key)}
+                className="text-4xl font-black text-blue-600 hover:text-blue-800 transition-all hover:scale-110"
+              >
+                {formattedModifier}
+              </button>
+            </div>
+
+            {/* Score Input Slot - Fixed Height */}
+            <div className="h-8 flex items-center justify-center w-full mt-1">
+              <div className="relative flex items-center justify-center bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-full px-2 py-0.5 min-w-[2.75rem] shadow-sm">
+                {isOverridden ? (
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-bold text-purple-600">
+                      {effectiveScore}
+                    </span>
+                    <span className="text-[10px] text-gray-400 line-through decoration-purple-400/50" title={`Base Score: ${score}`}>
+                      ({score})
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    <button
+                      onClick={() => setAbilityScore(key, Math.max(0, score - 1))}
+                      className="text-gray-400 hover:text-blue-500 w-5 flex items-center justify-center transition-colors px-1"
+                    >
+                      <Minus className="w-3.5 h-3.5 stroke-[3]" />
+                    </button>
+                    <input
+                      type="number"
+                      value={abilityScoresInput[key] ?? ""}
+                      onChange={(e) => handleAbilityScoreChange(key, e)}
+                      className="w-7 text-sm font-bold text-center border-none bg-transparent focus:outline-none p-0 h-5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                    <button
+                      onClick={() => setAbilityScore(key, score + 1)}
+                      className="text-gray-400 hover:text-blue-500 w-5 flex items-center justify-center transition-colors px-1"
+                    >
+                      <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         );

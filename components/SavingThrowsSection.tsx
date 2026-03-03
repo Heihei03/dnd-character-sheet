@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { SavingThrows, Character } from "../types/character";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
+import { Target } from "lucide-react";
 
 interface SavingThrowsSectionProps {
     character: Character;
@@ -25,6 +26,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
     abilityScores,
     rollDice,
 }) => {
+    const [isConcMode, setIsConcMode] = useState(false);
     const savingThrows = character.savingThrows || {
         strength: false, dexterity: false, constitution: false,
         intelligence: false, wisdom: false, charisma: false
@@ -33,94 +35,87 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
     const allNotes: string[] = [];
 
     return (
-        <div className="space-y-2">
-            <h2 className="text-xl font-bold text-center mb-4">Saving Throws</h2>
+        <div className="flex flex-col gap-2 w-full items-center">
             {Object.keys(savingThrows).map((key) => {
                 const isProficient = savingThrows[key];
-                const modifier = calculateModifier(abilityScores[key]) + (isProficient ? proficiencyBonus : 0);
-                const displayModifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+                const baseModifier = calculateModifier(abilityScores[key]);
+                const saveModifier = baseModifier + (isProficient ? proficiencyBonus : 0);
 
-                const { advantage, disadvantage, notes } = getAdvantageDisadvantage(character, `${formatKey(key)} Saves`);
+                const isConstitution = key === 'constitution';
+                const showConc = isConstitution && isConcMode;
+
+                const modifier = saveModifier;
+                const displayModifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+                const label = showConc ? "Concentration" : `${formatKey(key)} Save`;
+
+                const { advantage, disadvantage, notes } = getAdvantageDisadvantage(character, label);
                 notes.forEach(n => { if (!allNotes.includes(n)) allNotes.push(n); });
 
                 return (
-                    <div key={key} className="group flex items-center justify-between p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors">
-                        <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => setSavingThrows(key, !isProficient)}
-                                className="w-6 h-6 flex items-center justify-center focus:outline-none hover:text-blue-600 transition-transform active:scale-95"
-                                title={isProficient ? "Proficient" : "Not Proficient"}
+                    <div key={key} className="flex flex-col items-center h-[110px] w-32 border rounded-lg p-2 shadow-sm transition-all hover:shadow-lg relative bg-gray-50 border-gray-300 dark:bg-gray-900 dark:border-gray-800">
+                        {/* Name & Conc Button Integration Slot - Fixed Height */}
+                        <div className="h-8 flex items-center justify-center w-full relative px-2">
+                            <div
+                                className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-blue-500' : 'text-gray-400 hover:text-blue-500'}`}
+                                onClick={() => rollDice(20, modifier, label)}
                             >
-                                <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-4 h-4" />
-                            </button>
-                            <div className="flex flex-col">
-                                <div className="flex items-center gap-2">
-                                    <span
-                                        className="capitalize cursor-pointer font-medium text-sm sm:text-base"
-                                        onClick={() => rollDice(20, modifier, `${formatKey(key)} Save`)}
-                                    >
-                                        {key}
-                                    </span>
-                                    {advantage && (
-                                        <span className="text-[10px] font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV</span>
-                                    )}
-                                    {disadvantage && (
-                                        <span className="text-[10px] font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DIS</span>
-                                    )}
-                                </div>
+                                {showConc ? "Concentration" : `${key.slice(0, 3)} Save`}
                             </div>
                         </div>
 
-                        <button
-                            onClick={() => rollDice(20, modifier, `${formatKey(key)} Save`)}
-                            className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
-                        >
-                            {displayModifier}
-                        </button>
+                        {/* Modifier Slot - Taking remaining space */}
+                        <div className="flex-1 flex items-center justify-center w-full">
+                            <button
+                                onClick={() => rollDice(20, modifier, label)}
+                                className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-blue-500 hover:text-blue-600' : 'text-blue-600 hover:text-blue-800'}`}
+                            >
+                                {displayModifier}
+                            </button>
+                        </div>
+
+                        {/* Proficiency Toggle Slot - Centered */}
+                        <div className="h-8 flex items-center justify-center w-full mt-1">
+                            {showConc ? (
+                                <div className="flex items-center justify-center opacity-60">
+                                    <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-2.5 h-2.5" />
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => setSavingThrows(key, !isProficient)}
+                                    className="flex items-center justify-center transition-transform active:scale-95"
+                                    title={isProficient ? "Proficient" : "Not Proficient"}
+                                >
+                                    <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-3.5 h-3.5" />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Constitution-specific Concentration Toggle - Bottom Right */}
+                        {isConstitution && (
+                            <button
+                                onClick={() => setIsConcMode(!isConcMode)}
+                                className={`absolute bottom-1 right-1 p-1 rounded-md transition-all z-10 ${isConcMode ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800' : 'text-gray-300 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                title={isConcMode ? "Switch to Saving Throw" : "Switch to Concentration"}
+                            >
+                                <Target className="w-3.5 h-3.5" />
+                            </button>
+                        )}
+
+                        {/* ADV/DIS Badges - Top Right */}
+                        <div className="absolute top-1 right-1 flex flex-col gap-1 pointer-events-none">
+                            {advantage && <span className="text-[8px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800">ADV</span>}
+                            {disadvantage && <span className="text-[8px] font-black bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800">DIS</span>}
+                        </div>
                     </div>
                 );
             })}
 
-            {/* Special: Concentration */}
-            <div className="group flex items-center justify-between p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors mt-2 pt-2 border-t border-gray-50 dark:border-gray-900">
-                <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 flex items-center justify-center opacity-30">
-                        <ProficiencyIcon level="none" className="w-4 h-4" />
-                    </div>
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                            <span
-                                className="capitalize cursor-pointer font-bold text-sm sm:text-base text-gray-700 dark:text-gray-300"
-                                onClick={() => rollDice(20, calculateModifier(abilityScores.constitution), "Concentration Check")}
-                            >
-                                Concentration
-                            </span>
-                            {(() => {
-                                const { advantage, disadvantage, notes } = getAdvantageDisadvantage(character, "Concentration");
-                                notes.forEach(n => { if (!allNotes.includes(n)) allNotes.push(n); });
-                                return (
-                                    <>
-                                        {advantage && <span className="text-[10px] font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800">ADV</span>}
-                                        {disadvantage && <span className="text-[10px] font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800">DIS</span>}
-                                    </>
-                                );
-                            })()}
-                        </div>
-                    </div>
-                </div>
-                <button
-                    onClick={() => rollDice(20, calculateModifier(abilityScores.constitution), "Concentration Check")}
-                    className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
-                >
-                    {calculateModifier(abilityScores.constitution) >= 0 ? `+${calculateModifier(abilityScores.constitution)}` : calculateModifier(abilityScores.constitution)}
-                </button>
-            </div>
             {allNotes.length > 0 && (
-                <div className="mt-4 pt-2 border-t border-gray-100 dark:border-gray-800">
-                    <h4 className="text-[10px] uppercase font-bold text-gray-400 mb-1">Contextual Bonuses</h4>
-                    <ul className="space-y-1">
+                <div className="mt-2 pt-1 border-t border-gray-100 dark:border-gray-800">
+                    <h4 className="text-[8px] uppercase font-bold text-gray-400 mb-1">Bonuses</h4>
+                    <ul className="space-y-0.5">
                         {allNotes.map((note, i) => (
-                            <li key={i} className="text-[11px] text-gray-600 dark:text-gray-400 italic leading-tight">
+                            <li key={i} className="text-[9px] text-gray-500 dark:text-gray-400 italic leading-tight">
                                 • {note}
                             </li>
                         ))}

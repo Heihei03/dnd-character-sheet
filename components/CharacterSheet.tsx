@@ -606,23 +606,31 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
             {/* Left Card */}
             <Card className="w-full">
-              <CardContent className="p-6 space-y-4">
-                <h2 className="text-2xl font-bold text-center mb-4">Ability Scores</h2>
-                <div className="flex flex-col items-center">
-                  {/* Ability Score Inputs */}
-                  <AbilityScoreSection
-                    abilityScores={characterWithDefaults.abilityScores}
-                    effectiveAbilityScores={effectiveAbilityScores}
-                    setAbilityScore={handleAbilityScoreChange}
-                    rollDice={rollDice}
-                  />
-                  <SavingThrowsSection
-                    character={characterWithDefaults}
-                    proficiencyBonus={proficiencyBonus}
-                    setSavingThrows={handleSavingThrowChange}
-                    abilityScores={effectiveAbilityScores}
-                    rollDice={rollDice}
-                  />
+              <CardContent className="p-4 space-y-4">
+                <div className="flex items-start w-full overflow-hidden">
+                  <div className="flex-1 pr-2 border-r border-gray-100 dark:border-gray-800 flex flex-col items-center">
+                    <div className="flex items-center justify-center border-b pb-2 mb-2 w-full">
+                      <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest text-center">Ability Scores</h2>
+                    </div>
+                    <AbilityScoreSection
+                      abilityScores={characterWithDefaults.abilityScores}
+                      effectiveAbilityScores={effectiveAbilityScores}
+                      setAbilityScore={handleAbilityScoreChange}
+                      rollDice={rollDice}
+                    />
+                  </div>
+                  <div className="flex-1 pl-2 flex flex-col items-center">
+                    <div className="flex items-center justify-center border-b pb-2 mb-2 w-full">
+                      <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest text-center">Saving Throws</h2>
+                    </div>
+                    <SavingThrowsSection
+                      character={characterWithDefaults}
+                      proficiencyBonus={proficiencyBonus}
+                      setSavingThrows={handleSavingThrowChange}
+                      abilityScores={effectiveAbilityScores}
+                      rollDice={rollDice}
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
