@@ -515,6 +515,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
                 )}
 
                 <ItemFeaturesEditor
+                    itemName={newItemName}
                     features={newItemFeatures}
                     onUpdate={setNewItemFeatures}
                 />

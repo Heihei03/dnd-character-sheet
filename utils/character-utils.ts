@@ -32,9 +32,9 @@ export const getEffectiveAbilityScores = (character: Character) => {
     const overrides = getFeatureModifiersByType(activeFeatures, "Override");
 
     overrides.forEach(mod => {
-        const ability = mod.subType.toLowerCase();
+        const ability = (mod.subType || "").toLowerCase();
         const value = Number(mod.value);
-        if (!isNaN(value) && scores[ability] !== undefined) {
+        if (!isNaN(value) && ability && scores[ability] !== undefined) {
             // Override only applies if it's higher than the current score
             if (value > scores[ability]) {
                 scores[ability] = value;
@@ -85,7 +85,7 @@ export const getEffectiveSenses = (character: Character): Sense[] => {
     // Merge by name, feature values override manual ones if they share a name
     const combined = [...manualSenses];
     featureSenses.forEach(fs => {
-        const existingIdx = combined.findIndex(s => s.name.toLowerCase() === fs.name.toLowerCase());
+        const existingIdx = combined.findIndex(s => (s.name || "").toLowerCase() === (fs.name || "").toLowerCase());
         if (existingIdx >= 0) {
             combined[existingIdx] = { ...fs };
         } else {
@@ -111,7 +111,7 @@ export const getEffectiveDefenses = (character: Character): Defenses => {
     const merge = (manualList: (string | DefenseEntry)[], featureList: DefenseEntry[]): DefenseEntry[] => {
         const combined = manualList.map(toEntry);
         featureList.forEach(fe => {
-            if (!combined.some(ce => ce.name.toLowerCase() === fe.name.toLowerCase())) {
+            if (!combined.some(ce => (ce.name || "").toLowerCase() === (fe.name || "").toLowerCase())) {
                 combined.push(fe);
             }
         });
@@ -141,11 +141,11 @@ export const getEffectiveSpells = (character: Character): Spell[] => {
                 const spellNames = m.value.split(",").map(s => s.trim()).filter(Boolean);
                 spellNames.forEach((spellName, idx) => {
                     // Check if this spell name is already in ANY list to avoid duplicates from DIFFERENT features
-                    const alreadyFound = featureSpells.find(s => s.name.toLowerCase() === spellName.toLowerCase());
+                    const alreadyFound = featureSpells.find(s => (s.name || "").toLowerCase() === (spellName || "").toLowerCase());
                     if (alreadyFound) return;
 
                     // Check if there's a manual override for this feature spell
-                    const override = manualOverrides.find(s => s.name.toLowerCase() === spellName.toLowerCase());
+                    const override = manualOverrides.find(s => (s.name || "").toLowerCase() === (spellName || "").toLowerCase());
 
                     if (override) {
                         // Use the override but ensure fromFeature is true and unique ID
@@ -256,7 +256,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
             damageType = damageType.charAt(0).toUpperCase() + damageType.slice(1).toLowerCase();
 
             const isMagical = weapon.name.includes("+") ||
-                details.properties?.some(p => p.toLowerCase().includes("magical")) ||
+                details.properties?.some(p => p?.toLowerCase().includes("magical")) ||
                 weapon.description?.toLowerCase().includes("magical");
 
             if (isMagical && ["Bludgeoning", "Piercing", "Slashing"].includes(damageType)) {
@@ -267,7 +267,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 id: `weapon-${weapon.id}`,
                 name: weapon.name,
                 type: "Attack",
-                description: `A ${details.category.toLowerCase()} ${details.rangeType.toLowerCase()} weapon attack. Properties: ${details.properties?.join(", ") || "None"}.`,
+                description: `A ${(details.category || "").toLowerCase()} ${(details.rangeType || "").toLowerCase()} weapon attack. Properties: ${details.properties?.join(", ") || "None"}.`,
                 damage: `${details.damageDice}${damageBonus >= 0 ? "+" : ""}${damageBonus}`,
                 damageType: damageType,
                 versatileDamage: versatileDamage,
@@ -292,11 +292,11 @@ export const getEffectiveActions = (character: Character): Action[] => {
     const spellActions: Action[] = effectiveSpells
         .filter(spell => {
             if (spell.level > 0 && !spell.prepared) return false;
-            const ct = spell.castingTime.toLowerCase().trim();
+            const ct = (spell.castingTime || "").toLowerCase().trim();
             return ct.includes("1 action") || ct.includes("bonus action") || ct.includes("reaction");
         })
         .map(spell => {
-            const ct = spell.castingTime.toLowerCase();
+            const ct = (spell.castingTime || "").toLowerCase();
             let type: "Action" | "Bonus Action" | "Reaction" | "Free Action" | "Attack" = "Action";
             if (ct.includes("bonus action")) type = "Bonus Action";
             else if (ct.includes("reaction")) type = "Reaction";
@@ -393,13 +393,20 @@ export const getEffectiveActions = (character: Character): Action[] => {
     });
 
     // Merge manual, weapon, standard actions, spell actions, and feature actions
-    const combined = [...STANDARD_ACTIONS, ...manualActions];
+    const combined = [...STANDARD_ACTIONS];
 
     // Use a map to ensure unique IDs for weapon/spell/feature actions
     const dynamicActions = [...weaponActions, ...spellActions, ...extraActions];
     dynamicActions.forEach(da => {
         if (!combined.some(a => a.id === da.id)) {
             combined.push(da);
+        }
+    });
+
+    // Add manual actions, ensuring they don't duplicate standard or dynamic actions by ID
+    manualActions.forEach(ma => {
+        if (!combined.some(a => a.id === ma.id)) {
+            combined.push(ma);
         }
     });
 
@@ -419,7 +426,7 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
                     const data = JSON.parse(m.value);
                     const resourceName = data.name || f.name; // Fallback to feature name
                     // Check if this resource is already in featureResources to avoid duplicates from DIFFERENT features
-                    const alreadyFound = featureResources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
+                    const alreadyFound = featureResources.find(r => (r.name || "").toLowerCase() === (resourceName || "").toLowerCase());
                     if (alreadyFound) return;
 
                     let max = data.max || 0;
@@ -438,7 +445,7 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
                 } catch (e) {
                     // If not JSON, it might just be a link or simple name
                     const val = m.value?.toString() || f.name; // Fallback to feature name
-                    const alreadyFound = featureResources.find(r => r.name.toLowerCase() === val.toLowerCase());
+                    const alreadyFound = featureResources.find(r => (r.name || "").toLowerCase() === (val || "").toLowerCase());
                     if (alreadyFound) return;
 
                     featureResources.push({
@@ -457,7 +464,7 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
     // Merge manual and feature resources
     const combined = [...manualResources];
     featureResources.forEach(fr => {
-        const existingIdx = combined.findIndex(r => r.name.toLowerCase() === fr.name.toLowerCase());
+        const existingIdx = combined.findIndex(r => (r.name || "").toLowerCase() === (fr.name || "").toLowerCase());
         if (existingIdx >= 0) {
             // Keep manual value if it exists, but update max/regain from feature if they are linking
             // For now, let's treat feature resources as authoritative if they have the same name
@@ -479,8 +486,8 @@ export const getAdvantageDisadvantage = (character: Character, key: string): { a
     const disMods = getFeatureModifiersByType(activeFeatures, "Disadvantage");
 
     const matches = (mod: FeatureModifier, target: string) => {
-        const sub = mod.subType.toLowerCase();
-        const t = target.toLowerCase();
+        const sub = (mod.subType || "").toLowerCase();
+        const t = (target || "").toLowerCase();
 
         // Exact match
         if (sub === t) return true;
@@ -500,8 +507,8 @@ export const getAdvantageDisadvantage = (character: Character, key: string): { a
     // Notes for more specific or contextual modifiers
     const notes = [...advMods, ...disMods]
         .filter(m => {
-            const sub = m.subType.toLowerCase();
-            const t = key.toLowerCase();
+            const sub = (m.subType || "").toLowerCase();
+            const t = (key || "").toLowerCase();
 
             // If checking a broad category, include specific notes
             if (t === "saving throws" && (sub.endsWith("saves") || sub === "concentration")) return true;

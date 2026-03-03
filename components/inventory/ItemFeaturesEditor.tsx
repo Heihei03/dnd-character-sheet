@@ -8,16 +8,17 @@ import { useState } from "react";
 import ConfirmationModal from "../ui/ConfirmationModal";
 
 interface ItemFeaturesEditorProps {
+    itemName: string;
     features: Feature[];
     onUpdate: (features: Feature[]) => void;
 }
 
-const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ features, onUpdate }) => {
+const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ itemName, features, onUpdate }) => {
     const [featureToDelete, setFeatureToDelete] = useState<string | null>(null);
     const addFeature = () => {
         const newFeature: Feature = {
             id: `item-feature-${Date.now()}`,
-            name: "New Item Feature",
+            name: itemName || "New Feature",
             description: "",
             origin: "Item",
             modifiers: [],

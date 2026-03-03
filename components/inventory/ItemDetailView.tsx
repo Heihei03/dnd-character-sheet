@@ -335,6 +335,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
             )}
 
             <ItemFeaturesEditor
+                itemName={item.name}
                 features={item.features || []}
                 onUpdate={features => updateItem(item.id, "features", features)}
             />
