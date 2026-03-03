@@ -224,6 +224,7 @@ export interface Action {
   atHigherLevels?: string;
   higherLevelDamage?: string;
   higherLevelHealing?: string;
+  scalesWithCharacterLevel?: boolean;
 }
 
 export interface SpellSlot {

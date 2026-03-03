@@ -7,6 +7,7 @@ import Button from "./ui/button";
 import { Pencil, Trash2, ChevronDown, Plus, Zap } from "lucide-react";
 import { DAMAGE_TYPES } from "../utils/constants";
 import { getAbilityModifier } from "../utils/character-utils";
+import { calculateUpcastedValue, calculateScaledCantripValue } from "../utils/dice-utils";
 import ResourcePipTracker from "./ResourcePipTracker";
 import { Resource } from "../types/character";
 import ConfirmationModal from "./ui/ConfirmationModal";
@@ -16,6 +17,7 @@ interface ActionsSectionProps {
     onUpdate: (actions: Action[]) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
+    totalLevel: number;
     rollDice?: (sides: number, modifier?: number, label?: string) => void;
     rollDamage?: (damageString: string, label?: string, damageType?: string) => void;
     resources?: Resource[];
@@ -29,6 +31,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     onUpdate,
     abilityScores,
     proficiencyBonus,
+    totalLevel,
     rollDice,
     rollDamage,
     resources = [],
@@ -61,34 +64,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         versatileDice: "",
     });
 
-    const calculateUpcastedValue = (baseValue: string, higherLevelValue: string, currentLevel: number, baseLevel: number) => {
-        if (currentLevel <= baseLevel || !higherLevelValue) return baseValue;
-
-        const diff = currentLevel - baseLevel;
-
-        // Simple dice notation parser: (num)d(sides) + (mod)
-        const diceRegex = /(\d+)?d(\d+)(\s*[\+\-]\s*\d+)?/i;
-        const baseMatch = baseValue.match(diceRegex);
-        const higherMatch = higherLevelValue.match(diceRegex);
-
-        if (baseMatch && higherMatch) {
-            const baseNum = parseInt(baseMatch[1] || "1");
-            const baseSides = baseMatch[2];
-            const baseMod = baseMatch[3] || "";
-
-            const higherNum = parseInt(higherMatch[1] || "1");
-            const higherSides = higherMatch[2];
-
-            // Only combine if dice sides match
-            if (baseSides === higherSides) {
-                const totalNum = baseNum + (higherNum * diff);
-                return `${totalNum}d${baseSides}${baseMod}`;
-            }
-        }
-
-        // If not dice or sides don't match, just show the addition textually
-        return `${baseValue} (+${diff}x ${higherLevelValue})`;
-    };
+    // Moved to utils/dice-utils.ts
 
     const toggleExpand = (id: string) => {
         const newExpanded = new Set(expandedIds);
@@ -469,9 +445,12 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                             <div className="grid grid-cols-1 gap-3">
                                 {groupedActions[type].map(action => {
                                     const currentCastLevel = castLevels[action.id] || action.baseLevel || 0;
-                                    const upcastedDamage = action.damage && action.baseLevel !== undefined
-                                        ? calculateUpcastedValue(action.damage, action.higherLevelDamage || "", currentCastLevel, action.baseLevel)
-                                        : action.damage;
+                                    const damageToUse = action.damage || "";
+                                    const upcastedDamage = action.baseLevel === 0 && action.scalesWithCharacterLevel
+                                        ? calculateScaledCantripValue(damageToUse, totalLevel)
+                                        : (action.baseLevel !== undefined
+                                            ? calculateUpcastedValue(damageToUse, action.higherLevelDamage || "", currentCastLevel, action.baseLevel)
+                                            : action.damage);
 
                                     const upcastedHealing = action.damage === undefined && action.higherLevelHealing && action.baseLevel !== undefined
                                         ? calculateUpcastedValue("", action.higherLevelHealing, currentCastLevel, action.baseLevel)

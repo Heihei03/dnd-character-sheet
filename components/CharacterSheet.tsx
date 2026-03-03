@@ -761,6 +761,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               onUpdate={handleUpdateActions}
               abilityScores={effectiveAbilityScores}
               proficiencyBonus={getProficiencyBonus(characterWithDefaults.classes.reduce((sum, cls) => sum + cls.level, 0))}
+              totalLevel={totalLevel}
               rollDice={rollDice}
               rollDamage={rollDamage}
               resources={effectiveResources}

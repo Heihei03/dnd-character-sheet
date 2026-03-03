@@ -328,6 +328,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 damageDice: spell.damage,
                 attackBonus: 0,
                 damageBonus: 0,
+                scalesWithCharacterLevel: spell.scalesWithCharacterLevel,
             } as Action;
         });
 
