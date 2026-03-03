@@ -84,7 +84,7 @@ const CharacterHeader = ({
                                 className="p-1 px-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-400 hover:text-blue-600 focus:outline-none"
                                 title="Edit Classes"
                             >
-                                <Settings size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+                                <Settings size={20} />
                             </button>
                         </div>
                         <div className="space-y-2">
