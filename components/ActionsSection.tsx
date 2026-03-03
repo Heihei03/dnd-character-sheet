@@ -9,6 +9,7 @@ import { DAMAGE_TYPES } from "../utils/constants";
 import { getAbilityModifier } from "../utils/character-utils";
 import ResourcePipTracker from "./ResourcePipTracker";
 import { Resource } from "../types/character";
+import ConfirmationModal from "./ui/ConfirmationModal";
 
 interface ActionsSectionProps {
     actions: Action[];
@@ -37,6 +38,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     const [editingId, setEditingId] = useState<string | null>(null);
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
     const [castLevels, setCastLevels] = useState<Record<string, number>>({});
+    const [actionToDelete, setActionToDelete] = useState<string | null>(null);
 
     const [formData, setFormData] = useState<Partial<Action>>({
         name: "",
@@ -557,7 +559,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                         )}
                                                         {!action.fromWeapon && !action.fromFeature && (
                                                             <button
-                                                                onClick={(e) => { e.stopPropagation(); handleDelete(action.id); }}
+                                                                onClick={(e) => { e.stopPropagation(); setActionToDelete(action.id); }}
                                                                 className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                                                             >
                                                                 <Trash2 className="w-4 h-4" />
@@ -657,6 +659,20 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                     </Card>
                 )}
             </div>
+
+            <ConfirmationModal
+                isOpen={actionToDelete !== null}
+                onClose={() => setActionToDelete(null)}
+                onConfirm={() => {
+                    if (actionToDelete) {
+                        handleDelete(actionToDelete);
+                        setActionToDelete(null);
+                    }
+                }}
+                title="Delete Action"
+                message={`Are you sure you want to delete "${actions.find(a => a.id === actionToDelete)?.name}"? This action cannot be undone.`}
+                confirmText="Delete"
+            />
         </div>
     );
 };

@@ -7,6 +7,7 @@ import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import FeatureModifierEditor from "./FeatureModifierEditor";
 import ResourcePipTracker from "./ResourcePipTracker";
+import ConfirmationModal from "./ui/ConfirmationModal";
 
 interface FeaturesSectionProps {
     features: Feature[];
@@ -43,6 +44,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedOrigin, setSelectedOrigin] = useState("All");
+    const [featureToDelete, setFeatureToDelete] = useState<string | null>(null);
 
     const [formData, setFormData] = useState<Partial<Feature>>({
         name: "",
@@ -350,7 +352,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                             <Pencil className="w-4 h-4" />
                                         </button>
                                         <button
-                                            onClick={(e) => { e.stopPropagation(); handleDelete(feature.id); }}
+                                            onClick={(e) => { e.stopPropagation(); setFeatureToDelete(feature.id); }}
                                             className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -427,6 +429,20 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                     ))
                 )}
             </div>
+
+            <ConfirmationModal
+                isOpen={featureToDelete !== null}
+                onClose={() => setFeatureToDelete(null)}
+                onConfirm={() => {
+                    if (featureToDelete) {
+                        handleDelete(featureToDelete);
+                        setFeatureToDelete(null);
+                    }
+                }}
+                title="Delete Feature"
+                message={`Are you sure you want to delete "${allFeatures.find(f => f.id === featureToDelete)?.name}"? This action cannot be undone.`}
+                confirmText="Delete"
+            />
         </div>
     );
 };

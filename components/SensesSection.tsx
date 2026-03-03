@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Sense } from "../types/character";
 import { SENSES_LIST } from "../utils/constants";
 import { Trash2, Plus } from "lucide-react";
+import ConfirmationModal from "./ui/ConfirmationModal";
 
 interface SensesSectionProps {
     senses: Sense[];
@@ -15,6 +16,7 @@ const SensesSection: React.FC<SensesSectionProps> = ({
     onUpdateSenses,
 }) => {
     const [newSense, setNewSense] = useState({ name: "", value: "" });
+    const [senseToDelete, setSenseToDelete] = useState<Sense | null>(null);
 
     const addSense = () => {
         if (newSense.name && newSense.value) {
@@ -51,7 +53,7 @@ const SensesSection: React.FC<SensesSectionProps> = ({
                                 <span className="font-bold text-blue-600 dark:text-blue-400">{sense.value}</span>
                                 {!sense.fromFeature && (
                                     <button
-                                        onClick={() => removeSense(sense)}
+                                        onClick={() => setSenseToDelete(sense)}
                                         className="text-gray-400 hover:text-red-500 transition-colors"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -91,6 +93,20 @@ const SensesSection: React.FC<SensesSectionProps> = ({
                     </button>
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={senseToDelete !== null}
+                onClose={() => setSenseToDelete(null)}
+                onConfirm={() => {
+                    if (senseToDelete) {
+                        removeSense(senseToDelete);
+                        setSenseToDelete(null);
+                    }
+                }}
+                title="Remove Sense"
+                message={`Are you sure you want to remove "${senseToDelete?.name}"?`}
+                confirmText="Remove"
+            />
         </div>
     );
 };

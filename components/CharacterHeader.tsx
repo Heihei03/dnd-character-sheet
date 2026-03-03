@@ -5,6 +5,7 @@ import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
 import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, Settings, X, Shield } from "lucide-react";
+import ConfirmationModal from "./ui/ConfirmationModal";
 
 interface CharacterHeaderProps {
     name: string;
@@ -49,6 +50,7 @@ const CharacterHeader = ({
     onRemoveClass,
 }: CharacterHeaderProps) => {
     const [isEditingClasses, setIsEditingClasses] = useState(false);
+    const [classIndexToRemove, setClassIndexToRemove] = useState<number | null>(null);
     const nextLevelExp = totalLevel < 20 ? EXP_THRESHOLDS[totalLevel] : null;
 
     return (
@@ -139,7 +141,7 @@ const CharacterHeader = ({
                                                 </div>
                                                 {classes.length > 1 && (
                                                     <button
-                                                        onClick={() => onRemoveClass(index)}
+                                                        onClick={() => setClassIndexToRemove(index)}
                                                         className="text-gray-400 hover:text-red-500 transition-colors p-1"
                                                     >
                                                         <Trash2 size={14} />
@@ -261,6 +263,20 @@ const CharacterHeader = ({
                     </div>
                 </div>
             </CardContent>
+
+            <ConfirmationModal
+                isOpen={classIndexToRemove !== null}
+                onClose={() => setClassIndexToRemove(null)}
+                onConfirm={() => {
+                    if (classIndexToRemove !== null) {
+                        onRemoveClass(classIndexToRemove);
+                        setClassIndexToRemove(null);
+                    }
+                }}
+                title="Remove Class"
+                message={`Are you sure you want to remove the ${classes[classIndexToRemove ?? 0]?.name} class?`}
+                confirmText="Remove"
+            />
         </Card>
     );
 };

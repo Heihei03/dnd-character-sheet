@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
 import { Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import ConfirmationModal from "./ui/ConfirmationModal";
 import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../types/modifiers";
 import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES, REGAIN_TYPES, ROLL_TYPES } from "../utils/constants";
 import { TOOL_DATA } from "../data/tools";
@@ -15,6 +16,7 @@ interface FeatureModifierEditorProps {
 }
 
 const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers, onUpdate, parentName }) => {
+    const [modToDelete, setModToDelete] = useState<string | null>(null);
     const addModifier = () => {
         const newModifier: FeatureModifier = {
             id: Date.now().toString(),
@@ -328,7 +330,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                             </div>
                             <div className="col-span-1 flex justify-center pt-1.5">
                                 <button
-                                    onClick={() => removeModifier(mod.id)}
+                                    onClick={() => setModToDelete(mod.id)}
                                     className="text-gray-400 hover:text-red-500 flex items-center justify-center pt-1"
                                 >
                                     <Trash2 className="w-4 h-4" />
@@ -341,6 +343,20 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                     <p className="text-xs text-gray-400 italic text-center py-2">No modifiers added.</p>
                 )}
             </div>
+
+            <ConfirmationModal
+                isOpen={modToDelete !== null}
+                onClose={() => setModToDelete(null)}
+                onConfirm={() => {
+                    if (modToDelete) {
+                        removeModifier(modToDelete);
+                        setModToDelete(null);
+                    }
+                }}
+                title="Remove Modifier"
+                message={`Are you sure you want to remove this ${modifiers.find(m => m.id === modToDelete)?.type} modifier?`}
+                confirmText="Remove"
+            />
         </div>
     );
 };

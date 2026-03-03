@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Defenses, DefenseEntry } from "../types/character";
 import { DAMAGE_TYPES, CONDITION_TYPES } from "../utils/constants";
 import { Trash2, Plus } from "lucide-react";
+import ConfirmationModal from "./ui/ConfirmationModal";
 
 interface DefensesSectionProps {
     defenses: Defenses;
@@ -17,6 +18,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
     const [newResistance, setNewResistance] = useState("");
     const [newVulnerability, setNewVulnerability] = useState("");
     const [newImmunity, setNewImmunity] = useState("");
+    const [defenseToDelete, setDefenseToDelete] = useState<{ category: keyof Defenses, entry: DefenseEntry } | null>(null);
 
     const ALL_DEFENSE_TYPES = [...DAMAGE_TYPES, ...CONDITION_TYPES].sort();
 
@@ -70,7 +72,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                         )}
                         {!item.fromFeature && (
                             <button
-                                onClick={() => removeDefense(category, item)}
+                                onClick={() => setDefenseToDelete({ category, entry: item })}
                                 className="text-current opacity-60 hover:opacity-100 transition-opacity"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -134,6 +136,20 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                     colorClass="bg-orange-50 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border border-orange-100 dark:border-orange-800/50 shadow-sm"
                 />
             </div>
+
+            <ConfirmationModal
+                isOpen={defenseToDelete !== null}
+                onClose={() => setDefenseToDelete(null)}
+                onConfirm={() => {
+                    if (defenseToDelete) {
+                        removeDefense(defenseToDelete.category, defenseToDelete.entry);
+                        setDefenseToDelete(null);
+                    }
+                }}
+                title="Remove Defense"
+                message={`Are you sure you want to remove "${defenseToDelete?.entry.name}" from ${defenseToDelete?.category}?`}
+                confirmText="Remove"
+            />
         </div>
     );
 };

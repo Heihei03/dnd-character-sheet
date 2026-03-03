@@ -3,6 +3,7 @@ import Button from "./ui/button";
 import { Edit2, Trash2, Zap } from "lucide-react";
 import { Spell, AbilityScores } from "../types/character";
 import { DAMAGE_TYPES, SPELL_SCHOOLS, SPELL_AOE_SHAPES } from "../utils/constants";
+import ConfirmationModal from "./ui/ConfirmationModal";
 
 interface SpellCardProps {
     spell: Spell;
@@ -28,6 +29,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
     totalLevel
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     // Reset cast level if spell base level changes
     useEffect(() => {
@@ -483,9 +485,19 @@ const SpellCard: React.FC<SpellCardProps> = ({
                         </button>
                     )}
                     {!spell.fromFeature && (
-                        <button className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => handleDeleteSpell(spell.id)}>
-                            <Trash2 className="w-5 h-5" />
-                        </button>
+                        <>
+                            <button className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setShowDeleteConfirm(true)}>
+                                <Trash2 className="w-5 h-5" />
+                            </button>
+                            <ConfirmationModal
+                                isOpen={showDeleteConfirm}
+                                onClose={() => setShowDeleteConfirm(false)}
+                                onConfirm={() => handleDeleteSpell(spell.id)}
+                                title="Delete Spell"
+                                message={`Are you sure you want to delete "${spell.name}"? This action cannot be undone.`}
+                                confirmText="Delete"
+                            />
+                        </>
                     )}
                 </div>
             </div>

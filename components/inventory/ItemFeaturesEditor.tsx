@@ -4,6 +4,8 @@ import React from "react";
 import { Feature } from "../../types/character";
 import FeatureModifierEditor from "../FeatureModifierEditor";
 import { Trash2 } from "lucide-react";
+import { useState } from "react";
+import ConfirmationModal from "../ui/ConfirmationModal";
 
 interface ItemFeaturesEditorProps {
     features: Feature[];
@@ -11,6 +13,7 @@ interface ItemFeaturesEditorProps {
 }
 
 const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ features, onUpdate }) => {
+    const [featureToDelete, setFeatureToDelete] = useState<string | null>(null);
     const addFeature = () => {
         const newFeature: Feature = {
             id: `item-feature-${Date.now()}`,
@@ -63,7 +66,7 @@ const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ features, onUpd
                                 />
                             </div>
                             <button
-                                onClick={() => removeFeature(feature.id)}
+                                onClick={() => setFeatureToDelete(feature.id)}
                                 className="text-gray-400 hover:text-red-500 transition-colors"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -92,6 +95,20 @@ const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ features, onUpd
                     </div>
                 )}
             </div>
+
+            <ConfirmationModal
+                isOpen={featureToDelete !== null}
+                onClose={() => setFeatureToDelete(null)}
+                onConfirm={() => {
+                    if (featureToDelete) {
+                        removeFeature(featureToDelete);
+                        setFeatureToDelete(null);
+                    }
+                }}
+                title="Remove Feature"
+                message={`Are you sure you want to remove the feature "${features.find(f => f.id === featureToDelete)?.name}"?`}
+                confirmText="Remove"
+            />
         </div>
     );
 };
