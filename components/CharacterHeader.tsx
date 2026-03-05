@@ -58,25 +58,25 @@ const CharacterHeader = ({
             <CardContent className="p-0">
                 <div className="grid grid-cols-1 md:grid-cols-12">
                     {/* Character Name and Basics */}
-                    <div className="md:col-span-4 p-6 bg-gray-50/50 border-r border-gray-100 flex flex-col justify-center">
+                    <div className="md:col-span-4 p-4 bg-gray-50/50 border-r border-gray-100 flex flex-col justify-center">
                         <div className="space-y-1">
-                            <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                            <label className="text-[11px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
                                 <User size={12} /> Character Name
                             </label>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={(e) => onNameChange(e.target.value)}
-                                className="w-full text-3xl font-black bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none transition-all py-1"
+                                className="w-full text-3xl font-black bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none transition-all py-1 mb-1"
                                 placeholder="Enter Name..."
                             />
                         </div>
                     </div>
 
                     {/* Classes and Levels */}
-                    <div className="md:col-span-4 p-6 space-y-3 relative group">
+                    <div className="md:col-span-4 p-4 space-y-2 relative group">
                         <div className="flex justify-between items-center mb-1">
-                            <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                            <label className="text-[11px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
                                 <GraduationCap size={12} /> Class & Level
                             </label>
                             <button
@@ -100,6 +100,11 @@ const CharacterHeader = ({
                                     </div>
                                 </div>
                             ))}
+                        </div>
+
+                        <div className="absolute bottom-2 left-3 flex items-center gap-1 pointer-events-none">
+                            <span className="text-[10px] uppercase font-black text-gray-400">Total Lv</span>
+                            <span className="text-xs font-black text-blue-600">{totalLevel}</span>
                         </div>
 
                         {/* Class Editor Popup */}
@@ -180,7 +185,7 @@ const CharacterHeader = ({
                     </div>
 
                     {/* Meta Info (Species, Background, EXP) */}
-                    <div className="md:col-span-4 p-6 bg-gray-50/50 border-l border-gray-100 grid grid-cols-1 gap-4">
+                    <div className="md:col-span-4 p-4 bg-gray-50/50 border-l border-gray-100 grid grid-cols-1 gap-3">
                         <div className="grid grid-cols-1 gap-3">
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1">
@@ -253,15 +258,6 @@ const CharacterHeader = ({
                     </div>
                 </div>
 
-                {/* Footer / Summary Line */}
-                <div className="px-6 py-2 bg-white border-t border-gray-100 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                            <span className="text-[10px] uppercase font-bold text-gray-400">Total Level</span>
-                            <span className="text-sm font-black text-blue-600">{totalLevel}</span>
-                        </div>
-                    </div>
-                </div>
             </CardContent>
 
             <ConfirmationModal

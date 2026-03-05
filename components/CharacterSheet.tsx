@@ -538,8 +538,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   const effectiveResources = getEffectiveResources(characterWithDefaults, proficiencyBonus);
 
   return (
-    <div className="flex flex-col items-center p-8">
-      <div className="w-full mb-8">
+    <div className="flex flex-col items-center pt-1 px-8 pb-8">
+      <div className="w-full mb-4">
         <CharacterHeader
           name={characterWithDefaults.name}
           species={characterWithDefaults.species}
