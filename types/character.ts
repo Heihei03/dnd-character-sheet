@@ -161,6 +161,12 @@ export interface Initiative {
   showDexTiebreaker: boolean;
 }
 
+export interface Condition {
+  name: string;
+  level?: number;
+  fromFeature?: boolean;
+}
+
 export interface Sense {
   name: string;
   value: string;
@@ -300,6 +306,7 @@ export interface Character {
   spells?: Spell[];
   spellSlots?: SpellSlot[];
   resources?: Resource[];
+  conditions?: Condition[];
   species: string;
   subSpecies?: string;
   background: string;

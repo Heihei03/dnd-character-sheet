@@ -1,4 +1,4 @@
-import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource } from "../types/character";
+import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 import { STANDARD_ACTIONS } from "../data/standard-actions";
 
@@ -529,4 +529,23 @@ export const getAdvantageDisadvantage = (character: Character, key: string): { a
         disadvantage: relevantDis.length > 0,
         notes: notes
     };
+};
+
+export const getEffectiveConditions = (character: Character): Condition[] => {
+    const manualConditions = character.conditions || [];
+    const activeFeatures = getAllActiveFeatures(character);
+    const featureConditions = getFeatureModifiersByType(activeFeatures, "Condition").map(m => ({
+        name: m.subType,
+        fromFeature: true
+    }));
+
+    // Merge by name
+    const combined = [...manualConditions];
+    featureConditions.forEach(fc => {
+        if (!combined.some(c => (c.name || "").toLowerCase() === (fc.name || "").toLowerCase())) {
+            combined.push(fc);
+        }
+    });
+
+    return combined;
 };

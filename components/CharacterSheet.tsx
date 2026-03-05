@@ -13,7 +13,7 @@ import ToolChecksSection from "./ToolChecksSection";
 import FeaturesSection from "./FeaturesSection";
 import ResourcesSection from "./ResourcesSection";
 import { TOOL_DATA } from "../data/tools";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature, Sense, Defenses, Spell, SpellSlot, Resource } from "../types/character";
+import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature, Sense, Defenses, Spell, SpellSlot, Resource, Condition } from "../types/character";
 import SavingThrowsSection from "./SavingThrowsSection";
 import SkillsSection from "./SkillsSection";
 import InventorySection from "./InventorySection";
@@ -22,9 +22,10 @@ import InitiativeSection from "./InitiativeSection";
 import CharacterHeader from "./CharacterHeader";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
-import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells, getEffectiveResources } from "../utils/character-utils";
 import ActionsSection from "./ActionsSection";
 import SpellsSection from "./SpellsSection";
+import ConditionsSection from "./ConditionsSection";
+import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells, getEffectiveResources, getEffectiveConditions } from "../utils/character-utils";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -138,6 +139,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     actions: character.actions ?? [],
     spells: character.spells ?? [],
     spellSlots: character.spellSlots ?? [],
+    conditions: character.conditions ?? [],
     species: character.species ?? "",
     subSpecies: character.subSpecies ?? "",
     background: character.background ?? "",
@@ -349,6 +351,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
   const handleUpdateDefenses = (defenses: Defenses) => {
     setCharacter(prev => prev ? { ...prev, defenses } : null);
+  };
+
+  const handleUpdateConditions = (conditions: Condition[]) => {
+    setCharacter(prev => prev ? { ...prev, conditions } : null);
   };
 
   const handleUpdateItemFeature = (updatedFeature: Feature) => {
@@ -752,6 +758,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                 <DefensesSection
                   defenses={getEffectiveDefenses(characterWithDefaults)}
                   onUpdateDefenses={handleUpdateDefenses}
+                />
+                <ConditionsSection
+                  conditions={getEffectiveConditions(characterWithDefaults)}
+                  onUpdateConditions={handleUpdateConditions}
                 />
               </CardContent>
             </Card>
