@@ -32,7 +32,7 @@ interface CharacterSheetProps {
 }
 
 const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter }) => {
-  const [activeTab, setActiveTab] = useState<string>("coreStats");
+  const [activeTab, setActiveTab] = useState<string>("inventory");
   const [rollResult, setRollResult] = useState<string | null>(null);
 
   // Ensure character is not null before rendering the component
@@ -562,49 +562,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
       <div className="space-y-4">
 
-        <div className="flex space-x-4 mb-6">
-          <button
-            onClick={() => setActiveTab("coreStats")}
-            className={`py-2 px-4 rounded-lg ${activeTab === "coreStats" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Core Stats
-          </button>
-          <button
-            onClick={() => setActiveTab("inventory")}
-            className={`py-2 px-4 rounded-lg ${activeTab === "inventory" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Inventory
-          </button>
-          <button
-            onClick={() => setActiveTab("bio")}
-            className={`py-2 px-4 rounded-lg ${activeTab === "bio" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Bio
-          </button>
-          <button
-            onClick={() => setActiveTab("spells")}
-            className={`py-2 px-4 rounded-lg ${activeTab === "spells" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Spells
-          </button>
-          <button
-            onClick={() => setActiveTab("features")}
-            className={`py-2 px-4 rounded-lg ${activeTab === "features" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Features
-          </button>
-          <button
-            onClick={() => setActiveTab("actions")}
-            className={`py-2 px-4 rounded-lg ${activeTab === "actions" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Actions
-          </button>
-        </div>
 
-        {activeTab === "coreStats" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full max-w-screen-2xl mx-auto">
 
-            {/* Left Card */}
+          {/* Left Column */}
+          <div className="space-y-6 md:col-span-3">
             <Card className="w-full">
               <CardContent className="p-4 space-y-4">
                 <div className="flex items-start w-full overflow-hidden">
@@ -635,7 +597,121 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               </CardContent>
             </Card>
 
-            {/* Center Card */}
+            <SkillsSection
+              character={characterWithDefaults}
+              setSkills={handleSkillChange}
+              abilityScores={effectiveAbilityScores}
+              proficiencyBonus={proficiencyBonus}
+              rollDice={rollDice}
+            />
+            <ToolChecksSection
+              toolProficiencies={characterWithDefaults.toolProficiencies}
+              onUpdate={(value) => handleChange("toolProficiencies", value)}
+              abilityScores={effectiveAbilityScores}
+              proficiencyBonus={proficiencyBonus}
+              rollDice={rollDice}
+            />
+            <ProficienciesLanguagesSection
+              weaponProficiencies={characterWithDefaults.weaponProficiencies}
+              armorProficiencies={characterWithDefaults.armorProficiencies}
+              toolProficiencies={characterWithDefaults.toolProficiencies}
+              languages={characterWithDefaults.languages}
+              onUpdate={(field, value) => handleChange(field as keyof Character, value)}
+            />
+          </div>
+
+          {/* Center Column - Functional Tabs */}
+          <div className="space-y-6 md:col-span-6">
+            <div className="flex flex-wrap gap-2 justify-center bg-gray-50 dark:bg-gray-900/50 p-2 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+              {[
+                { id: "inventory", label: "Inventory" },
+                { id: "spells", label: "Spells" },
+                { id: "features", label: "Features" },
+                { id: "actions", label: "Actions" },
+                { id: "bio", label: "Bio" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-1.5 px-3 rounded-lg text-sm font-bold transition-all ${activeTab === tab.id
+                    ? "bg-blue-500 text-white shadow-md scale-105"
+                    : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {activeTab === "inventory" && (
+              <div className="space-y-6">
+                <CurrencySection
+                  currency={characterWithDefaults.currency}
+                  setCurrency={handleCurrencyChange}
+                />
+                <InventorySection
+                  inventory={characterWithDefaults.inventory}
+                  setInventory={handleInventoryChange}
+                  resources={effectiveResources}
+                  onUpdateResources={handleUpdateResources}
+                />
+              </div>
+            )}
+
+            {activeTab === "spells" && (
+              <SpellsSection
+                classes={characterWithDefaults.classes || []}
+                spells={getEffectiveSpells(characterWithDefaults)}
+                spellSlots={characterWithDefaults.spellSlots || []}
+                onUpdateSpells={handleUpdateSpells}
+                onUpdateSpellSlots={handleUpdateSpellSlots}
+                abilityScores={effectiveAbilityScores}
+                proficiencyBonus={proficiencyBonus}
+              />
+            )}
+
+            {activeTab === "features" && (
+              <FeaturesSection
+                features={characterWithDefaults.features}
+                itemFeatures={getAllActiveFeatures(characterWithDefaults).filter((f: Feature) => f.origin === "Item")}
+                resources={effectiveResources}
+                onUpdate={(value) => handleChange("features", value)}
+                onUpdateItemFeature={handleUpdateItemFeature}
+                onDeleteItemFeature={handleDeleteItemFeature}
+                onUpdateResources={handleUpdateResources}
+                classes={characterWithDefaults.classes}
+                species={characterWithDefaults.species}
+                subSpecies={characterWithDefaults.subSpecies}
+                background={characterWithDefaults.background}
+              />
+            )}
+
+            {activeTab === "actions" && (
+              <ActionsSection
+                actions={getEffectiveActions(characterWithDefaults)}
+                onUpdate={handleUpdateActions}
+                abilityScores={effectiveAbilityScores}
+                proficiencyBonus={getProficiencyBonus(characterWithDefaults.classes.reduce((sum, cls) => sum + cls.level, 0))}
+                totalLevel={totalLevel}
+                rollDice={rollDice}
+                rollDamage={rollDamage}
+                resources={effectiveResources}
+                onUpdateResources={handleUpdateResources}
+              />
+            )}
+
+            {activeTab === "bio" && (
+              <Card>
+                <CardContent className="p-6 space-y-4">
+                  <h2 className="text-2xl font-bold text-center">Character Bio</h2>
+                  <p className="text-gray-500 italic text-center">Your character's history and personality.</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* Right Column */}
+          <div className="md:col-span-3">
             <Card className="w-full">
               <CardContent className="p-4 space-y-4">
                 <InitiativeSection
@@ -679,104 +755,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                 />
               </CardContent>
             </Card>
-
-            {/* Right Card / Column */}
-            <div className="space-y-6">
-              <SkillsSection
-                character={characterWithDefaults}
-                setSkills={handleSkillChange}
-                abilityScores={effectiveAbilityScores}
-                proficiencyBonus={proficiencyBonus}
-                rollDice={rollDice}
-              />
-              <ToolChecksSection
-                toolProficiencies={characterWithDefaults.toolProficiencies}
-                onUpdate={(value) => handleChange("toolProficiencies", value)}
-                abilityScores={effectiveAbilityScores}
-                proficiencyBonus={proficiencyBonus}
-                rollDice={rollDice}
-              />
-              <ProficienciesLanguagesSection
-                weaponProficiencies={characterWithDefaults.weaponProficiencies}
-                armorProficiencies={characterWithDefaults.armorProficiencies}
-                toolProficiencies={characterWithDefaults.toolProficiencies}
-                languages={characterWithDefaults.languages}
-                onUpdate={(field, value) => handleChange(field as keyof Character, value)}
-              />
-            </div>
           </div>
-        )}
-
-        {activeTab === "inventory" && (
-          <div className="w-full max-w-4xl mx-auto space-y-6">
-            <CurrencySection
-              currency={characterWithDefaults.currency}
-              setCurrency={handleCurrencyChange}
-            />
-            <InventorySection
-              inventory={characterWithDefaults.inventory}
-              setInventory={handleInventoryChange}
-              resources={effectiveResources}
-              onUpdateResources={handleUpdateResources}
-            />
-          </div>
-        )}
-
-        {activeTab === "bio" && (
-          <Card>
-            <CardContent className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-center">Character Bio</h2>
-              <p>Add your character's biography here.</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {activeTab === "spells" && (
-          <div className="w-full max-w-4xl mx-auto">
-            <SpellsSection
-              classes={characterWithDefaults.classes || []}
-              spells={getEffectiveSpells(characterWithDefaults)}
-              spellSlots={characterWithDefaults.spellSlots || []}
-              onUpdateSpells={handleUpdateSpells}
-              onUpdateSpellSlots={handleUpdateSpellSlots}
-              abilityScores={effectiveAbilityScores}
-              proficiencyBonus={proficiencyBonus}
-            />
-          </div>
-        )}
-
-        {activeTab === "features" && (
-          <div className="w-full max-w-4xl mx-auto">
-            <FeaturesSection
-              features={characterWithDefaults.features}
-              itemFeatures={getAllActiveFeatures(characterWithDefaults).filter((f: Feature) => f.origin === "Item")}
-              resources={effectiveResources}
-              onUpdate={(value) => handleChange("features", value)}
-              onUpdateItemFeature={handleUpdateItemFeature}
-              onDeleteItemFeature={handleDeleteItemFeature}
-              onUpdateResources={handleUpdateResources}
-              classes={characterWithDefaults.classes}
-              species={characterWithDefaults.species}
-              subSpecies={characterWithDefaults.subSpecies}
-              background={characterWithDefaults.background}
-            />
-          </div>
-        )}
-        {activeTab === "actions" && (
-          <div className="w-full max-w-4xl mx-auto">
-            <ActionsSection
-              actions={getEffectiveActions(characterWithDefaults)}
-              onUpdate={handleUpdateActions}
-              abilityScores={effectiveAbilityScores}
-              proficiencyBonus={getProficiencyBonus(characterWithDefaults.classes.reduce((sum, cls) => sum + cls.level, 0))}
-              totalLevel={totalLevel}
-              rollDice={rollDice}
-              rollDamage={rollDamage}
-              resources={effectiveResources}
-              onUpdateResources={handleUpdateResources}
-            />
-          </div>
-        )}
+        </div>
       </div>
 
       <DiceRoller
