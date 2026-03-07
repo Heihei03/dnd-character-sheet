@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Character } from "../types/character";
-import { loadAllCharacters, deleteCharacter, saveCharacter } from "../utils/db"; // Import saveCharacter and deleteCharacter functions
+import { loadAllCharacters, deleteCharacter, saveCharacter, exportAllCharacters, importCharacters } from "../utils/db"; // Import backup functions
 
 const HomePage = () => {
   // Specify the type of characters as an array of Character objects
@@ -67,16 +67,81 @@ const HomePage = () => {
     });
   };
 
+  // Export all character data to a JSON file
+  const handleExportData = async () => {
+    try {
+      const data = await exportAllCharacters();
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `dnd-characters-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      alert("Failed to export character data.");
+    }
+  };
+
+  // Import character data from a JSON file
+  const handleImportData = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const content = e.target?.result;
+      if (typeof content === "string") {
+        try {
+          await importCharacters(content);
+          // Refresh character list
+          const updatedList = await loadAllCharacters();
+          setCharacters(updatedList);
+          alert("Characters imported successfully!");
+        } catch (error) {
+          console.error("Error importing data:", error);
+          alert("Failed to import character data. Please ensure the file is a valid backup.");
+        }
+      }
+    };
+    reader.readAsText(file);
+    // Reset input value so the same file can be selected again if needed
+    event.target.value = "";
+  };
+
   return (
     <div className="flex flex-col items-center p-8">
       <h1 className="text-3xl font-bold mb-6">Character Selection</h1>
-      <div className="mb-4">
+      <div className="flex gap-4 mb-6">
         <button
           onClick={createNewCharacter}
           className="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
           Create New Character
         </button>
+        <button
+          onClick={handleExportData}
+          className="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600"
+        >
+          Export Data
+        </button>
+        <div className="relative">
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleImportData}
+            className="absolute inset-0 opacity-0 cursor-pointer"
+            id="import-input"
+          />
+          <button
+            className="py-2 px-4 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+          >
+            Import Data
+          </button>
+        </div>
       </div>
       {characters.length > 0 ? (
         <div className="space-y-4">

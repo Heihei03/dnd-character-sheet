@@ -1,9 +1,10 @@
-// utils/db.ts
 import { Character } from "../types/character";
-
+let dbInstance: IDBDatabase | null = null;
 
 // Open the IndexedDB database
 export const openDatabase = (): Promise<IDBDatabase> => {
+    if (dbInstance) return Promise.resolve(dbInstance);
+
     return new Promise((resolve, reject) => {
         const request = indexedDB.open("CharacterSheetDB", 1);
 
@@ -22,7 +23,8 @@ export const openDatabase = (): Promise<IDBDatabase> => {
             const target = event.target as IDBRequest | null;
             if (target) {
                 console.log("Database opened successfully");
-                resolve(target.result as IDBDatabase);
+                dbInstance = target.result as IDBDatabase;
+                resolve(dbInstance);
             } else {
                 console.error("Unknown error, target is null");
                 reject(new Error("Unknown error, target is null"));
@@ -133,4 +135,37 @@ export const deleteCharacter = (characterId: number): Promise<void> => {
             };
         });
     });
+};
+
+// Export all characters as a JSON string
+export const exportAllCharacters = async (): Promise<string> => {
+    const characters = await loadAllCharacters();
+    return JSON.stringify(characters, null, 2);
+};
+
+// Import characters from a JSON string or array
+export const importCharacters = async (data: string | Character[]): Promise<void> => {
+    let characters: Character[];
+    if (typeof data === "string") {
+        try {
+            characters = JSON.parse(data);
+        } catch (error) {
+            console.error("Failed to parse character data:", error);
+            throw new Error("Invalid character data format");
+        }
+    } else {
+        characters = data;
+    }
+
+    if (!Array.isArray(characters)) {
+        throw new Error("Character data must be an array");
+    }
+
+    for (const character of characters) {
+        // Ensure character has an ID, or generate one if missing (though the backup should have them)
+        if (!character.id) {
+            character.id = Date.now() + Math.floor(Math.random() * 1000);
+        }
+        await saveCharacter(character);
+    }
 };
