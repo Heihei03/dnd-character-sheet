@@ -9,11 +9,13 @@ import ConfirmationModal from "./ui/ConfirmationModal";
 interface DefensesSectionProps {
     defenses: Defenses;
     onUpdateDefenses: (defenses: Defenses) => void;
+    onNavigateToFeature?: (featureId: string) => void;
 }
 
 const DefensesSection: React.FC<DefensesSectionProps> = ({
     defenses = { resistances: [], vulnerabilities: [], immunities: [] },
-    onUpdateDefenses
+    onUpdateDefenses,
+    onNavigateToFeature,
 }) => {
     const [newResistance, setNewResistance] = useState("");
     const [newVulnerability, setNewVulnerability] = useState("");
@@ -55,7 +57,8 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
         category: keyof Defenses,
         newValue: string,
         setNewValue: (val: string) => void,
-        colorClass: string
+        colorClass: string,
+        onNavigateToFeature?: (featureId: string) => void
     }) => (
         <div className="space-y-2">
             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{title}</h4>
@@ -64,7 +67,14 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                 {items.map((item, idx) => (
                     <span
                         key={idx}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${colorClass} group animate-in zoom-in-50 duration-200 ${item.fromFeature ? 'opacity-85 border-dashed' : ''}`}
+                        onClick={(e) => {
+                            if (item.fromFeature && item.fromFeatureId && onNavigateToFeature) {
+                                e.stopPropagation();
+                                onNavigateToFeature(item.fromFeatureId);
+                            }
+                        }}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${colorClass} group animate-in zoom-in-50 duration-200 ${item.fromFeature ? 'opacity-85 border-dashed cursor-pointer hover:ring-2 hover:ring-current hover:ring-opacity-30' : ''}`}
+                        title={item.fromFeature ? "Granted by Feature - Click to view" : ""}
                     >
                         {item.name}
                         {item.fromFeature && (
@@ -72,7 +82,10 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                         )}
                         {!item.fromFeature && (
                             <button
-                                onClick={() => setDefenseToDelete({ category, entry: item })}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDefenseToDelete({ category, entry: item });
+                                }}
                                 className="text-current opacity-60 hover:opacity-100 transition-opacity"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -118,6 +131,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                     newValue={newResistance}
                     setNewValue={setNewResistance}
                     colorClass="bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-100 dark:border-blue-800/50 shadow-sm"
+                    onNavigateToFeature={onNavigateToFeature}
                 />
                 <DefenseList
                     title="Immunities"
@@ -126,6 +140,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                     newValue={newImmunity}
                     setNewValue={setNewImmunity}
                     colorClass="bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-100 dark:border-purple-800/50 shadow-sm"
+                    onNavigateToFeature={onNavigateToFeature}
                 />
                 <DefenseList
                     title="Vulnerabilities"
@@ -134,6 +149,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                     newValue={newVulnerability}
                     setNewValue={setNewVulnerability}
                     colorClass="bg-orange-50 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border border-orange-100 dark:border-orange-800/50 shadow-sm"
+                    onNavigateToFeature={onNavigateToFeature}
                 />
             </div>
 

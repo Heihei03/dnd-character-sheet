@@ -772,10 +772,12 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                 <SensesSection
                   senses={getEffectiveSenses(characterWithDefaults)}
                   onUpdateSenses={handleUpdateSenses}
+                  onNavigateToFeature={handleNavigateToFeature}
                 />
                 <DefensesSection
                   defenses={getEffectiveDefenses(characterWithDefaults)}
                   onUpdateDefenses={handleUpdateDefenses}
+                  onNavigateToFeature={handleNavigateToFeature}
                 />
                 <ConditionsSection
                   conditions={getEffectiveConditions(characterWithDefaults)}

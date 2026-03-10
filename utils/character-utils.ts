@@ -84,10 +84,11 @@ export const getAllActiveFeatures = (character: Character): Feature[] => {
 export const getEffectiveSenses = (character: Character): Sense[] => {
     const manualSenses = character.senses || [];
     const activeFeatures = getAllActiveFeatures(character);
-    const featureSenses = getFeatureModifiersByType(activeFeatures, "Sense").map(m => ({
+    const featureSenses = getFeatureModifiersWithSource(activeFeatures, "Sense").map(m => ({
         name: m.subType,
         value: typeof m.value === 'string' ? m.value : `${m.value}ft`,
-        fromFeature: true
+        fromFeature: true,
+        fromFeatureId: m.fromFeatureId
     }));
 
     // Merge by name, feature values override manual ones if they share a name
@@ -112,9 +113,9 @@ export const getEffectiveDefenses = (character: Character): Defenses => {
     const toEntry = (d: string | DefenseEntry): DefenseEntry =>
         typeof d === 'string' ? { name: d } : d;
 
-    const featureResistances = getFeatureModifiersByType(activeFeatures, "Resistance").map(m => ({ name: m.subType, fromFeature: true }));
-    const featureImmunities = getFeatureModifiersByType(activeFeatures, "Immunity").map(m => ({ name: m.subType, fromFeature: true }));
-    const featureVulnerabilities = getFeatureModifiersByType(activeFeatures, "Vulnerability").map(m => ({ name: m.subType, fromFeature: true }));
+    const featureResistances = getFeatureModifiersWithSource(activeFeatures, "Resistance").map(m => ({ name: m.subType, fromFeature: true, fromFeatureId: m.fromFeatureId }));
+    const featureImmunities = getFeatureModifiersWithSource(activeFeatures, "Immunity").map(m => ({ name: m.subType, fromFeature: true, fromFeatureId: m.fromFeatureId }));
+    const featureVulnerabilities = getFeatureModifiersWithSource(activeFeatures, "Vulnerability").map(m => ({ name: m.subType, fromFeature: true, fromFeatureId: m.fromFeatureId }));
 
     const merge = (manualList: (string | DefenseEntry)[], featureList: DefenseEntry[]): DefenseEntry[] => {
         const combined = manualList.map(toEntry);

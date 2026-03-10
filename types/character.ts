@@ -173,11 +173,13 @@ export interface Sense {
   name: string;
   value: string;
   fromFeature?: boolean;
+  fromFeatureId?: string;
 }
 
 export interface DefenseEntry {
   name: string;
   fromFeature?: boolean;
+  fromFeatureId?: string;
 }
 
 export interface Defenses {

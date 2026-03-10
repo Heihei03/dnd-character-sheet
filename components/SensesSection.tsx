@@ -9,11 +9,13 @@ import ConfirmationModal from "./ui/ConfirmationModal";
 interface SensesSectionProps {
     senses: Sense[];
     onUpdateSenses: (senses: Sense[]) => void;
+    onNavigateToFeature?: (featureId: string) => void;
 }
 
 const SensesSection: React.FC<SensesSectionProps> = ({
     senses = [],
     onUpdateSenses,
+    onNavigateToFeature,
 }) => {
     const [newSense, setNewSense] = useState({ name: "", value: "" });
     const [senseToDelete, setSenseToDelete] = useState<Sense | null>(null);
@@ -46,7 +48,18 @@ const SensesSection: React.FC<SensesSectionProps> = ({
                             <div className="flex items-center gap-2 truncate mr-2">
                                 <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">{sense.name}</span>
                                 {sense.fromFeature && (
-                                    <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 tracking-wider">Feature</span>
+                                    <span
+                                        className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 tracking-wider cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                                        title="Granted by Feature - Click to view"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (sense.fromFeatureId && onNavigateToFeature) {
+                                                onNavigateToFeature(sense.fromFeatureId);
+                                            }
+                                        }}
+                                    >
+                                        Feature
+                                    </span>
                                 )}
                             </div>
                             <div className="flex items-center gap-3 shrink-0">
