@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "../../lib/utils";
 
 // Define props for both Card and CardContent
 export interface CardProps {
@@ -13,12 +14,12 @@ export interface CardContentProps {
 
 export function Card({ children, className = "" }: CardProps) {
   return (
-    <div className={`bg-white shadow-md rounded-lg overflow-hidden ${className}`}>
+    <div className={cn("bg-white shadow-md rounded-lg overflow-hidden", className)}>
       {children}
     </div>
   );
 }
 
 export function CardContent({ children, className = "" }: CardContentProps) {
-  return <div className={`p-4 ${className}`}>{children}</div>;
+  return <div className={cn("p-4", className)}>{children}</div>;
 }

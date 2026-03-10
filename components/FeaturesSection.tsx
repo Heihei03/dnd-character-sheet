@@ -305,7 +305,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                 </Card>
             )}
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-0">
                 {allFeatures.length === 0 ? (
                     <Card className="border-dashed">
                         <CardContent className="p-12 text-center text-gray-500 italic">
@@ -314,7 +314,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                     </Card>
                 ) : (
                     allFeatures.map((feature) => (
-                        <Card key={feature.id} className="overflow-hidden group hover:border-blue-400 transition-colors">
+                        <Card key={feature.id} className="overflow-hidden group border-none rounded-none shadow-none hover:shadow transition-all duration-200">
                             <CardContent className="p-0">
                                 <div
                                     className="p-3 px-4 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
