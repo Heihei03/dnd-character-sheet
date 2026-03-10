@@ -31,10 +31,13 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
         const newModifiers = modifiers.map(m => {
             if (m.id === id) {
                 const updated = { ...m, ...updates };
-                // If type changed to New Action and value is empty, default to parentName
-                // value is the name for New Action
-                if (updates.type === "New Action" && !updated.value && parentName) {
-                    updated.value = parentName;
+                // Autopopulate name from feature name (parentName) if empty
+                if (parentName) {
+                    if (updates.type === "New Action" && !updated.value) {
+                        updated.value = parentName;
+                    } else if (updates.type === "Resource" && (!updated.value || updated.value === "{}")) {
+                        updated.value = JSON.stringify({ name: parentName, max: 0, regain: "Long Rest" });
+                    }
                 }
                 return updated;
             }

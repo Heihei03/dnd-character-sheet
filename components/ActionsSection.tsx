@@ -62,6 +62,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         damageAbility: "strength",
         damageBonus: 0,
         versatileDice: "",
+        resourceName: "",
     });
 
     // Moved to utils/dice-utils.ts
@@ -123,6 +124,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
             damageAbility: processedData.damageAbility,
             damageBonus: processedData.damageBonus,
             versatileDice: processedData.versatileDice,
+            resourceName: processedData.resourceName,
         };
         handleActionsUpdate([...actions, newAction]);
         setIsAdding(false);
@@ -176,6 +178,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
             damageAbility: "strength",
             damageBonus: 0,
             versatileDice: "",
+            resourceName: "",
         });
     };
 
@@ -364,6 +367,20 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                             placeholder="One creature..."
                                         />
                                     </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold uppercase text-gray-500">Resource Name</label>
+                                        <input
+                                            type="text"
+                                            list="resource-suggestions"
+                                            value={formData.resourceName || ""}
+                                            onChange={(e) => setFormData({ ...formData, resourceName: e.target.value })}
+                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
+                                            placeholder="e.g. Ki Points"
+                                        />
+                                        <datalist id="resource-suggestions">
+                                            {resources.map(r => <option key={r.id} value={r.name} />)}
+                                        </datalist>
+                                    </div>
                                 </div>
                             </>
                         )}
@@ -493,7 +510,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                                 onClick={(e) => e.stopPropagation()}
                                                             >
                                                                 {(() => {
-                                                                    const resource = resources.find(r => r.name === action.resourceName);
+                                                                    const resource = resources.find(r => r.name.toLowerCase() === action.resourceName?.toLowerCase());
                                                                     if (!resource) return null;
                                                                     return (
                                                                         <ResourcePipTracker
@@ -625,7 +642,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                         {action.resourceName && (
                                                             <div className="pt-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
                                                                 {(() => {
-                                                                    const resource = resources.find(r => r.name === action.resourceName);
+                                                                    const resource = resources.find(r => r.name.toLowerCase() === action.resourceName?.toLowerCase());
                                                                     if (!resource) return null;
                                                                     return (
                                                                         <div className="max-w-sm">
