@@ -317,10 +317,10 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                         <Card key={feature.id} className="overflow-hidden group hover:border-blue-400 transition-colors">
                             <CardContent className="p-0">
                                 <div
-                                    className="p-4 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                                    className="p-3 px-4 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
                                     onClick={() => toggleExpand(feature.id)}
                                 >
-                                    <div className="flex items-center gap-3 overflow-hidden">
+                                    <div className="flex items-center gap-3 overflow-hidden flex-1">
                                         <div className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded whitespace-nowrap ${feature.origin === "Class" ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300" :
                                             feature.origin === "Species" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" :
                                                 feature.origin === "Background" ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300" :
@@ -344,20 +344,57 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); startEdit(feature); }}
-                                            className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                                        >
-                                            <Pencil className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); setFeatureToDelete(feature.id); }}
-                                            className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                        <ChevronDown className={`w-4 h-4 text-gray-400 transform transition-transform ${expandedIds.has(feature.id) ? "rotate-180" : ""}`} />
+                                    <div className="flex items-center gap-4">
+                                        {/* Resource Tracker for unexpanded view - Always Visible */}
+                                        {!expandedIds.has(feature.id) && feature.modifiers?.some(m => m.type === "Resource") && (
+                                            <div
+                                                className="hidden md:block w-56"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {feature.modifiers
+                                                    .filter(m => m.type === "Resource")
+                                                    .map(mod => {
+                                                        let resourceName = "";
+                                                        let relevantResource: Resource | undefined;
+                                                        try {
+                                                            const data = JSON.parse(mod.value as string || "{}");
+                                                            resourceName = data.name || mod.subType || "";
+                                                            relevantResource = resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
+                                                        } catch {
+                                                            resourceName = (mod.value as string) || mod.subType || "";
+                                                            relevantResource = resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
+                                                        }
+
+                                                        if (!relevantResource) return null;
+
+                                                        return (
+                                                            <div key={mod.id} className="scale-90 origin-right translate-x-1">
+                                                                <ResourcePipTracker
+                                                                    resource={relevantResource}
+                                                                    onUpdate={(val) => handleUpdateResourceValue(relevantResource!.id, val)}
+                                                                    compact={true}
+                                                                />
+                                                            </div>
+                                                        );
+                                                    })}
+                                            </div>
+                                        )}
+
+                                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); startEdit(feature); }}
+                                                className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                            >
+                                                <Pencil className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); setFeatureToDelete(feature.id); }}
+                                                className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                            <ChevronDown className={`w-4 h-4 text-gray-400 transform transition-transform ${expandedIds.has(feature.id) ? "rotate-180" : ""}`} />
+                                        </div>
                                     </div>
                                 </div>
 
