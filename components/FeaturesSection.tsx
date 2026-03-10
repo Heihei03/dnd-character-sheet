@@ -166,6 +166,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
             subclass: "",
             modifiers: [],
             effects: [],
+            level: undefined,
         });
     };
 
@@ -175,20 +176,39 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
         onUpdateResources(newResources);
     };
 
-    const allFeatures = [...features, ...itemFeatures].filter(feature => {
-        let matchesOrigin = true;
-        if (selectedOrigin === "All") {
-            matchesOrigin = true;
-        } else if (selectedOrigin === "Subclass") {
-            matchesOrigin = feature.origin === "Class" && !!feature.subclass;
-        } else {
-            matchesOrigin = feature.origin === selectedOrigin;
-        }
+    const allFeatures = [...features, ...itemFeatures]
+        .filter(feature => {
+            let matchesOrigin = true;
+            if (selectedOrigin === "All") {
+                matchesOrigin = true;
+            } else if (selectedOrigin === "Subclass") {
+                matchesOrigin = feature.origin === "Class" && !!feature.subclass;
+            } else {
+                matchesOrigin = feature.origin === selectedOrigin;
+            }
 
-        const matchesSearch = feature.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            feature.description.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesOrigin && matchesSearch;
-    });
+            const matchesSearch = feature.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                feature.description.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesOrigin && matchesSearch;
+        })
+        .sort((a, b) => {
+            // Sort by origin first (Class -> Species -> Background -> Feat -> Item -> Other)
+            const originOrder: Record<string, number> = { "Class": 0, "Species": 1, "Background": 2, "Feat": 3, "Item": 4, "Other": 5 };
+            const orderA = originOrder[a.origin] ?? 99;
+            const orderB = originOrder[b.origin] ?? 99;
+
+            if (orderA !== orderB) return orderA - orderB;
+
+            // Within Class features, sort by level
+            if (a.origin === "Class" && b.origin === "Class") {
+                const levelA = a.level ?? 0;
+                const levelB = b.level ?? 0;
+                if (levelA !== levelB) return levelA - levelB;
+            }
+
+            // Finally sort by name
+            return a.name.localeCompare(b.name);
+        });
 
     return (
         <div className="space-y-6">
@@ -285,6 +305,20 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                     </select>
                                                 </div>
                                             )}
+
+                                            {/* Level Selection */}
+                                            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200 mt-1">
+                                                <label className="text-[10px] font-bold uppercase text-gray-400 whitespace-nowrap">Level Gained</label>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="20"
+                                                    value={formData.level || ""}
+                                                    onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) || undefined })}
+                                                    className="w-16 p-1 text-xs border rounded dark:bg-gray-900 dark:border-gray-700"
+                                                    placeholder="Lvl..."
+                                                />
+                                            </div>
                                         </div>
                                     )}
                                     {formData.origin === "Species" && (
@@ -366,6 +400,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                         "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                                             }`}>
                                             {feature.origin}: {feature.subclass ? `${feature.subclass} ` : ""}{feature.subOrigin || ""}
+                                            {feature.level && feature.origin === "Class" ? ` Lvl ${feature.level}` : ""}
                                         </div>
                                         <h4 className="font-bold truncate">{feature.name}</h4>
                                         {feature.modifiers && feature.modifiers.length > 0 && (

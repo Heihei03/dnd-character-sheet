@@ -200,6 +200,7 @@ export interface Feature {
   modifiers?: FeatureModifier[];
   effects?: string[];
   sourceItemId?: string;
+  level?: number;
 }
 
 export const ACTION_TYPES = ["Action", "Bonus Action", "Reaction", "Free Action", "Attack"] as const;
