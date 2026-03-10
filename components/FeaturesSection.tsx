@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, X, Pencil, Trash2, ChevronDown, Plus, Minus, RotateCcw } from "lucide-react";
-import { Feature, Resource, CharacterClass } from "../types/character";
+import { Dices, Search, X, Pencil, Trash2, ChevronDown, Plus, Minus, RotateCcw } from "lucide-react";
+import { Feature, Resource, CharacterClass, AbilityScores } from "../types/character";
+import { resolveRollExpression } from "../utils/character-utils";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import FeatureModifierEditor from "./FeatureModifierEditor";
@@ -18,6 +19,11 @@ interface FeaturesSectionProps {
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
     classes?: CharacterClass[];
+    abilityScores: AbilityScores;
+    proficiencyBonus: number;
+    totalLevel: number;
+    rollDice?: (sides: number, modifier?: number, label?: string) => void;
+    rollDamage?: (damageString: string, label?: string, damageType?: string) => void;
     species?: string;
     subSpecies?: string;
     background?: string;
@@ -37,6 +43,11 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     resources = [],
     onUpdateResources,
     classes = [],
+    abilityScores,
+    proficiencyBonus,
+    totalLevel,
+    rollDice,
+    rollDamage,
     species = "",
     subSpecies = "",
     background = "",
@@ -174,6 +185,29 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
         if (!onUpdateResources) return;
         const newResources = resources.map(r => r.id === id ? { ...r, value: newValue } : r);
         onUpdateResources(newResources);
+    };
+
+    const handleRoll = (mod: any, featureName: string) => {
+        if (!rollDamage) return;
+
+        let expr = "";
+        let label = featureName;
+
+        if (mod.type === "Roll") {
+            expr = mod.value as string;
+            if (mod.subType && mod.subType !== "all") label = `${featureName} (${mod.subType})`;
+        } else if (mod.type === "New Action") {
+            try {
+                const data = JSON.parse(mod.value as string || "{}");
+                expr = data.damageDice;
+                label = data.name || featureName;
+            } catch { return; }
+        }
+
+        if (expr) {
+            const resolved = resolveRollExpression(expr, abilityScores, totalLevel, proficiencyBonus);
+            rollDamage(resolved, label);
+        }
     };
 
     const allFeatures = [...features, ...itemFeatures]
@@ -418,6 +452,33 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                         )}
                                     </div>
                                     <div className="flex items-center gap-4">
+                                        {/* Roll Button for unexpanded view */}
+                                        {!expandedIds.has(feature.id) && (() => {
+                                            const rollableMod = (feature.modifiers || []).find(m => {
+                                                if (m.type === "Roll" && m.value) return true;
+                                                if (m.type === "New Action") {
+                                                    try {
+                                                        const data = JSON.parse(m.value as string || "{}");
+                                                        return !!data.damageDice;
+                                                    } catch { return false; }
+                                                }
+                                                return false;
+                                            });
+
+                                            if (!rollableMod) return null;
+
+                                            return (
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleRoll(rollableMod, feature.name); }}
+                                                    className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors flex items-center gap-1.5"
+                                                    title="Quick Roll"
+                                                >
+                                                    <Dices className="w-4 h-4" />
+                                                    {rollableMod.type === "Roll" && <span className="text-[10px] font-bold font-mono">{rollableMod.value}</span>}
+                                                </button>
+                                            );
+                                        })()}
+
                                         {/* Resource Tracker for unexpanded view - Always Visible */}
                                         {!expandedIds.has(feature.id) && feature.modifiers?.some(m => m.type === "Resource") && (
                                             <div
@@ -503,8 +564,19 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                                     <span className="font-semibold text-gray-700 dark:text-gray-200">{isResource ? resourceName : mod.subType}</span>
                                                                 </div>
                                                                 {!isResource && mod.type !== "Resistance" && mod.type !== "Immunity" && mod.type !== "Vulnerability" && (
-                                                                    <div className="font-mono bg-white dark:bg-gray-800 px-2 py-0.5 rounded border border-gray-100 dark:border-gray-700 shadow-sm text-blue-600 dark:text-blue-400 text-xs">
-                                                                        {mod.value}
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="font-mono bg-white dark:bg-gray-800 px-2 py-0.5 rounded border border-gray-100 dark:border-gray-700 shadow-sm text-blue-600 dark:text-blue-400 text-xs">
+                                                                            {mod.value}
+                                                                        </div>
+                                                                        {(mod.type === "Roll" || mod.type === "New Action") && (
+                                                                            <button
+                                                                                onClick={(e) => { e.stopPropagation(); handleRoll(mod, feature.name); }}
+                                                                                className="p-1 text-blue-600 hover:text-blue-800 transition-colors"
+                                                                                title="Roll"
+                                                                            >
+                                                                                <Dices className="w-4 h-4" />
+                                                                            </button>
+                                                                        )}
                                                                     </div>
                                                                 )}
                                                                 {isResource && relevantResource && (

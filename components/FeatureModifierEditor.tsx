@@ -108,7 +108,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                 </select>
                             </div>
                             <div className="col-span-4 relative group">
-                                {mod.type !== "Spell" && mod.type !== "Resource" && (
+                                {mod.type !== "Spell" && mod.type !== "Resource" && mod.type !== "New Action" && mod.type !== "Roll" && (
                                     <>
                                         <input
                                             type="text"
@@ -185,19 +185,34 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             </button>
                                         </div>
                                     </div>
-                                ) : mod.type === "Resource" ? (
+                                ) : mod.type === "Roll" ? (
+                                    <div className="flex gap-2 w-full">
+                                        <input
+                                            type="text"
+                                            value={mod.value || ""}
+                                            onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
+                                            className="flex-1 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-mono"
+                                            placeholder="Dice (e.g. 1d6, +2, or 10 + Dex)..."
+                                        />
+                                        <input
+                                            type="text"
+                                            value={mod.subType || ""}
+                                            onChange={(e) => updateModifier(mod.id, { subType: e.target.value })}
+                                            className="w-24 text-[10px] p-1 bg-gray-50 dark:bg-gray-800 border rounded"
+                                            placeholder="Target (all, melee, or Action Name)"
+                                        />
+                                    </div>
+                                ) : (mod.type === "New Action" || mod.type === "Resource") ? (
                                     <div className="flex items-center h-full px-1.5 italic text-gray-400 text-[10px]">
                                         Configure below...
                                     </div>
-                                ) : mod.type === "Advantage" || mod.type === "Disadvantage" || mod.type === "Resistance" || mod.type === "Immunity" || mod.type === "Vulnerability" ? (
-                                    <div className="col-span-3" />
                                 ) : (
                                     <input
                                         type="text"
                                         value={mod.value || ""}
                                         onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
                                         className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
-                                        placeholder={mod.type === "New Action" && parentName ? parentName : "Value..."}
+                                        placeholder="Value..."
                                     />
                                 )}
                             </div>
@@ -355,6 +370,118 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             >
                                                 {REGAIN_TYPES.map(r => <option key={r} value={r}>{r}</option>)}
                                             </select>
+                                        </div>
+                                    </div>
+                                )}
+                                {mod.type === "New Action" && (
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 mt-1 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-top-1">
+                                        <div className="md:col-span-2 space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Action Name</label>
+                                            <input
+                                                type="text"
+                                                value={(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return data.name || "";
+                                                    } catch { return mod.value as string || ""; }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { }
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, name: e.target.value }) });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                                                placeholder={parentName || "Action Name"}
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Type</label>
+                                            <select
+                                                value={(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return data.type || mod.subType || "Action";
+                                                    } catch { return mod.subType || "Action"; }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { }
+                                                    updateModifier(mod.id, {
+                                                        subType: e.target.value,
+                                                        value: JSON.stringify({ ...current, type: e.target.value })
+                                                    });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                                            >
+                                                <option value="Action">Action</option>
+                                                <option value="Bonus Action">Bonus Action</option>
+                                                <option value="Reaction">Reaction</option>
+                                                <option value="Attack">Attack</option>
+                                                <option value="Free Action">Free Action</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Damage Dice</label>
+                                            <input
+                                                type="text"
+                                                value={(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return data.damageDice || "";
+                                                    } catch { return ""; }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { }
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, damageDice: e.target.value }) });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900 font-mono"
+                                                placeholder="1d8"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Ability</label>
+                                            <select
+                                                value={(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return data.damageAbility || "";
+                                                    } catch { return ""; }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { }
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, damageAbility: e.target.value }) });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                                            >
+                                                <option value="">None</option>
+                                                <option value="strength">STR</option>
+                                                <option value="dexterity">DEX</option>
+                                                <option value="constitution">CON</option>
+                                                <option value="intelligence">INT</option>
+                                                <option value="wisdom">WIS</option>
+                                                <option value="charisma">CHA</option>
+                                            </select>
+                                        </div>
+                                        <div className="md:col-span-2 space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Resource Link</label>
+                                            <input
+                                                type="text"
+                                                value={(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return data.resourceName || "";
+                                                    } catch { return ""; }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { }
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, resourceName: e.target.value }) });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                                                placeholder="Auto-linked if in feature"
+                                            />
                                         </div>
                                     </div>
                                 )}

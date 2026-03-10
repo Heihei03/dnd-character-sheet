@@ -4,9 +4,9 @@ import React, { useState } from "react";
 import { Action, ActionType, AbilityScores } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
-import { Pencil, Trash2, ChevronDown, Plus, Zap } from "lucide-react";
+import { Pencil, Trash2, ChevronDown, Plus, Zap, Dices } from "lucide-react";
 import { DAMAGE_TYPES } from "../utils/constants";
-import { getAbilityModifier } from "../utils/character-utils";
+import { getAbilityModifier, resolveRollExpression } from "../utils/character-utils";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../utils/dice-utils";
 import ResourcePipTracker from "./ResourcePipTracker";
 import { Resource } from "../types/character";
@@ -493,8 +493,9 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                                                 type="button"
                                                                                 onClick={(e) => { e.stopPropagation(); if (rollDice) rollDice(20, total, `${action.name} Attack`); }}
                                                                                 title="Roll Attack"
-                                                                                className="hover:underline flex items-center gap-1"
+                                                                                className="hover:underline flex items-center gap-1.5"
                                                                             >
+                                                                                <Dices className="w-3 h-3 opacity-70" />
                                                                                 {total >= 0 ? "+" : ""}{total}
                                                                             </button>
                                                                         );
@@ -522,16 +523,23 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                                 })()}
                                                             </div>
                                                         )}
-                                                        {(action.type === "Attack" || action.baseLevel !== undefined) && (upcastedDamage || action.range || action.activation) && (
+                                                        {(action.type === "Attack" || action.baseLevel !== undefined || upcastedDamage) && (upcastedDamage || action.range || action.activation) && (
                                                             <div className="hidden sm:flex items-center gap-3 text-xs text-gray-500">
                                                                 {action.activation && <span className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">{action.activation}</span>}
                                                                 {upcastedDamage && (
                                                                     <button
                                                                         type="button"
-                                                                        onClick={(e) => { e.stopPropagation(); if (rollDamage) rollDamage(upcastedDamage || "", `${action.name} Damage`, action.damageType); }}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            if (rollDamage) {
+                                                                                const resolved = resolveRollExpression(upcastedDamage || "", abilityScores, totalLevel, proficiencyBonus);
+                                                                                rollDamage(resolved, action.name, action.damageType);
+                                                                            }
+                                                                        }}
                                                                         title="Roll Damage"
-                                                                        className={`font-mono font-bold hover:underline cursor-pointer ${currentCastLevel > (action.baseLevel || 0) ? "text-blue-600 dark:text-blue-400" : "text-blue-600 dark:text-blue-400"}`}
+                                                                        className={`font-mono font-bold hover:underline cursor-pointer flex items-center gap-1.5 ${currentCastLevel > (action.baseLevel || 0) ? "text-blue-600 dark:text-blue-400" : "text-blue-600 dark:text-blue-400"}`}
                                                                     >
+                                                                        <Dices className="w-3 h-3" />
                                                                         {upcastedDamage}{action.versatileDamage ? ` / ${action.versatileDamage}` : ""} {action.damageType}
                                                                     </button>
                                                                 )}
@@ -600,10 +608,18 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                                         <div className="font-medium">
                                                                             <button
                                                                                 type="button"
-                                                                                onClick={(e) => { e.stopPropagation(); if (rollDamage) rollDamage(upcastedDamage || upcastedHealing || "", `${action.name} Result`, action.damageType); }}
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    if (rollDamage) {
+                                                                                        const expr = upcastedDamage || upcastedHealing || "";
+                                                                                        const resolved = resolveRollExpression(expr, abilityScores, totalLevel, proficiencyBonus);
+                                                                                        rollDamage(resolved, action.name, action.damageType);
+                                                                                    }
+                                                                                }}
                                                                                 title="Roll"
-                                                                                className={`hover:underline cursor-pointer font-bold ${currentCastLevel > (action.baseLevel || 0) ? "text-blue-600 dark:text-blue-400" : "text-blue-600 dark:text-blue-400"}`}
+                                                                                className={`hover:underline cursor-pointer font-bold flex items-center gap-1.5 ${currentCastLevel > (action.baseLevel || 0) ? "text-blue-600 dark:text-blue-400" : "text-blue-600 dark:text-blue-400"}`}
                                                                             >
+                                                                                <Dices className="w-3 h-3" />
                                                                                 {upcastedDamage || upcastedHealing}
                                                                             </button>
                                                                             {action.versatileDamage ? ` (${action.versatileDamage} 2-handed)` : ""} {action.damageType}

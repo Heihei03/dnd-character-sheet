@@ -1,4 +1,4 @@
-import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency } from "../types/character";
+import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency, AbilityScores } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 import { STANDARD_ACTIONS } from "../data/standard-actions";
 import { SKILL_LIST, LANGUAGES } from "./constants";
@@ -28,6 +28,68 @@ export const ABILITY_NAMES = ["Strength", "Dexterity", "Constitution", "Intellig
 
 export const getFeatureModifiersByType = (features: Feature[] = [], type: string): FeatureModifier[] => {
     return features.flatMap(f => (f.modifiers || []).filter(m => m.type === type));
+};
+
+/**
+ * Resolves a dice expression like "1d10 + Dex + Level" into "1d10 + 7"
+ */
+export const resolveRollExpression = (
+    expr: string,
+    abilityScores: AbilityScores,
+    totalLevel: number,
+    proficiencyBonus: number
+): string => {
+    if (!expr) return "";
+
+    let resolved = expr.trim();
+
+    // Ability scores (e.g., "Dex", "Strength")
+    const abilities = [
+        { full: "strength", short: "str" },
+        { full: "dexterity", short: "dex" },
+        { full: "constitution", short: "con" },
+        { full: "intelligence", short: "int" },
+        { full: "wisdom", short: "wis" },
+        { full: "charisma", short: "cha" }
+    ];
+
+    abilities.forEach(a => {
+        const mod = getAbilityModifier(abilityScores[a.full as keyof AbilityScores] || 10);
+        // Use regex to replace both full and short names, case-insensitive
+        const regex = new RegExp(`\\b(${a.full}|${a.short})\\b`, 'gi');
+        resolved = resolved.replace(regex, mod >= 0 ? `+${mod}` : `${mod}`);
+    });
+
+    // Level and Proficiency
+    resolved = resolved.replace(/\blevel\b/gi, `+${totalLevel}`);
+    resolved = resolved.replace(/\b(prof|proficiency)\b/gi, `+${proficiencyBonus}`);
+
+    // Clean up double pluses or spaces around signs
+    resolved = resolved.replace(/\+\+/g, "+").replace(/\-\+/g, "-").replace(/\+\-/g, "-");
+
+    // Attempt to simplify the numeric parts if it starts with dice
+    const diceMatch = resolved.match(/^(\d+d\d+)(.*)/i);
+    if (diceMatch) {
+        const dicePart = diceMatch[1];
+        const modPart = diceMatch[2].trim();
+
+        if (modPart) {
+            try {
+                // Sanitize: only allow numbers, +, -, and spaces (avoiding * / for simple addition)
+                const sanitizedMod = modPart.replace(/[^-+0-9 ]/g, '');
+                // Simple sum of parts
+                const parts = sanitizedMod.match(/[+-]?\s*\d+/g);
+                if (parts) {
+                    const sum = parts.reduce((acc, part) => acc + parseInt(part.replace(/\s+/g, '')), 0);
+                    return `${dicePart}${sum >= 0 ? "+" : ""}${sum}`;
+                }
+            } catch (e) {
+                // Return unresolved if complex
+            }
+        }
+    }
+
+    return resolved;
 };
 
 export const getFeatureModifiersWithSource = (features: Feature[] = [], type: string): (FeatureModifier & { fromFeatureId?: string })[] => {
@@ -358,7 +420,6 @@ export const getEffectiveActions = (character: Character): Action[] => {
                     // Try to link to a resource in the same feature
                     let resourceName = data.resourceName;
                     if (!resourceName && resourceModifiers.length > 0) {
-                        // Default to the first resource in the same feature if not specified
                         try {
                             const firstRes = JSON.parse(resourceModifiers[0].value as string);
                             resourceName = firstRes.name || f.name;
@@ -367,9 +428,19 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         }
                     }
 
+                    // Calculate damage string if dice and ability are provided
+                    let damage = data.damage;
+                    if (data.damageDice) {
+                        const abilityMod = data.damageAbility ? getAbilityModifier(effectiveAbilityScores[data.damageAbility] || 10) : 0;
+                        damage = `${data.damageDice}${abilityMod >= 0 ? "+" : ""}${abilityMod}`;
+                    }
+
                     action = {
                         name: actionName,
+                        type: (data.type || m.subType) as any || "Action",
                         ...data,
+                        activation: data.activation || (data.type || m.subType) as any || "1 Action",
+                        damage: damage,
                         resourceName,
                         id: `feature-action-${m.id}-${idx}`,
                         fromFeature: true
@@ -402,9 +473,8 @@ export const getEffectiveActions = (character: Character): Action[] => {
     });
 
     // Merge manual, weapon, standard actions, spell actions, and feature actions
-    const combined = [...STANDARD_ACTIONS];
+    const combined: Action[] = [...STANDARD_ACTIONS];
 
-    // Use a map to ensure unique IDs for weapon/spell/feature actions
     const dynamicActions = [...weaponActions, ...spellActions, ...extraActions];
     dynamicActions.forEach(da => {
         if (!combined.some(a => a.id === da.id)) {
@@ -412,11 +482,42 @@ export const getEffectiveActions = (character: Character): Action[] => {
         }
     });
 
-    // Add manual actions, ensuring they don't duplicate standard or dynamic actions by ID
     manualActions.forEach(ma => {
         if (!combined.some(a => a.id === ma.id)) {
             combined.push(ma);
         }
+    });
+
+    // 5. Apply "Roll" modifiers (bonus dice/flat damage)
+    const rollModifiers = getFeatureModifiersByType(activeFeatures, "Roll");
+
+    combined.forEach(action => {
+        rollModifiers.forEach(mod => {
+            const target = (mod.subType || "").toLowerCase().trim();
+            const actionName = action.name.toLowerCase().trim();
+
+            // Match by specific name or "all", or "melee", "ranged" (if we had those tags, but for now name or all)
+            const isMatch = target === "all" || target === actionName ||
+                (target === "melee" && action.range === undefined) || // Simple heuristic
+                (target === "ranged" && action.range !== undefined);
+
+            if (isMatch && mod.value) {
+                // Append the bonus to the damage string
+                const bonus = mod.value.toString().trim();
+                if (bonus) {
+                    // Check if it's already a dice string or just a number
+                    const separator = (bonus.startsWith("+") || bonus.startsWith("-")) ? "" : "+";
+                    action.damage = `${action.damage}${separator}${bonus}`;
+
+                    // Also update structured field if applicable
+                    if (action.damageDice) {
+                        action.damageDice = `${action.damageDice}${separator}${bonus}`;
+                    } else {
+                        action.damageDice = bonus;
+                    }
+                }
+            }
+        });
     });
 
     return combined;
