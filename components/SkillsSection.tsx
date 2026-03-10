@@ -7,6 +7,7 @@ import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, getAdva
 
 interface SkillsSectionProps {
     character: Character;
+    skills: Skills;
     setSkills: (key: string, value: string) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
@@ -15,13 +16,12 @@ interface SkillsSectionProps {
 
 const SkillsSection: React.FC<SkillsSectionProps> = ({
     character,
+    skills,
     setSkills,
     abilityScores,
     proficiencyBonus,
     rollDice,
 }) => {
-    const skills = character.skills || {} as Skills;
-
     return (
         <Card className="w-full">
             <CardContent className="p-6">
@@ -58,6 +58,9 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                             <span className="font-medium cursor-pointer" onClick={() => rollDice(20, totalBonus, skill.name)}>
                                                 {skill.name} <span className="text-gray-500 text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
                                             </span>
+                                            {(skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
+                                                <span className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter" title="Granted by Feature">Feature</span>
+                                            )}
                                             {advantage && (
                                                 <span className="text-[10px] font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV</span>
                                             )}

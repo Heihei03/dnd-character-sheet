@@ -93,6 +93,7 @@ export interface ToolProficiency {
   name: string;
   ability: string;
   level: ProficiencyLevel;
+  fromFeature?: boolean;
 }
 
 export interface InventoryItem {

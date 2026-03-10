@@ -25,7 +25,7 @@ import DefensesSection from "./DefensesSection";
 import ActionsSection from "./ActionsSection";
 import SpellsSection from "./SpellsSection";
 import ConditionsSection from "./ConditionsSection";
-import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells, getEffectiveResources, getEffectiveConditions } from "../utils/character-utils";
+import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells, getEffectiveResources, getEffectiveConditions, getEffectiveSkills, getEffectiveToolProficiencies, getEffectiveWeaponProficiencies, getEffectiveArmorProficiencies, getEffectiveLanguages } from "../utils/character-utils";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -147,6 +147,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   };
 
   const effectiveAbilityScores = getEffectiveAbilityScores(characterWithDefaults);
+  const effectiveSkills = getEffectiveSkills(characterWithDefaults);
+  const effectiveToolProficiencies = getEffectiveToolProficiencies(characterWithDefaults);
+  const effectiveWeaponProficiencies = getEffectiveWeaponProficiencies(characterWithDefaults);
+  const effectiveArmorProficiencies = getEffectiveArmorProficiencies(characterWithDefaults);
+  const effectiveLanguages = getEffectiveLanguages(characterWithDefaults);
 
 
   // Function to calculate proficiency bonus based on level
@@ -605,23 +610,24 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
             <SkillsSection
               character={characterWithDefaults}
+              skills={effectiveSkills}
               setSkills={handleSkillChange}
               abilityScores={effectiveAbilityScores}
               proficiencyBonus={proficiencyBonus}
               rollDice={rollDice}
             />
             <ToolChecksSection
-              toolProficiencies={characterWithDefaults.toolProficiencies}
+              toolProficiencies={effectiveToolProficiencies}
               onUpdate={(value) => handleChange("toolProficiencies", value)}
               abilityScores={effectiveAbilityScores}
               proficiencyBonus={proficiencyBonus}
               rollDice={rollDice}
             />
             <ProficienciesLanguagesSection
-              weaponProficiencies={characterWithDefaults.weaponProficiencies}
-              armorProficiencies={characterWithDefaults.armorProficiencies}
-              toolProficiencies={characterWithDefaults.toolProficiencies}
-              languages={characterWithDefaults.languages}
+              weaponProficiencies={effectiveWeaponProficiencies}
+              armorProficiencies={effectiveArmorProficiencies}
+              toolProficiencies={effectiveToolProficiencies}
+              languages={effectiveLanguages}
               onUpdate={(field, value) => handleChange(field as keyof Character, value)}
             />
           </div>

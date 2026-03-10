@@ -52,9 +52,9 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                             >
                                 <div className="flex items-center gap-3">
                                     <button
-                                        onClick={() => handleUpdateTool(index, { level: cycleProficiency(tool.level) })}
-                                        className="w-8 h-8 flex items-center justify-center focus:outline-none hover:text-blue-600 transition-transform active:scale-95"
-                                        title={`Proficiency: ${tool.level}`}
+                                        onClick={() => !tool.fromFeature && handleUpdateTool(index, { level: cycleProficiency(tool.level) })}
+                                        className={`w-8 h-8 flex items-center justify-center focus:outline-none transition-transform active:scale-95 ${tool.fromFeature ? "cursor-default" : "hover:text-blue-600"}`}
+                                        title={tool.fromFeature ? `Granted by Feature: ${tool.level}` : `Proficiency: ${tool.level}`}
                                     >
                                         <ProficiencyIcon level={tool.level} />
                                     </button>
@@ -62,19 +62,26 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                         <span className="font-medium cursor-pointer" onClick={() => rollDice(20, totalBonus, `${tool.name} Check`)}>
                                             {tool.name}
                                         </span>
+                                        {tool.fromFeature && (
+                                            <span className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter" title="Granted by Feature">Feature</span>
+                                        )}
                                         <div className="flex items-center text-[11px] text-gray-500 font-bold uppercase tracking-tight">
                                             <span>(</span>
-                                            <select
-                                                value={tool.ability}
-                                                onChange={(e) => handleUpdateTool(index, { ability: e.target.value })}
-                                                className="bg-transparent border-none p-0 h-auto w-fit text-inherit focus:ring-0 cursor-pointer uppercase font-bold tracking-tight hover:text-blue-600"
-                                            >
-                                                {ABILITY_NAMES.map(ability => (
-                                                    <option key={ability} value={ability}>
-                                                        {ability.substring(0, 3)}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                            {tool.fromFeature ? (
+                                                <span className="cursor-default">{tool.ability.substring(0, 3)}</span>
+                                            ) : (
+                                                <select
+                                                    value={tool.ability}
+                                                    onChange={(e) => handleUpdateTool(index, { ability: e.target.value })}
+                                                    className="bg-transparent border-none p-0 h-auto w-fit text-inherit focus:ring-0 cursor-pointer uppercase font-bold tracking-tight hover:text-blue-600"
+                                                >
+                                                    {ABILITY_NAMES.map(ability => (
+                                                        <option key={ability} value={ability}>
+                                                            {ability.substring(0, 3)}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            )}
                                             <span>)</span>
                                         </div>
                                     </div>

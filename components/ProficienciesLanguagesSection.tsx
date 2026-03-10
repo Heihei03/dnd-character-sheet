@@ -10,9 +10,9 @@ import { Plus, X } from "lucide-react";
 
 interface ProficiencyListProps {
     title: string;
-    items: (string | ToolProficiency)[];
+    items: (string | ToolProficiency | { name: string, fromFeature: boolean })[];
     field: string;
-    onUpdate: (field: string, value: (string | ToolProficiency)[]) => void;
+    onUpdate: (field: string, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => void;
     options?: string[];
 }
 
@@ -67,21 +67,31 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                 {items.length > 0 ? (
                     items.map((item, index) => {
                         const itemName = typeof item === 'string' ? item : item.name;
+                        const isFromFeature = typeof item === 'object' && item.fromFeature;
+
                         return (
                             <div
                                 key={index}
-                                className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-900/50 text-[13px] flex items-center gap-1 group whitespace-nowrap overflow-hidden text-ellipsis"
+                                className={`px-1.5 py-0.5 rounded border text-[13px] flex items-center gap-1 group whitespace-nowrap overflow-hidden text-ellipsis transition-colors ${isFromFeature
+                                    ? "bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200"
+                                    : "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/50 text-blue-700 dark:text-blue-300"
+                                    }`}
                             >
                                 <span className="flex items-center gap-1 min-w-0">
                                     <span className="truncate">{itemName}</span>
+                                    {isFromFeature && (
+                                        <span className="text-[8px] font-black bg-blue-500 text-white px-0.5 rounded uppercase leading-tight">F</span>
+                                    )}
                                 </span>
-                                <button
-                                    onClick={() => removeItem(index)}
-                                    className="text-blue-300 hover:text-red-500 dark:text-blue-700 dark:hover:text-red-400 transition-colors px-0.5 ml-0.5 flex items-center justify-center font-bold"
-                                    title="Remove"
-                                >
-                                    <X className="w-3.5 h-3.5" />
-                                </button>
+                                {!isFromFeature && (
+                                    <button
+                                        onClick={() => removeItem(index)}
+                                        className="text-blue-300 hover:text-red-500 dark:text-blue-700 dark:hover:text-red-400 transition-colors px-0.5 ml-0.5 flex items-center justify-center font-bold"
+                                        title="Remove"
+                                    >
+                                        <X className="w-3.5 h-3.5" />
+                                    </button>
+                                )}
                             </div>
                         );
                     })
@@ -124,11 +134,11 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
 };
 
 interface ProficienciesLanguagesSectionProps {
-    weaponProficiencies?: string[];
-    armorProficiencies?: string[];
+    weaponProficiencies?: (string | { name: string, fromFeature: boolean })[];
+    armorProficiencies?: (string | { name: string, fromFeature: boolean })[];
     toolProficiencies?: ToolProficiency[];
-    languages?: string[];
-    onUpdate: (field: string, value: (string | ToolProficiency)[]) => void;
+    languages?: (string | { name: string, fromFeature: boolean })[];
+    onUpdate: (field: string, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => void;
 }
 
 const weaponOptions = ["Simple Weapons", "Martial Weapons", ...Object.keys(WEAPON_DATA)];
