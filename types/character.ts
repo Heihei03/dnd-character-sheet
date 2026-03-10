@@ -140,6 +140,10 @@ export interface Resource {
   value: number;
   regain: string; // e.g., "Short Rest", "Long Rest", "Dawn"
   fromFeature?: boolean;
+  useAbilityMod?: keyof AbilityScores;
+  useCharacterLevel?: boolean;
+  useProficiencyBonus?: boolean;
+  multiplier?: number;
 }
 
 export interface DeathSaves {

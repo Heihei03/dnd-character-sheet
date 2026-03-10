@@ -226,69 +226,109 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <div className="flex justify-between items-center">
-                                                <label className="text-[10px] uppercase font-bold text-gray-400">Max Amount</label>
-                                                <div className="flex items-center gap-1">
-                                                    <input
-                                                        type="checkbox"
-                                                        id={`prof-bonus-${mod.id}`}
-                                                        checked={(() => {
-                                                            try {
-                                                                return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
-                                                            } catch {
-                                                                return false;
-                                                            }
-                                                        })()}
-                                                        onChange={(e) => {
-                                                            let current = {};
-                                                            try { current = JSON.parse(mod.value as string || "{}"); } catch { /* ignore */ }
-                                                            updateModifier(mod.id, { value: JSON.stringify({ ...current, useProficiencyBonus: e.target.checked }) });
-                                                        }}
-                                                        className="w-3 h-3"
-                                                    />
-                                                    <label htmlFor={`prof-bonus-${mod.id}`} className="text-[9px] text-gray-500 whitespace-nowrap">Prof. Bonus</label>
-                                                </div>
-                                            </div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Max Scaling</label>
+                                            <select
+                                                value={(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        if (data.useProficiencyBonus) return "pb";
+                                                        if (data.useAbilityMod) return data.useAbilityMod;
+                                                        if (data.useCharacterLevel) return "level";
+                                                        return "fixed";
+                                                    } catch { return "fixed"; }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { }
+                                                    const val = e.target.value;
+                                                    const updates = {
+                                                        useProficiencyBonus: val === "pb",
+                                                        useAbilityMod: ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"].includes(val) ? val : undefined,
+                                                        useCharacterLevel: val === "level"
+                                                    };
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, ...updates }) });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                                            >
+                                                <option value="fixed">Fixed</option>
+                                                <option value="pb">Prof. Bonus</option>
+                                                <option value="level">Level</option>
+                                                {["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"].map(a => (
+                                                    <option key={a} value={a}>{a.charAt(0).toUpperCase() + a.slice(1, 3)} Mod</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">
+                                                {(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return (data.useProficiencyBonus || data.useAbilityMod || data.useCharacterLevel) ? "Multiplier" : "N/A";
+                                                    } catch { return "Multiplier"; }
+                                                })()}
+                                            </label>
                                             <input
                                                 type="number"
                                                 value={(() => {
                                                     try {
                                                         const data = JSON.parse(mod.value as string || "{}");
-                                                        if (data.useProficiencyBonus) return "";
-                                                        return data.max || 0;
-                                                    } catch {
-                                                        return 0;
-                                                    }
+                                                        return data.multiplier || 1;
+                                                    } catch { return 1; }
                                                 })()}
                                                 disabled={(() => {
                                                     try {
-                                                        return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
-                                                    } catch {
-                                                        return false;
-                                                    }
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return !(data.useProficiencyBonus || data.useAbilityMod || data.useCharacterLevel);
+                                                    } catch { return true; }
                                                 })()}
                                                 onChange={(e) => {
                                                     let current = {};
-                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { /* ignore */ }
-                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, max: parseInt(e.target.value) || 0 }) });
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { }
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, multiplier: parseFloat(e.target.value) || 1 }) });
                                                 }}
                                                 className={`w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900 ${(() => {
                                                     try {
-                                                        return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
-                                                    } catch {
-                                                        return false;
-                                                    }
-                                                })() ? "bg-gray-100 text-gray-400" : ""
-                                                    }`}
-                                                placeholder={
-                                                    (() => {
-                                                        try {
-                                                            return !!JSON.parse(mod.value as string || "{}").useProficiencyBonus;
-                                                        } catch {
-                                                            return false;
-                                                        }
-                                                    })() ? "Dynamic" : "Max"
-                                                }
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return (data.useProficiencyBonus || data.useAbilityMod || data.useCharacterLevel) ? "" : "bg-gray-100 text-gray-400";
+                                                    } catch { return "bg-gray-100 text-gray-400"; }
+                                                })()}`}
+                                                placeholder="1"
+                                                step="0.1"
+                                                min="0"
+                                            />
+                                            {(() => {
+                                                try {
+                                                    const data = JSON.parse(mod.value as string || "{}");
+                                                    return (data.useProficiencyBonus || data.useAbilityMod || data.useCharacterLevel) && (
+                                                        <div className="text-[9px] text-gray-500 italic">Use 0.5 for half, etc.</div>
+                                                    );
+                                                } catch { return null; }
+                                            })()}
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">
+                                                {(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return (data.useProficiencyBonus || data.useAbilityMod || data.useCharacterLevel) ? "Bonus" : "Max";
+                                                    } catch { return "Max"; }
+                                                })()}
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return data.max || 0;
+                                                    } catch { return 0; }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { }
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, max: parseInt(e.target.value) || 0 }) });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                                                placeholder="0"
                                                 min="0"
                                             />
                                         </div>

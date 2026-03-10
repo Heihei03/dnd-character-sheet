@@ -426,21 +426,30 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
     const manualResources = character.resources || [];
     const activeFeatures = getAllActiveFeatures(character);
     const featureResources: Resource[] = [];
+    const effectiveAbilityScores = getEffectiveAbilityScores(character);
+    const totalLevel = (character.classes || []).reduce((sum, cls) => sum + cls.level, 0);
 
     activeFeatures.forEach(f => {
         const resourceModifiers = (f.modifiers || []).filter(m => m.type === "Resource");
         resourceModifiers.forEach((m, idx) => {
             if (m.value && typeof m.value === 'string') {
                 try {
-                    const data = JSON.parse(m.value);
+                    const data = JSON.parse(m.value) as Resource;
                     const resourceName = data.name || f.name; // Fallback to feature name
                     // Check if this resource is already in featureResources to avoid duplicates from DIFFERENT features
                     const alreadyFound = featureResources.find(r => (r.name || "").toLowerCase() === (resourceName || "").toLowerCase());
                     if (alreadyFound) return;
 
-                    let max = data.max || 0;
+                    let max = 0;
+                    const multiplier = data.multiplier || 1;
                     if (data.useProficiencyBonus) {
-                        max = proficiencyBonus;
+                        max = Math.floor((proficiencyBonus * multiplier) + (data.max || 0));
+                    } else if (data.useAbilityMod) {
+                        max = Math.floor((getAbilityModifier(effectiveAbilityScores[data.useAbilityMod] || 10) * multiplier) + (data.max || 0));
+                    } else if (data.useCharacterLevel) {
+                        max = Math.floor((totalLevel * multiplier) + (data.max || 0));
+                    } else {
+                        max = data.max || 0;
                     }
 
                     featureResources.push({
@@ -471,7 +480,21 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
     });
 
     // Merge manual and feature resources
-    const combined = [...manualResources];
+    const combined: Resource[] = manualResources.map(r => {
+        let max = 0;
+        const multiplier = r.multiplier || 1;
+        if (r.useProficiencyBonus) {
+            max = Math.floor((proficiencyBonus * multiplier) + (r.max || 0));
+        } else if (r.useAbilityMod) {
+            max = Math.floor((getAbilityModifier(effectiveAbilityScores[r.useAbilityMod] || 10) * multiplier) + (r.max || 0));
+        } else if (r.useCharacterLevel) {
+            max = Math.floor((totalLevel * multiplier) + (r.max || 0));
+        } else {
+            max = r.max || 0;
+        }
+        return { ...r, max };
+    });
+
     featureResources.forEach(fr => {
         const existingIdx = combined.findIndex(r => (r.name || "").toLowerCase() === (fr.name || "").toLowerCase());
         if (existingIdx >= 0) {
