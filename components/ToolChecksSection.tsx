@@ -24,7 +24,8 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
     const handleUpdateTool = (index: number, updates: Partial<ToolProficiency>) => {
         const newTools = [...toolProficiencies];
         newTools[index] = { ...newTools[index], ...updates };
-        onUpdate(newTools);
+        // Filter out feature-granted tools before persisting to base character data
+        onUpdate(newTools.filter(t => !t.fromFeature));
     };
 
     if (toolProficiencies.length === 0) {

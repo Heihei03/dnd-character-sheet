@@ -606,7 +606,12 @@ export const getEffectiveWeaponProficiencies = (character: Character): (string |
         const isWeapon = WEAPON_DATA[name] !== undefined || weaponCategories.some(c => c.toLowerCase() === name.toLowerCase());
         if (!isWeapon) return;
 
-        if (!baseProf.some(p => p.toLowerCase() === name.toLowerCase())) {
+        const alreadyHas = baseProf.some((p: any) => {
+            const pName = typeof p === 'string' ? p : (p && (p as any).name);
+            return pName && pName.toLowerCase() === name.toLowerCase();
+        });
+
+        if (!alreadyHas) {
             if (!result.some(r => (typeof r === 'string' ? r : r.name).toLowerCase() === name.toLowerCase())) {
                 result.push({ name, fromFeature: true });
             }
@@ -633,7 +638,12 @@ export const getEffectiveArmorProficiencies = (character: Character): (string | 
         const isArmor = ARMOR_DATA[name] !== undefined || armorCategories.some(c => c.toLowerCase() === name.toLowerCase());
         if (!isArmor) return;
 
-        if (!baseProf.some(p => p.toLowerCase() === name.toLowerCase())) {
+        const alreadyHas = baseProf.some((p: any) => {
+            const pName = typeof p === 'string' ? p : (p && (p as any).name);
+            return pName && pName.toLowerCase() === name.toLowerCase();
+        });
+
+        if (!alreadyHas) {
             if (!result.some(r => (typeof r === 'string' ? r : r.name).toLowerCase() === name.toLowerCase())) {
                 result.push({ name, fromFeature: true });
             }
@@ -658,7 +668,12 @@ export const getEffectiveLanguages = (character: Character): (string | { name: s
         const isLanguage = LANGUAGES.some(l => l.toLowerCase() === name.toLowerCase());
         if (!isLanguage) return;
 
-        if (!baseLang.some(l => l.toLowerCase() === name.toLowerCase())) {
+        const alreadyHas = baseLang.some((l: any) => {
+            const lName = typeof l === 'string' ? l : (l && (l as any).name);
+            return lName && lName.toLowerCase() === name.toLowerCase();
+        });
+
+        if (!alreadyHas) {
             if (!result.some(r => (typeof r === 'string' ? r : r.name).toLowerCase() === name.toLowerCase())) {
                 result.push({ name, fromFeature: true });
             }

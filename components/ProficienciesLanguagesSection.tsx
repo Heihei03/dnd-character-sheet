@@ -153,6 +153,24 @@ const ProficienciesLanguagesSection: React.FC<ProficienciesLanguagesSectionProps
     languages = [],
     onUpdate,
 }) => {
+    const handleUpdate = (field: string, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => {
+        // Filter out feature-granted items so they aren't persisted in the character's base data
+        const baseValues = value
+            .filter(item => {
+                if (typeof item === 'object' && (item as any).fromFeature) return false;
+                return true;
+            })
+            .map(item => {
+                // For weapons, armor, and languages, convert the descriptive objects (if any remained) back to strings
+                if (typeof item === 'object' && field !== "toolProficiencies") {
+                    return (item as any).name as string;
+                }
+                return item;
+            });
+
+        onUpdate(field, baseValues as (string | ToolProficiency)[]);
+    };
+
     return (
         <Card className="w-full h-fit">
             <CardContent className="p-6">
@@ -162,28 +180,28 @@ const ProficienciesLanguagesSection: React.FC<ProficienciesLanguagesSectionProps
                         title="Weapon Proficiencies"
                         items={weaponProficiencies}
                         field="weaponProficiencies"
-                        onUpdate={onUpdate}
+                        onUpdate={handleUpdate}
                         options={weaponOptions}
                     />
                     <ProficiencyList
                         title="Armor Proficiencies"
                         items={armorProficiencies}
                         field="armorProficiencies"
-                        onUpdate={onUpdate}
+                        onUpdate={handleUpdate}
                         options={armorOptions}
                     />
                     <ProficiencyList
                         title="Tool Proficiencies"
                         items={toolProficiencies}
                         field="toolProficiencies"
-                        onUpdate={onUpdate}
+                        onUpdate={handleUpdate}
                         options={toolOptions}
                     />
                     <ProficiencyList
                         title="Languages"
                         items={languages}
                         field="languages"
-                        onUpdate={onUpdate}
+                        onUpdate={handleUpdate}
                         options={LANGUAGES}
                     />
                 </div>
