@@ -429,7 +429,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                                     <span className="text-[10px] uppercase font-bold text-gray-400 leading-tight">{mod.type}</span>
                                                                     <span className="font-semibold text-gray-700 dark:text-gray-200">{isResource ? resourceName : mod.subType}</span>
                                                                 </div>
-                                                                {!isResource && (
+                                                                {!isResource && mod.type !== "Resistance" && mod.type !== "Immunity" && mod.type !== "Vulnerability" && (
                                                                     <div className="font-mono bg-white dark:bg-gray-800 px-2 py-0.5 rounded border border-gray-100 dark:border-gray-700 shadow-sm text-blue-600 dark:text-blue-400 text-xs">
                                                                         {mod.value}
                                                                     </div>

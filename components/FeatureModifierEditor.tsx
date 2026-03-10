@@ -186,7 +186,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                     <div className="flex items-center h-full px-1.5 italic text-gray-400 text-[10px]">
                                         Configure below...
                                     </div>
-                                ) : mod.type === "Advantage" || mod.type === "Disadvantage" ? (
+                                ) : mod.type === "Advantage" || mod.type === "Disadvantage" || mod.type === "Resistance" || mod.type === "Immunity" || mod.type === "Vulnerability" ? (
                                     <div className="col-span-3" />
                                 ) : (
                                     <input
