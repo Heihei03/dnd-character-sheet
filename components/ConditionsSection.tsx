@@ -61,7 +61,7 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
                         const description = CONDITION_DATA[condition.name];
 
                         return (
-                            <div key={idx} className="flex flex-col animate-in slide-in-from-left-2 duration-200">
+                            <div key={idx} className="flex flex-col">
                                 <div
                                     onClick={() => toggleExpand(condition.name)}
                                     className={`flex justify-between items-center bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded-t border-x border-t border-gray-200 dark:border-gray-800 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${!isExpanded ? 'rounded-b border-b' : ''} ${condition.fromFeature ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-950/20' : ''}`}

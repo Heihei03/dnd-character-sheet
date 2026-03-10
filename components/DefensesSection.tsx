@@ -73,7 +73,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                                 onNavigateToFeature(item.fromFeatureId);
                             }
                         }}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${colorClass} group animate-in zoom-in-50 duration-200 ${item.fromFeature ? 'opacity-85 border-dashed cursor-pointer hover:ring-2 hover:ring-current hover:ring-opacity-30' : ''}`}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${colorClass} group ${item.fromFeature ? 'opacity-85 border-dashed cursor-pointer hover:ring-2 hover:ring-current hover:ring-opacity-30' : ''}`}
                         title={item.fromFeature ? "Granted by Feature - Click to view" : ""}
                     >
                         {item.name}

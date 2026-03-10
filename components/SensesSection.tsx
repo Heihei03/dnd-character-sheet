@@ -44,7 +44,7 @@ const SensesSection: React.FC<SensesSectionProps> = ({
                 <div className="grid grid-cols-1 gap-2">
                     {senses.length === 0 && <span className="text-sm text-gray-400 italic">No special senses.</span>}
                     {senses.map((sense, idx) => (
-                        <div key={idx} className={`flex justify-between items-center bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded border border-gray-200 dark:border-gray-800 text-sm animate-in slide-in-from-left-2 duration-200 ${sense.fromFeature ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-950/20' : ''}`}>
+                        <div key={idx} className={`flex justify-between items-center bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded border border-gray-200 dark:border-gray-800 text-sm ${sense.fromFeature ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-950/20' : ''}`}>
                             <div className="flex items-center gap-2 truncate mr-2">
                                 <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">{sense.name}</span>
                                 {sense.fromFeature && (
