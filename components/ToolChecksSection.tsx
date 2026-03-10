@@ -12,6 +12,7 @@ interface ToolChecksSectionProps {
     abilityScores: AbilityScores;
     proficiencyBonus: number;
     rollDice: (sides: number, modifier: number, label: string) => void;
+    onNavigateToFeature?: (featureId: string) => void;
 }
 
 const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
@@ -20,6 +21,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
     abilityScores,
     proficiencyBonus,
     rollDice,
+    onNavigateToFeature,
 }) => {
     const handleUpdateTool = (index: number, updates: Partial<ToolProficiency>) => {
         const newTools = [...toolProficiencies];
@@ -64,7 +66,18 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                             {tool.name}
                                         </span>
                                         {tool.fromFeature && (
-                                            <span className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter" title="Granted by Feature">Feature</span>
+                                            <span
+                                                className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
+                                                title="Granted by Feature - Click to view"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (tool.fromFeatureId && onNavigateToFeature) {
+                                                        onNavigateToFeature(tool.fromFeatureId);
+                                                    }
+                                                }}
+                                            >
+                                                Feature
+                                            </span>
                                         )}
                                         <div className="flex items-center text-[11px] text-gray-500 font-bold uppercase tracking-tight">
                                             <span>(</span>

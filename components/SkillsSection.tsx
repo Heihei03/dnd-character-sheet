@@ -8,19 +8,23 @@ import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, getAdva
 interface SkillsSectionProps {
     character: Character;
     skills: Skills;
+    skillSources?: Record<string, string>;
     setSkills: (key: string, value: string) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
     rollDice: (sides: number, modifier: number, label: string) => void;
+    onNavigateToFeature?: (featureId: string) => void;
 }
 
 const SkillsSection: React.FC<SkillsSectionProps> = ({
     character,
     skills,
+    skillSources = {},
     setSkills,
     abilityScores,
     proficiencyBonus,
     rollDice,
+    onNavigateToFeature,
 }) => {
     return (
         <Card className="w-full">
@@ -59,7 +63,19 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                                 {skill.name} <span className="text-gray-500 text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
                                             </span>
                                             {(skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
-                                                <span className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter" title="Granted by Feature">Feature</span>
+                                                <span
+                                                    className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
+                                                    title="Granted by Feature - Click to view"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const sourceId = skillSources[skill.key];
+                                                        if (sourceId && onNavigateToFeature) {
+                                                            onNavigateToFeature(sourceId);
+                                                        }
+                                                    }}
+                                                >
+                                                    Feature
+                                                </span>
                                             )}
                                             {advantage && (
                                                 <span className="text-[10px] font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV</span>

@@ -14,10 +14,11 @@ interface ProficiencyListProps {
     field: string;
     onUpdate: (field: string, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => void;
     options?: string[];
+    onNavigateToFeature?: (featureId: string) => void;
 }
 
 const ProficiencyList: React.FC<ProficiencyListProps> = ({
-    title, items, field, onUpdate, options = []
+    title, items, field, onUpdate, options = [], onNavigateToFeature
 }) => {
     const [newItem, setNewItem] = useState("");
     const [showAdd, setShowAdd] = useState(false);
@@ -72,20 +73,33 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                         return (
                             <div
                                 key={index}
+                                onClick={(e) => {
+                                    if (isFromFeature && onNavigateToFeature) {
+                                        e.stopPropagation();
+                                        const featureId = (item as any).fromFeatureId;
+                                        if (featureId) onNavigateToFeature(featureId);
+                                    }
+                                }}
                                 className={`px-1.5 py-0.5 rounded border text-[13px] flex items-center gap-1 group whitespace-nowrap overflow-hidden text-ellipsis transition-colors ${isFromFeature
-                                    ? "bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200"
+                                    ? "bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/60"
                                     : "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/50 text-blue-700 dark:text-blue-300"
                                     }`}
+                                title={isFromFeature ? "Granted by Feature - Click to view" : ""}
                             >
                                 <span className="flex items-center gap-1 min-w-0">
                                     <span className="truncate">{itemName}</span>
                                     {isFromFeature && (
-                                        <span className="text-[8px] font-black bg-blue-500 text-white px-0.5 rounded uppercase leading-tight">F</span>
+                                        <span className="text-[8px] font-black bg-blue-500 text-white px-0.5 rounded uppercase leading-tight">
+                                            F
+                                        </span>
                                     )}
                                 </span>
                                 {!isFromFeature && (
                                     <button
-                                        onClick={() => removeItem(index)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeItem(index);
+                                        }}
                                         className="text-blue-300 hover:text-red-500 dark:text-blue-700 dark:hover:text-red-400 transition-colors px-0.5 ml-0.5 flex items-center justify-center font-bold"
                                         title="Remove"
                                     >
@@ -134,11 +148,12 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
 };
 
 interface ProficienciesLanguagesSectionProps {
-    weaponProficiencies?: (string | { name: string, fromFeature: boolean })[];
-    armorProficiencies?: (string | { name: string, fromFeature: boolean })[];
+    weaponProficiencies?: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[];
+    armorProficiencies?: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[];
     toolProficiencies?: ToolProficiency[];
-    languages?: (string | { name: string, fromFeature: boolean })[];
+    languages?: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[];
     onUpdate: (field: string, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => void;
+    onNavigateToFeature?: (featureId: string) => void;
 }
 
 const weaponOptions = ["Simple Weapons", "Martial Weapons", ...Object.keys(WEAPON_DATA)];
@@ -152,6 +167,7 @@ const ProficienciesLanguagesSection: React.FC<ProficienciesLanguagesSectionProps
     toolProficiencies = [],
     languages = [],
     onUpdate,
+    onNavigateToFeature,
 }) => {
     const handleUpdate = (field: string, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => {
         // Filter out feature-granted items so they aren't persisted in the character's base data
@@ -182,6 +198,7 @@ const ProficienciesLanguagesSection: React.FC<ProficienciesLanguagesSectionProps
                         field="weaponProficiencies"
                         onUpdate={handleUpdate}
                         options={weaponOptions}
+                        onNavigateToFeature={onNavigateToFeature}
                     />
                     <ProficiencyList
                         title="Armor Proficiencies"
@@ -189,6 +206,7 @@ const ProficienciesLanguagesSection: React.FC<ProficienciesLanguagesSectionProps
                         field="armorProficiencies"
                         onUpdate={handleUpdate}
                         options={armorOptions}
+                        onNavigateToFeature={onNavigateToFeature}
                     />
                     <ProficiencyList
                         title="Tool Proficiencies"
@@ -196,6 +214,7 @@ const ProficienciesLanguagesSection: React.FC<ProficienciesLanguagesSectionProps
                         field="toolProficiencies"
                         onUpdate={handleUpdate}
                         options={toolOptions}
+                        onNavigateToFeature={onNavigateToFeature}
                     />
                     <ProficiencyList
                         title="Languages"
@@ -203,6 +222,7 @@ const ProficienciesLanguagesSection: React.FC<ProficienciesLanguagesSectionProps
                         field="languages"
                         onUpdate={handleUpdate}
                         options={LANGUAGES}
+                        onNavigateToFeature={onNavigateToFeature}
                     />
                 </div>
             </CardContent>

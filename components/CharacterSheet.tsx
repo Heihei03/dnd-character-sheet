@@ -34,6 +34,12 @@ interface CharacterSheetProps {
 
 const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter }) => {
   const [activeTab, setActiveTab] = useState<string>("inventory");
+  const [focusedFeatureId, setFocusedFeatureId] = useState<string | null>(null);
+
+  const handleNavigateToFeature = (featureId: string) => {
+    setActiveTab("features");
+    setFocusedFeatureId(featureId);
+  };
   const [rollResult, setRollResult] = useState<string | null>(null);
 
   // Ensure character is not null before rendering the component
@@ -147,7 +153,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   };
 
   const effectiveAbilityScores = getEffectiveAbilityScores(characterWithDefaults);
-  const effectiveSkills = getEffectiveSkills(characterWithDefaults);
+  const { skills: effectiveSkills, skillSources } = getEffectiveSkills(characterWithDefaults);
   const effectiveToolProficiencies = getEffectiveToolProficiencies(characterWithDefaults);
   const effectiveWeaponProficiencies = getEffectiveWeaponProficiencies(characterWithDefaults);
   const effectiveArmorProficiencies = getEffectiveArmorProficiencies(characterWithDefaults);
@@ -611,10 +617,12 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             <SkillsSection
               character={characterWithDefaults}
               skills={effectiveSkills}
+              skillSources={skillSources}
               setSkills={handleSkillChange}
               abilityScores={effectiveAbilityScores}
               proficiencyBonus={proficiencyBonus}
               rollDice={rollDice}
+              onNavigateToFeature={handleNavigateToFeature}
             />
             <ToolChecksSection
               toolProficiencies={effectiveToolProficiencies}
@@ -622,6 +630,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               abilityScores={effectiveAbilityScores}
               proficiencyBonus={proficiencyBonus}
               rollDice={rollDice}
+              onNavigateToFeature={handleNavigateToFeature}
             />
             <ProficienciesLanguagesSection
               weaponProficiencies={effectiveWeaponProficiencies}
@@ -629,6 +638,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               toolProficiencies={effectiveToolProficiencies}
               languages={effectiveLanguages}
               onUpdate={(field, value) => handleChange(field as keyof Character, value)}
+              onNavigateToFeature={handleNavigateToFeature}
             />
           </div>
 
@@ -695,6 +705,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                 species={characterWithDefaults.species}
                 subSpecies={characterWithDefaults.subSpecies}
                 background={characterWithDefaults.background}
+                focusedId={focusedFeatureId}
+                onFocusedIdChange={setFocusedFeatureId}
               />
             )}
 

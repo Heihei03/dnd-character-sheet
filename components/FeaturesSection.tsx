@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, X, Pencil, Trash2, ChevronDown, Plus, Minus, RotateCcw } from "lucide-react";
 import { Feature, Resource, CharacterClass } from "../types/character";
 import { Card, CardContent } from "./ui/card";
@@ -21,6 +21,8 @@ interface FeaturesSectionProps {
     species?: string;
     subSpecies?: string;
     background?: string;
+    focusedId?: string | null;
+    onFocusedIdChange?: (id: string | null) => void;
 }
 
 const ORIGIN_OPTIONS = ["Class", "Species", "Background", "Feat", "Item", "Other"];
@@ -37,7 +39,9 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     classes = [],
     species = "",
     subSpecies = "",
-    background = ""
+    background = "",
+    focusedId = null,
+    onFocusedIdChange
 }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -55,6 +59,36 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
         modifiers: [],
         effects: [],
     });
+
+    useEffect(() => {
+        if (focusedId) {
+            // Expand the feature
+            setExpandedIds(prev => {
+                const next = new Set(prev);
+                next.add(focusedId);
+                return next;
+            });
+
+            // Scroll to it after a short delay to ensure it's rendered/expanded
+            const timer = setTimeout(() => {
+                const element = document.getElementById(`feature-${focusedId}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Visual feedback: briefly highlight
+                    // Add relative and z-10 to ensure the ring isn't hidden by adjacent cards (gap-0)
+                    element.classList.add('ring-2', 'ring-blue-500', 'ring-opacity-50', 'relative', 'z-10');
+                    setTimeout(() => {
+                        element.classList.remove('ring-2', 'ring-blue-500', 'ring-opacity-50', 'relative', 'z-10');
+                    }, 2000);
+                }
+                // Reset focusedId so it can be re-triggered
+                if (onFocusedIdChange) {
+                    onFocusedIdChange(null);
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [focusedId, onFocusedIdChange]);
 
     const toggleExpand = (id: string) => {
         const newExpanded = new Set(expandedIds);
@@ -314,7 +348,11 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                     </Card>
                 ) : (
                     allFeatures.map((feature) => (
-                        <Card key={feature.id} className="overflow-hidden group border-none rounded-none shadow-none hover:shadow transition-all duration-200">
+                        <Card
+                            key={feature.id}
+                            id={`feature-${feature.id}`}
+                            className="overflow-hidden group border-none rounded-none shadow-none hover:shadow transition-all duration-200"
+                        >
                             <CardContent className="p-0">
                                 <div
                                     className="p-3 px-4 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"

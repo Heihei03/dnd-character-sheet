@@ -5,6 +5,7 @@ import { cn } from "../../lib/utils";
 export interface CardProps {
   children: React.ReactNode;
   className?: string;
+  id?: string;
 }
 
 export interface CardContentProps {
@@ -12,9 +13,9 @@ export interface CardContentProps {
   className?: string;
 }
 
-export function Card({ children, className = "" }: CardProps) {
+export function Card({ children, className = "", id }: CardProps) {
   return (
-    <div className={cn("bg-white shadow-md rounded-lg overflow-hidden", className)}>
+    <div id={id} className={cn("bg-white shadow-md rounded-lg overflow-hidden", className)}>
       {children}
     </div>
   );

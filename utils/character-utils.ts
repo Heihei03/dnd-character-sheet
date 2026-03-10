@@ -30,6 +30,10 @@ export const getFeatureModifiersByType = (features: Feature[] = [], type: string
     return features.flatMap(f => (f.modifiers || []).filter(m => m.type === type));
 };
 
+export const getFeatureModifiersWithSource = (features: Feature[] = [], type: string): (FeatureModifier & { fromFeatureId?: string })[] => {
+    return features.flatMap(f => (f.modifiers || []).filter(m => m.type === type).map(m => ({ ...m, fromFeatureId: f.id })));
+};
+
 export const getEffectiveAbilityScores = (character: Character) => {
     const scores = { ...character.abilityScores };
     const activeFeatures = getAllActiveFeatures(character);
@@ -554,11 +558,12 @@ export const getEffectiveConditions = (character: Character): Condition[] => {
     return combined;
 };
 
-export const getEffectiveSkills = (character: Character): Skills => {
+export const getEffectiveSkills = (character: Character): { skills: Skills, skillSources: Record<string, string> } => {
     // Start with a copy of skills or a default empty skills object
     const baseSkills: any = { ...(character.skills || {}) };
+    const skillSources: Record<string, string> = {};
     const activeFeatures = getAllActiveFeatures(character);
-    const profMods = getFeatureModifiersByType(activeFeatures, "Proficiency");
+    const profMods = getFeatureModifiersWithSource(activeFeatures, "Proficiency");
 
     profMods.forEach(mod => {
         const subTypeStr = String(mod.subType || "").trim();
@@ -582,19 +587,22 @@ export const getEffectiveSkills = (character: Character): Skills => {
 
             if (modIdx > currentIdx) {
                 baseSkills[skillKey] = modValue;
+                if (mod.fromFeatureId) {
+                    skillSources[skillKey] = mod.fromFeatureId;
+                }
             }
         }
     });
 
-    return baseSkills as Skills;
+    return { skills: baseSkills as Skills, skillSources };
 };
 
-export const getEffectiveWeaponProficiencies = (character: Character): (string | { name: string, fromFeature: boolean })[] => {
+export const getEffectiveWeaponProficiencies = (character: Character): (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] => {
     const baseProf = [...(character.weaponProficiencies || [])];
     const activeFeatures = getAllActiveFeatures(character);
-    const profMods = getFeatureModifiersByType(activeFeatures, "Proficiency");
+    const profMods = getFeatureModifiersWithSource(activeFeatures, "Proficiency");
 
-    const result: (string | { name: string, fromFeature: boolean })[] = [...baseProf];
+    const result: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] = [...baseProf];
 
     const weaponCategories = ["Simple Weapons", "Martial Weapons"];
 
@@ -612,8 +620,8 @@ export const getEffectiveWeaponProficiencies = (character: Character): (string |
         });
 
         if (!alreadyHas) {
-            if (!result.some(r => (typeof r === 'string' ? r : r.name).toLowerCase() === name.toLowerCase())) {
-                result.push({ name, fromFeature: true });
+            if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
+                result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
             }
         }
     });
@@ -621,12 +629,12 @@ export const getEffectiveWeaponProficiencies = (character: Character): (string |
     return result;
 };
 
-export const getEffectiveArmorProficiencies = (character: Character): (string | { name: string, fromFeature: boolean })[] => {
+export const getEffectiveArmorProficiencies = (character: Character): (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] => {
     const baseProf = [...(character.armorProficiencies || [])];
     const activeFeatures = getAllActiveFeatures(character);
-    const profMods = getFeatureModifiersByType(activeFeatures, "Proficiency");
+    const profMods = getFeatureModifiersWithSource(activeFeatures, "Proficiency");
 
-    const result: (string | { name: string, fromFeature: boolean })[] = [...baseProf];
+    const result: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] = [...baseProf];
 
     const armorCategories = ["Light Armor", "Medium Armor", "Heavy Armor", "Shields"];
 
@@ -644,8 +652,8 @@ export const getEffectiveArmorProficiencies = (character: Character): (string | 
         });
 
         if (!alreadyHas) {
-            if (!result.some(r => (typeof r === 'string' ? r : r.name).toLowerCase() === name.toLowerCase())) {
-                result.push({ name, fromFeature: true });
+            if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
+                result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
             }
         }
     });
@@ -653,12 +661,12 @@ export const getEffectiveArmorProficiencies = (character: Character): (string | 
     return result;
 };
 
-export const getEffectiveLanguages = (character: Character): (string | { name: string, fromFeature: boolean })[] => {
+export const getEffectiveLanguages = (character: Character): (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] => {
     const baseLang = [...(character.languages || [])];
     const activeFeatures = getAllActiveFeatures(character);
-    const profMods = getFeatureModifiersByType(activeFeatures, "Proficiency");
+    const profMods = getFeatureModifiersWithSource(activeFeatures, "Proficiency");
 
-    const result: (string | { name: string, fromFeature: boolean })[] = [...baseLang];
+    const result: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] = [...baseLang];
 
     profMods.forEach(mod => {
         const name = String(mod.subType || "");
@@ -674,8 +682,8 @@ export const getEffectiveLanguages = (character: Character): (string | { name: s
         });
 
         if (!alreadyHas) {
-            if (!result.some(r => (typeof r === 'string' ? r : r.name).toLowerCase() === name.toLowerCase())) {
-                result.push({ name, fromFeature: true });
+            if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
+                result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
             }
         }
     });
@@ -686,7 +694,7 @@ export const getEffectiveLanguages = (character: Character): (string | { name: s
 export const getEffectiveToolProficiencies = (character: Character): ToolProficiency[] => {
     const baseTools = [...(character.toolProficiencies || [])];
     const activeFeatures = getAllActiveFeatures(character);
-    const profMods = getFeatureModifiersByType(activeFeatures, "Proficiency");
+    const profMods = getFeatureModifiersWithSource(activeFeatures, "Proficiency");
 
     const skillKeys = SKILL_LIST.map(s => s.key);
     const skillNames = SKILL_LIST.map(s => s.name);
@@ -717,7 +725,7 @@ export const getEffectiveToolProficiencies = (character: Character): ToolProfici
             const modIdx = progression.indexOf(modValue);
 
             if (modIdx > currentIdx) {
-                baseTools[existingIdx] = { ...baseTools[existingIdx], level: modValue };
+                baseTools[existingIdx] = { ...baseTools[existingIdx], level: modValue, fromFeature: true, fromFeatureId: mod.fromFeatureId };
             }
         } else {
             // New proficiency (Tool or Other)
@@ -726,7 +734,8 @@ export const getEffectiveToolProficiencies = (character: Character): ToolProfici
                 name: name,
                 ability: toolData?.ability || "Intelligence",
                 level: modValue,
-                fromFeature: true
+                fromFeature: true,
+                fromFeatureId: mod.fromFeatureId
             });
         }
     });
