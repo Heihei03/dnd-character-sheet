@@ -485,6 +485,26 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                                 </span>
                                                             )}
                                                         </div>
+
+                                                        {/* Resource Tracker in collapsed view - MOVED HERE to be always visible */}
+                                                        {!expandedIds.has(action.id) && action.resourceName && (
+                                                            <div
+                                                                className="flex-1 max-w-[180px]"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                {(() => {
+                                                                    const resource = resources.find(r => r.name === action.resourceName);
+                                                                    if (!resource) return null;
+                                                                    return (
+                                                                        <ResourcePipTracker
+                                                                            resource={resource}
+                                                                            onUpdate={(val) => handleUpdateResourceValue(resource.id, val)}
+                                                                            compact
+                                                                        />
+                                                                    );
+                                                                })()}
+                                                            </div>
+                                                        )}
                                                         {(action.type === "Attack" || action.baseLevel !== undefined) && (upcastedDamage || action.range || action.activation) && (
                                                             <div className="hidden sm:flex items-center gap-3 text-xs text-gray-500">
                                                                 {action.activation && <span className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">{action.activation}</span>}
