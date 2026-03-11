@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "./ui/button";
 import { Edit2, Trash2, Zap, ChevronDown, ChevronUp } from "lucide-react";
-import { Spell, AbilityScores } from "../types/character";
+import { Spell, AbilityScores, CharacterClass } from "../types/character";
 import { DAMAGE_TYPES, SPELL_SCHOOLS, SPELL_AOE_SHAPES } from "../utils/constants";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../utils/dice-utils";
 import ConfirmationModal from "./ui/ConfirmationModal";
@@ -16,6 +16,7 @@ interface SpellCardProps {
     abilityScores: AbilityScores;
     proficiencyBonus: number;
     totalLevel: number;
+    classes: CharacterClass[];
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -27,7 +28,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
     handleDeleteSpell,
     abilityScores,
     proficiencyBonus,
-    totalLevel
+    totalLevel,
+    classes
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -202,6 +204,19 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         <option value="charisma">Charisma</option>
                                     </select>
                                 </div>
+                                <div>
+                                    <label className="block text-sm mb-1 font-semibold">Source Class</label>
+                                    <select
+                                        className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700"
+                                        value={spell.classSource || ""}
+                                        onChange={(e) => handleUpdateSpell(spell.id, "classSource", e.target.value || undefined)}
+                                    >
+                                        <option value="">None (General)</option>
+                                        {classes.map(cls => (
+                                            <option key={cls.name} value={cls.name}>{cls.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                             {spell.level === 0 && (
                                 <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50 space-y-1 mb-4">
@@ -338,6 +353,11 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     </div>
                                 )}
                                 <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{spell.name}</h3>
+                                {spell.classSource && (
+                                    <span className="text-[10px] bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700 font-bold uppercase tracking-tight">
+                                        {spell.classSource}
+                                    </span>
+                                )}
                                 {spell.fromFeature && <span className="text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-bold uppercase tracking-tight">From Feature</span>}
                                 {spell.isRitual && <span className="text-[10px] bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800 font-bold uppercase tracking-tight">Ritual</span>}
                                 {spell.requiresConcentration && <span className="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 font-bold uppercase tracking-tight">Concentration</span>}

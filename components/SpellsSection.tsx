@@ -206,6 +206,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                             abilityScores={abilityScores}
                                             proficiencyBonus={proficiencyBonus}
                                             totalLevel={totalLevel}
+                                            classes={classes}
                                         />
                                     );
                                 })}
