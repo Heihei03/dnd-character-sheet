@@ -4,6 +4,9 @@ import { Card, CardContent } from "./ui/card";
 import AddItemForm from "./inventory/AddItemForm";
 import InventoryTable from "./inventory/InventoryTable";
 import AttunementSection from "./inventory/AttunementSection";
+import Button from "./ui/button";
+import { Plus } from "lucide-react";
+import LoadSummary from "./inventory/LoadSummary";
 
 interface InventorySectionProps {
     inventory: InventoryItem[];
@@ -19,6 +22,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     onUpdateResources
 }) => {
     const [expandedItemIds, setExpandedItemIds] = useState<string[]>([]);
+    const [isAdding, setIsAdding] = useState(false);
 
     const onAddItem = (newItem: InventoryItem) => {
         setInventory([...inventory, newItem]);
@@ -145,9 +149,26 @@ const InventorySection: React.FC<InventorySectionProps> = ({
 
     return (
         <div className="space-y-6">
-            <Card>
-                <AddItemForm onAdd={onAddItem} totalWeight={totalWeight} />
-            </Card>
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Inventory</h2>
+                <div className="flex items-center gap-4">
+                    <LoadSummary totalWeight={totalWeight} />
+                    {!isAdding && (
+                        <Button onClick={() => setIsAdding(true)} className="flex items-center gap-2">
+                            <Plus className="w-4 h-4" /> Add Item
+                        </Button>
+                    )}
+                </div>
+            </div>
+
+            {isAdding && (
+                <Card>
+                    <AddItemForm 
+                        onAdd={onAddItem} 
+                        onCancel={() => setIsAdding(false)} 
+                    />
+                </Card>
+            )}
 
             <div className="grid grid-cols-1 gap-6">
                 <Card>

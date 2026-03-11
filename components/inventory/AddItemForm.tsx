@@ -7,14 +7,13 @@ import { Feature, InventoryItem, WeaponDetails, ArmorDetails, ContainerDetails, 
 import ItemFeaturesEditor from "./ItemFeaturesEditor";
 import { CardContent } from "../ui/card";
 import Button from "../ui/button";
-import LoadSummary from "./LoadSummary";
 
 interface AddItemFormProps {
     onAdd: (item: InventoryItem) => void;
-    totalWeight: number;
+    onCancel?: () => void;
 }
 
-const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
+const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
     const [newItemName, setNewItemName] = useState("");
     const [newItemWeight, setNewItemWeight] = useState(0);
     const [newItemCost, setNewItemCost] = useState(0);
@@ -157,6 +156,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
         };
 
         onAdd(newItem);
+        if (onCancel) onCancel(); // Hide form after adding
         setNewItemName("");
         setNewItemWeight(0);
         setNewItemCost(0);
@@ -175,7 +175,6 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
         <CardContent className="p-4 space-y-4">
             <div className="flex justify-between items-center border-b pb-2">
                 <h2 className="text-xl font-bold">Inventory Management</h2>
-                <LoadSummary totalWeight={totalWeight} />
             </div>
             <div className="space-y-4">
                 <div className="flex gap-2 items-end">
@@ -195,7 +194,12 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
                         <label className="block text-xs text-gray-400 font-semibold mb-1 uppercase">Qty</label>
                         <input type="number" value={newItemQuantity} onChange={(e) => setNewItemQuantity(Number(e.target.value))} className="w-full p-2 border rounded" min="1" />
                     </div>
-                    <Button onClick={addItem} className="h-[42px]">Add</Button>
+                    <div className="flex gap-2">
+                        {onCancel && (
+                            <Button variant="ghost" onClick={onCancel} className="h-[42px]">Cancel</Button>
+                        )}
+                        <Button onClick={addItem} className="h-[42px]">Add</Button>
+                    </div>
                 </div>
                 <div className="flex gap-4 items-center bg-gray-50 p-2 rounded border">
                     <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
