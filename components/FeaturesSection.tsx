@@ -19,6 +19,7 @@ import { Card, CardContent } from "./ui/card";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import EntityForm from "./ui/EntityForm";
 import SectionHeader from "./ui/SectionHeader";
+import SearchFilterBar from "./ui/SearchFilterBar";
 
 // Components
 import FeatureModifierEditor from "./FeatureModifierEditor";
@@ -273,39 +274,17 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                 isAdding={isAdding || !!editingId}
             />
 
-            <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                        <Search className="w-4 h-4" />
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="Search features..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
-                    />
-                    {searchQuery && (
-                        <button
-                            onClick={() => setSearchQuery("")}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    )}
-                </div>
-                <div className="w-full md:w-48">
-                    <select
-                        value={selectedOrigin}
-                        onChange={(e) => setSelectedOrigin(e.target.value)}
-                        className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm appearance-none"
-                    >
-                        {FILTER_OPTIONS.map(opt => (
-                            <option key={opt} value={opt}>{opt === "All" ? "All Origins" : opt}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
+            <SearchFilterBar
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Search features..."
+                filterValue={selectedOrigin}
+                onFilterChange={setSelectedOrigin}
+                filterOptions={FILTER_OPTIONS.map(opt => ({
+                    label: opt === "All" ? "All Origins" : opt,
+                    value: opt
+                }))}
+            />
 
             {(isAdding || editingId) && (
                 <EntityForm

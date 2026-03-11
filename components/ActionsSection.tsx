@@ -16,6 +16,7 @@ import { Card, CardContent } from "./ui/card";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import EntityForm from "./ui/EntityForm";
 import SectionHeader from "./ui/SectionHeader";
+import SearchFilterBar from "./ui/SearchFilterBar";
 
 // Components
 import ResourcePipTracker from "./ResourcePipTracker";
@@ -58,6 +59,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
     const [castLevels, setCastLevels] = useState<Record<string, number>>({});
     const [actionToDelete, setActionToDelete] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedType, setSelectedType] = useState("All");
 
     const [formData, setFormData] = useState<Partial<Action>>({
         name: "",
@@ -201,8 +204,15 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     const standardActions = actions.filter(a => a.id.startsWith("std-"));
     const otherActions = actions.filter(a => !a.id.startsWith("std-"));
 
+    const filteredActions = otherActions.filter(action => {
+        const matchesSearch = action.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             action.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesType = selectedType === "All" || action.type === selectedType;
+        return matchesSearch && matchesType;
+    });
+
     const groupedActions = ACTION_TYPES.reduce((acc, type) => {
-        acc[type] = otherActions.filter(a => a.type === type);
+        acc[type] = filteredActions.filter(a => a.type === type);
         return acc;
     }, {} as Record<ActionType, Action[]>);
 
@@ -213,6 +223,18 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 buttonLabel="Add Action" 
                 onAdd={() => { setIsAdding(true); setEditingId(null); resetForm(); }} 
                 isAdding={isAdding || !!editingId} 
+            />
+
+            <SearchFilterBar
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Search actions..."
+                filterValue={selectedType}
+                onFilterChange={setSelectedType}
+                filterOptions={[
+                    { label: "All Types", value: "All" },
+                    ...ACTION_TYPES.map(type => ({ label: type, value: type }))
+                ]}
             />
 
             {(isAdding || editingId) && (

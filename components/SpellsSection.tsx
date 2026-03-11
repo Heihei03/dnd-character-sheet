@@ -6,6 +6,7 @@ import Button from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import EntityForm from "./ui/EntityForm";
 import SectionHeader from "./ui/SectionHeader";
+import SearchFilterBar from "./ui/SearchFilterBar";
 
 // Components
 import ResourcePipTracker from "./ResourcePipTracker";
@@ -39,6 +40,16 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
     const [newSpellDraft, setNewSpellDraft] = useState<Spell | null>(null);
     const [autoCalculateSlots, setAutoCalculateSlots] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    // Filters
+    const [selectedLevel, setSelectedLevel] = useState("All");
+    const [selectedSchool, setSelectedSchool] = useState("All");
+    const [selectedPrepared, setSelectedPrepared] = useState("All");
+    const [selectedRitual, setSelectedRitual] = useState("All");
+    const [selectedConcentration, setSelectedConcentration] = useState("All");
+    const [selectedClass, setSelectedClass] = useState("All");
+    const [selectedType, setSelectedType] = useState("All");
 
     const calculatedSlots = calculateSpellSlots(classes);
 
@@ -120,7 +131,33 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
         onUpdateSpells(spells.filter(s => s.id !== id));
     };
 
-    const spellsByLevel = spells.reduce((acc, spell) => {
+    const filteredSpells = spells.filter(spell => {
+        const matchesSearch = spell.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             spell.description.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        const matchesLevel = selectedLevel === "All" || spell.level.toString() === selectedLevel;
+        const matchesSchool = selectedSchool === "All" || spell.school === selectedSchool;
+        
+        const matchesPrepared = selectedPrepared === "All" || 
+                               (selectedPrepared === "Yes" ? spell.prepared : !spell.prepared);
+                               
+        const matchesRitual = selectedRitual === "All" || 
+                             (selectedRitual === "Yes" ? spell.isRitual : !spell.isRitual);
+                             
+        const matchesConcentration = selectedConcentration === "All" || 
+                                    (selectedConcentration === "Yes" ? spell.requiresConcentration : !spell.requiresConcentration);
+        
+        const matchesClass = selectedClass === "All" || spell.classSource === selectedClass;
+        
+        const matchesType = selectedType === "All" || 
+                           (selectedType === "Attack" && spell.hasAttack) ||
+                           (selectedType === "Save" && spell.hasSave) ||
+                           (selectedType === "Utility" && !spell.hasAttack && !spell.hasSave);
+        
+        return matchesSearch && matchesLevel && matchesSchool && matchesPrepared && matchesRitual && matchesConcentration && matchesClass && matchesType;
+    });
+
+    const spellsByLevel = filteredSpells.reduce((acc, spell) => {
         const lvl = spell.level || 0;
         if (!acc[lvl]) acc[lvl] = [];
         acc[lvl].push(spell);
@@ -208,6 +245,99 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                 buttonLabel="Add Spell"
                 onAdd={handleAddSpell}
                 isAdding={!!newSpellDraft}
+            />
+
+            <SearchFilterBar
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Search spells..."
+                className="mb-4"
+                filters={[
+                    {
+                        id: "level",
+                        value: selectedLevel,
+                        onValueChange: setSelectedLevel,
+                        options: [
+                            { label: "All Levels", value: "All" },
+                            { label: "Cantrip", value: "0" },
+                            ...Array.from({ length: 9 }, (_, i) => ({ label: `Level ${i + 1}`, value: (i + 1).toString() }))
+                        ],
+                        placeholder: "Level"
+                    },
+                    {
+                        id: "school",
+                        value: selectedSchool,
+                        onValueChange: setSelectedSchool,
+                        options: [
+                            { label: "All Schools", value: "All" },
+                            { label: "Abjuration", value: "Abjuration" },
+                            { label: "Conjuration", value: "Conjuration" },
+                            { label: "Divination", value: "Divination" },
+                            { label: "Enchantment", value: "Enchantment" },
+                            { label: "Evocation", value: "Evocation" },
+                            { label: "Illusion", value: "Illusion" },
+                            { label: "Necromancy", value: "Necromancy" },
+                            { label: "Transmutation", value: "Transmutation" }
+                        ],
+                        placeholder: "School"
+                    },
+                    {
+                        id: "prepared",
+                        value: selectedPrepared,
+                        onValueChange: setSelectedPrepared,
+                        options: [
+                            { label: "All Prep", value: "All" },
+                            { label: "Prepared", value: "Yes" },
+                            { label: "Unprepared", value: "No" }
+                        ],
+                        placeholder: "Prepared"
+                    },
+                    {
+                        id: "ritual",
+                        value: selectedRitual,
+                        onValueChange: setSelectedRitual,
+                        options: [
+                            { label: "All Rituals", value: "All" },
+                            { label: "Ritual", value: "Yes" },
+                            { label: "Non-Ritual", value: "No" }
+                        ],
+                        placeholder: "Ritual"
+                    },
+                    {
+                        id: "concentration",
+                        value: selectedConcentration,
+                        onValueChange: setSelectedConcentration,
+                        options: [
+                            { label: "All Conc.", value: "All" },
+                            { label: "Concentration", value: "Yes" },
+                            { label: "Non-Conc.", value: "No" }
+                        ],
+                        placeholder: "Concentration"
+                    },
+                    {
+                        id: "class",
+                        value: selectedClass,
+                        onValueChange: setSelectedClass,
+                        options: [
+                            { label: "All Classes", value: "All" },
+                            ...classes.map(cls => ({ label: cls.name, value: cls.name })),
+                            { label: "Other", value: "Other" }
+                        ],
+                        placeholder: "Source Class"
+                    },
+                    {
+                        id: "type",
+                        value: selectedType,
+                        onValueChange: setSelectedType,
+                        options: [
+                            { label: "All Types", value: "All" },
+                            { label: "Attack", value: "Attack" },
+                            { label: "Save", value: "Save" },
+                            { label: "Utility", value: "Utility" }
+                        ],
+                        placeholder: "Combat Type"
+                    }
+                ]}
             />
 
             {newSpellDraft && (

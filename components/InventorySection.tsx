@@ -6,6 +6,7 @@ import InventoryTable from "./inventory/InventoryTable";
 import AttunementSection from "./inventory/AttunementSection";
 import SectionHeader from "./ui/SectionHeader";
 import LoadSummary from "./inventory/LoadSummary";
+import SearchFilterBar from "./ui/SearchFilterBar";
 
 interface InventorySectionProps {
     inventory: InventoryItem[];
@@ -13,6 +14,8 @@ interface InventorySectionProps {
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
 }
+
+const INVENTORY_ITEM_TYPES = ["weapon", "armor", "shield", "container", "tool", "other"] as const;
 
 const InventorySection: React.FC<InventorySectionProps> = ({
     inventory,
@@ -22,6 +25,8 @@ const InventorySection: React.FC<InventorySectionProps> = ({
 }) => {
     const [expandedItemIds, setExpandedItemIds] = useState<string[]>([]);
     const [isAdding, setIsAdding] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("All");
 
     const onAddItem = (newItem: InventoryItem) => {
         setInventory([...inventory, newItem]);
@@ -141,8 +146,16 @@ const InventorySection: React.FC<InventorySectionProps> = ({
         return result;
     };
 
-    const equipment = sortItemsHierarchically(inventory.filter((item) => item.equippable));
-    const otherItems = sortItemsHierarchically(inventory.filter((item) => !item.equippable));
+    const filteredInventory = inventory.filter(item => {
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             (item.description || "").toLowerCase().includes(searchQuery.toLowerCase());
+        const itemType = item.itemType || "other";
+        const matchesType = selectedCategory === "All" || itemType === selectedCategory;
+        return matchesSearch && matchesType;
+    });
+
+    const equipment = sortItemsHierarchically(filteredInventory.filter((item) => item.equippable));
+    const otherItems = sortItemsHierarchically(filteredInventory.filter((item) => !item.equippable));
     const attunedItems = inventory.filter(item => item.attuned);
     const attunableItems = inventory.filter(item => item.attunable);
 
@@ -156,6 +169,21 @@ const InventorySection: React.FC<InventorySectionProps> = ({
             >
                 <LoadSummary totalWeight={totalWeight} />
             </SectionHeader>
+
+            <SearchFilterBar
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Search inventory..."
+                filterValue={selectedCategory}
+                onFilterChange={setSelectedCategory}
+                filterOptions={[
+                    { label: "All Types", value: "All" },
+                    ...INVENTORY_ITEM_TYPES.map(type => ({ 
+                        label: type.charAt(0).toUpperCase() + type.slice(1), 
+                        value: type 
+                    }))
+                ]}
+            />
 
             {isAdding && (
                 <Card>
