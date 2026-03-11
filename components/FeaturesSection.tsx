@@ -146,6 +146,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
             subclass: formData.origin === "Class" ? formData.subclass : "",
             modifiers: formData.modifiers || [],
             effects: formData.effects || [],
+            level: formData.level,
         };
         onUpdate([...features, newFeature]);
         setIsAdding(false);
@@ -159,7 +160,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
             subOrigin: formData.origin === "Class" ? (formData.subOrigin || classes[0]?.name || "") :
                 formData.origin === "Species" ? (formData.subOrigin || subSpecies || species || "") :
                     formData.origin === "Background" ? (formData.subOrigin || background || "") : "",
-            subclass: formData.origin === "Class" ? formData.subclass : ""
+            subclass: formData.origin === "Class" ? formData.subclass : "",
+            level: formData.level
         } as Feature;
 
         if (formData.origin === "Item" && onUpdateItemFeature) {
