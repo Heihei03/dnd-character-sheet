@@ -42,6 +42,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
     const [newItemContainerDetails, setNewItemContainerDetails] = useState<ContainerDetails | undefined>(undefined);
     const [newItemToolDetails, setNewItemToolDetails] = useState<ToolDetails | undefined>(undefined);
     const [newItemFeatures, setNewItemFeatures] = useState<Feature[]>([]);
+    const [newItemDescription, setNewItemDescription] = useState("");
 
     const handleBaseWeaponSelect = (baseName: string) => {
         if (baseName === "Custom") {
@@ -167,7 +168,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
             containerDetails: newItemContainerDetails,
             toolDetails: newItemToolDetails,
             isContainer: newItemType === "container",
-            description: "",
+            description: newItemDescription,
             features: newItemFeatures,
         };
 
@@ -184,6 +185,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
         setNewItemArmorDetails(undefined);
         setNewItemContainerDetails(undefined);
         setNewItemToolDetails(undefined);
+        setNewItemDescription("");
         setNewItemFeatures([]);
     };
 
@@ -213,6 +215,16 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                         <label className="block text-xs text-gray-400 font-semibold mb-1 uppercase">Qty</label>
                         <input type="number" value={newItemQuantity} onChange={(e) => setNewItemQuantity(Number(e.target.value))} className="w-full p-2 border rounded" min="1" />
                     </div>
+                </div>
+
+                <div>
+                    <label className="block text-xs text-gray-400 font-semibold mb-1 uppercase">Description</label>
+                    <textarea 
+                        value={newItemDescription} 
+                        onChange={(e) => setNewItemDescription(e.target.value)} 
+                        placeholder="Item description..." 
+                        className="w-full p-2 border rounded text-sm min-h-[80px]" 
+                    />
                 </div>
                 <div className="flex gap-4 items-center bg-gray-50 p-2 rounded border">
                     <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
