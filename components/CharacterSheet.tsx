@@ -476,7 +476,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         name: r.name,
         value: r.value,
         max: r.max,
-        regain: r.regain
+        regain: r.regain,
+        regainAmount: r.regainAmount
       }));
       return { ...prev, resources: resourcesToSave };
     });

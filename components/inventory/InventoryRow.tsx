@@ -58,6 +58,13 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                 style={style}
                 className={`border-b hover:bg-gray-50 transition-colors ${isNested ? "bg-gray-50/30" : ""} ${isDragging ? "bg-blue-50/50 shadow-inner" : ""}`}
             >
+                {isReorderMode && (
+                    <td className="p-2 cursor-grab active:cursor-grabbing text-gray-400 hover:text-blue-500" {...attributes} {...listeners}>
+                        <div className="flex items-center justify-center w-full">
+                            <GripVertical className="w-4 h-4" />
+                        </div>
+                    </td>
+                )}
                 <td className="p-2">
                     <input
                         type="number"
@@ -161,13 +168,6 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                         <ChevronDown className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                     </button>
                 </td>
-                {isReorderMode && (
-                    <td className="p-2 cursor-grab active:cursor-grabbing text-gray-400 hover:text-blue-500" {...attributes} {...listeners}>
-                        <div className="flex items-center justify-center w-full">
-                            <GripVertical className="w-4 h-4" />
-                        </div>
-                    </td>
-                )}
             </tr>
             {isExpanded && (
                 <tr className="bg-gray-50/50">

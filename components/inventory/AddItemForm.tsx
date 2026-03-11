@@ -223,7 +223,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                         value={newItemDescription} 
                         onChange={(e) => setNewItemDescription(e.target.value)} 
                         placeholder="Item description..." 
-                        className="w-full p-2 border rounded text-sm min-h-[80px]" 
+                        className="w-full p-2 border rounded text-sm min-h-[160px]" 
                     />
                 </div>
                 <div className="flex gap-4 items-center bg-gray-50 p-2 rounded border">

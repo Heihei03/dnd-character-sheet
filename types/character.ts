@@ -139,6 +139,7 @@ export interface Resource {
   max: number;
   value: number;
   regain: string; // e.g., "Short Rest", "Long Rest", "Dawn"
+  regainAmount?: string; // e.g., "1d6 + 1", "All"
   fromFeature?: boolean;
   useAbilityMod?: keyof AbilityScores;
   useCharacterLevel?: boolean;

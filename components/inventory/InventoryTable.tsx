@@ -38,6 +38,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
             <table className="w-full text-left border-collapse">
                 <thead>
                     <tr className="border-b text-[10px] text-gray-400 uppercase tracking-tighter">
+                        {isReorderMode && <th className="p-1 w-6"></th>}
                         <th className="p-2 w-10">Qty</th>
                         <th className="p-2">Name</th>
                         <th className="p-2 w-16">Cost</th>
@@ -45,7 +46,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                         {section === "equipment" && <th className="p-2 w-10 text-center">Eq</th>}
                         <th className="p-2 w-6"></th>
                         <th className="p-2 w-6"></th>
-                        {isReorderMode && <th className="p-1 w-6"></th>}
                     </tr>
                 </thead>
                 <tbody>

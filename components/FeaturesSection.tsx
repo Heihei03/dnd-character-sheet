@@ -387,7 +387,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                         <textarea
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-24"
+                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-48"
                             placeholder="Describe the feature..."
                         />
                     </div>

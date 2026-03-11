@@ -42,7 +42,13 @@ const ResourcePipTracker: React.FC<ResourcePipTrackerProps> = ({
                             </span>
                         )}
                     </div>
-                    {!compact && <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{resource.regain}</span>}
+                    {!compact && (
+                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+                            {resource.regainAmount && resource.regainAmount !== "All" 
+                                ? `${resource.regainAmount} on ${resource.regain}` 
+                                : resource.regain}
+                        </span>
+                    )}
                 </div>
                 <button
                     onClick={handleReset}

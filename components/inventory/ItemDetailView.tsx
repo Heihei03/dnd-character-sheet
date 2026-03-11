@@ -60,13 +60,13 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                 </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="md:col-span-2 space-y-2">
                 <label className="block text-[10px] font-bold text-gray-400 uppercase">Description</label>
                 <textarea
                     value={item.description || ""}
                     onChange={e => updateItem(item.id, "description", e.target.value)}
                     className="w-full p-2 border rounded text-xs bg-white"
-                    rows={2}
+                    rows={6}
                     placeholder="No description..."
                 />
                 <div className="flex gap-4">
@@ -90,7 +90,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                     </label>
                 </div>
             </div>
-            <div className="space-y-2">
+            <div className="md:col-span-2 space-y-2">
                 <label className="block text-[10px] font-bold text-gray-400 uppercase">Location / Container</label>
                 <select
                     value={item.parentId || ""}

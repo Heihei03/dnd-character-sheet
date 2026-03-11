@@ -36,7 +36,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                     if (updates.type === "New Action" && !updated.value) {
                         updated.value = parentName;
                     } else if (updates.type === "Resource" && (!updated.value || updated.value === "{}")) {
-                        updated.value = JSON.stringify({ name: parentName, max: 0, regain: "Long Rest" });
+                        updated.value = JSON.stringify({ name: parentName, max: 0, regain: "Long Rest", regainAmount: "All" });
                     }
                 }
                 return updated;
@@ -370,6 +370,27 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             >
                                                 {REGAIN_TYPES.map(r => <option key={r} value={r}>{r}</option>)}
                                             </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Regain Amount</label>
+                                            <input
+                                                type="text"
+                                                value={(() => {
+                                                    try {
+                                                        const data = JSON.parse(mod.value as string || "{}");
+                                                        return data.regainAmount || "All";
+                                                    } catch {
+                                                        return "All";
+                                                    }
+                                                })()}
+                                                onChange={(e) => {
+                                                    let current = {};
+                                                    try { current = JSON.parse(mod.value as string || "{}"); } catch { /* ignore */ }
+                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, regainAmount: e.target.value }) });
+                                                }}
+                                                className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                                                placeholder="All, 1d6 + 1, etc."
+                                            />
                                         </div>
                                     </div>
                                 )}

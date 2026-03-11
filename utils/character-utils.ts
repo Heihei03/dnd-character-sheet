@@ -573,6 +573,7 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
                         max: 1,
                         value: 1,
                         regain: m.subType || "Long Rest",
+                        regainAmount: "All",
                         fromFeature: true
                     });
                 }
