@@ -1,4 +1,4 @@
-import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency, AbilityScores } from "../types/character";
+import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency, AbilityScores, NormalizedCharacter } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 import { STANDARD_ACTIONS } from "../data/standard-actions";
 import { SKILL_LIST, LANGUAGES } from "./constants";
@@ -801,9 +801,9 @@ export const getEffectiveLanguages = (character: Character): (string | { name: s
         const isLanguage = LANGUAGES.some(l => l.toLowerCase() === name.toLowerCase());
         if (!isLanguage) return;
 
-        const alreadyHas = baseLang.some((l: any) => {
-            const lName = typeof l === 'string' ? l : (l && (l as any).name);
-            return lName && lName.toLowerCase() === name.toLowerCase();
+        const alreadyHas = baseLang.some((p: any) => {
+            const pName = typeof p === 'string' ? p : (p && (p as any).name);
+            return pName && pName.toLowerCase() === name.toLowerCase();
         });
 
         if (!alreadyHas) {
@@ -814,6 +814,114 @@ export const getEffectiveLanguages = (character: Character): (string | { name: s
     });
 
     return result;
+};
+
+export const normalizeCharacter = (character: any): NormalizedCharacter => {
+    if (!character) return character;
+
+    return {
+        ...character,
+        classes: character.classes ?? [{ name: "Fighter", level: 1 }],
+        abilityScores: character.abilityScores ?? {
+            strength: 10,
+            dexterity: 10,
+            constitution: 10,
+            intelligence: 10,
+            wisdom: 10,
+            charisma: 10,
+        },
+        savingThrows: character.savingThrows ?? {
+            strength: false,
+            dexterity: false,
+            constitution: false,
+            intelligence: false,
+            wisdom: false,
+            charisma: false,
+        },
+        skills: character.skills ?? {
+            acrobatics: "none",
+            animalHandling: "none",
+            arcana: "none",
+            athletics: "none",
+            deception: "none",
+            history: "none",
+            insight: "none",
+            intimidation: "none",
+            investigation: "none",
+            medicine: "none",
+            nature: "none",
+            perception: "none",
+            performance: "none",
+            persuasion: "none",
+            religion: "none",
+            sleightOfHand: "none",
+            stealth: "none",
+            survival: "none",
+        },
+        speed: character.speed ?? {
+            walk: { value: 30, from: "Base" },
+        },
+        inventory: character.inventory ?? [],
+        currency: character.currency ?? {
+            cp: 0,
+            sp: 0,
+            ep: 0,
+            gp: 0,
+            pp: 0,
+        },
+        deathSaves: character.deathSaves ?? {
+            successes: 0,
+            failures: 0,
+        },
+        armorClass: character.armorClass ?? {
+            baseAC: 10,
+            hasDexBonus: true,
+            shieldBonus: 0,
+            miscBonus: 0,
+        },
+        initiative: character.initiative ?? {
+            miscBonus: 0,
+            useJackOfAllTrades: false,
+            showDexTiebreaker: false,
+        },
+        weaponProficiencies: character.weaponProficiencies ?? [],
+        armorProficiencies: character.armorProficiencies ?? [],
+        toolProficiencies: (character.toolProficiencies ?? []).map((tool: any) => {
+            if (typeof tool === "string") {
+                const toolData = TOOL_DATA[tool];
+                return {
+                    name: tool,
+                    ability: toolData?.ability || "Intelligence",
+                    level: "proficient"
+                } as ToolProficiency;
+            }
+            return tool;
+        }),
+        languages: character.languages ?? ["Common"],
+        features: (character.features ?? []).map((f: any) => ({
+            ...f,
+            modifiers: f.modifiers ?? (f.tags ?? []).map((tag: string) => ({
+                id: `migrated-${tag}-${Math.random().toString(36).substr(2, 9)}`,
+                type: "Other",
+                subType: tag,
+                value: ""
+            }))
+        })),
+        senses: character.senses ?? [],
+        defenses: character.defenses ?? {
+            resistances: [],
+            vulnerabilities: [],
+            immunities: []
+        },
+        actions: character.actions ?? [],
+        spells: character.spells ?? [],
+        spellSlots: character.spellSlots ?? [],
+        conditions: character.conditions ?? [],
+        species: character.species ?? "",
+        subSpecies: character.subSpecies ?? "",
+        background: character.background ?? "",
+        exp: character.exp ?? 0,
+    };
 };
 
 export const getEffectiveToolProficiencies = (character: Character): ToolProficiency[] => {

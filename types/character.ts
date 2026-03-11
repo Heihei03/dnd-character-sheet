@@ -322,3 +322,28 @@ export interface Character {
   background: string;
   exp?: number;
 }
+
+export interface NormalizedCharacter extends Character {
+  classes: CharacterClass[];
+  abilityScores: AbilityScores;
+  savingThrows: SavingThrows;
+  skills: Skills;
+  speed: Speed;
+  inventory: InventoryItem[];
+  currency: Currency;
+  deathSaves: DeathSaves;
+  armorClass: ArmorClass;
+  initiative: Initiative;
+  weaponProficiencies: string[];
+  armorProficiencies: string[];
+  toolProficiencies: ToolProficiency[];
+  languages: string[];
+  features: Feature[];
+  senses: Sense[];
+  defenses: Defenses;
+  actions: Action[];
+  spells: Spell[];
+  spellSlots: SpellSlot[];
+  resources: Resource[];
+  conditions: Condition[];
+}

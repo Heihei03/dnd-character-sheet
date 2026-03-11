@@ -4,28 +4,23 @@ import { useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import HPSection from "./HP";
 import AbilityScoreSection from "./AbilityScoreSection";
-import SpeedSection from "./SpeedSection";
-import DiceRoller from "./DiceRoller";
-import CurrencySection from "./CurrencySection";
-import DeathSaves from "./DeathSaves";
-import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
-import ToolChecksSection from "./ToolChecksSection";
-import FeaturesSection from "./FeaturesSection";
-import ResourcesSection from "./ResourcesSection";
-import { TOOL_DATA } from "../data/tools";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature, Sense, Defenses, Spell, SpellSlot, Resource, Condition } from "../types/character";
-import SavingThrowsSection from "./SavingThrowsSection";
-import SkillsSection from "./SkillsSection";
-import InventorySection from "./InventorySection";
 import ArmorClassSection from "./ArmorClassSection";
 import InitiativeSection from "./InitiativeSection";
 import CharacterHeader from "./CharacterHeader";
 import SensesSection from "./SensesSection";
 import DefensesSection from "./DefensesSection";
-import ActionsSection from "./ActionsSection";
-import SpellsSection from "./SpellsSection";
+import CharacterTabs from "./CharacterTabs";
+import DeathSaves from "./DeathSaves";
+import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
+import ToolChecksSection from "./ToolChecksSection";
 import ConditionsSection from "./ConditionsSection";
-import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells, getEffectiveResources, getEffectiveConditions, getEffectiveSkills, getEffectiveToolProficiencies, getEffectiveWeaponProficiencies, getEffectiveArmorProficiencies, getEffectiveLanguages } from "../utils/character-utils";
+import SpeedSection from "./SpeedSection";
+import DiceRoller from "./DiceRoller";
+import { TOOL_DATA } from "../data/tools";
+import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature, Sense, Defenses, Spell, SpellSlot, Resource, Condition, NormalizedCharacter } from "../types/character";
+import SavingThrowsSection from "./SavingThrowsSection";
+import SkillsSection from "./SkillsSection";
+import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells, getEffectiveResources, getEffectiveConditions, getEffectiveSkills, getEffectiveToolProficiencies, getEffectiveWeaponProficiencies, getEffectiveArmorProficiencies, getEffectiveLanguages, normalizeCharacter } from "../utils/character-utils";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -47,110 +42,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     return <div>Loading...</div>; // You can show a loading indicator or fallback here
   }
 
-  // Fallback default values if `character.abilityScores` is undefined
-  const characterWithDefaults = {
-    ...character,
-    classes: character.classes ?? [{ name: "Fighter", level: 1 }],
-    abilityScores: character.abilityScores ?? {
-      strength: 10,
-      dexterity: 10,
-      constitution: 10,
-      intelligence: 10,
-      wisdom: 10,
-      charisma: 10,
-    },
-    savingThrows: character.savingThrows ?? {
-      strength: false,
-      dexterity: false,
-      constitution: false,
-      intelligence: false,
-      wisdom: false,
-      charisma: false,
-    },
-    skills: character.skills ?? {
-      acrobatics: "none",
-      animalHandling: "none",
-      arcana: "none",
-      athletics: "none",
-      deception: "none",
-      history: "none",
-      insight: "none",
-      intimidation: "none",
-      investigation: "none",
-      medicine: "none",
-      nature: "none",
-      perception: "none",
-      performance: "none",
-      persuasion: "none",
-      religion: "none",
-      sleightOfHand: "none",
-      stealth: "none",
-      survival: "none",
-    },
-    speed: character.speed ?? {
-      walk: { value: 30, from: "Base" },
-    },
-    inventory: character.inventory ?? [],
-    currency: character.currency ?? {
-      cp: 0,
-      sp: 0,
-      ep: 0,
-      gp: 0,
-      pp: 0,
-    },
-    deathSaves: character.deathSaves ?? {
-      successes: 0,
-      failures: 0,
-    },
-    armorClass: character.armorClass ?? {
-      baseAC: 10,
-      hasDexBonus: true,
-      shieldBonus: 0,
-      miscBonus: 0,
-    },
-    initiative: character.initiative ?? {
-      miscBonus: 0,
-      useJackOfAllTrades: false,
-      showDexTiebreaker: false,
-    },
-    weaponProficiencies: character.weaponProficiencies ?? [],
-    armorProficiencies: character.armorProficiencies ?? [],
-    toolProficiencies: (character.toolProficiencies ?? []).map((tool: any) => {
-      if (typeof tool === "string") {
-        const toolData = TOOL_DATA[tool];
-        return {
-          name: tool,
-          ability: toolData?.ability || "Intelligence",
-          level: "proficient"
-        } as ToolProficiency;
-      }
-      return tool;
-    }),
-    languages: character.languages ?? ["Common"],
-    features: (character.features ?? []).map((f: any) => ({
-      ...f,
-      modifiers: f.modifiers ?? (f.tags ?? []).map((tag: string) => ({
-        id: `migrated-${tag}-${Math.random().toString(36).substr(2, 9)}`,
-        type: "Other",
-        subType: tag,
-        value: ""
-      }))
-    })),
-    senses: character.senses ?? [],
-    defenses: character.defenses ?? {
-      resistances: [],
-      vulnerabilities: [],
-      immunities: []
-    },
-    actions: character.actions ?? [],
-    spells: character.spells ?? [],
-    spellSlots: character.spellSlots ?? [],
-    conditions: character.conditions ?? [],
-    species: character.species ?? "",
-    subSpecies: character.subSpecies ?? "",
-    background: character.background ?? "",
-    exp: character.exp ?? 0,
-  };
+  const characterWithDefaults = normalizeCharacter(character);
 
   const effectiveAbilityScores = getEffectiveAbilityScores(characterWithDefaults);
   const { skills: effectiveSkills, skillSources } = getEffectiveSkills(characterWithDefaults);
@@ -626,7 +518,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             />
             <ToolChecksSection
               toolProficiencies={effectiveToolProficiencies}
-              onUpdate={(value) => handleChange("toolProficiencies", value)}
+              onUpdate={(value: ToolProficiency[]) => handleChange("toolProficiencies", value)}
               abilityScores={effectiveAbilityScores}
               proficiencyBonus={proficiencyBonus}
               rollDice={rollDice}
@@ -643,100 +535,29 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           </div>
 
           {/* Center Column - Functional Tabs */}
-          <div className="space-y-6 md:col-span-6">
-            <div className="flex flex-wrap gap-2 justify-center bg-gray-50 dark:bg-gray-900/50 p-2 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
-              {[
-                { id: "inventory", label: "Inventory" },
-                { id: "spells", label: "Spells" },
-                { id: "features", label: "Features" },
-                { id: "actions", label: "Actions" },
-                { id: "bio", label: "Bio" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-1.5 px-3 rounded-lg text-sm font-bold transition-all ${activeTab === tab.id
-                    ? "bg-blue-500 text-white shadow-md scale-105"
-                    : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {activeTab === "inventory" && (
-              <div className="space-y-6">
-                <CurrencySection
-                  currency={characterWithDefaults.currency}
-                  setCurrency={handleCurrencyChange}
-                />
-                <InventorySection
-                  inventory={characterWithDefaults.inventory}
-                  setInventory={handleInventoryChange}
-                  resources={effectiveResources}
-                  onUpdateResources={handleUpdateResources}
-                />
-              </div>
-            )}
-
-            {activeTab === "spells" && (
-              <SpellsSection
-                classes={characterWithDefaults.classes || []}
-                spells={getEffectiveSpells(characterWithDefaults)}
-                spellSlots={characterWithDefaults.spellSlots || []}
-                onUpdateSpells={handleUpdateSpells}
-                onUpdateSpellSlots={handleUpdateSpellSlots}
-                abilityScores={effectiveAbilityScores}
-                proficiencyBonus={proficiencyBonus}
-              />
-            )}
-
-            {activeTab === "features" && (
-              <FeaturesSection
-                features={characterWithDefaults.features}
-                itemFeatures={getAllActiveFeatures(characterWithDefaults).filter((f: Feature) => f.origin === "Item")}
-                resources={effectiveResources}
-                onUpdate={(value) => handleChange("features", value)}
-                onUpdateItemFeature={handleUpdateItemFeature}
-                onDeleteItemFeature={handleDeleteItemFeature}
-                onUpdateResources={handleUpdateResources}
-                classes={characterWithDefaults.classes}
-                abilityScores={effectiveAbilityScores}
-                proficiencyBonus={proficiencyBonus}
-                totalLevel={totalLevel}
-                rollDice={rollDice}
-                rollDamage={rollDamage}
-                species={characterWithDefaults.species}
-                subSpecies={characterWithDefaults.subSpecies}
-                background={characterWithDefaults.background}
-                focusedId={focusedFeatureId}
-                onFocusedIdChange={setFocusedFeatureId}
-              />
-            )}
-
-            {activeTab === "actions" && (
-              <ActionsSection
-                actions={getEffectiveActions(characterWithDefaults)}
-                onUpdate={handleUpdateActions}
-                abilityScores={effectiveAbilityScores}
-                proficiencyBonus={getProficiencyBonus(characterWithDefaults.classes.reduce((sum, cls) => sum + cls.level, 0))}
-                totalLevel={totalLevel}
-                rollDice={rollDice}
-                rollDamage={rollDamage}
-                resources={effectiveResources}
-                onUpdateResources={handleUpdateResources}
-              />
-            )}
-
-            {activeTab === "bio" && (
-              <Card>
-                <CardContent className="p-6 space-y-4">
-                  <h2 className="text-2xl font-bold text-center">Character Bio</h2>
-                  <p className="text-gray-500 italic text-center">Your character's history and personality.</p>
-                </CardContent>
-              </Card>
-            )}
+          <div className="md:col-span-6">
+            <CharacterTabs
+              character={characterWithDefaults}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              focusedFeatureId={focusedFeatureId}
+              setFocusedFeatureId={setFocusedFeatureId}
+              proficiencyBonus={proficiencyBonus}
+              totalLevel={totalLevel}
+              effectiveAbilityScores={effectiveAbilityScores}
+              effectiveResources={effectiveResources}
+              handleInventoryChange={handleInventoryChange}
+              handleCurrencyChange={handleCurrencyChange}
+              handleUpdateResources={handleUpdateResources}
+              handleUpdateSpells={handleUpdateSpells}
+              handleUpdateSpellSlots={handleUpdateSpellSlots}
+              handleUpdateItemFeature={handleUpdateItemFeature}
+              handleDeleteItemFeature={handleDeleteItemFeature}
+              handleUpdateActions={handleUpdateActions}
+              handleUpdateFeatures={(value: Feature[]) => handleChange("features", value)}
+              rollDice={rollDice}
+              rollDamage={rollDamage}
+            />
           </div>
 
           {/* Right Column */}
@@ -795,7 +616,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       </div>
 
       <DiceRoller
-        rollDice={(sides) => rollDice(sides)}
+        rollDice={(sides: number) => rollDice(sides)}
         rollResult={rollResult}
       />
 
