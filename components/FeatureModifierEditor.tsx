@@ -206,6 +206,16 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                     <div className="flex items-center h-full px-1.5 italic text-gray-400 text-[10px]">
                                         Configure below...
                                     </div>
+                                ) : mod.type === "Proficiency" ? (
+                                    <select
+                                        value={mod.value || "Proficient"}
+                                        onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
+                                        className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-medium"
+                                    >
+                                        <option value="Proficient">Proficient</option>
+                                        <option value="Expertise">Expertise</option>
+                                        <option value="Half Proficient">Half Proficient</option>
+                                    </select>
                                 ) : (
                                     <input
                                         type="text"
