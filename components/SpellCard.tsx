@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Button from "./ui/button";
-import { Edit2, Trash2, Zap } from "lucide-react";
+import { Edit2, Trash2, Zap, ChevronDown, ChevronUp } from "lucide-react";
 import { Spell, AbilityScores } from "../types/character";
 import { DAMAGE_TYPES, SPELL_SCHOOLS, SPELL_AOE_SHAPES } from "../utils/constants";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../utils/dice-utils";
@@ -31,6 +31,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     // Reset cast level if spell base level changes
     useEffect(() => {
@@ -54,7 +55,10 @@ const SpellCard: React.FC<SpellCardProps> = ({
     return (
         <div className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/20 transition-colors">
             <div className="flex justify-between items-start">
-                <div className="flex-1">
+                <div 
+                    className={`flex-1 ${editingSpellId !== spell.id ? 'cursor-pointer' : ''}`}
+                    onClick={() => editingSpellId !== spell.id && setIsExpanded(!isExpanded)}
+                >
                     {editingSpellId === spell.id ? (
                         <div className="space-y-4 pr-10">
                             <div className="grid grid-cols-2 gap-4">
@@ -322,6 +326,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                             type="checkbox"
                                             checked={spell.prepared}
                                             onChange={(e) => handleUpdateSpell(spell.id, "prepared", e.target.checked)}
+                                            onClick={(e) => e.stopPropagation()}
                                             title={spell.prepared ? "Unprepare spell" : "Prepare spell for combat"}
                                             className="w-4 h-4 cursor-pointer accent-blue-600"
                                         />
@@ -343,7 +348,10 @@ const SpellCard: React.FC<SpellCardProps> = ({
 
                                 {/* Upcasting Selector */}
                                 {spell.level > 0 && (
-                                    <div className="ml-auto flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg border border-blue-100 dark:border-blue-800">
+                                    <div 
+                                        className="ml-auto flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg border border-blue-100 dark:border-blue-800"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
                                         <Zap className="w-3 h-3 text-blue-500" />
                                         <label className="text-[10px] font-bold uppercase text-blue-600 dark:text-blue-400">Cast At:</label>
                                         <select
@@ -417,18 +425,22 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 )}
                             </div>
 
-                            <p className="text-sm dark:text-gray-300 leading-relaxed font-serif whitespace-pre-wrap mt-2">{spell.description}</p>
+                            {isExpanded && (
+                                <>
+                                    <p className="text-sm dark:text-gray-300 leading-relaxed font-serif whitespace-pre-wrap mt-2">{spell.description}</p>
 
-                            {spell.atHigherLevels && (
-                                <div className="mt-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-800/50 italic text-sm text-gray-600 dark:text-gray-400">
-                                    <strong className="text-blue-700 dark:text-blue-300 text-xs uppercase not-italic">At Higher Levels: </strong>
-                                    {spell.atHigherLevels}
-                                </div>
+                                    {spell.atHigherLevels && (
+                                        <div className="mt-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-800/50 italic text-sm text-gray-600 dark:text-gray-400">
+                                            <strong className="text-blue-700 dark:text-blue-300 text-xs uppercase not-italic">At Higher Levels: </strong>
+                                            {spell.atHigherLevels}
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
                     )}
                 </div>
-                <div className="flex gap-2 ml-4 flex-shrink-0">
+                <div className="flex gap-2 ml-4 flex-shrink-0 items-center">
                     {editingSpellId !== spell.id && (
                         <button className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" onClick={() => setEditingSpellId(spell.id)}>
                             <Edit2 className="w-5 h-5" />
@@ -448,6 +460,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 confirmText="Delete"
                             />
                         </>
+                    )}
+                    {editingSpellId !== spell.id && (
+                        <ChevronDown className={`w-5 h-5 text-gray-400 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                     )}
                 </div>
             </div>
