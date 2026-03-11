@@ -54,11 +54,11 @@ const SpellCard: React.FC<SpellCardProps> = ({
 
     return (
         <div className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/20 transition-colors">
-            <div className="flex justify-between items-start">
-                <div 
-                    className={`flex-1 ${editingSpellId !== spell.id ? 'cursor-pointer' : ''}`}
-                    onClick={() => editingSpellId !== spell.id && setIsExpanded(!isExpanded)}
-                >
+            <div 
+                className={`flex justify-between items-start ${editingSpellId !== spell.id ? 'cursor-pointer' : ''}`}
+                onClick={() => editingSpellId !== spell.id && setIsExpanded(!isExpanded)}
+            >
+                <div className="flex-1">
                     {editingSpellId === spell.id ? (
                         <div className="space-y-4 pr-10">
                             <div className="grid grid-cols-2 gap-4">
@@ -442,13 +442,19 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 </div>
                 <div className="flex gap-2 ml-4 flex-shrink-0 items-center">
                     {editingSpellId !== spell.id && (
-                        <button className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" onClick={() => setEditingSpellId(spell.id)}>
+                        <button 
+                            className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                            onClick={(e) => { e.stopPropagation(); setEditingSpellId(spell.id); }}
+                        >
                             <Edit2 className="w-5 h-5" />
                         </button>
                     )}
                     {!spell.fromFeature && (
                         <>
-                            <button className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setShowDeleteConfirm(true)}>
+                            <button 
+                                className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" 
+                                onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(true); }}
+                            >
                                 <Trash2 className="w-5 h-5" />
                             </button>
                             <ConfirmationModal
