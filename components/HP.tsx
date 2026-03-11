@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Button from "./ui/button";
 import { CharacterClass, AbilityScores } from "../types/character";
 import { classHitDice } from "../utils/constants";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, Heart, Shield, Activity, Dna } from "lucide-react";
+import { cn } from "../lib/utils";
 
 interface HPSectionProps {
   maxHp: number;
@@ -43,24 +44,24 @@ const HPSection = ({
   const getModifier = (score: number) => Math.floor((score - 10) / 2);
 
   const handleAction = (type: "damage" | "heal") => {
+    const amount = hpDiff || 0;
     if (type === "damage") {
       if (tempHp > 0) {
-        // Damage first reduces temp HP
-        const remainingTemp = Math.max(0, tempHp - hpDiff);
-        const overflow = Math.max(0, hpDiff - tempHp);
+        const remainingTemp = Math.max(0, tempHp - amount);
+        const overflow = Math.max(0, amount - tempHp);
         setTempHp(remainingTemp);
         if (overflow > 0) {
           const newHp = Math.max(0, hp - overflow);
           setHp(newHp);
         }
       } else {
-        // No temp HP, apply directly to current HP
-        const newHp = Math.max(0, hp - hpDiff);
+        const newHp = Math.max(0, hp - amount);
         setHp(newHp);
       }
     } else {
-      setHp(Math.min(maxHp, hp + hpDiff)); // Heal but not exceed max HP
+      setHp(Math.min(maxHp, hp + amount));
     }
+    setHpDiff(0);
   };
 
   const handleRollHitDice = (index: number) => {
@@ -74,10 +75,8 @@ const HPSection = ({
     const roll = Math.floor(Math.random() * sides) + 1;
     const healAmount = Math.max(1, roll + conMod);
 
-    // Update HP
     setHp(Math.min(maxHp, hp + healAmount));
 
-    // Update Used Hit Dice
     const updatedClasses = [...classes];
     updatedClasses[index] = {
       ...cls,
@@ -85,56 +84,39 @@ const HPSection = ({
     };
     onUpdateClasses(updatedClasses);
 
-    // Show roll result using main dice roller
     rollDice(sides, conMod, `Hit Die (${cls.name})`);
   };
 
   const handleMaxHpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === "") {
-      setMaxHpInput("");
-      setMaxHp(0);
-    } else {
-      const parsedValue = Number(value);
-      if (!isNaN(parsedValue)) {
-        setMaxHpInput(parsedValue.toString());
-        setMaxHp(parsedValue);
-      }
+    setMaxHpInput(value);
+    const parsedValue = parseInt(value);
+    if (!isNaN(parsedValue)) {
+      setMaxHp(parsedValue);
     }
   };
 
   const handleHpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === "") {
-      setHpInput("");
-      setHp(0);
-    } else {
-      const parsedValue = Number(value);
-      if (!isNaN(parsedValue)) {
-        setHpInput(parsedValue.toString());
-        setHp(parsedValue);
-      }
+    setHpInput(value);
+    const parsedValue = parseInt(value);
+    if (!isNaN(parsedValue)) {
+      setHp(parsedValue);
     }
   };
 
   const handleTempHpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === "") {
-      setTempHpInput("");
-      setTempHp(0);
-    } else {
-      const parsedValue = Number(value);
-      if (!isNaN(parsedValue)) {
-        setTempHpInput(parsedValue.toString());
-        setTempHp(parsedValue);
-      }
+    setTempHpInput(value);
+    const parsedValue = parseInt(value);
+    if (!isNaN(parsedValue)) {
+      setTempHp(parsedValue);
     }
   };
 
   const handleHitDiceChange = (index: number, newValue: number) => {
     const cls = classes[index];
     const updatedClasses = [...classes];
-    // available = level - usedHitDice => usedHitDice = level - available
     const newUsed = Math.max(0, Math.min(cls.level, cls.level - newValue));
     updatedClasses[index] = {
       ...cls,
@@ -143,97 +125,145 @@ const HPSection = ({
     onUpdateClasses(updatedClasses);
   };
 
+  const hpPercentage = maxHp > 0 ? (hp / maxHp) * 100 : 0;
+  const barColor = hpPercentage > 50 ? "bg-green-500" : hpPercentage > 25 ? "bg-amber-500" : "bg-red-500";
+
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between px-2">
-          <label className="text-lg">Max HP:</label>
-          <input
-            type="number"
-            value={maxHpInput}
-            onChange={handleMaxHpChange}
-            className="w-20 p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="flex items-center justify-between px-2">
-          <label className="text-lg">HP:</label>
-          <input
+    <div className="flex flex-col gap-6 p-2">
+      {/* HP Cards */}
+      <div className="grid grid-cols-3 gap-2">
+        <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-colors">
+           <Heart className="absolute -right-2 -top-2 w-10 h-10 text-red-500 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
+           <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Current</span>
+           <input
             type="number"
             value={hpInput}
             onChange={handleHpChange}
-            className="w-20 p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-transparent text-2xl font-black text-center text-blue-600 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
           />
         </div>
-        <div className="flex items-center justify-between px-2">
-          <label className="text-lg">Temp HP:</label>
-          <input
+
+        <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-colors">
+           <Activity className="absolute -right-2 -top-2 w-10 h-10 text-gray-400 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
+           <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Max HP</span>
+           <input
+            type="number"
+            value={maxHpInput}
+            onChange={handleMaxHpChange}
+            className="w-full bg-transparent text-2xl font-black text-center text-gray-700 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
+          />
+        </div>
+
+        <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-colors">
+           <Shield className="absolute -right-2 -top-2 w-10 h-10 text-blue-500 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
+           <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Temp HP</span>
+           <input
             type="number"
             value={tempHpInput}
             onChange={handleTempHpChange}
-            className="w-20 p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-transparent text-2xl font-black text-center text-sky-600 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
           />
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-4 mt-2 border-t pt-4">
-        <input
-          type="number"
-          value={hpDiff}
-          onChange={(e) => setHpDiff(Math.max(0, Number(e.target.value)))}
-          placeholder="Amount"
-          className="w-24 p-2 border border-gray-300 rounded-lg shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-          min="0"
-        />
-        <div className="flex gap-2">
-          <Button
-            variant="danger"
-            onClick={() => handleAction("damage")}
-            className="flex items-center gap-2"
+      {/* Visual HP Bar */}
+      <div className="space-y-1.5">
+        <div className="h-4 w-full bg-gray-100 rounded-full border border-gray-200 p-0.5 flex items-center overflow-hidden shadow-inner">
+          <div 
+            className={cn("h-full rounded-full transition-all duration-700 ease-out flex items-center justify-center shadow-sm", barColor)}
+            style={{ width: `${Math.min(100, hpPercentage)}%` }}
           >
-            <Minus className="w-4 h-4" /> Damage
-          </Button>
-          <Button
-            variant="success"
-            onClick={() => handleAction("heal")}
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" /> Heal
-          </Button>
+            {hpPercentage > 30 && <span className="text-[9px] font-black text-white drop-shadow-sm">{Math.round(hpPercentage)}%</span>}
+          </div>
         </div>
+        {tempHp > 0 && (
+          <div className="h-1.5 w-full bg-blue-50 rounded-full overflow-hidden border border-blue-100/50">
+            <div className="h-full bg-blue-400 w-full animate-pulse transition-all duration-500"></div>
+          </div>
+        )}
       </div>
 
-      <div className="border-t pt-4 space-y-2">
-        <h3 className="text-md font-semibold text-center">Hit Dice</h3>
-        {classes.map((cls, index) => {
-          const available = cls.level - (cls.usedHitDice || 0);
-          const sides = classHitDice[cls.name.toLowerCase()] || 8;
-          return (
-            <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-100">
-              <span className="text-sm font-medium">{cls.name}</span>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 text-sm font-medium">
-                  <input
-                    type="number"
-                    value={available}
-                    onChange={(e) => handleHitDiceChange(index, parseInt(e.target.value) || 0)}
-                    min={0}
-                    max={cls.level}
-                    className="w-10 p-1 border border-gray-300 rounded bg-white text-center font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                  <span className="text-gray-600">/ {cls.level} d{sides}</span>
+      {/* Damage / Heal Controls */}
+      <div className="flex items-center gap-3 p-1.5 bg-gray-50 rounded-xl border border-gray-200 shadow-inner">
+        <Button
+          onClick={() => handleAction("damage")}
+          variant="danger"
+          className="w-12 h-12 p-0 flex-shrink-0 rounded-lg"
+          title="Apply Damage"
+        >
+          <Minus className="w-6 h-6" />
+        </Button>
+        
+        <div className="flex-1 flex flex-col items-center">
+          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Adjustment</span>
+          <input
+            type="number"
+            value={hpDiff || ""}
+            onChange={(e) => setHpDiff(Math.max(0, parseInt(e.target.value) || 0))}
+            placeholder="0"
+            className="w-full bg-transparent text-xl font-black text-center focus:outline-none placeholder:text-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        </div>
+
+        <Button
+          onClick={() => handleAction("heal")}
+          variant="success"
+          className="w-12 h-12 p-0 flex-shrink-0 rounded-lg"
+          title="Apply Healing"
+        >
+          <Plus className="w-6 h-6" />
+        </Button>
+      </div>
+
+      {/* Hit Dice */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">
+          <Dna className="w-3 h-3" />
+          <span>Hit Dice Management</span>
+          <div className="flex-1 h-px bg-gray-100"></div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-2">
+          {classes.map((cls, index) => {
+            const available = cls.level - (cls.usedHitDice || 0);
+            const sides = classHitDice[cls.name.toLowerCase()] || 8;
+            return (
+              <div key={index} className="flex items-center justify-between bg-white px-3 py-2.5 rounded-xl border border-gray-100 shadow-sm transition-all hover:border-blue-200 group">
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-tight leading-none">{cls.name}</span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-sm font-black text-gray-700">d{sides}</span>
+                    <span className="text-[9px] font-bold text-gray-400">Dice</span>
+                  </div>
                 </div>
-                <Button
-                  variant="primary"
-                  onClick={() => handleRollHitDice(index)}
-                  disabled={available <= 0}
-                  className="text-xs px-2 py-1 h-7"
-                >
-                  Roll
-                </Button>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-lg border border-gray-100">
+                    <input
+                      type="number"
+                      value={available}
+                      onChange={(e) => handleHitDiceChange(index, parseInt(e.target.value) || 0)}
+                      min={0}
+                      max={cls.level}
+                      className="w-5 text-sm font-black text-blue-600 bg-transparent text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                    <span className="text-xs font-black text-gray-300">/ {cls.level}</span>
+                  </div>
+
+                  <Button
+                    onClick={() => handleRollHitDice(index)}
+                    disabled={available <= 0}
+                    variant="primary"
+                    className="text-[10px] font-black uppercase px-3 py-1.5 h-auto rounded-lg shadow-sm tracking-widest"
+                    title="Roll Hit Die to Heal"
+                  >
+                    Roll
+                  </Button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
