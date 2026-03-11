@@ -28,6 +28,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     proficiencyBonus
 }) => {
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
+    const [newSpellDraft, setNewSpellDraft] = useState<Spell | null>(null);
     const [autoCalculateSlots, setAutoCalculateSlots] = useState(true);
 
     const calculatedSlots = calculateSpellSlots(classes);
@@ -53,7 +54,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
 
     const handleAddSpell = () => {
         const newSpell: Spell = {
-            id: `spell-${Date.now()}`,
+            id: `spell-draft-${Date.now()}`,
             name: "New Spell",
             level: 0,
             school: "Evocation",
@@ -82,8 +83,19 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
             hasAoe: false,
             spellcastingAbility: undefined
         };
-        onUpdateSpells([...spells, newSpell]);
+        setNewSpellDraft(newSpell);
         setEditingSpellId(newSpell.id);
+    };
+
+    const handleSaveNewSpell = (spell: Spell) => {
+        onUpdateSpells([...spells, spell]);
+        setNewSpellDraft(null);
+        setEditingSpellId(null);
+    };
+
+    const handleCancelNewSpell = () => {
+        setNewSpellDraft(null);
+        setEditingSpellId(null);
     };
 
     const handleUpdateSpell = (id: string, field: keyof Spell, value: any) => {
@@ -184,8 +196,41 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
 
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Spells List</h2>
-                <Button onClick={handleAddSpell} className="flex items-center whitespace-nowrap"><Plus className="w-4 h-4 mr-2" /> Add Spell</Button>
+                {!newSpellDraft && (
+                    <Button onClick={handleAddSpell} className="flex items-center whitespace-nowrap">
+                        <Plus className="w-4 h-4 mr-2" /> Add Spell
+                    </Button>
+                )}
             </div>
+
+            {newSpellDraft && (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                    <Card className="border-2 border-blue-500 shadow-md">
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-t-lg border-b border-blue-200 dark:border-blue-800 flex justify-between items-center">
+                            <h3 className="text-lg font-bold text-blue-700 dark:text-blue-300">New Spell Draft</h3>
+                            <Button variant="ghost" className="h-8 w-8 p-0" onClick={handleCancelNewSpell}>
+                                <Plus className="w-4 h-4 rotate-45" />
+                            </Button>
+                        </div>
+                        <SpellCard
+                            spell={newSpellDraft}
+                            level={newSpellDraft.level}
+                            editingSpellId={editingSpellId}
+                            setEditingSpellId={(id) => {
+                                if (id === null) handleCancelNewSpell();
+                                else setEditingSpellId(id);
+                            }}
+                            handleUpdateSpell={(id, field, value) => setNewSpellDraft({ ...newSpellDraft, [field]: value })}
+                            handleSaveSpell={handleSaveNewSpell}
+                            handleDeleteSpell={handleCancelNewSpell}
+                            abilityScores={abilityScores}
+                            proficiencyBonus={proficiencyBonus}
+                            totalLevel={classes.reduce((sum, cls) => sum + cls.level, 0)}
+                            classes={classes}
+                        />
+                    </Card>
+                </div>
+            )}
 
             {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => {
                 const levelSpells = spellsByLevel[level] || [];
