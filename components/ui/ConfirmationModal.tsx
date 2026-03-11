@@ -61,20 +61,19 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                     </div>
                     <div className="flex justify-end gap-3 p-4 bg-gray-50 dark:bg-gray-900/50 border-t dark:border-gray-800">
                         <Button
+                            variant="ghost"
                             onClick={onClose}
-                            className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 font-semibold px-4 py-2"
+                            className="border border-gray-200 dark:border-gray-700 font-semibold"
                         >
                             Cancel
                         </Button>
                         <Button
+                            variant={confirmVariant === "danger" ? "danger" : "primary"}
                             onClick={() => {
                                 onConfirm();
                                 onClose();
                             }}
-                            className={`${confirmVariant === "danger"
-                                ? "bg-red-600 hover:bg-red-700"
-                                : "bg-blue-600 hover:bg-blue-700"
-                                } text-white font-semibold px-4 py-2 shadow-sm transition-all active:scale-95`}
+                            className="font-semibold shadow-sm transition-all active:scale-95"
                         >
                             {confirmText}
                         </Button>

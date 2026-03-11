@@ -5,6 +5,7 @@ import { Sense } from "../types/character";
 import { SENSES_LIST } from "../utils/constants";
 import { Trash2, Plus } from "lucide-react";
 import ConfirmationModal from "./ui/ConfirmationModal";
+import Button from "./ui/button";
 
 interface SensesSectionProps {
     senses: Sense[];
@@ -98,12 +99,12 @@ const SensesSection: React.FC<SensesSectionProps> = ({
                         placeholder="Range..."
                         className="flex-1 text-sm p-2 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded outline-none focus:ring-2 focus:ring-blue-500 transition-all font-sans min-w-0"
                     />
-                    <button
+                    <Button
                         onClick={addSense}
-                        className="px-3 py-2 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700 transition-colors shadow-sm shrink-0 flex items-center justify-center min-w-[34px]"
+                        className="px-3"
                     >
                         <Plus className="w-4 h-4" />
-                    </button>
+                    </Button>
                 </div>
             </div>
 

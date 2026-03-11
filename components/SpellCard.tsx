@@ -12,6 +12,7 @@ interface SpellCardProps {
     editingSpellId: string | null;
     setEditingSpellId: (id: string | null) => void;
     handleUpdateSpell: (id: string, field: keyof Spell, value: any) => void;
+    handleSaveSpell: (spell: Spell) => void;
     handleDeleteSpell: (id: string) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
@@ -25,6 +26,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
     editingSpellId,
     setEditingSpellId,
     handleUpdateSpell,
+    handleSaveSpell,
     handleDeleteSpell,
     abilityScores,
     proficiencyBonus,
@@ -34,6 +36,25 @@ const SpellCard: React.FC<SpellCardProps> = ({
     const [castLevel, setCastLevel] = useState(spell.level);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [localSpell, setLocalSpell] = useState<Spell>(spell);
+
+    useEffect(() => {
+        if (editingSpellId === spell.id) {
+            setLocalSpell(spell);
+            setIsExpanded(true);
+        }
+    }, [editingSpellId, spell]);
+
+    const handleLocalUpdate = (field: keyof Spell, value: any) => {
+        setLocalSpell(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleLocalComponentUpdate = (component: keyof Spell["components"], value: boolean) => {
+        setLocalSpell(prev => ({
+            ...prev,
+            components: { ...prev.components, [component]: value }
+        }));
+    };
 
     // Reset cast level if spell base level changes
     useEffect(() => {
@@ -66,14 +87,18 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Name</label>
-                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.name || ""} onChange={(e) => handleUpdateSpell(spell.id, "name", e.target.value)} />
+                                    <input 
+                                        className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" 
+                                        value={localSpell.name || ""} 
+                                        onChange={(e) => handleLocalUpdate("name", e.target.value)} 
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Level</label>
                                     <select
                                         className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700"
-                                        value={spell.level}
-                                        onChange={(e) => handleUpdateSpell(spell.id, "level", parseInt(e.target.value) || 0)}
+                                        value={localSpell.level}
+                                        onChange={(e) => handleLocalUpdate("level", parseInt(e.target.value) || 0)}
                                     >
                                         <option value={0}>Cantrip</option>
                                         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => <option key={l} value={l}>Level {l}</option>)}
@@ -85,8 +110,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     <label className="block text-sm mb-1 font-semibold">School</label>
                                     <select
                                         className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700"
-                                        value={spell.school || "Evocation"}
-                                        onChange={(e) => handleUpdateSpell(spell.id, "school", e.target.value)}
+                                        value={localSpell.school || "Evocation"}
+                                        onChange={(e) => handleLocalUpdate("school", e.target.value)}
                                     >
                                         {SPELL_SCHOOLS.map((school: string) => (
                                             <option key={school} value={school}>{school}</option>
@@ -95,17 +120,29 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 </div>
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Casting Time</label>
-                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.castingTime || ""} onChange={(e) => handleUpdateSpell(spell.id, "castingTime", e.target.value)} />
+                                    <input 
+                                        className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" 
+                                        value={localSpell.castingTime || ""} 
+                                        onChange={(e) => handleLocalUpdate("castingTime", e.target.value)} 
+                                    />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Range</label>
-                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.range || ""} onChange={(e) => handleUpdateSpell(spell.id, "range", e.target.value)} />
+                                    <input 
+                                        className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" 
+                                        value={localSpell.range || ""} 
+                                        onChange={(e) => handleLocalUpdate("range", e.target.value)} 
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm mb-1 font-semibold">Duration</label>
-                                    <input className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" value={spell.duration || ""} onChange={(e) => handleUpdateSpell(spell.id, "duration", e.target.value)} />
+                                    <input 
+                                        className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700" 
+                                        value={localSpell.duration || ""} 
+                                        onChange={(e) => handleLocalUpdate("duration", e.target.value)} 
+                                    />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -113,61 +150,69 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     <label className="block text-sm mb-1 font-semibold">Components</label>
                                     <div className="flex gap-4">
                                         <label className="flex items-center gap-1 text-sm cursor-pointer">
-                                            <input type="checkbox" checked={!Array.isArray(spell.components as any) && (spell.components as any)?.v || Array.isArray(spell.components as any) && (spell.components as any).includes("V")} onChange={(e) => {
-                                                const newComp = Array.isArray(spell.components as any) ? { v: (spell.components as any).includes("V"), s: (spell.components as any).includes("S"), m: (spell.components as any).includes("M") } : { ...spell.components } as any;
-                                                handleUpdateSpell(spell.id, "components", { ...newComp, v: e.target.checked });
-                                            }} /> V
+                                            <input 
+                                                type="checkbox" 
+                                                checked={localSpell.components.v} 
+                                                onChange={(e) => handleLocalComponentUpdate("v", e.target.checked)} 
+                                            /> V
                                         </label>
                                         <label className="flex items-center gap-1 text-sm cursor-pointer">
-                                            <input type="checkbox" checked={!Array.isArray(spell.components as any) && (spell.components as any)?.s || Array.isArray(spell.components as any) && (spell.components as any).includes("S")} onChange={(e) => {
-                                                const newComp = Array.isArray(spell.components as any) ? { v: (spell.components as any).includes("V"), s: (spell.components as any).includes("S"), m: (spell.components as any).includes("M") } : { ...spell.components } as any;
-                                                handleUpdateSpell(spell.id, "components", { ...newComp, s: e.target.checked });
-                                            }} /> S
+                                            <input 
+                                                type="checkbox" 
+                                                checked={localSpell.components.s} 
+                                                onChange={(e) => handleLocalComponentUpdate("s", e.target.checked)} 
+                                            /> S
                                         </label>
                                         <label className="flex items-center gap-1 text-sm cursor-pointer">
-                                            <input type="checkbox" checked={!Array.isArray(spell.components as any) && (spell.components as any)?.m || Array.isArray(spell.components as any) && (spell.components as any).includes("M")} onChange={(e) => {
-                                                const newComp = Array.isArray(spell.components as any) ? { v: (spell.components as any).includes("V"), s: (spell.components as any).includes("S"), m: (spell.components as any).includes("M") } : { ...spell.components } as any;
-                                                handleUpdateSpell(spell.id, "components", { ...newComp, m: e.target.checked });
-                                            }} /> M
+                                            <input 
+                                                type="checkbox" 
+                                                checked={localSpell.components.m} 
+                                                onChange={(e) => handleLocalComponentUpdate("m", e.target.checked)} 
+                                            /> M
                                         </label>
                                     </div>
-                                    {(!Array.isArray(spell.components as any) && (spell.components as any)?.m || Array.isArray(spell.components as any) && (spell.components as any).includes("M")) && (
-                                        <input className="border rounded px-3 py-1 w-full mt-1 text-sm dark:bg-gray-900 dark:border-gray-700" placeholder="Material..." value={spell.material || ""} onChange={(e) => handleUpdateSpell(spell.id, "material", e.target.value)} />
+                                    {localSpell.components.m && (
+                                        <input 
+                                            className="border rounded px-3 py-1 w-full mt-1 text-sm dark:bg-gray-900 dark:border-gray-700" 
+                                            placeholder="Material..." 
+                                            value={localSpell.material || ""} 
+                                            onChange={(e) => handleLocalUpdate("material", e.target.value)} 
+                                        />
                                     )}
                                 </div>
                                 <div className="space-y-2">
                                     <label className="block text-sm mb-1 font-semibold">Flags & AoE</label>
                                     <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                                         <label className="flex items-center gap-2 text-xs">
-                                            <input type="checkbox" checked={spell.isRitual || false} onChange={(e) => handleUpdateSpell(spell.id, "isRitual", e.target.checked)} /> Ritual
+                                            <input type="checkbox" checked={localSpell.isRitual || false} onChange={(e) => handleLocalUpdate("isRitual", e.target.checked)} /> Ritual
                                         </label>
                                         <label className="flex items-center gap-2 text-xs">
-                                            <input type="checkbox" checked={spell.requiresConcentration || false} onChange={(e) => handleUpdateSpell(spell.id, "requiresConcentration", e.target.checked)} /> Concentration
+                                            <input type="checkbox" checked={localSpell.requiresConcentration || false} onChange={(e) => handleLocalUpdate("requiresConcentration", e.target.checked)} /> Concentration
                                         </label>
                                         <label className="flex items-center gap-2 text-xs">
-                                            <input type="checkbox" checked={spell.hasAttack || false} onChange={(e) => handleUpdateSpell(spell.id, "hasAttack", e.target.checked)} /> Attack
+                                            <input type="checkbox" checked={localSpell.hasAttack || false} onChange={(e) => handleLocalUpdate("hasAttack", e.target.checked)} /> Attack
                                         </label>
                                         <label className="flex items-center gap-2 text-xs">
-                                            <input type="checkbox" checked={spell.hasSave || false} onChange={(e) => handleUpdateSpell(spell.id, "hasSave", e.target.checked)} /> Save
+                                            <input type="checkbox" checked={localSpell.hasSave || false} onChange={(e) => handleLocalUpdate("hasSave", e.target.checked)} /> Save
                                         </label>
                                         <label className="flex items-center gap-2 text-xs">
-                                            <input type="checkbox" checked={spell.hasHeal || false} onChange={(e) => handleUpdateSpell(spell.id, "hasHeal", e.target.checked)} /> Heal
+                                            <input type="checkbox" checked={localSpell.hasHeal || false} onChange={(e) => handleLocalUpdate("hasHeal", e.target.checked)} /> Heal
                                         </label>
                                         <label className="flex items-center gap-2 text-xs font-bold text-blue-600">
-                                            <input type="checkbox" checked={spell.hasAoe || false} onChange={(e) => handleUpdateSpell(spell.id, "hasAoe", e.target.checked)} /> AoE
+                                            <input type="checkbox" checked={localSpell.hasAoe || false} onChange={(e) => handleLocalUpdate("hasAoe", e.target.checked)} /> AoE
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
-                            {spell.hasAoe && (
+                            {localSpell.hasAoe && (
                                 <div className="grid grid-cols-2 gap-4 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30 animate-in fade-in slide-in-from-top-2 duration-200">
                                     <div>
                                         <label className="block text-xs font-bold uppercase text-blue-700 dark:text-blue-300 mb-1">AoE Shape</label>
                                         <select
                                             className="border rounded px-2 py-1 w-full text-sm dark:bg-gray-800"
-                                            value={spell.aoeShape || ""}
-                                            onChange={(e) => handleUpdateSpell(spell.id, "aoeShape", e.target.value)}
+                                            value={localSpell.aoeShape || ""}
+                                            onChange={(e) => handleLocalUpdate("aoeShape", e.target.value)}
                                         >
                                             <option value="">Select Shape...</option>
                                             {SPELL_AOE_SHAPES.map(shape => (
@@ -180,8 +225,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         <input
                                             className="border rounded px-2 py-1 w-full text-sm dark:bg-gray-800"
                                             placeholder="e.g. 15 ft"
-                                            value={spell.aoeSize || ""}
-                                            onChange={(e) => handleUpdateSpell(spell.id, "aoeSize", e.target.value)}
+                                            value={localSpell.aoeSize || ""}
+                                            onChange={(e) => handleLocalUpdate("aoeSize", e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -192,8 +237,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     <label className="block text-sm mb-1 font-semibold">Spellcasting Ability</label>
                                     <select
                                         className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700"
-                                        value={spell.spellcastingAbility || ""}
-                                        onChange={(e) => handleUpdateSpell(spell.id, "spellcastingAbility", e.target.value || undefined)}
+                                        value={localSpell.spellcastingAbility || ""}
+                                        onChange={(e) => handleLocalUpdate("spellcastingAbility", e.target.value || undefined)}
                                     >
                                         <option value="">None</option>
                                         <option value="strength">Strength</option>
@@ -208,8 +253,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     <label className="block text-sm mb-1 font-semibold">Source Class</label>
                                     <select
                                         className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700"
-                                        value={spell.classSource || ""}
-                                        onChange={(e) => handleUpdateSpell(spell.id, "classSource", e.target.value || undefined)}
+                                        value={localSpell.classSource || ""}
+                                        onChange={(e) => handleLocalUpdate("classSource", e.target.value || undefined)}
                                     >
                                         <option value="">None (General)</option>
                                         {classes.map(cls => (
@@ -218,14 +263,14 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     </select>
                                 </div>
                             </div>
-                            {spell.level === 0 && (
+                            {localSpell.level === 0 && (
                                 <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50 space-y-1 mb-4">
                                     <div className="flex items-center justify-between">
                                         <label className="text-sm font-bold text-blue-700 dark:text-blue-300">Scales with Character Level</label>
                                         <input
                                             type="checkbox"
-                                            checked={spell.scalesWithCharacterLevel || false}
-                                            onChange={(e) => handleUpdateSpell(spell.id, "scalesWithCharacterLevel", e.target.checked)}
+                                            checked={localSpell.scalesWithCharacterLevel || false}
+                                            onChange={(e) => handleLocalUpdate("scalesWithCharacterLevel", e.target.checked)}
                                             className="w-5 h-5 cursor-pointer accent-blue-600"
                                         />
                                     </div>
@@ -235,25 +280,35 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 </div>
                             )}
 
-                            {(spell.hasAttack || spell.hasSave || spell.damageOnly || spell.hasHeal) && (
+                            {(localSpell.hasAttack || localSpell.hasSave || localSpell.damageOnly || localSpell.hasHeal) && (
                                 <div className="space-y-4 p-3 bg-gray-50 dark:bg-gray-900/40 rounded-lg border dark:border-gray-800">
                                     <div className="grid grid-cols-2 gap-4">
-                                        {(spell.hasAttack || spell.hasSave || spell.damageOnly) && (
+                                        {(localSpell.hasAttack || localSpell.hasSave || localSpell.damageOnly) && (
                                             <>
                                                 <div>
                                                     <label className="block text-sm mb-1 font-medium">Base Damage / Effect</label>
-                                                    <input className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800" placeholder="e.g. 8d6" value={spell.damage || ""} onChange={(e) => handleUpdateSpell(spell.id, "damage", e.target.value)} />
+                                                    <input 
+                                                        className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800" 
+                                                        placeholder="e.g. 8d6" 
+                                                        value={localSpell.damage || ""} 
+                                                        onChange={(e) => handleLocalUpdate("damage", e.target.value)} 
+                                                    />
                                                 </div>
                                                 <div>
                                                     <label className="block text-sm mb-1 font-medium">At Higher Levels (Damage)</label>
-                                                    <input className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800" placeholder="e.g. 1d6" value={spell.higherLevelDamage || ""} onChange={(e) => handleUpdateSpell(spell.id, "higherLevelDamage", e.target.value)} />
+                                                    <input 
+                                                        className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800" 
+                                                        placeholder="e.g. 1d6" 
+                                                        value={localSpell.higherLevelDamage || ""} 
+                                                        onChange={(e) => handleLocalUpdate("higherLevelDamage", e.target.value)} 
+                                                    />
                                                 </div>
                                                 <div>
                                                     <label className="block text-sm mb-1 font-medium">Damage Type</label>
                                                     <select
                                                         className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800"
-                                                        value={spell.damageType || ""}
-                                                        onChange={(e) => handleUpdateSpell(spell.id, "damageType", e.target.value || undefined)}
+                                                        value={localSpell.damageType || ""}
+                                                        onChange={(e) => handleLocalUpdate("damageType", e.target.value || undefined)}
                                                     >
                                                         <option value="">None</option>
                                                         {DAMAGE_TYPES.map((type: string) => (
@@ -261,13 +316,13 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                         ))}
                                                     </select>
                                                 </div>
-                                                {spell.hasSave && (
+                                                {localSpell.hasSave && (
                                                     <div>
                                                         <label className="block text-sm mb-1 font-medium">Save Type</label>
                                                         <select
                                                             className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800"
-                                                            value={spell.saveType || ""}
-                                                            onChange={(e) => handleUpdateSpell(spell.id, "saveType", e.target.value || undefined)}
+                                                            value={localSpell.saveType || ""}
+                                                            onChange={(e) => handleLocalUpdate("saveType", e.target.value || undefined)}
                                                         >
                                                             <option value="">None</option>
                                                             <option value="strength">Strength</option>
@@ -281,15 +336,25 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                 )}
                                             </>
                                         )}
-                                        {spell.hasHeal && (
+                                        {localSpell.hasHeal && (
                                             <>
                                                 <div>
                                                     <label className="block text-sm mb-1 font-medium">Base Healing</label>
-                                                    <input className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800" placeholder="e.g. 1d4 + 4" value={spell.healing || ""} onChange={(e) => handleUpdateSpell(spell.id, "healing", e.target.value)} />
+                                                    <input 
+                                                        className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800" 
+                                                        placeholder="e.g. 1d4 + 4" 
+                                                        value={localSpell.healing || ""} 
+                                                        onChange={(e) => handleLocalUpdate("healing", e.target.value)} 
+                                                    />
                                                 </div>
                                                 <div>
                                                     <label className="block text-sm mb-1 font-medium">At Higher Levels (Healing)</label>
-                                                    <input className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800" placeholder="e.g. 1d4" value={spell.higherLevelHealing || ""} onChange={(e) => handleUpdateSpell(spell.id, "higherLevelHealing", e.target.value)} />
+                                                    <input 
+                                                        className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800" 
+                                                        placeholder="e.g. 1d4" 
+                                                        value={localSpell.higherLevelHealing || ""} 
+                                                        onChange={(e) => handleLocalUpdate("higherLevelHealing", e.target.value)} 
+                                                    />
                                                 </div>
                                             </>
                                         )}
@@ -299,8 +364,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         <textarea
                                             className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800 min-h-[60px]"
                                             placeholder="The damage increases by 1d6 for each slot level above 3rd..."
-                                            value={spell.atHigherLevels || ""}
-                                            onChange={(e) => handleUpdateSpell(spell.id, "atHigherLevels", e.target.value)}
+                                            value={localSpell.atHigherLevels || ""}
+                                            onChange={(e) => handleLocalUpdate("atHigherLevels", e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -308,7 +373,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
 
                             <div className="space-y-2">
                                 <label className="block text-sm mb-1 font-semibold">Description</label>
-                                <textarea className="border rounded px-3 py-2 w-full min-h-[100px] dark:bg-gray-900 dark:border-gray-700 font-serif" value={spell.description || ""} onChange={(e) => handleUpdateSpell(spell.id, "description", e.target.value)} />
+                                <textarea className="border rounded px-3 py-2 w-full min-h-[100px] dark:bg-gray-900 dark:border-gray-700 font-serif" value={localSpell.description || ""} onChange={(e) => handleLocalUpdate("description", e.target.value)} />
                             </div>
                             <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50 space-y-2">
                                 <div className="flex items-center justify-between">
@@ -317,19 +382,24 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     </div>
                                     <input
                                         type="checkbox"
-                                        checked={spell.prepared || false}
-                                        onChange={(e) => handleUpdateSpell(spell.id, "prepared", e.target.checked)}
+                                        checked={localSpell.prepared || false}
+                                        onChange={(e) => handleLocalUpdate("prepared", e.target.checked)}
                                         className="w-5 h-5 cursor-pointer accent-blue-600 rounded border-gray-300"
                                     />
                                 </div>
                                 <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight italic">
-                                    {spell.level === 0
+                                    {localSpell.level === 0
                                         ? "Cantrips are always prepared and show in the Actions tab."
                                         : "Level 1+ spells must be prepared to show up in the Actions & Attacks tab."}
                                 </p>
                             </div>
-                            <div>
-                                <Button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm" onClick={() => setEditingSpellId(null)}>Save Changes</Button>
+                            <div className="flex justify-end gap-3 pt-4">
+                                <Button variant="ghost" onClick={() => setEditingSpellId(null)}>
+                                    Cancel
+                                </Button>
+                                <Button onClick={() => handleSaveSpell(localSpell)}>
+                                    Save Changes
+                                </Button>
                             </div>
                         </div>
                     ) : (

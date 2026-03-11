@@ -395,8 +395,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                             />
                         </div>
 
-                        <div className="flex justify-end gap-2 pt-2">
-                            <Button onClick={() => { setIsAdding(false); setEditingId(null); }}>
+                        <div className="flex justify-end gap-3 pt-2">
+                            <Button variant="ghost" onClick={() => { setIsAdding(false); setEditingId(null); }}>
                                 Cancel
                             </Button>
                             <Button onClick={editingId ? handleSaveEdit : handleAdd}>

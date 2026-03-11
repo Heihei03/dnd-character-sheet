@@ -7,6 +7,7 @@ import { ARMOR_DATA } from "../data/armor";
 import { TOOL_DATA } from "../data/tools";
 import { ToolProficiency } from "../types/character";
 import { Plus, X } from "lucide-react";
+import Button from "./ui/button";
 
 interface ProficiencyListProps {
     title: string;
@@ -135,12 +136,12 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                             ))}
                         </datalist>
                     </div>
-                    <button
+                    <Button
                         onClick={addItem}
-                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors whitespace-nowrap font-medium"
+                        className="py-1"
                     >
                         Add
-                    </button>
+                    </Button>
                 </div>
             )}
         </div>

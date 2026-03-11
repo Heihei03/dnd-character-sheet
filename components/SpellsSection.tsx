@@ -13,6 +13,7 @@ interface SpellsSectionProps {
     spellSlots: SpellSlot[];
     onUpdateSpells: (spells: Spell[]) => void;
     onUpdateSpellSlots: (slots: SpellSlot[]) => void;
+    handleSaveSpell: (spell: Spell) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
 }
@@ -87,6 +88,11 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
 
     const handleUpdateSpell = (id: string, field: keyof Spell, value: any) => {
         onUpdateSpells(spells.map(s => s.id === id ? { ...s, [field]: value } : s));
+    };
+
+    const handleSaveLocalSpell = (updatedSpell: Spell) => {
+        onUpdateSpells(spells.map(s => s.id === updatedSpell.id ? updatedSpell : s));
+        setEditingSpellId(null);
     };
 
     const handleDeleteSpell = (id: string) => {
@@ -202,6 +208,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                             editingSpellId={editingSpellId}
                                             setEditingSpellId={setEditingSpellId}
                                             handleUpdateSpell={handleUpdateSpell}
+                                            handleSaveSpell={handleSaveLocalSpell}
                                             handleDeleteSpell={handleDeleteSpell}
                                             abilityScores={abilityScores}
                                             proficiencyBonus={proficiencyBonus}

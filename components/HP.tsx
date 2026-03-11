@@ -186,14 +186,16 @@ const HPSection = ({
         />
         <div className="flex gap-2">
           <Button
+            variant="danger"
             onClick={() => handleAction("damage")}
-            className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
+            className="flex items-center gap-2"
           >
             <Minus className="w-4 h-4" /> Damage
           </Button>
           <Button
+            variant="success"
             onClick={() => handleAction("heal")}
-            className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
+            className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" /> Heal
           </Button>
@@ -220,16 +222,14 @@ const HPSection = ({
                   />
                   <span className="text-gray-600">/ {cls.level} d{sides}</span>
                 </div>
-                <button
+                <Button
+                  variant="primary"
                   onClick={() => handleRollHitDice(index)}
                   disabled={available <= 0}
-                  className={`text-xs px-2 py-1 rounded transition-colors font-semibold ${available > 0
-                    ? "bg-blue-500 text-white hover:bg-blue-600 shadow-sm"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    }`}
+                  className="text-xs px-2 py-1 h-7"
                 >
                   Roll
-                </button>
+                </Button>
               </div>
             </div>
           );

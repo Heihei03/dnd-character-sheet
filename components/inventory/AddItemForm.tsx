@@ -195,7 +195,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, totalWeight }) => {
                         <label className="block text-xs text-gray-400 font-semibold mb-1 uppercase">Qty</label>
                         <input type="number" value={newItemQuantity} onChange={(e) => setNewItemQuantity(Number(e.target.value))} className="w-full p-2 border rounded" min="1" />
                     </div>
-                    <Button onClick={addItem} className="bg-blue-600 text-white hover:bg-blue-700 h-[42px]">Add</Button>
+                    <Button onClick={addItem} className="h-[42px]">Add</Button>
                 </div>
                 <div className="flex gap-4 items-center bg-gray-50 p-2 rounded border">
                     <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">

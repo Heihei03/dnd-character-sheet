@@ -8,17 +8,39 @@ function cn(...inputs: ClassValue[]) {
 
 // Define prop types
 interface ButtonProps {
-  onClick: () => void; // onClick should be a function that takes no arguments and returns nothing
-  children: ReactNode; // children can be any React element or string
-  className?: string; // Optional className prop
+  onClick: () => void;
+  children: ReactNode;
+  className?: string;
+  variant?: "primary" | "ghost" | "danger" | "ghost-danger" | "success" | "secondary";
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ onClick, children, className }) => {
+const Button: React.FC<ButtonProps> = ({ 
+  onClick, 
+  children, 
+  className, 
+  variant = "primary",
+  type = "button",
+  disabled = false
+}) => {
+  const variants = {
+    primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
+    secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700",
+    ghost: "bg-transparent text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/50",
+    danger: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
+    "ghost-danger": "bg-transparent text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10",
+    success: "bg-green-600 text-white hover:bg-green-700 shadow-sm"
+  };
+
   return (
     <button
+      type={type}
       onClick={onClick}
+      disabled={disabled}
       className={cn(
-        "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
+        "px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center justify-center gap-2",
+        disabled ? "opacity-50 cursor-not-allowed shadow-none" : variants[variant],
         className
       )}
     >

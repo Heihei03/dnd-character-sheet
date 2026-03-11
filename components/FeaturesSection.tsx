@@ -249,7 +249,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Features & Traits</h2>
                 <Button onClick={() => { setIsAdding(true); setEditingId(null); resetForm(); }}>
-                    + Add Feature
+                    <Plus className="w-4 h-4 mr-2" /> Add Feature
                 </Button>
             </div>
 
@@ -395,8 +395,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                             parentName={formData.name}
                         />
 
-                        <div className="flex justify-end gap-2 pt-2">
-                            <Button onClick={() => { setIsAdding(false); setEditingId(null); }}>
+                        <div className="flex justify-end gap-3 pt-2">
+                            <Button variant="ghost" onClick={() => { setIsAdding(false); setEditingId(null); }}>
                                 Cancel
                             </Button>
                             <Button onClick={editingId ? handleSaveEdit : handleAdd}>
