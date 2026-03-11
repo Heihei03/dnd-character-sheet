@@ -1,11 +1,19 @@
 import React, { useState } from "react";
-import { Card, CardContent } from "./ui/card";
+import { Calculator, Plus } from "lucide-react";
+
+// UI Components
 import Button from "./ui/button";
-import { Plus, Calculator } from "lucide-react";
+import { Card, CardContent } from "./ui/card";
 import SectionHeader from "./ui/SectionHeader";
-import SpellCard from "./SpellCard";
+
+// Components
 import ResourcePipTracker from "./ResourcePipTracker";
-import { CharacterClass, Spell, SpellSlot, AbilityScores, Resource } from "../types/character";
+import SpellCard from "./SpellCard";
+
+// Types
+import { AbilityScores, CharacterClass, Resource, Spell, SpellSlot } from "../types/character";
+
+// Utils
 import { calculateSpellSlots } from "../utils/spell-utils";
 
 interface SpellsSectionProps {

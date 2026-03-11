@@ -1,27 +1,35 @@
 "use client";
 
 import React from "react";
+
+// UI Components
 import { Card, CardContent } from "./ui/card";
+
+// Components
+import ActionsSection from "./ActionsSection";
 import CurrencySection from "./CurrencySection";
+import FeaturesSection from "./FeaturesSection";
 import InventorySection from "./InventorySection";
 import SpellsSection from "./SpellsSection";
-import FeaturesSection from "./FeaturesSection";
-import ActionsSection from "./ActionsSection";
+
+// Types
 import { 
-  NormalizedCharacter, 
-  Action, 
-  Spell, 
-  SpellSlot, 
-  Resource, 
-  Feature, 
   AbilityScores,
+  Action, 
+  Currency,
+  Feature, 
   InventoryItem,
-  Currency
+  NormalizedCharacter, 
+  Resource, 
+  Spell, 
+  SpellSlot 
 } from "../types/character";
+
+// Utils
 import { 
-  getEffectiveSpells, 
+  getAllActiveFeatures, 
   getEffectiveActions, 
-  getAllActiveFeatures 
+  getEffectiveSpells 
 } from "../utils/character-utils";
 
 interface CharacterTabsProps {

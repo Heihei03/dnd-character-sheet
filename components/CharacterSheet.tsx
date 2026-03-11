@@ -1,26 +1,64 @@
 "use client";
 
 import { useState } from "react";
+
+// UI Components
 import { Card, CardContent } from "./ui/card";
-import HPSection from "./HP";
+
+// Components
 import AbilityScoreSection from "./AbilityScoreSection";
 import ArmorClassSection from "./ArmorClassSection";
-import InitiativeSection from "./InitiativeSection";
 import CharacterHeader from "./CharacterHeader";
-import SensesSection from "./SensesSection";
-import DefensesSection from "./DefensesSection";
 import CharacterTabs from "./CharacterTabs";
-import DeathSaves from "./DeathSaves";
-import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
-import ToolChecksSection from "./ToolChecksSection";
 import ConditionsSection from "./ConditionsSection";
-import SpeedSection from "./SpeedSection";
+import DeathSaves from "./DeathSaves";
+import DefensesSection from "./DefensesSection";
 import DiceRoller from "./DiceRoller";
-import { TOOL_DATA } from "../data/tools";
-import { Character, SavingThrows, Skills, InventoryItem, Currency, CharacterClass, DeathSaves as DeathSavesType, ArmorClass, ToolProficiency, Action, Feature, Sense, Defenses, Spell, SpellSlot, Resource, Condition, NormalizedCharacter } from "../types/character";
+import HPSection from "./HP";
+import InitiativeSection from "./InitiativeSection";
+import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
 import SavingThrowsSection from "./SavingThrowsSection";
+import SensesSection from "./SensesSection";
 import SkillsSection from "./SkillsSection";
-import { getEffectiveSenses, getEffectiveDefenses, getEffectiveActions, getAllActiveFeatures, getEffectiveAbilityScores, getEffectiveSpells, getEffectiveResources, getEffectiveConditions, getEffectiveSkills, getEffectiveToolProficiencies, getEffectiveWeaponProficiencies, getEffectiveArmorProficiencies, getEffectiveLanguages, normalizeCharacter } from "../utils/character-utils";
+import SpeedSection from "./SpeedSection";
+import ToolChecksSection from "./ToolChecksSection";
+
+// Types
+import {
+  Action,
+  ArmorClass,
+  Character,
+  CharacterClass,
+  Condition,
+  Currency,
+  DeathSaves as DeathSavesType,
+  Defenses,
+  Feature,
+  InventoryItem,
+  NormalizedCharacter,
+  Resource,
+  SavingThrows,
+  Sense,
+  Skills,
+  Spell,
+  SpellSlot,
+  ToolProficiency
+} from "../types/character";
+
+// Utils
+import {
+  getEffectiveAbilityScores,
+  getEffectiveArmorProficiencies,
+  getEffectiveConditions,
+  getEffectiveDefenses,
+  getEffectiveLanguages,
+  getEffectiveResources,
+  getEffectiveSenses,
+  getEffectiveSkills,
+  getEffectiveToolProficiencies,
+  getEffectiveWeaponProficiencies,
+  normalizeCharacter
+} from "../utils/character-utils";
 
 interface CharacterSheetProps {
   character: Character | null;

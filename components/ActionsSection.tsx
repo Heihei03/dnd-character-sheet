@@ -1,17 +1,31 @@
 "use client";
 
 import React, { useState } from "react";
-import { Action, ActionType, AbilityScores } from "../types/character";
-import { Card, CardContent } from "./ui/card";
+import { 
+  ChevronDown, 
+  Dices, 
+  Pencil, 
+  Plus, 
+  Trash2, 
+  Zap 
+} from "lucide-react";
+
+// UI Components
 import Button from "./ui/button";
-import SectionHeader from "./ui/SectionHeader";
-import { Pencil, Trash2, ChevronDown, Plus, Zap, Dices } from "lucide-react";
-import { DAMAGE_TYPES } from "../utils/constants";
-import { getAbilityModifier, resolveRollExpression } from "../utils/character-utils";
-import { calculateUpcastedValue, calculateScaledCantripValue } from "../utils/dice-utils";
-import ResourcePipTracker from "./ResourcePipTracker";
-import { Resource } from "../types/character";
+import { Card, CardContent } from "./ui/card";
 import ConfirmationModal from "./ui/ConfirmationModal";
+import SectionHeader from "./ui/SectionHeader";
+
+// Components
+import ResourcePipTracker from "./ResourcePipTracker";
+
+// Types
+import { AbilityScores, Action, ActionType, Resource } from "../types/character";
+
+// Utils
+import { getAbilityModifier, resolveRollExpression } from "../utils/character-utils";
+import { DAMAGE_TYPES } from "../utils/constants";
+import { calculateScaledCantripValue, calculateUpcastedValue } from "../utils/dice-utils";
 
 interface ActionsSectionProps {
     actions: Action[];

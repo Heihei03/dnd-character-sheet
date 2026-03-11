@@ -1,15 +1,33 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Dices, Search, X, Pencil, Trash2, ChevronDown, Plus, Minus, RotateCcw } from "lucide-react";
-import { Feature, Resource, CharacterClass, AbilityScores } from "../types/character";
-import { resolveRollExpression } from "../utils/character-utils";
-import { Card, CardContent } from "./ui/card";
+import React, { useEffect, useState } from "react";
+import { 
+  ChevronDown, 
+  Dices, 
+  Minus, 
+  Pencil, 
+  Plus, 
+  RotateCcw, 
+  Search, 
+  Trash2, 
+  X 
+} from "lucide-react";
+
+// UI Components
 import Button from "./ui/button";
+import { Card, CardContent } from "./ui/card";
+import ConfirmationModal from "./ui/ConfirmationModal";
 import SectionHeader from "./ui/SectionHeader";
+
+// Components
 import FeatureModifierEditor from "./FeatureModifierEditor";
 import ResourcePipTracker from "./ResourcePipTracker";
-import ConfirmationModal from "./ui/ConfirmationModal";
+
+// Types
+import { AbilityScores, CharacterClass, Feature, Resource } from "../types/character";
+
+// Utils
+import { resolveRollExpression } from "../utils/character-utils";
 
 interface FeaturesSectionProps {
     features: Feature[];

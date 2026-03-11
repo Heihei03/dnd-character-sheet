@@ -1,12 +1,27 @@
 import React, { useState } from "react";
-import { WEAPON_DATA } from "../../data/weapons";
+
+// UI Components
+import Button from "../ui/button";
+import { CardContent } from "../ui/card";
+
+// Components
+import ItemFeaturesEditor from "./ItemFeaturesEditor";
+
+// Data
 import { ARMOR_DATA } from "../../data/armor";
 import { CONTAINER_DATA } from "../../data/containers";
 import { TOOL_DATA } from "../../data/tools";
-import { Feature, InventoryItem, WeaponDetails, ArmorDetails, ContainerDetails, ToolDetails } from "../../types/character";
-import ItemFeaturesEditor from "./ItemFeaturesEditor";
-import { CardContent } from "../ui/card";
-import Button from "../ui/button";
+import { WEAPON_DATA } from "../../data/weapons";
+
+// Types
+import { 
+  ArmorDetails, 
+  ContainerDetails, 
+  Feature, 
+  InventoryItem, 
+  ToolDetails, 
+  WeaponDetails 
+} from "../../types/character";
 
 interface AddItemFormProps {
     onAdd: (item: InventoryItem) => void;
