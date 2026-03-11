@@ -3,6 +3,7 @@ import React, { useState } from "react";
 // UI Components
 import Button from "../ui/button";
 import { CardContent } from "../ui/card";
+import EntityForm from "../ui/EntityForm";
 
 // Components
 import ItemFeaturesEditor from "./ItemFeaturesEditor";
@@ -187,10 +188,13 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
     };
 
     return (
-        <CardContent className="p-4 space-y-4">
-            <div className="flex justify-between items-center border-b pb-2">
-                <h2 className="text-xl font-bold">Inventory Management</h2>
-            </div>
+        <EntityForm
+            title="Inventory Management"
+            onSave={addItem}
+            onCancel={onCancel || (() => {})}
+            saveLabel="Add"
+            className="w-full"
+        >
             <div className="space-y-4">
                 <div className="flex gap-2 items-end">
                     <div className="flex-1">
@@ -208,12 +212,6 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                     <div className="w-16">
                         <label className="block text-xs text-gray-400 font-semibold mb-1 uppercase">Qty</label>
                         <input type="number" value={newItemQuantity} onChange={(e) => setNewItemQuantity(Number(e.target.value))} className="w-full p-2 border rounded" min="1" />
-                    </div>
-                    <div className="flex gap-2">
-                        {onCancel && (
-                            <Button variant="ghost" onClick={onCancel} className="h-[42px]">Cancel</Button>
-                        )}
-                        <Button onClick={addItem} className="h-[42px]">Add</Button>
                     </div>
                 </div>
                 <div className="flex gap-4 items-center bg-gray-50 p-2 rounded border">
@@ -539,7 +537,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                     onUpdate={setNewItemFeatures}
                 />
             </div>
-        </CardContent>
+        </EntityForm>
     );
 };
 

@@ -18,6 +18,7 @@ interface SpellCardProps {
     proficiencyBonus: number;
     totalLevel: number;
     classes: CharacterClass[];
+    hideFooter?: boolean;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -31,7 +32,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
     abilityScores,
     proficiencyBonus,
     totalLevel,
-    classes
+    classes,
+    hideFooter = false
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -393,14 +395,16 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         : "Level 1+ spells must be prepared to show up in the Actions & Attacks tab."}
                                 </p>
                             </div>
-                            <div className="flex justify-end gap-3 pt-4">
-                                <Button variant="ghost" onClick={() => setEditingSpellId(null)}>
-                                    Cancel
-                                </Button>
-                                <Button onClick={() => handleSaveSpell(localSpell)}>
-                                    Save Changes
-                                </Button>
-                            </div>
+                            {!hideFooter && (
+                                <div className="flex justify-end gap-3 pt-4">
+                                    <Button variant="ghost" onClick={() => setEditingSpellId(null)}>
+                                        Cancel
+                                    </Button>
+                                    <Button onClick={() => handleSaveSpell(localSpell)}>
+                                        Save Changes
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="space-y-3">

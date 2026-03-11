@@ -4,6 +4,7 @@ import { Calculator, Plus } from "lucide-react";
 // UI Components
 import Button from "./ui/button";
 import { Card, CardContent } from "./ui/card";
+import EntityForm from "./ui/EntityForm";
 import SectionHeader from "./ui/SectionHeader";
 
 // Components
@@ -202,22 +203,22 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                 </CardContent>
             </Card>
 
-            <SectionHeader 
-                title="Spells List" 
-                buttonLabel="Add Spell" 
-                onAdd={handleAddSpell} 
-                isAdding={!!newSpellDraft} 
+            <SectionHeader
+                title="Spells List"
+                buttonLabel="Add Spell"
+                onAdd={handleAddSpell}
+                isAdding={!!newSpellDraft}
             />
 
             {newSpellDraft && (
                 <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                    <Card className="border-2 border-blue-500 shadow-md">
-                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-t-lg border-b border-blue-200 dark:border-blue-800 flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-blue-700 dark:text-blue-300">New Spell Draft</h3>
-                            <Button variant="ghost" className="h-8 w-8 p-0" onClick={handleCancelNewSpell}>
-                                <Plus className="w-4 h-4 rotate-45" />
-                            </Button>
-                        </div>
+                    <EntityForm
+                        title="New Spell"
+                        onSave={() => handleSaveNewSpell(newSpellDraft)}
+                        onCancel={handleCancelNewSpell}
+                        saveLabel="Add Spell"
+                        className="shadow-md p-0"
+                    >
                         <SpellCard
                             spell={newSpellDraft}
                             level={newSpellDraft.level}
@@ -233,8 +234,9 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                             proficiencyBonus={proficiencyBonus}
                             totalLevel={classes.reduce((sum, cls) => sum + cls.level, 0)}
                             classes={classes}
+                            hideFooter={true} // New prop to hide internal buttons
                         />
-                    </Card>
+                    </EntityForm>
                 </div>
             )}
 

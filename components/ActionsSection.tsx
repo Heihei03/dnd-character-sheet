@@ -14,6 +14,7 @@ import {
 import Button from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import ConfirmationModal from "./ui/ConfirmationModal";
+import EntityForm from "./ui/EntityForm";
 import SectionHeader from "./ui/SectionHeader";
 
 // Components
@@ -215,211 +216,205 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
             />
 
             {(isAdding || editingId) && (
-                <Card className="border-blue-200 bg-blue-50/30 dark:bg-blue-900/10 dark:border-blue-800">
-                    <CardContent className="p-6 space-y-4">
-                        <h3 className="font-bold text-lg">{editingId ? "Edit Action" : "New Action"}</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-gray-500">Name</label>
-                                <input
-                                    type="text"
-                                    value={formData.name || ""}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
-                                    placeholder="Action name..."
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-gray-500">Type</label>
-                                <select
-                                    value={formData.type || "Action"}
-                                    onChange={(e) => setFormData({ ...formData, type: e.target.value as ActionType })}
-                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                >
-                                    {ACTION_TYPES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                </select>
-                            </div>
-                        </div>
-
-                        {formData.type === "Attack" && (
-                            <>
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
-                                    <div className="flex items-center gap-2 pt-6">
-                                        <input
-                                            type="checkbox"
-                                            id="proficient"
-                                            checked={!!formData.proficient}
-                                            onChange={(e) => setFormData({ ...formData, proficient: e.target.checked })}
-                                            className="w-4 h-4"
-                                        />
-                                        <label htmlFor="proficient" className="text-xs font-bold uppercase text-gray-500 cursor-pointer">Proficient</label>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Attack Ability</label>
-                                        <select
-                                            value={formData.attackAbility || ""}
-                                            onChange={(e) => setFormData({ ...formData, attackAbility: (e.target.value as keyof AbilityScores) || undefined })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                        >
-                                            <option value="">None</option>
-                                            <option value="strength">Strength</option>
-                                            <option value="dexterity">Dexterity</option>
-                                            <option value="constitution">Constitution</option>
-                                            <option value="intelligence">Intelligence</option>
-                                            <option value="wisdom">Wisdom</option>
-                                            <option value="charisma">Charisma</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Attack Bonus</label>
-                                        <input
-                                            type="number"
-                                            value={formData.attackBonus ?? 0}
-                                            onChange={(e) => setFormData({ ...formData, attackBonus: parseInt(e.target.value) || 0 })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                            placeholder="0"
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Damage Type</label>
-                                        <select
-                                            value={formData.damageType || "Slashing"}
-                                            onChange={(e) => setFormData({ ...formData, damageType: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                        >
-                                            {DAMAGE_TYPES.map(dt => <option key={dt} value={dt}>{dt}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Damage Dice</label>
-                                        <input
-                                            type="text"
-                                            value={formData.damageDice || ""}
-                                            onChange={(e) => setFormData({ ...formData, damageDice: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                            placeholder="1d8"
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Versatile Dice</label>
-                                        <input
-                                            type="text"
-                                            value={formData.versatileDice || ""}
-                                            onChange={(e) => setFormData({ ...formData, versatileDice: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                            placeholder="1d10"
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Damage Ability</label>
-                                        <select
-                                            value={formData.damageAbility || ""}
-                                            onChange={(e) => setFormData({ ...formData, damageAbility: (e.target.value as keyof AbilityScores) || undefined })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                        >
-                                            <option value="">None</option>
-                                            <option value="strength">Strength</option>
-                                            <option value="dexterity">Dexterity</option>
-                                            <option value="constitution">Constitution</option>
-                                            <option value="intelligence">Intelligence</option>
-                                            <option value="wisdom">Wisdom</option>
-                                            <option value="charisma">Charisma</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Damage Bonus</label>
-                                        <input
-                                            type="number"
-                                            value={formData.damageBonus ?? 0}
-                                            onChange={(e) => setFormData({ ...formData, damageBonus: parseInt(e.target.value) || 0 })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                            placeholder="0"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Reach</label>
-                                        <input
-                                            type="text"
-                                            value={formData.reach || ""}
-                                            onChange={(e) => setFormData({ ...formData, reach: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                            placeholder="5 ft"
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Range</label>
-                                        <input
-                                            type="text"
-                                            value={formData.range || ""}
-                                            onChange={(e) => setFormData({ ...formData, range: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                            placeholder="20/60 ft"
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Activation</label>
-                                        <input
-                                            type="text"
-                                            value={formData.activation || ""}
-                                            onChange={(e) => setFormData({ ...formData, activation: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                            placeholder="1 Action..."
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Target</label>
-                                        <input
-                                            type="text"
-                                            value={formData.target || ""}
-                                            onChange={(e) => setFormData({ ...formData, target: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                            placeholder="One creature..."
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500">Resource Name</label>
-                                        <input
-                                            type="text"
-                                            list="resource-suggestions"
-                                            value={formData.resourceName || ""}
-                                            onChange={(e) => setFormData({ ...formData, resourceName: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
-                                            placeholder="e.g. Ki Points"
-                                        />
-                                        <datalist id="resource-suggestions">
-                                            {resources.map(r => <option key={r.id} value={r.name} />)}
-                                        </datalist>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-
+                <EntityForm
+                    title={editingId ? "Edit Action" : "New Action"}
+                    onSave={editingId ? handleSaveEdit : handleAdd}
+                    onCancel={() => { setIsAdding(false); setEditingId(null); }}
+                    saveLabel={editingId ? "Save Changes" : "Create Action"}
+                    isEditing={!!editingId}
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                            <label className="text-xs font-bold uppercase text-gray-500">Description</label>
-                            <textarea
-                                value={formData.description || ""}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-24"
-                                placeholder="Describe the action..."
+                            <label className="text-xs font-bold uppercase text-gray-500">Name</label>
+                            <input
+                                type="text"
+                                value={formData.name || ""}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
+                                placeholder="Action name..."
                             />
                         </div>
-
-                        <div className="flex justify-end gap-3 pt-2">
-                            <Button variant="ghost" onClick={() => { setIsAdding(false); setEditingId(null); }}>
-                                Cancel
-                            </Button>
-                            <Button onClick={editingId ? handleSaveEdit : handleAdd}>
-                                {editingId ? "Save Changes" : "Create Action"}
-                            </Button>
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase text-gray-500">Type</label>
+                            <select
+                                value={formData.type || "Action"}
+                                onChange={(e) => setFormData({ ...formData, type: e.target.value as ActionType })}
+                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                            >
+                                {ACTION_TYPES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                            </select>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+
+                    {formData.type === "Attack" && (
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <div className="flex items-center gap-2 pt-6">
+                                    <input
+                                        type="checkbox"
+                                        id="proficient"
+                                        checked={!!formData.proficient}
+                                        onChange={(e) => setFormData({ ...formData, proficient: e.target.checked })}
+                                        className="w-4 h-4"
+                                    />
+                                    <label htmlFor="proficient" className="text-xs font-bold uppercase text-gray-500 cursor-pointer">Proficient</label>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Attack Ability</label>
+                                    <select
+                                        value={formData.attackAbility || ""}
+                                        onChange={(e) => setFormData({ ...formData, attackAbility: (e.target.value as keyof AbilityScores) || undefined })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                    >
+                                        <option value="">None</option>
+                                        <option value="strength">Strength</option>
+                                        <option value="dexterity">Dexterity</option>
+                                        <option value="constitution">Constitution</option>
+                                        <option value="intelligence">Intelligence</option>
+                                        <option value="wisdom">Wisdom</option>
+                                        <option value="charisma">Charisma</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Attack Bonus</label>
+                                    <input
+                                        type="number"
+                                        value={formData.attackBonus ?? 0}
+                                        onChange={(e) => setFormData({ ...formData, attackBonus: parseInt(e.target.value) || 0 })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                        placeholder="0"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Damage Type</label>
+                                    <select
+                                        value={formData.damageType || "Slashing"}
+                                        onChange={(e) => setFormData({ ...formData, damageType: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                    >
+                                        {DAMAGE_TYPES.map(dt => <option key={dt} value={dt}>{dt}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Damage Dice</label>
+                                    <input
+                                        type="text"
+                                        value={formData.damageDice || ""}
+                                        onChange={(e) => setFormData({ ...formData, damageDice: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                        placeholder="1d8"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Versatile Dice</label>
+                                    <input
+                                        type="text"
+                                        value={formData.versatileDice || ""}
+                                        onChange={(e) => setFormData({ ...formData, versatileDice: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                        placeholder="1d10"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Damage Ability</label>
+                                    <select
+                                        value={formData.damageAbility || ""}
+                                        onChange={(e) => setFormData({ ...formData, damageAbility: (e.target.value as keyof AbilityScores) || undefined })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                    >
+                                        <option value="">None</option>
+                                        <option value="strength">Strength</option>
+                                        <option value="dexterity">Dexterity</option>
+                                        <option value="constitution">Constitution</option>
+                                        <option value="intelligence">Intelligence</option>
+                                        <option value="wisdom">Wisdom</option>
+                                        <option value="charisma">Charisma</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Damage Bonus</label>
+                                    <input
+                                        type="number"
+                                        value={formData.damageBonus ?? 0}
+                                        onChange={(e) => setFormData({ ...formData, damageBonus: parseInt(e.target.value) || 0 })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                        placeholder="0"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Reach</label>
+                                    <input
+                                        type="text"
+                                        value={formData.reach || ""}
+                                        onChange={(e) => setFormData({ ...formData, reach: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                        placeholder="5 ft"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Range</label>
+                                    <input
+                                        type="text"
+                                        value={formData.range || ""}
+                                        onChange={(e) => setFormData({ ...formData, range: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                        placeholder="20/60 ft"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Activation</label>
+                                    <input
+                                        type="text"
+                                        value={formData.activation || ""}
+                                        onChange={(e) => setFormData({ ...formData, activation: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                        placeholder="1 Action..."
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Target</label>
+                                    <input
+                                        type="text"
+                                        value={formData.target || ""}
+                                        onChange={(e) => setFormData({ ...formData, target: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                        placeholder="One creature..."
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Resource Name</label>
+                                    <input
+                                        type="text"
+                                        list="resource-suggestions"
+                                        value={formData.resourceName || ""}
+                                        onChange={(e) => setFormData({ ...formData, resourceName: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
+                                        placeholder="e.g. Ki Points"
+                                    />
+                                    <datalist id="resource-suggestions">
+                                        {resources.map(r => <option key={r.id} value={r.name} />)}
+                                    </datalist>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold uppercase text-gray-500">Description</label>
+                        <textarea
+                            value={formData.description || ""}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-24"
+                            placeholder="Describe the action..."
+                        />
+                    </div>
+                </EntityForm>
             )}
 
             {/* Common Actions Grid */}

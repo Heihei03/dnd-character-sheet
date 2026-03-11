@@ -17,6 +17,7 @@ import {
 import Button from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import ConfirmationModal from "./ui/ConfirmationModal";
+import EntityForm from "./ui/EntityForm";
 import SectionHeader from "./ui/SectionHeader";
 
 // Components
@@ -307,123 +308,117 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
             </div>
 
             {(isAdding || editingId) && (
-                <Card className="border-blue-200 bg-blue-50/30 dark:bg-blue-900/10 dark:border-blue-800">
-                    <CardContent className="p-6 space-y-4">
-                        <h3 className="font-bold text-lg">{editingId ? "Edit Feature" : "New Feature"}</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-gray-500">Name</label>
-                                <input
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
-                                    placeholder="Feature name..."
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-gray-500">Origin</label>
-                                <div className="flex gap-2">
-                                    <select
-                                        value={formData.origin}
-                                        onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
-                                    >
-                                        {ORIGIN_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                    </select>
-
-                                    {formData.origin === "Class" && classes.length > 0 && (
-                                        <div className="flex flex-col gap-2 w-full">
-                                            <select
-                                                value={formData.subOrigin || (classes.length > 0 ? classes[0].name : "")}
-                                                onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value, subclass: "" })}
-                                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
-                                            >
-                                                {classes.map(cls => <option key={cls.name} value={cls.name}>{cls.name}</option>)}
-                                            </select>
-
-                                            {/* Subclass Selection */}
-                                            {classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass && (
-                                                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                                                    <label className="text-[10px] font-bold uppercase text-gray-400 whitespace-nowrap">Subclass Feature?</label>
-                                                    <select
-                                                        value={formData.subclass || ""}
-                                                        onChange={(e) => setFormData({ ...formData, subclass: e.target.value })}
-                                                        className="flex-1 p-1 text-xs border rounded dark:bg-gray-900 dark:border-gray-700"
-                                                    >
-                                                        <option value="">None (Base Class)</option>
-                                                        <option value={classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass}>
-                                                            {classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass}
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                            )}
-
-                                            {/* Level Selection */}
-                                            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200 mt-1">
-                                                <label className="text-[10px] font-bold uppercase text-gray-400 whitespace-nowrap">Level Gained</label>
-                                                <input
-                                                    type="number"
-                                                    min="1"
-                                                    max="20"
-                                                    value={formData.level || ""}
-                                                    onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) || undefined })}
-                                                    className="w-16 p-1 text-xs border rounded dark:bg-gray-900 dark:border-gray-700"
-                                                    placeholder="Lvl..."
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-                                    {formData.origin === "Species" && (
-                                        <select
-                                            value={formData.subOrigin || (subSpecies || species || "")}
-                                            onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
-                                        >
-                                            <option value={species}>{species}</option>
-                                            {subSpecies && <option value={subSpecies}>{subSpecies}</option>}
-                                            <option value="">Other...</option>
-                                        </select>
-                                    )}
-                                    {formData.origin === "Background" && (
-                                        <input
-                                            type="text"
-                                            value={formData.subOrigin || background || ""}
-                                            onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value })}
-                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
-                                            placeholder="Background name..."
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
+                <EntityForm
+                    title={editingId ? "Edit Feature" : "New Feature"}
+                    onSave={editingId ? handleSaveEdit : handleAdd}
+                    onCancel={() => { setIsAdding(false); setEditingId(null); resetForm(); }}
+                    saveLabel={editingId ? "Save Changes" : "Create Feature"}
+                    isEditing={!!editingId}
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                            <label className="text-xs font-bold uppercase text-gray-500">Description</label>
-                            <textarea
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-24"
-                                placeholder="Describe the feature..."
+                            <label className="text-xs font-bold uppercase text-gray-500">Name</label>
+                            <input
+                                type="text"
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
+                                placeholder="Feature name..."
                             />
                         </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase text-gray-500">Origin</label>
+                            <div className="flex gap-2">
+                                <select
+                                    value={formData.origin}
+                                    onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                >
+                                    {ORIGIN_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                </select>
 
-                        <FeatureModifierEditor
-                            modifiers={formData.modifiers || []}
-                            onUpdate={(modifiers) => setFormData({ ...formData, modifiers })}
-                            parentName={formData.name}
-                        />
+                                {formData.origin === "Class" && classes.length > 0 && (
+                                    <div className="flex flex-col gap-2 w-full">
+                                        <select
+                                            value={formData.subOrigin || (classes.length > 0 ? classes[0].name : "")}
+                                            onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value, subclass: "" })}
+                                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
+                                        >
+                                            {classes.map(cls => <option key={cls.name} value={cls.name}>{cls.name}</option>)}
+                                        </select>
 
-                        <div className="flex justify-end gap-3 pt-2">
-                            <Button variant="ghost" onClick={() => { setIsAdding(false); setEditingId(null); }}>
-                                Cancel
-                            </Button>
-                            <Button onClick={editingId ? handleSaveEdit : handleAdd}>
-                                {editingId ? "Save Changes" : "Create Feature"}
-                            </Button>
+                                        {/* Subclass Selection */}
+                                        {classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass && (
+                                            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                                                <label className="text-[10px] font-bold uppercase text-gray-400 whitespace-nowrap">Subclass Feature?</label>
+                                                <select
+                                                    value={formData.subclass || ""}
+                                                    onChange={(e) => setFormData({ ...formData, subclass: e.target.value })}
+                                                    className="flex-1 p-1 text-xs border rounded dark:bg-gray-900 dark:border-gray-700"
+                                                >
+                                                    <option value="">None (Base Class)</option>
+                                                    <option value={classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass}>
+                                                        {classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        )}
+
+                                        {/* Level Selection */}
+                                        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200 mt-1">
+                                            <label className="text-[10px] font-bold uppercase text-gray-400 whitespace-nowrap">Level Gained</label>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                max="20"
+                                                value={formData.level || ""}
+                                                onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) || undefined })}
+                                                className="w-16 p-1 text-xs border rounded dark:bg-gray-900 dark:border-gray-700"
+                                                placeholder="Lvl..."
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                {formData.origin === "Species" && (
+                                    <select
+                                        value={formData.subOrigin || (subSpecies || species || "")}
+                                        onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
+                                    >
+                                        <option value={species}>{species}</option>
+                                        {subSpecies && <option value={subSpecies}>{subSpecies}</option>}
+                                        <option value="">Other...</option>
+                                    </select>
+                                )}
+                                {formData.origin === "Background" && (
+                                    <input
+                                        type="text"
+                                        value={formData.subOrigin || background || ""}
+                                        onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value })}
+                                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
+                                        placeholder="Background name..."
+                                    />
+                                )}
+                            </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold uppercase text-gray-500">Description</label>
+                        <textarea
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-24"
+                            placeholder="Describe the feature..."
+                        />
+                    </div>
+
+                    <FeatureModifierEditor
+                        modifiers={formData.modifiers || []}
+                        onUpdate={(modifiers) => setFormData({ ...formData, modifiers })}
+                        parentName={formData.name}
+                    />
+                </EntityForm>
             )}
 
             <div className="grid grid-cols-1 gap-0">
