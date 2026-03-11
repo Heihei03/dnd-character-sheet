@@ -442,6 +442,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         activation: data.activation || (data.type || m.subType) as any || "1 Action",
                         damage: damage,
                         resourceName,
+                        resourceId: data.resourceId || m.id, // Link to resource with ID
                         id: `feature-action-${m.id}-${idx}`,
                         fromFeature: true
                     };
@@ -464,7 +465,8 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         description: `Action granted by feature: ${f.name}`,
                         activation: "1 Action",
                         fromFeature: true,
-                        resourceName
+                        resourceName,
+                        resourceId: m.id // Link to resource with the same ID
                     } as Action;
                 }
                 extraActions.push(action);
@@ -556,7 +558,7 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
                     featureResources.push({
                         ...data,
                         name: resourceName,
-                        id: `feature-resource-${m.id}-${idx}`,
+                        id: m.id, // Use modifier ID as the stable resource ID
                         fromFeature: true,
                         max: max,
                         value: data.value ?? max // Default value to max if not specified
@@ -568,7 +570,7 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
                     if (alreadyFound) return;
 
                     featureResources.push({
-                        id: `feature-resource-${m.id}-${idx}`,
+                        id: m.id, // Use modifier ID as the stable resource ID
                         name: val,
                         max: 1,
                         value: 1,
@@ -598,7 +600,19 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
     });
 
     featureResources.forEach(fr => {
-        const existingIdx = combined.findIndex(r => (r.name || "").toLowerCase() === (fr.name || "").toLowerCase());
+        // First try to merge by ID (the robust way)
+        let existingIdx = combined.findIndex(r => r.id === fr.id);
+
+        // Fallback: merge by name if ID doesn't match AND it's a manual resource
+        // This allows feature resources to link to manually created ones, 
+        // but prevents feature resources with different IDs (e.g. from different items) from clashing.
+        if (existingIdx === -1) {
+            existingIdx = combined.findIndex(r =>
+                !r.fromFeature &&
+                (r.name || "").toLowerCase() === (fr.name || "").toLowerCase()
+            );
+        }
+
         if (existingIdx >= 0) {
             // Keep manual value if it exists, but update max/regain from feature if they are linking
             // For now, let's treat feature resources as authoritative if they have the same name

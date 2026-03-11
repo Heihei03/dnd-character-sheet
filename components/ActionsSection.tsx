@@ -543,7 +543,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                                 onClick={(e) => e.stopPropagation()}
                                                             >
                                                                 {(() => {
-                                                                    const resource = resources.find(r => r.name.toLowerCase() === action.resourceName?.toLowerCase());
+                                                                    const resource = resources.find(r => r.id === action.resourceId) || 
+                                                                                     resources.find(r => r.name.toLowerCase() === action.resourceName?.toLowerCase());
                                                                     if (!resource) return null;
                                                                     return (
                                                                         <ResourcePipTracker
@@ -690,7 +691,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                         {action.resourceName && (
                                                             <div className="pt-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
                                                                 {(() => {
-                                                                    const resource = resources.find(r => r.name.toLowerCase() === action.resourceName?.toLowerCase());
+                                                                    const resource = resources.find(r => r.id === action.resourceId) || 
+                                                                                     resources.find(r => r.name.toLowerCase() === action.resourceName?.toLowerCase());
                                                                     if (!resource) return null;
                                                                     return (
                                                                         <div className="max-w-sm">

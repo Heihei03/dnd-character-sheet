@@ -487,22 +487,51 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                         </div>
                                         <div className="md:col-span-2 space-y-1">
                                             <label className="text-[10px] uppercase font-bold text-gray-400">Resource Link</label>
-                                            <input
-                                                type="text"
+                                            <select
                                                 value={(() => {
                                                     try {
                                                         const data = JSON.parse(mod.value as string || "{}");
-                                                        return data.resourceName || "";
+                                                        return data.resourceId || "";
                                                     } catch { return ""; }
                                                 })()}
                                                 onChange={(e) => {
                                                     let current = {};
                                                     try { current = JSON.parse(mod.value as string || "{}"); } catch { }
-                                                    updateModifier(mod.id, { value: JSON.stringify({ ...current, resourceName: e.target.value }) });
+                                                    const resId = e.target.value;
+                                                    const linkedRes = modifiers.find(m => m.id === resId);
+                                                    let resName = "";
+                                                    if (linkedRes) {
+                                                        try {
+                                                            const resData = JSON.parse(linkedRes.value as string);
+                                                            resName = resData.name;
+                                                        } catch {
+                                                            resName = linkedRes.value as string;
+                                                        }
+                                                    }
+                                                    updateModifier(mod.id, { 
+                                                        value: JSON.stringify({ 
+                                                            ...current, 
+                                                            resourceId: resId,
+                                                            resourceName: resName || undefined 
+                                                        }) 
+                                                    });
                                                 }}
                                                 className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
-                                                placeholder="Auto-linked if in feature"
-                                            />
+                                            >
+                                                <option value="">No Link</option>
+                                                {modifiers
+                                                    .filter(m => m.type === "Resource")
+                                                    .map(m => {
+                                                        let name = "";
+                                                        try {
+                                                            name = JSON.parse(m.value as string).name || "Unnamed Resource";
+                                                        } catch {
+                                                            name = m.value as string || "Unnamed Resource";
+                                                        }
+                                                        return <option key={m.id} value={m.id}>{name}</option>;
+                                                    })
+                                                }
+                                            </select>
                                         </div>
                                     </div>
                                 )}

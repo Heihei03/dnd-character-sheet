@@ -35,7 +35,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                 } catch {
                     name = m.value as string || f.name;
                 }
-                return resources.find(r => r.name === name);
+                return resources.find(r => r.id === m.id) || resources.find(r => r.name === name);
             })
             .filter((r): r is Resource => !!r)
     );

@@ -488,10 +488,10 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                         try {
                                                             const data = JSON.parse(mod.value as string || "{}");
                                                             resourceName = data.name || mod.subType || "";
-                                                            relevantResource = resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
+                                                            relevantResource = resources.find(r => r.id === mod.id) || resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
                                                         } catch {
                                                             resourceName = (mod.value as string) || mod.subType || "";
-                                                            relevantResource = resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
+                                                            relevantResource = resources.find(r => r.id === mod.id) || resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
                                                         }
 
                                                         if (!relevantResource) return null;
@@ -544,10 +544,10 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                         try {
                                                             const data = JSON.parse(mod.value as string || "{}");
                                                             resourceName = data.name || mod.subType || "";
-                                                            relevantResource = resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
+                                                            relevantResource = resources.find(r => r.id === mod.id) || resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
                                                         } catch {
                                                             resourceName = (mod.value as string) || mod.subType || "";
-                                                            relevantResource = resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
+                                                            relevantResource = resources.find(r => r.id === mod.id) || resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
                                                         }
                                                     }
 
