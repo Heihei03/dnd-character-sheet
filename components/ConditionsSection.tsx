@@ -100,27 +100,25 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
                         );
                     })}
                 </div>
-                <div className="flex gap-2 items-center">
-                    <div className="flex-1 relative">
-                        <input
-                            type="text"
-                            list="conditions-list"
-                            value={newConditionName}
-                            onChange={(e) => setNewConditionName(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && addCondition()}
-                            placeholder="Add condition..."
-                            className="w-full text-sm p-2 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded outline-none focus:ring-2 focus:ring-blue-500 transition-all font-sans min-w-0"
-                        />
-                        <datalist id="conditions-list">
-                            {CONDITION_TYPES.map(type => <option key={type} value={type} />)}
-                        </datalist>
-                    </div>
+                <div className="flex gap-1 relative">
+                    <input
+                        type="text"
+                        list="conditions-list"
+                        value={newConditionName}
+                        onChange={(e) => setNewConditionName(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && addCondition()}
+                        placeholder="Add condition..."
+                        className="flex-1 text-sm p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all font-sans min-w-0"
+                    />
                     <button
                         onClick={addCondition}
-                        className="px-3 py-2 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700 transition-colors shadow-sm shrink-0 flex items-center justify-center min-w-[34px]"
+                        className="px-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold flex items-center justify-center min-w-[34px]"
                     >
                         <Plus className="w-4 h-4" />
                     </button>
+                    <datalist id="conditions-list">
+                        {CONDITION_TYPES.map(type => <option key={type} value={type} />)}
+                    </datalist>
                 </div>
             </div>
 
