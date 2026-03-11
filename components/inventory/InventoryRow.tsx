@@ -45,12 +45,6 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                 <td className="p-2">
                     <div className="flex items-center gap-1">
                         {isNested && <CornerDownRight className="w-3 h-3 text-gray-300 ml-2" />}
-                        <button
-                            onClick={onToggleExpand}
-                            className="text-gray-400 hover:text-gray-600 w-4 flex items-center justify-center"
-                        >
-                            {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-                        </button>
                         <div className="flex-1">
                             <input
                                 type="text"
@@ -134,10 +128,18 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                         <Trash2 className="w-4 h-4" />
                     </button>
                 </td>
+                <td className="p-2">
+                    <button
+                        onClick={onToggleExpand}
+                        className="text-gray-400 hover:text-gray-600 w-full flex items-center justify-center"
+                    >
+                        <ChevronDown className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                    </button>
+                </td>
             </tr>
             {isExpanded && (
                 <tr className="bg-gray-50/50">
-                    <td colSpan={section === "equipment" ? 6 : 5} className="p-4 pt-2">
+                    <td colSpan={section === "equipment" ? 7 : 6} className="p-4 pt-2">
                         <ItemDetailView
                             item={item}
                             containers={containers}

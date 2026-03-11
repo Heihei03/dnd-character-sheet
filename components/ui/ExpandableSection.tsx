@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 interface ExpandableSectionProps {
     title: string;
@@ -17,7 +17,7 @@ const ExpandableSection: React.FC<ExpandableSectionProps> = ({ title, children }
                 className="w-full flex justify-between items-center p-3 bg-gray-200 hover:bg-gray-300 rounded-lg"
             >
                 <span className="font-semibold">{title}</span>
-                <span>{open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}</span>
+                <span><ChevronDown className={`w-5 h-5 transform transition-transform duration-200 ${open ? "rotate-180" : ""}`} /></span>
             </button>
 
             {open && (
