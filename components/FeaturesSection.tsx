@@ -6,6 +6,7 @@ import { Feature, Resource, CharacterClass, AbilityScores } from "../types/chara
 import { resolveRollExpression } from "../utils/character-utils";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
+import SectionHeader from "./ui/SectionHeader";
 import FeatureModifierEditor from "./FeatureModifierEditor";
 import ResourcePipTracker from "./ResourcePipTracker";
 import ConfirmationModal from "./ui/ConfirmationModal";
@@ -246,12 +247,12 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Features & Traits</h2>
-                <Button onClick={() => { setIsAdding(true); setEditingId(null); resetForm(); }}>
-                    <Plus className="w-4 h-4 mr-2" /> Add Feature
-                </Button>
-            </div>
+            <SectionHeader
+                title="Features & Traits"
+                buttonLabel="Add Feature"
+                onAdd={() => { setIsAdding(true); setEditingId(null); resetForm(); }}
+                isAdding={isAdding || !!editingId}
+            />
 
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 relative">

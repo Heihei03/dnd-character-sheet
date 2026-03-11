@@ -4,8 +4,7 @@ import { Card, CardContent } from "./ui/card";
 import AddItemForm from "./inventory/AddItemForm";
 import InventoryTable from "./inventory/InventoryTable";
 import AttunementSection from "./inventory/AttunementSection";
-import Button from "./ui/button";
-import { Plus } from "lucide-react";
+import SectionHeader from "./ui/SectionHeader";
 import LoadSummary from "./inventory/LoadSummary";
 
 interface InventorySectionProps {
@@ -149,17 +148,14 @@ const InventorySection: React.FC<InventorySectionProps> = ({
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Inventory</h2>
-                <div className="flex items-center gap-4">
-                    <LoadSummary totalWeight={totalWeight} />
-                    {!isAdding && (
-                        <Button onClick={() => setIsAdding(true)} className="flex items-center gap-2">
-                            <Plus className="w-4 h-4" /> Add Item
-                        </Button>
-                    )}
-                </div>
-            </div>
+            <SectionHeader 
+                title="Inventory" 
+                buttonLabel="Add Item" 
+                onAdd={() => setIsAdding(true)} 
+                isAdding={isAdding}
+            >
+                <LoadSummary totalWeight={totalWeight} />
+            </SectionHeader>
 
             {isAdding && (
                 <Card>

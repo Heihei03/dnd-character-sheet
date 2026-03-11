@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Action, ActionType, AbilityScores } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
+import SectionHeader from "./ui/SectionHeader";
 import { Pencil, Trash2, ChevronDown, Plus, Zap, Dices } from "lucide-react";
 import { DAMAGE_TYPES } from "../utils/constants";
 import { getAbilityModifier, resolveRollExpression } from "../utils/character-utils";
@@ -192,12 +193,12 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Actions & Attacks</h2>
-                <Button onClick={() => { setIsAdding(true); setEditingId(null); resetForm(); }} className="flex items-center gap-2 whitespace-nowrap">
-                    <Plus className="w-4 h-4" /> Add Action
-                </Button>
-            </div>
+            <SectionHeader 
+                title="Actions & Attacks" 
+                buttonLabel="Add Action" 
+                onAdd={() => { setIsAdding(true); setEditingId(null); resetForm(); }} 
+                isAdding={isAdding || !!editingId} 
+            />
 
             {(isAdding || editingId) && (
                 <Card className="border-blue-200 bg-blue-50/30 dark:bg-blue-900/10 dark:border-blue-800">

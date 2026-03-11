@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 import { Plus, Calculator } from "lucide-react";
+import SectionHeader from "./ui/SectionHeader";
 import SpellCard from "./SpellCard";
 import ResourcePipTracker from "./ResourcePipTracker";
 import { CharacterClass, Spell, SpellSlot, AbilityScores, Resource } from "../types/character";
@@ -13,7 +14,6 @@ interface SpellsSectionProps {
     spellSlots: SpellSlot[];
     onUpdateSpells: (spells: Spell[]) => void;
     onUpdateSpellSlots: (slots: SpellSlot[]) => void;
-    handleSaveSpell: (spell: Spell) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
 }
@@ -194,14 +194,12 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                 </CardContent>
             </Card>
 
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Spells List</h2>
-                {!newSpellDraft && (
-                    <Button onClick={handleAddSpell} className="flex items-center whitespace-nowrap">
-                        <Plus className="w-4 h-4 mr-2" /> Add Spell
-                    </Button>
-                )}
-            </div>
+            <SectionHeader 
+                title="Spells List" 
+                buttonLabel="Add Spell" 
+                onAdd={handleAddSpell} 
+                isAdding={!!newSpellDraft} 
+            />
 
             {newSpellDraft && (
                 <div className="animate-in fade-in slide-in-from-top-4 duration-300">
