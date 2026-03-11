@@ -1,7 +1,9 @@
 import React from "react";
 import { InventoryItem, Resource } from "../../types/character";
 import ItemDetailView from "./ItemDetailView";
-import { ChevronDown, ChevronRight, Trash2, CornerDownRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Trash2, CornerDownRight, GripVertical } from "lucide-react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface InventoryRowProps {
     item: InventoryItem;
@@ -13,6 +15,7 @@ interface InventoryRowProps {
     onToggleExpand: () => void;
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
+    isReorderMode?: boolean;
 }
 
 const InventoryRow: React.FC<InventoryRowProps> = ({
@@ -24,15 +27,37 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
     isExpanded,
     onToggleExpand,
     resources = [],
-    onUpdateResources
+    onUpdateResources,
+    isReorderMode = false
 }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: item.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 100 : "auto",
+        position: (isDragging ? "relative" : "static") as any,
+    };
+
     const isParentValidContainer = item.parentId ? allInventory.some(i => i.id === item.parentId && Boolean(i.isContainer)) : false;
     const isNested = !!item.parentId && isParentValidContainer;
     const containers = allInventory.filter(i => i.isContainer && i.itemType === "container");
 
     return (
         <React.Fragment>
-            <tr className={`border-b hover:bg-gray-50 transition-colors ${isNested ? "bg-gray-50/30" : ""}`}>
+            <tr 
+                ref={setNodeRef}
+                style={style}
+                className={`border-b hover:bg-gray-50 transition-colors ${isNested ? "bg-gray-50/30" : ""} ${isDragging ? "bg-blue-50/50 shadow-inner" : ""}`}
+            >
                 <td className="p-2">
                     <input
                         type="number"
@@ -136,10 +161,17 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                         <ChevronDown className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                     </button>
                 </td>
+                {isReorderMode && (
+                    <td className="p-2 cursor-grab active:cursor-grabbing text-gray-400 hover:text-blue-500" {...attributes} {...listeners}>
+                        <div className="flex items-center justify-center w-full">
+                            <GripVertical className="w-4 h-4" />
+                        </div>
+                    </td>
+                )}
             </tr>
             {isExpanded && (
                 <tr className="bg-gray-50/50">
-                    <td colSpan={section === "equipment" ? 7 : 6} className="p-4 pt-2">
+                    <td colSpan={(section === "equipment" ? 7 : 6) + (isReorderMode ? 1 : 0)} className="p-4 pt-2">
                         <ItemDetailView
                             item={item}
                             containers={containers}

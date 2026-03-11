@@ -7,6 +7,22 @@ import AttunementSection from "./inventory/AttunementSection";
 import SectionHeader from "./ui/SectionHeader";
 import LoadSummary from "./inventory/LoadSummary";
 import SearchFilterBar from "./ui/SearchFilterBar";
+import { Lock, Unlock, GripVertical } from "lucide-react";
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 interface InventorySectionProps {
     inventory: InventoryItem[];
@@ -27,6 +43,14 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     const [isAdding, setIsAdding] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
+    const [isReorderMode, setIsReorderMode] = useState(false);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     const onAddItem = (newItem: InventoryItem) => {
         setInventory([...inventory, newItem]);
@@ -114,6 +138,19 @@ const InventorySection: React.FC<InventorySectionProps> = ({
 
     const removeItem = (id: string) => {
         setInventory(inventory.filter((item) => item.id !== id).map((item) => item.parentId === id ? { ...item, parentId: undefined } : item));
+    };
+
+    const handleDragEnd = (event: DragEndEvent, itemsInTable: InventoryItem[]) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            const oldIndex = inventory.findIndex((i) => i.id === active.id);
+            const newIndex = inventory.findIndex((i) => i.id === over.id);
+
+            if (oldIndex !== -1 && newIndex !== -1) {
+                setInventory(arrayMove(inventory, oldIndex, newIndex));
+            }
+        }
     };
 
     const calculateItemTotalWeight = (item: InventoryItem): number => {
@@ -209,40 +246,82 @@ const InventorySection: React.FC<InventorySectionProps> = ({
             <Card>
                 <CardContent className="p-4 space-y-4">
                     <h3 className="font-bold border-b pb-2 flex items-center justify-between">
-                        <span>Equipment</span>
+                        <div className="flex items-center gap-2">
+                            <span>Equipment</span>
+                            <button
+                                onClick={() => setIsReorderMode(!isReorderMode)}
+                                className={`p-1 rounded hover:bg-gray-100 transition-all ${isReorderMode ? "text-blue-600 bg-blue-50" : "text-gray-400"}`}
+                                title={isReorderMode ? "Lock Order" : "Unlock Order (Drag to Reorder)"}
+                            >
+                                {isReorderMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                            </button>
+                        </div>
                         <span className="text-xs font-normal text-gray-400">{equipment.length} items</span>
                     </h3>
-                    <InventoryTable
-                        items={equipment}
-                        allInventory={inventory}
-                        section="equipment"
-                        updateItem={updateItem}
-                        removeItem={removeItem}
-                        toggleExpand={toggleExpand}
-                        expandedItemIds={expandedItemIds}
-                        resources={resources}
-                        onUpdateResources={onUpdateResources}
-                    />
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(event) => handleDragEnd(event, equipment)}
+                    >
+                        <SortableContext
+                            items={equipment.map(i => i.id)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            <InventoryTable
+                                items={equipment}
+                                allInventory={inventory}
+                                section="equipment"
+                                updateItem={updateItem}
+                                removeItem={removeItem}
+                                toggleExpand={toggleExpand}
+                                expandedItemIds={expandedItemIds}
+                                resources={resources}
+                                onUpdateResources={onUpdateResources}
+                                isReorderMode={isReorderMode}
+                            />
+                        </SortableContext>
+                    </DndContext>
                 </CardContent>
             </Card>
 
             <Card>
                 <CardContent className="p-4 space-y-4">
                     <h3 className="font-bold border-b pb-2 flex items-center justify-between">
-                        <span>Other Inventory</span>
+                        <div className="flex items-center gap-2">
+                            <span>Other Inventory</span>
+                            <button
+                                onClick={() => setIsReorderMode(!isReorderMode)}
+                                className={`p-1 rounded hover:bg-gray-100 transition-all ${isReorderMode ? "text-blue-600 bg-blue-50" : "text-gray-400"}`}
+                                title={isReorderMode ? "Lock Order" : "Unlock Order (Drag to Reorder)"}
+                            >
+                                {isReorderMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                            </button>
+                        </div>
                         <span className="text-xs font-normal text-gray-400">{otherItems.length} items</span>
                     </h3>
-                    <InventoryTable
-                        items={otherItems}
-                        allInventory={inventory}
-                        section="inventory"
-                        updateItem={updateItem}
-                        removeItem={removeItem}
-                        toggleExpand={toggleExpand}
-                        expandedItemIds={expandedItemIds}
-                        resources={resources}
-                        onUpdateResources={onUpdateResources}
-                    />
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(event) => handleDragEnd(event, otherItems)}
+                    >
+                        <SortableContext
+                            items={otherItems.map(i => i.id)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            <InventoryTable
+                                items={otherItems}
+                                allInventory={inventory}
+                                section="inventory"
+                                updateItem={updateItem}
+                                removeItem={removeItem}
+                                toggleExpand={toggleExpand}
+                                expandedItemIds={expandedItemIds}
+                                resources={resources}
+                                onUpdateResources={onUpdateResources}
+                                isReorderMode={isReorderMode}
+                            />
+                        </SortableContext>
+                    </DndContext>
                 </CardContent>
             </Card>
         </div>

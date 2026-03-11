@@ -14,6 +14,7 @@ interface InventoryTableProps {
     expandedItemIds: string[];
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
+    isReorderMode?: boolean;
 }
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
@@ -25,7 +26,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     toggleExpand,
     expandedItemIds,
     resources = [],
-    onUpdateResources
+    onUpdateResources,
+    isReorderMode = false
 }) => {
     const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null);
 
@@ -43,6 +45,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                         {section === "equipment" && <th className="p-2 w-10 text-center">Eq</th>}
                         <th className="p-2 w-6"></th>
                         <th className="p-2 w-6"></th>
+                        {isReorderMode && <th className="p-1 w-6"></th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -53,7 +56,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                             allInventory={allInventory}
                             section={section}
                             updateItem={updateItem}
-                            removeItem={(id) => {
+                            removeItem={(id: string) => {
                                 const item = items.find(i => i.id === id);
                                 if (item) setItemToDelete(item);
                             }}
@@ -61,6 +64,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                             onToggleExpand={() => toggleExpand(item.id)}
                             resources={resources}
                             onUpdateResources={onUpdateResources}
+                            isReorderMode={isReorderMode}
                         />
                     ))}
                 </tbody>
