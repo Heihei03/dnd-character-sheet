@@ -437,10 +437,16 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         damage = `${data.damageDice}${abilityMod >= 0 ? "+" : ""}${abilityMod}`;
                     }
 
+                    let description = data.description || "";
+                    if (f.description) {
+                        description = description ? `${description}\n\nFeature Description:\n${f.description}` : f.description;
+                    }
+
                     action = {
                         name: actionName,
                         type: (data.type || m.subType) as any || "Action",
                         ...data,
+                        description: description || `Action granted by feature: ${f.name}`,
                         activation: data.activation || (data.type || m.subType) as any || "1 Action",
                         damage: damage,
                         resourceName,
@@ -464,7 +470,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         id: `feature-action-${m.id}-${idx}`,
                         name: m.value || f.name,
                         type: m.subType as any || "Action",
-                        description: `Action granted by feature: ${f.name}`,
+                        description: f.description || `Action granted by feature: ${f.name}`,
                         activation: "1 Action",
                         fromFeature: true,
                         resourceName,
