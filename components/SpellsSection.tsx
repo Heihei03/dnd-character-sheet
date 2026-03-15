@@ -26,6 +26,7 @@ interface SpellsSectionProps {
     onUpdateSpellSlots: (slots: SpellSlot[]) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
+    onNavigateToFeature?: (featureId: string) => void;
 }
 
 const SpellsSection: React.FC<SpellsSectionProps> = ({
@@ -35,7 +36,8 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     onUpdateSpells,
     onUpdateSpellSlots,
     abilityScores,
-    proficiencyBonus
+    proficiencyBonus,
+    onNavigateToFeature
 }) => {
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
     const [newSpellDraft, setNewSpellDraft] = useState<Spell | null>(null);
@@ -365,6 +367,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                             totalLevel={classes.reduce((sum, cls) => sum + cls.level, 0)}
                             classes={classes}
                             hideFooter={true} // New prop to hide internal buttons
+                            onNavigateToFeature={onNavigateToFeature}
                         />
                     </EntityForm>
                 </div>
@@ -397,6 +400,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                             proficiencyBonus={proficiencyBonus}
                                             totalLevel={totalLevel}
                                             classes={classes}
+                                            onNavigateToFeature={onNavigateToFeature}
                                         />
                                     );
                                 })}

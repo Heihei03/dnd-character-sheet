@@ -19,6 +19,7 @@ interface SpellCardProps {
     totalLevel: number;
     classes: CharacterClass[];
     hideFooter?: boolean;
+    onNavigateToFeature?: (featureId: string) => void;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -33,7 +34,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
     proficiencyBonus,
     totalLevel,
     classes,
-    hideFooter = false
+    hideFooter = false,
+    onNavigateToFeature
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -432,7 +434,20 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         {spell.classSource}
                                     </span>
                                 )}
-                                {spell.fromFeature && <span className="text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-bold uppercase tracking-tight">From Feature</span>}
+                                {spell.fromFeature && (
+                                    <span 
+                                        className={`text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-bold uppercase tracking-tight ${spell.fromFeatureId && onNavigateToFeature ? 'cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors' : ''}`}
+                                        title={spell.fromFeatureId && onNavigateToFeature ? "Granted by Feature - Click to view" : ""}
+                                        onClick={(e) => {
+                                            if (spell.fromFeatureId && onNavigateToFeature) {
+                                                e.stopPropagation();
+                                                onNavigateToFeature(spell.fromFeatureId);
+                                            }
+                                        }}
+                                    >
+                                        From Feature
+                                    </span>
+                                )}
                                 {spell.isRitual && <span className="text-[10px] bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800 font-bold uppercase tracking-tight">Ritual</span>}
                                 {spell.requiresConcentration && <span className="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 font-bold uppercase tracking-tight">Concentration</span>}
                                 {spell.hasAttack && <span className="text-[10px] bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800 font-bold uppercase tracking-tight">Attack</span>}

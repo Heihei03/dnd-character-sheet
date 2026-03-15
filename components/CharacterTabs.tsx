@@ -130,6 +130,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           onUpdateSpellSlots={handleUpdateSpellSlots}
           abilityScores={effectiveAbilityScores}
           proficiencyBonus={proficiencyBonus}
+          onNavigateToFeature={handleNavigateToFeature}
         />
       )}
 

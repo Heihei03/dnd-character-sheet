@@ -223,7 +223,8 @@ export const getEffectiveSpells = (character: Character): Spell[] => {
                         featureSpells.push({
                             ...override,
                             id: `feature-spell-${m.id}-${idx}`,
-                            fromFeature: true
+                            fromFeature: true,
+                            fromFeatureId: f.id
                         });
                     } else {
                         // Create default
@@ -240,7 +241,8 @@ export const getEffectiveSpells = (character: Character): Spell[] => {
                             prepared: true,
                             isRitual: false,
                             requiresConcentration: false,
-                            fromFeature: true
+                            fromFeature: true,
+                            fromFeatureId: f.id
                         } as Spell);
                     }
                 });

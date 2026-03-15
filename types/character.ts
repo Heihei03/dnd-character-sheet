@@ -287,6 +287,7 @@ export interface Spell {
   higherLevelDamage?: string;
   higherLevelHealing?: string;
   fromFeature?: boolean;
+  fromFeatureId?: string;
   scalesWithCharacterLevel?: boolean;
   classSource?: string;
 }
