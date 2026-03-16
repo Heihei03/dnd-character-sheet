@@ -42,7 +42,8 @@ import {
   Skills,
   Spell,
   SpellSlot,
-  ToolProficiency
+  ToolProficiency,
+  Bio
 } from "../types/character";
 
 // Utils
@@ -415,6 +416,19 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     });
   };
 
+  const handleUpdateBio = (field: keyof Bio, value: string) => {
+    setCharacter(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        bio: {
+          ...(prev.bio || {}),
+          [field]: value
+        }
+      };
+    });
+  };
+
   const handleUpdateSpells = (spells: Spell[]) => {
     setCharacter(prev => prev ? { ...prev, spells } : null);
   };
@@ -593,6 +607,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               handleUpdateItemFeature={handleUpdateItemFeature}
               handleDeleteItemFeature={handleDeleteItemFeature}
               handleUpdateActions={handleUpdateActions}
+              handleUpdateBio={handleUpdateBio}
               handleUpdateFeatures={(value: Feature[]) => handleChange("features", value)}
               rollDice={rollDice}
               rollDamage={rollDamage}

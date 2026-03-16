@@ -844,6 +844,7 @@ export const normalizeCharacter = (character: any): NormalizedCharacter => {
 
     return {
         ...character,
+        bio: character.bio ?? {},
         classes: character.classes ?? [{ name: "Fighter", level: 1 }],
         abilityScores: character.abilityScores ?? {
             strength: 10,

@@ -292,6 +292,24 @@ export interface Spell {
   classSource?: string;
 }
 
+export interface Bio {
+  alignment?: string;
+  age?: string;
+  height?: string;
+  weight?: string;
+  eyes?: string;
+  skin?: string;
+  hair?: string;
+  personalityTraits?: string;
+  ideals?: string;
+  bonds?: string;
+  flaws?: string;
+  backstory?: string;
+  alliesAndOrganizations?: string;
+  appearance?: string;
+  treasure?: string;
+}
+
 export interface Character {
   id: number;
   name: string;
@@ -324,6 +342,7 @@ export interface Character {
   subSpecies?: string;
   background: string;
   exp?: number;
+  bio?: Bio;
 }
 
 export interface NormalizedCharacter extends Character {
@@ -349,4 +368,5 @@ export interface NormalizedCharacter extends Character {
   spellSlots: SpellSlot[];
   resources: Resource[];
   conditions: Condition[];
+  bio: Bio;
 }

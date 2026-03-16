@@ -11,6 +11,7 @@ import CurrencySection from "./CurrencySection";
 import FeaturesSection from "./FeaturesSection";
 import InventorySection from "./InventorySection";
 import SpellsSection from "./SpellsSection";
+import BioSection from "./BioSection";
 
 // Types
 import { 
@@ -22,7 +23,8 @@ import {
   NormalizedCharacter, 
   Resource, 
   Spell, 
-  SpellSlot 
+  SpellSlot,
+  Bio
 } from "../types/character";
 
 // Utils
@@ -50,6 +52,7 @@ interface CharacterTabsProps {
   handleUpdateItemFeature: (feature: Feature) => void;
   handleDeleteItemFeature: (featureId: string, itemId: string) => void;
   handleUpdateActions: (actions: Action[]) => void;
+  handleUpdateBio: (field: keyof Bio, value: string) => void;
   handleUpdateFeatures: (features: Feature[]) => void;
   rollDice: (sides: number, modifier?: number, label?: string) => void;
   rollDamage: (damageString: string, label?: string, damageType?: string) => void;
@@ -73,6 +76,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
   handleUpdateItemFeature,
   handleDeleteItemFeature,
   handleUpdateActions,
+  handleUpdateBio,
   handleUpdateFeatures,
   rollDice,
   rollDamage,
@@ -172,12 +176,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
       )}
 
       {activeTab === "bio" && (
-        <Card>
-          <CardContent className="p-6 space-y-4">
-            <h2 className="text-2xl font-bold text-center">Character Bio</h2>
-            <p className="text-gray-500 italic text-center">Your character's history and personality.</p>
-          </CardContent>
-        </Card>
+        <BioSection bio={character.bio} onUpdate={handleUpdateBio} />
       )}
     </div>
   );
