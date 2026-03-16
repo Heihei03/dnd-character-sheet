@@ -30,6 +30,14 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
 
     const addCondition = () => {
         if (newConditionName) {
+            const isExhaustion = newConditionName.toLowerCase() === "exhaustion";
+            
+            if (isExhaustion) {
+                updateExhaustion(exhaustionLevel < 6 ? exhaustionLevel + 1 : 6);
+                setNewConditionName("");
+                return;
+            }
+
             const manualConditions = conditions.filter(c => !c.fromFeature);
             // Check if already exists
             if (conditions.some(c => c.name.toLowerCase() === newConditionName.toLowerCase())) {
@@ -47,6 +55,32 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
         onUpdateConditions(manualConditions.filter(c => c.name !== condition.name));
     };
 
+    const exhaustionCondition = conditions.find(c => c.name === "Exhaustion");
+    const exhaustionLevel = exhaustionCondition?.level || 0;
+
+    const updateExhaustion = (newLevel: number) => {
+        if (newLevel < 0 || newLevel > 6) return;
+        
+        let newConditions = [...conditions];
+        const existingIndex = newConditions.findIndex(c => c.name === "Exhaustion");
+        
+        if (newLevel === 0) {
+            if (existingIndex >= 0) {
+                newConditions.splice(existingIndex, 1);
+            }
+        } else {
+            if (existingIndex >= 0) {
+                newConditions[existingIndex] = { ...newConditions[existingIndex], level: newLevel };
+            } else {
+                newConditions.push({ name: "Exhaustion", level: newLevel });
+            }
+        }
+        
+        onUpdateConditions(newConditions);
+    };
+
+    const displayConditions = conditions.filter(c => c.name !== "Exhaustion");
+
     return (
         <div className="border p-3 rounded bg-white dark:bg-gray-950 shadow-sm transition-all font-sans space-y-4">
             <div className="flex justify-between items-center border-b pb-2">
@@ -54,9 +88,30 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
             </div>
 
             <div className="space-y-3">
+                <div className="flex flex-col gap-2 p-3 bg-red-50 dark:bg-red-950/20 rounded-md border border-red-100 dark:border-red-900/30">
+                    <div className="flex justify-between items-center">
+                        <span className="font-semibold text-red-800 dark:text-red-300">Exhaustion</span>
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => updateExhaustion(exhaustionLevel - 1)} disabled={exhaustionLevel === 0} className="w-6 h-6 flex items-center justify-center rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 disabled:opacity-50 hover:bg-gray-50 transition-colors">-</button>
+                            <span className="w-4 text-center font-bold text-red-700 dark:text-red-400">{exhaustionLevel}</span>
+                            <button onClick={() => updateExhaustion(exhaustionLevel + 1)} disabled={exhaustionLevel === 6} className="w-6 h-6 flex items-center justify-center rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 disabled:opacity-50 hover:bg-gray-50 transition-colors">+</button>
+                        </div>
+                    </div>
+                    {exhaustionLevel > 0 && (
+                        <div className="text-xs text-red-600 dark:text-red-400 mt-1 leading-snug">
+                            {exhaustionLevel >= 1 && <div><span className="font-bold">1:</span> Disadvantage on ability checks</div>}
+                            {exhaustionLevel >= 2 && <div><span className="font-bold">2:</span> Speed halved</div>}
+                            {exhaustionLevel >= 3 && <div><span className="font-bold">3:</span> Disadvantage on attack rolls and saving throws</div>}
+                            {exhaustionLevel >= 4 && <div><span className="font-bold">4:</span> Hit point maximum halved</div>}
+                            {exhaustionLevel >= 5 && <div><span className="font-bold">5:</span> Speed reduced to 0</div>}
+                            {exhaustionLevel === 6 && <div><span className="font-bold">6:</span> Death</div>}
+                        </div>
+                    )}
+                </div>
+
                 <div className="grid grid-cols-1 gap-2">
-                    {conditions.length === 0 && <span className="text-sm text-gray-400 italic">No active conditions.</span>}
-                    {conditions.map((condition, idx) => {
+                    {displayConditions.length === 0 && <span className="text-sm text-gray-400 italic">No other active conditions.</span>}
+                    {displayConditions.map((condition, idx) => {
                         const isExpanded = expandedConditions.includes(condition.name);
                         const description = CONDITION_DATA[condition.name];
 
@@ -117,7 +172,7 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
                         <Plus className="w-4 h-4" />
                     </button>
                     <datalist id="conditions-list">
-                        {CONDITION_TYPES.map(type => <option key={type} value={type} />)}
+                        {CONDITION_TYPES.filter(type => type !== "Exhaustion").map(type => <option key={type} value={type} />)}
                     </datalist>
                 </div>
             </div>
