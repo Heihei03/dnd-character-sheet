@@ -5,6 +5,7 @@ import { AbilityScores, ToolProficiency, ProficiencyLevel } from "../types/chara
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, ABILITY_NAMES } from "../utils/character-utils";
+import FeatureNavigationBadge from "./FeatureNavigationBadge";
 
 interface ToolChecksSectionProps {
     toolProficiencies: ToolProficiency[];
@@ -66,18 +67,11 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                             {tool.name}
                                         </span>
                                         {tool.fromFeature && (
-                                            <span
-                                                className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
-                                                title="Granted by Feature - Click to view"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    if (tool.fromFeatureId && onNavigateToFeature) {
-                                                        onNavigateToFeature(tool.fromFeatureId);
-                                                    }
-                                                }}
-                                            >
-                                                Feature
-                                            </span>
+                                            <FeatureNavigationBadge 
+                                                featureId={tool.fromFeatureId} 
+                                                onNavigateToFeature={onNavigateToFeature} 
+                                                variant="compact" 
+                                            />
                                         )}
                                         <div className="flex items-center text-[11px] text-gray-500 font-bold uppercase tracking-tight">
                                             <span>(</span>

@@ -5,6 +5,7 @@ import { Spell, AbilityScores, CharacterClass } from "../types/character";
 import { DAMAGE_TYPES, SPELL_SCHOOLS, SPELL_AOE_SHAPES } from "../utils/constants";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../utils/dice-utils";
 import ConfirmationModal from "./ui/ConfirmationModal";
+import FeatureNavigationBadge from "./FeatureNavigationBadge";
 
 interface SpellCardProps {
     spell: Spell;
@@ -435,18 +436,11 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     </span>
                                 )}
                                 {spell.fromFeature && (
-                                    <span 
-                                        className={`text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-bold uppercase tracking-tight ${spell.fromFeatureId && onNavigateToFeature ? 'cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors' : ''}`}
-                                        title={spell.fromFeatureId && onNavigateToFeature ? "Granted by Feature - Click to view" : ""}
-                                        onClick={(e) => {
-                                            if (spell.fromFeatureId && onNavigateToFeature) {
-                                                e.stopPropagation();
-                                                onNavigateToFeature(spell.fromFeatureId);
-                                            }
-                                        }}
-                                    >
-                                        From Feature
-                                    </span>
+                                    <FeatureNavigationBadge 
+                                        featureId={spell.fromFeatureId} 
+                                        onNavigateToFeature={onNavigateToFeature} 
+                                        variant="badge" 
+                                    />
                                 )}
                                 {spell.isRitual && <span className="text-[10px] bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800 font-bold uppercase tracking-tight">Ritual</span>}
                                 {spell.requiresConcentration && <span className="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 font-bold uppercase tracking-tight">Concentration</span>}

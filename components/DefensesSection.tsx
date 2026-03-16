@@ -5,6 +5,7 @@ import { Defenses, DefenseEntry } from "../types/character";
 import { DAMAGE_TYPES, CONDITION_TYPES } from "../utils/constants";
 import { Trash2, Plus } from "lucide-react";
 import ConfirmationModal from "./ui/ConfirmationModal";
+import FeatureItemPill from "./FeatureItemPill";
 
 interface DefensesSectionProps {
     defenses: Defenses;
@@ -65,21 +66,14 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
             <div className="flex flex-wrap gap-1.5 min-h-[1.5rem]">
                 {items.length === 0 && <span className="text-sm text-gray-400 italic">None</span>}
                 {items.map((item, idx) => (
-                    <span
+                    <FeatureItemPill
                         key={idx}
-                        onClick={(e) => {
-                            if (item.fromFeature && item.fromFeatureId && onNavigateToFeature) {
-                                e.stopPropagation();
-                                onNavigateToFeature(item.fromFeatureId);
-                            }
-                        }}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${colorClass} group ${item.fromFeature ? 'opacity-85 border-dashed cursor-pointer hover:ring-2 hover:ring-current hover:ring-opacity-30' : ''}`}
-                        title={item.fromFeature ? "Granted by Feature - Click to view" : ""}
+                        isFromFeature={item.fromFeature}
+                        featureId={item.fromFeatureId}
+                        onNavigateToFeature={onNavigateToFeature}
+                        colorClass={colorClass}
                     >
                         {item.name}
-                        {item.fromFeature && (
-                            <span className="text-[8px] font-bold uppercase px-1 bg-current/10 rounded tracking-tighter">Feature</span>
-                        )}
                         {!item.fromFeature && (
                             <button
                                 onClick={(e) => {
@@ -91,7 +85,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         )}
-                    </span>
+                    </FeatureItemPill>
                 ))}
             </div>
             <div className="flex gap-1 relative">

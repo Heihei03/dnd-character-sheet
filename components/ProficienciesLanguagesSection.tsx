@@ -5,9 +5,10 @@ import { Card, CardContent } from "./ui/card";
 import { WEAPON_DATA } from "../data/weapons";
 import { ARMOR_DATA } from "../data/armor";
 import { TOOL_DATA } from "../data/tools";
-import { ToolProficiency } from "../types/character";
 import { Plus, X } from "lucide-react";
 import Button from "./ui/button";
+import FeatureItemPill from "./FeatureItemPill";
+import { ToolProficiency } from "../types/character";
 
 interface ProficiencyListProps {
     title: string;
@@ -72,28 +73,14 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                         const isFromFeature = typeof item === 'object' && item.fromFeature;
 
                         return (
-                            <div
+                            <FeatureItemPill
                                 key={index}
-                                onClick={(e) => {
-                                    if (isFromFeature && onNavigateToFeature) {
-                                        e.stopPropagation();
-                                        const featureId = (item as any).fromFeatureId;
-                                        if (featureId) onNavigateToFeature(featureId);
-                                    }
-                                }}
-                                className={`px-1.5 py-0.5 rounded border text-[13px] flex items-center gap-1 group whitespace-nowrap overflow-hidden text-ellipsis transition-colors ${isFromFeature
-                                    ? "bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/60"
-                                    : "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/50 text-blue-700 dark:text-blue-300"
-                                    }`}
-                                title={isFromFeature ? "Granted by Feature - Click to view" : ""}
+                                isFromFeature={isFromFeature}
+                                featureId={isFromFeature ? (item as any).fromFeatureId : undefined}
+                                onNavigateToFeature={onNavigateToFeature}
                             >
                                 <span className="flex items-center gap-1 min-w-0">
                                     <span className="truncate">{itemName}</span>
-                                    {isFromFeature && (
-                                        <span className="text-[8px] font-black bg-blue-500 text-white px-0.5 rounded uppercase leading-tight">
-                                            F
-                                        </span>
-                                    )}
                                 </span>
                                 {!isFromFeature && (
                                     <button
@@ -107,7 +94,7 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                                         <X className="w-3.5 h-3.5" />
                                     </button>
                                 )}
-                            </div>
+                            </FeatureItemPill>
                         );
                     })
                 ) : (
