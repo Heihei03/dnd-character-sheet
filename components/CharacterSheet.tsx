@@ -56,6 +56,7 @@ import {
   getEffectiveResources,
   getEffectiveSenses,
   getEffectiveSkills,
+  getEffectiveSpeed,
   getEffectiveToolProficiencies,
   getEffectiveWeaponProficiencies,
   normalizeCharacter
@@ -646,8 +647,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                   onUpdate={handleDeathSavesChange}
                 />
                 <SpeedSection
-                  speed={characterWithDefaults.speed}
+                  baseSpeed={characterWithDefaults.speed}
+                  effectiveSpeed={getEffectiveSpeed(characterWithDefaults)}
                   setSpeed={handleSpeedChange}
+                  onNavigateToFeature={handleNavigateToFeature}
                 />
                 <SensesSection
                   senses={getEffectiveSenses(characterWithDefaults)}

@@ -1,4 +1,4 @@
-import { Character, Sense, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency, AbilityScores, NormalizedCharacter } from "../types/character";
+import { Character, Sense, Speed, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency, AbilityScores, NormalizedCharacter } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 import { STANDARD_ACTIONS } from "../data/standard-actions";
 import { SKILL_LIST, LANGUAGES } from "./constants";
@@ -252,6 +252,54 @@ export const getEffectiveSpells = (character: Character): Spell[] => {
     });
 
     return [...purelyManualSpells, ...featureSpells];
+};
+
+export const getEffectiveSpeed = (character: Character): Speed => {
+    const baseSpeed = character.speed || { walk: { value: 30, from: "Base" } };
+    const activeFeatures = getAllActiveFeatures(character);
+    const speedMods = getFeatureModifiersWithSource(activeFeatures, "Speed");
+
+    // Start with a copy of base speed
+    const effective: Speed = JSON.parse(JSON.stringify(baseSpeed));
+
+    speedMods.forEach(mod => {
+        const type = (mod.subType || "walk").toLowerCase();
+        let valStr = String(mod.value || "0").trim();
+        let isOverride = false;
+
+        if (valStr.startsWith("=")) {
+            isOverride = true;
+            valStr = valStr.substring(1).trim();
+        }
+
+        const value = parseInt(valStr) || 0;
+
+        const applyToType = (t: string) => {
+            if (!effective[t]) {
+                effective[t] = { value: isOverride ? value : value, from: mod.fromFeatureId };
+            } else {
+                if (isOverride) {
+                    const currentVal = effective[t]?.value || 0;
+                    if (value > currentVal) {
+                        effective[t] = { value, from: mod.fromFeatureId };
+                    }
+                } else {
+                    effective[t] = {
+                        value: (effective[t]?.value || 0) + value,
+                        from: effective[t]?.from
+                    };
+                }
+            }
+        };
+
+        if (type === "all" || type === "global") {
+            Object.keys(effective).forEach(t => applyToType(t));
+        } else {
+            applyToType(type);
+        }
+    });
+
+    return effective;
 };
 
 export const getEffectiveActions = (character: Character): Action[] => {

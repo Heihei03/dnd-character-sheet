@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { Speed } from "../types/character";
 import { speedTypes } from "../utils/constants";
+import FeatureNavigationBadge from "./FeatureNavigationBadge";
 
 interface SpeedSectionProps {
-  speed: Speed;
+  baseSpeed: Speed;
+  effectiveSpeed: Speed;
   setSpeed: (key: string, value: number, from?: string) => void;
+  onNavigateToFeature?: (featureId: string) => void;
 }
 
-const SpeedSection: React.FC<SpeedSectionProps> = ({ speed, setSpeed }) => {
+const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, setSpeed, onNavigateToFeature }) => {
   const [expanded, setExpanded] = useState(false);
 
   const handleChange = (key: string, value: number, from?: string) => {
@@ -17,49 +21,86 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ speed, setSpeed }) => {
   };
 
   return (
-    <div className="border p-3 rounded">
+    <div className="border p-3 rounded shadow-sm bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 transition-all">
       {/* Collapsed Header */}
       <div
-        className="flex justify-between items-center cursor-pointer"
+        className="flex justify-between items-center cursor-pointer group"
         onClick={() => setExpanded(!expanded)}
       >
-        <span className="font-bold text-lg">Speed</span>
-        <span className="text-lg">{speed.walk.value} ft</span>
+        <div className="flex flex-col">
+          <span className="font-bold text-xs uppercase text-gray-400 tracking-wider">Speed</span>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-black text-gray-900 dark:text-gray-100">{effectiveSpeed.walk.value}</span>
+            <span className="text-sm font-bold text-gray-400">ft</span>
+          </div>
+        </div>
+        <div className={`text-gray-400 group-hover:text-blue-500 transition-all duration-300 ${expanded ? "rotate-180" : "rotate-0"}`}>
+          <ChevronDown className="w-5 h-5" />
+        </div>
       </div>
 
       {/* Expanded Content */}
       {expanded && (
-        <div className="mt-3 space-y-2">
+        <div className="mt-4 space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-top-2">
           {speedTypes.map((key) => {
-            const data = speed[key] || { value: 0, from: "" };
+            const baseData = baseSpeed[key] || { value: 0, from: "Base" };
+            const effectiveData = effectiveSpeed[key] || { value: 0 };
+            const hasModifier = effectiveData.value !== baseData.value;
+            const fromFeatureId = effectiveData.from;
+
             return (
-              <div key={key} className="flex justify-between items-center">
-                <span className="capitalize">{key}</span>
+              <div key={key} className="space-y-1 bg-gray-50 dark:bg-gray-800/50 p-2 rounded">
+                <div className="flex justify-between items-center">
+                  <span className="capitalize font-bold text-sm text-gray-600 dark:text-gray-400">{key}</span>
+                  <div className="flex items-center gap-2">
+                    {hasModifier && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 uppercase">
+                        {effectiveData.value > baseData.value ? `+${effectiveData.value - baseData.value}` : effectiveData.value - baseData.value} ft
+                      </span>
+                    )}
+                    <span className="text-sm font-black">{effectiveData.value} ft</span>
+                  </div>
+                </div>
 
                 <div className="flex gap-2 items-center">
-                  <input
-                    type="number"
-                    value={data.value}
-                    onChange={(e) =>
-                      handleChange(key, parseInt(e.target.value) || 0, data.from)
-                    }
-                    className="w-15 text-center border rounded"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Origin (optional)"
-                    value={data.from ?? ""}
-                    onChange={(e) =>
-                      handleChange(
-                        key,
-                        data.value,
-                        e.target.value || undefined
-                      )
-                    }
-                    className="w-32 border rounded text-sm"
-                  />
+                  <div className="flex-1 space-y-1">
+                    <label className="text-[9px] uppercase font-bold text-gray-400 ml-1">Base</label>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="number"
+                        value={baseData.value}
+                        onChange={(e) =>
+                          handleChange(key, parseInt(e.target.value) || 0, baseData.from)
+                        }
+                        className="w-16 text-sm p-1 border rounded dark:bg-gray-900 text-center"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Origin"
+                        value={baseData.from ?? ""}
+                        onChange={(e) =>
+                          handleChange(
+                            key,
+                            baseData.value,
+                            e.target.value || undefined
+                          )
+                        }
+                        className="flex-1 text-xs p-1 border rounded dark:bg-gray-900"
+                      />
+                    </div>
+                  </div>
                 </div>
+
+                {fromFeatureId && (
+                  <div className="flex items-center gap-2 pt-1 border-t border-gray-100 dark:border-gray-700 mt-1">
+                    <span className="text-[9px] uppercase font-bold text-gray-400">Modifier Source:</span>
+                    <FeatureNavigationBadge
+                      featureId={fromFeatureId}
+                      onNavigateToFeature={() => onNavigateToFeature?.(fromFeatureId)}
+                      variant="compact"
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
