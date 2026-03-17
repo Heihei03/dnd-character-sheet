@@ -516,12 +516,14 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                             >
                                                 <Pencil className="w-4 h-4" />
                                             </button>
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); setFeatureToDelete(feature.id); }}
-                                                className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                            {feature.origin !== "Item" && (
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); setFeatureToDelete(feature.id); }}
+                                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            )}
                                             <ChevronDown className={`w-4 h-4 text-gray-400 transform transition-transform ${expandedIds.has(feature.id) ? "rotate-180" : ""}`} />
                                         </div>
                                     </div>

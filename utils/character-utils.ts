@@ -133,6 +133,7 @@ export const getAllActiveFeatures = (character: Character): Feature[] => {
 
             return {
                 ...f,
+                description: f.description || item.description || "",
                 modifiers: activeModifiers,
                 origin: "Item",
                 subOrigin: item.name,
