@@ -107,27 +107,51 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                     {MODIFIER_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                                 </select>
                             </div>
-                            <div className="col-span-4 relative group">
-                                {mod.type !== "Spell" && mod.type !== "Resource" && mod.type !== "New Action" && mod.type !== "Roll" && (
-                                    <>
+                            <div className="col-span-8">
+                                {mod.type === "Roll" ? (
+                                    <div className="flex gap-2">
                                         <input
                                             type="text"
-                                            list={listId}
+                                            value={mod.value || ""}
+                                            onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
+                                            className="w-24 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-mono"
+                                            placeholder="Dice..."
+                                        />
+                                        <input
+                                            type="text"
+                                            list={`roll-type-${mod.id}`}
                                             value={mod.subType || ""}
                                             onChange={(e) => updateModifier(mod.id, { subType: e.target.value })}
-                                            className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
-                                            placeholder="Type..."
+                                            className="flex-1 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
+                                            placeholder="Type (Fire, Healing...)"
                                         />
-                                        {suggestions.length > 0 && (
-                                            <datalist id={listId}>
-                                                {suggestions.map(s => <option key={s} value={s} />)}
-                                            </datalist>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                            <div className="col-span-3">
-                                {mod.type === "Spell" ? (
+                                        <datalist id={`roll-type-${mod.id}`}>
+                                            {[...DAMAGE_TYPES, "Healing", "Temp HP"].sort().map(t => (
+                                                <option key={t} value={t} />
+                                            ))}
+                                        </datalist>
+                                    </div>
+                                ) : mod.type === "Bonus" ? (
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="number"
+                                            value={mod.value || 0}
+                                            onChange={(e) => updateModifier(mod.id, { value: parseInt(e.target.value) || 0 })}
+                                            className="w-16 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-mono"
+                                        />
+                                        <input
+                                            type="text"
+                                            list={`bonus-type-${mod.id}`}
+                                            value={mod.subType || ""}
+                                            onChange={(e) => updateModifier(mod.id, { subType: e.target.value })}
+                                            className="flex-1 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
+                                            placeholder="Target (AC, Init...)"
+                                        />
+                                        <datalist id={`bonus-type-${mod.id}`}>
+                                            {ROLL_TYPES.map(t => <option key={t} value={t} />)}
+                                        </datalist>
+                                    </div>
+                                ) : mod.type === "Spell" ? (
                                     <div className="space-y-1">
                                         <div className="flex flex-wrap gap-2">
                                             {((mod.value as string) || "").split(",").filter(s => s.trim()).map((spellName, idx) => (
@@ -167,40 +191,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                                     }
                                                 }}
                                             />
-                                            <button
-                                                onClick={(e) => {
-                                                    const input = (e.currentTarget.previousSibling as HTMLInputElement);
-                                                    const val = input.value.trim();
-                                                    if (val) {
-                                                        const currentSpells = ((mod.value as string) || "").split(",").filter(s => s.trim());
-                                                        if (!currentSpells.includes(val)) {
-                                                            updateModifier(mod.id, { value: [...currentSpells, val].join(",") });
-                                                        }
-                                                        input.value = "";
-                                                    }
-                                                }}
-                                                className="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/40 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 p-2 rounded transition-colors"
-                                            >
-                                                <Plus className="w-4 h-4" />
-                                            </button>
                                         </div>
-                                    </div>
-                                ) : mod.type === "Roll" ? (
-                                    <div className="flex gap-2 w-full">
-                                        <input
-                                            type="text"
-                                            value={mod.value || ""}
-                                            onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
-                                            className="flex-1 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-mono"
-                                            placeholder="Dice (e.g. 1d6, +2, or 10 + Dex)..."
-                                        />
-                                        <input
-                                            type="text"
-                                            value={mod.subType || ""}
-                                            onChange={(e) => updateModifier(mod.id, { subType: e.target.value })}
-                                            className="w-24 text-[10px] p-1 bg-gray-50 dark:bg-gray-800 border rounded"
-                                            placeholder="Target (all, melee, or Action Name)"
-                                        />
                                     </div>
                                 ) : (mod.type === "New Action" || mod.type === "Resource") ? (
                                     <div className="flex items-center h-full px-1.5 italic text-gray-400 text-[10px]">
@@ -217,14 +208,30 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                         <option value="Half Proficient">Half Proficient</option>
                                     </select>
                                 ) : (
-                                    <input
-                                        type="text"
-                                        value={mod.value || ""}
-                                        onChange={(e) => updateModifier(mod.id, { value: e.target.value })}
-                                        className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
-                                        placeholder="Value..."
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            list={listId}
+                                            value={mod.subType || ""}
+                                            onChange={(e) => updateModifier(mod.id, { subType: e.target.value })}
+                                            className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
+                                            placeholder="Type (e.g. Fire, Stealth)..."
+                                        />
+                                        {suggestions.length > 0 && (
+                                            <datalist id={listId}>
+                                                {suggestions.map(s => <option key={s} value={s} />)}
+                                            </datalist>
+                                        )}
+                                    </div>
                                 )}
+                            </div>
+                            <div className="col-span-1 flex justify-end items-center">
+                                <button
+                                    onClick={() => removeModifier(mod.id)}
+                                    className="p-1 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </button>
                             </div>
                             <div className="col-span-12">
                                 {mod.type === "Resource" && (

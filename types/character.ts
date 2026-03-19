@@ -240,6 +240,7 @@ export interface Action {
   atHigherLevels?: string;
   higherLevelDamage?: string;
   higherLevelHealing?: string;
+  healing?: string;
   scalesWithCharacterLevel?: boolean;
   resourceId?: string;
 }

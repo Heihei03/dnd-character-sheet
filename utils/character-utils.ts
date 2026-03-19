@@ -441,6 +441,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 range: spell.range,
                 damage: spell.damage,
                 damageType: spell.damageType,
+                healing: spell.healing,
                 atHigherLevels: spell.atHigherLevels,
                 higherLevelDamage: spell.higherLevelDamage,
                 higherLevelHealing: spell.higherLevelHealing,
@@ -552,27 +553,35 @@ export const getEffectiveActions = (character: Character): Action[] => {
 
     combined.forEach(action => {
         rollModifiers.forEach(mod => {
-            const target = (mod.subType || "").toLowerCase().trim();
-            const actionName = action.name.toLowerCase().trim();
-
-            // Match by specific name or "all", or "melee", "ranged" (if we had those tags, but for now name or all)
-            const isMatch = target === "all" || target === actionName ||
-                (target === "melee" && action.range === undefined) || // Simple heuristic
-                (target === "ranged" && action.range !== undefined);
-
-            if (isMatch && mod.value) {
-                // Append the bonus to the damage string
+            // Since there's no target field anymore, apply to all actions that have damage or healing
+            const hasDamage = action.damage || action.damageDice || action.healing || action.higherLevelDamage || action.higherLevelHealing;
+            
+            if (hasDamage && mod.value) {
                 const bonus = mod.value.toString().trim();
+                const type = (mod.subType || "").trim();
+                
                 if (bonus) {
-                    // Check if it's already a dice string or just a number
                     const separator = (bonus.startsWith("+") || bonus.startsWith("-")) ? "" : "+";
-                    action.damage = `${action.damage}${separator}${bonus}`;
+                    const typeStr = type ? ` ${type}` : "";
+                    
+                    // Update damage string
+                    action.damage = `${action.damage}${separator}${bonus}${typeStr}`;
+
+                    // Also update healing string if the action has healing
+                    if (action.healing) {
+                        action.healing = `${action.healing}${separator}${bonus}${typeStr}`;
+                    }
 
                     // Also update structured field if applicable
                     if (action.damageDice) {
-                        action.damageDice = `${action.damageDice}${separator}${bonus}`;
-                    } else {
-                        action.damageDice = bonus;
+                        action.damageDice = `${action.damageDice}${separator}${bonus}${typeStr}`;
+                    } else if (!action.damage && !action.healing) {
+                        action.damageDice = `${bonus}${typeStr}`;
+                    }
+                    
+                    // If it has a damage type and the modifier has a type, and action damage type is empty, set it
+                    if (type && !action.damageType && !action.healing) {
+                        action.damageType = type;
                     }
                 }
             }
