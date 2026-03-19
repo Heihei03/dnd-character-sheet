@@ -126,8 +126,11 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         return matchesSearch && matchesType;
     });
 
+    const rollActions = filteredActions.filter(a => a.id.startsWith("roll-mod-"));
+    const standardFilteredActions = filteredActions.filter(a => !a.id.startsWith("roll-mod-"));
+
     const groupedActions = ACTION_TYPES.reduce((acc, type) => {
-        acc[type] = filteredActions.filter(a => a.type === type);
+        acc[type] = standardFilteredActions.filter(a => a.type === type);
         return acc;
     }, {} as Record<ActionType, Action[]>);
 
@@ -218,14 +221,40 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                     )
                 ))}
 
-                {actions.length === 0 && !isAdding && (
-                    <Card className="border-dashed">
-                        <CardContent className="p-12 text-center text-gray-500 italic">
-                            No actions added yet. Click "+ Add Action" to begin.
-                        </CardContent>
-                    </Card>
+                {rollActions.length > 0 && (
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-bold border-b pb-1 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                            Rolls
+                        </h3>
+                        <div className="grid grid-cols-1 gap-3">
+                            {rollActions.map(action => (
+                                <ActionCard
+                                    key={action.id}
+                                    action={action}
+                                    abilityScores={abilityScores}
+                                    proficiencyBonus={proficiencyBonus}
+                                    totalLevel={totalLevel}
+                                    isExpanded={expandedIds.has(action.id)}
+                                    onToggleExpand={() => toggleExpand(action.id)}
+                                    rollDice={rollDice}
+                                    rollDamage={rollDamage}
+                                    currentCastLevel={0}
+                                    onCastLevelChange={() => {}}
+                                />
+                            ))}
+                        </div>
+                    </div>
                 )}
             </div>
+
+            {actions.length === 0 && !isAdding && (
+                <Card className="border-dashed">
+                    <CardContent className="p-12 text-center text-gray-500 italic">
+                        No actions added yet. Click "+ Add Action" to begin.
+                    </CardContent>
+                </Card>
+            )}
 
             <ConfirmationModal
                 isOpen={actionToDelete !== null}

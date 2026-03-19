@@ -551,41 +551,26 @@ export const getEffectiveActions = (character: Character): Action[] => {
     // 5. Apply "Roll" modifiers (bonus dice/flat damage)
     const rollModifiers = getFeatureModifiersByType(activeFeatures, "Roll");
 
-    combined.forEach(action => {
-        rollModifiers.forEach(mod => {
-            // Since there's no target field anymore, apply to all actions that have damage or healing
-            const hasDamage = action.damage || action.damageDice || action.healing || action.higherLevelDamage || action.higherLevelHealing;
+    // Separately, convert Roll modifiers into standalone actions if the user wants them "on their own"
+    rollModifiers.forEach(mod => {
+        if (mod.value) {
+            const feature = activeFeatures.find(f => (f.modifiers || []).some(m => m.id === mod.id));
+            const name = feature?.name || "Roll";
+            const typeLower = (mod.subType || "").toLowerCase();
+            const isHealing = typeLower.includes("healing") || typeLower.includes("heal");
             
-            if (hasDamage && mod.value) {
-                const bonus = mod.value.toString().trim();
-                const type = (mod.subType || "").trim();
-                
-                if (bonus) {
-                    const separator = (bonus.startsWith("+") || bonus.startsWith("-")) ? "" : "+";
-                    const typeStr = type ? ` ${type}` : "";
-                    
-                    // Update damage string
-                    action.damage = `${action.damage}${separator}${bonus}${typeStr}`;
-
-                    // Also update healing string if the action has healing
-                    if (action.healing) {
-                        action.healing = `${action.healing}${separator}${bonus}${typeStr}`;
-                    }
-
-                    // Also update structured field if applicable
-                    if (action.damageDice) {
-                        action.damageDice = `${action.damageDice}${separator}${bonus}${typeStr}`;
-                    } else if (!action.damage && !action.healing) {
-                        action.damageDice = `${bonus}${typeStr}`;
-                    }
-                    
-                    // If it has a damage type and the modifier has a type, and action damage type is empty, set it
-                    if (type && !action.damageType && !action.healing) {
-                        action.damageType = type;
-                    }
-                }
-            }
-        });
+            combined.push({
+                id: `roll-mod-${mod.id}`,
+                name: name,
+                type: "Action",
+                description: feature?.description || "Feature roll",
+                damage: !isHealing ? mod.value.toString() : undefined,
+                damageType: !isHealing ? mod.subType : "Healing",
+                healing: isHealing ? mod.value.toString() : undefined,
+                fromFeature: true,
+                fromFeatureId: feature?.id
+            } as Action);
+        }
     });
 
     return combined;

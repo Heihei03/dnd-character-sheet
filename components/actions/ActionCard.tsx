@@ -63,16 +63,14 @@ const ActionCard: React.FC<ActionCardProps> = ({
             : action.damage;
 
     const upcastedHealing =
-        action.damage === undefined &&
-        action.higherLevelHealing &&
-        action.baseLevel !== undefined
+        action.higherLevelHealing && action.baseLevel !== undefined
             ? calculateUpcastedValue(
-                  "",
+                  action.healing || "",
                   action.higherLevelHealing,
                   currentCastLevel,
                   action.baseLevel
               )
-            : undefined;
+            : action.healing;
 
     const handleAttackRoll = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -157,8 +155,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
                         )}
                         {(action.type === "Attack" ||
                             action.baseLevel !== undefined ||
-                            upcastedDamage) &&
+                            upcastedDamage ||
+                            upcastedHealing) &&
                             (upcastedDamage ||
+                                upcastedHealing ||
                                 action.range ||
                                 action.activation) && (
                                 <div className="hidden sm:flex items-center gap-3 text-xs text-gray-500">
@@ -167,20 +167,15 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                             {action.activation}
                                         </span>
                                     )}
-                                    {upcastedDamage && (
+                                    {(upcastedDamage || upcastedHealing) && (
                                         <button
                                             type="button"
                                             onClick={handleDamageRoll}
-                                            title="Roll Damage"
-                                            className={`font-mono font-bold hover:underline cursor-pointer flex items-center gap-1.5 ${
-                                                currentCastLevel >
-                                                (action.baseLevel || 0)
-                                                    ? "text-blue-600 dark:text-blue-400"
-                                                    : "text-blue-600 dark:text-blue-400"
-                                            }`}
+                                            title="Roll Damage/Effect"
+                                            className="font-mono font-bold hover:underline cursor-pointer flex items-center gap-1.5 text-blue-600 dark:text-blue-400"
                                         >
                                             <Dices className="w-3 h-3" />
-                                            {upcastedDamage}
+                                            {upcastedDamage || upcastedHealing}
                                             {action.versatileDamage
                                                 ? ` / ${action.versatileDamage}`
                                                 : ""}{" "}
