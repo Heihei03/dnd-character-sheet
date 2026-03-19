@@ -28,7 +28,7 @@ interface ActionsSectionProps {
     onUpdateResources?: (resources: Resource[]) => void;
 }
 
-const ACTION_TYPES: ActionType[] = ["Attack", "Action", "Bonus Action", "Reaction", "Free Action"];
+const ACTION_TYPES: ActionType[] = ["Action", "Bonus Action", "Reaction", "Free Action"];
 
 const ActionsSection: React.FC<ActionsSectionProps> = ({
     actions = [],
@@ -127,7 +127,15 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     });
 
     const rollActions = filteredActions.filter(a => a.id.startsWith("roll-mod-"));
-    const standardFilteredActions = filteredActions.filter(a => !a.id.startsWith("roll-mod-"));
+    const standardFilteredActions = filteredActions
+        .filter(a => !a.id.startsWith("roll-mod-"))
+        .map(a => {
+            // Runtime migration for legacy Attack types
+            if (a.type as string === "Attack") {
+                return { ...a, type: "Action" as ActionType, isAttack: true };
+            }
+            return a;
+        });
 
     const groupedActions = ACTION_TYPES.reduce((acc, type) => {
         acc[type] = standardFilteredActions.filter(a => a.type === type);
@@ -183,7 +191,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                     groupedActions[type].length > 0 && (
                         <div key={type} className="space-y-4">
                             <h3 className="text-lg font-bold border-b pb-1 flex items-center gap-2">
-                                <span className={`w-2 h-2 rounded-full ${type === "Attack" ? "bg-red-500" :
+                                <span className={`w-2 h-2 rounded-full ${
                                     type === "Action" ? "bg-blue-500" :
                                         type === "Bonus Action" ? "bg-orange-500" :
                                             type === "Reaction" ? "bg-purple-500" :

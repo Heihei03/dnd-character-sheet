@@ -208,7 +208,7 @@ export interface Feature {
   level?: number;
 }
 
-export const ACTION_TYPES = ["Action", "Bonus Action", "Reaction", "Free Action", "Attack"] as const;
+export const ACTION_TYPES = ["Action", "Bonus Action", "Reaction", "Free Action"] as const;
 export type ActionType = typeof ACTION_TYPES[number];
 
 export interface Action {
@@ -243,6 +243,7 @@ export interface Action {
   healing?: string;
   scalesWithCharacterLevel?: boolean;
   resourceId?: string;
+  isAttack?: boolean;
 }
 
 export interface SpellSlot {

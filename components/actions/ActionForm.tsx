@@ -15,7 +15,6 @@ interface ActionFormProps {
 }
 
 const ACTION_TYPES: ActionType[] = [
-    "Attack",
     "Action",
     "Bonus Action",
     "Reaction",
@@ -61,7 +60,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
     }, [initialData]);
 
     const calculateFinalStrings = (data: Partial<Action>): Partial<Action> => {
-        if (data.type !== "Attack") return data;
+        if (!data.isAttack) return data;
 
         const attackAbilityMod = getAbilityModifier(
             abilityScores[(data.attackAbility as keyof AbilityScores)] || 10
@@ -126,8 +125,23 @@ const ActionForm: React.FC<ActionFormProps> = ({
                     />
                 </div>
                 <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase text-gray-500">
+                    <label className="text-xs font-bold uppercase text-gray-500 flex justify-between items-center">
                         Type
+                        <div className="flex items-center gap-1.5 lowercase font-normal normal-case">
+                            <input
+                                type="checkbox"
+                                id="isAttack"
+                                checked={!!formData.isAttack}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        isAttack: e.target.checked
+                                    })
+                                }
+                                className="w-3.5 h-3.5"
+                            />
+                            <label htmlFor="isAttack" className="cursor-pointer">is attack?</label>
+                        </div>
                     </label>
                     <select
                         value={formData.type || "Action"}
@@ -137,7 +151,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                 type: e.target.value as ActionType,
                             })
                         }
-                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
                     >
                         {ACTION_TYPES.map((opt) => (
                             <option key={opt} value={opt}>
@@ -148,7 +162,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                 </div>
             </div>
 
-            {formData.type === "Attack" && (
+            {formData.isAttack && (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
                         <div className="flex items-center gap-2 pt-6">

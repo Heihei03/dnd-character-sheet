@@ -388,7 +388,8 @@ export const getEffectiveActions = (character: Character): Action[] => {
             return {
                 id: `weapon-${weapon.id}`,
                 name: weapon.name,
-                type: "Attack",
+                type: "Action",
+                isAttack: true,
                 description: `A ${(details.category || "").toLowerCase()} ${(details.rangeType || "").toLowerCase()} weapon attack. Properties: ${details.properties?.join(", ") || "None"}.`,
                 damage: `${details.damageDice}${damageBonus >= 0 ? "+" : ""}${damageBonus}`,
                 damageType: damageType,
@@ -430,12 +431,12 @@ export const getEffectiveActions = (character: Character): Action[] => {
             description += spell.description;
 
             const isAttack = spell.hasAttack;
-            const actionType = isAttack ? "Attack" : type;
 
             return {
                 id: `spell-${spell.id}`,
                 name: spell.name,
-                type: actionType,
+                type: type,
+                isAttack: isAttack,
                 description: description,
                 activation: spell.castingTime,
                 range: spell.range,
