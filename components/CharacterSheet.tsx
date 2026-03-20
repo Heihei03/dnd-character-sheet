@@ -477,7 +477,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       isFumble: sides === 20 && baseRoll === 1
     };
     
-    setRollHistory(prev => [newEntry, ...prev].slice(0, 50));
+    setRollHistory(prev => [...prev.slice(-49), newEntry]);
   };
 
   const rollDamage = (
@@ -565,7 +565,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       formatted
     };
 
-    setRollHistory(prev => [newEntry, ...prev].slice(0, 50));
+    setRollHistory(prev => [...prev.slice(-49), newEntry]);
   };
 
   const clearHistory = () => {
