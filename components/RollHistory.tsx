@@ -85,7 +85,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                     }`}>
                       {roll.total}
                     </span>
-                    {roll.damageType && (
+                    {roll.type === 'damage' && roll.damageType && (
                       <span className="text-xs font-bold uppercase text-orange-400">
                         {roll.damageType}
                       </span>
