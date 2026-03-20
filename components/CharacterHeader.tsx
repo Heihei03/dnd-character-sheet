@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
-import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, Settings, X, Shield } from "lucide-react";
+import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, Settings, X, Shield, Camera, Image as ImageIcon } from "lucide-react";
 import ConfirmationModal from "./ui/ConfirmationModal";
 
 interface CharacterHeaderProps {
@@ -24,6 +24,8 @@ interface CharacterHeaderProps {
     onClassChange: (index: number, field: keyof CharacterClass, value: any) => void;
     onAddClass: () => void;
     onRemoveClass: (index: number) => void;
+    imageUrl?: string;
+    onImageUrlChange: (value: string) => void;
 }
 
 const EXP_THRESHOLDS = [
@@ -48,6 +50,8 @@ const CharacterHeader = ({
     onClassChange,
     onAddClass,
     onRemoveClass,
+    imageUrl,
+    onImageUrlChange,
 }: CharacterHeaderProps) => {
     const [isEditingClasses, setIsEditingClasses] = useState(false);
     const [classIndexToRemove, setClassIndexToRemove] = useState<number | null>(null);
@@ -58,8 +62,37 @@ const CharacterHeader = ({
             <CardContent className="p-0">
                 <div className="grid grid-cols-1 md:grid-cols-12">
                     {/* Character Name and Basics */}
-                    <div className="md:col-span-4 p-4 bg-gray-50/50 border-r border-gray-100 flex flex-col justify-center">
-                        <div className="space-y-1">
+                    <div className="md:col-span-4 p-4 bg-gray-50/50 border-r border-gray-100 flex items-center gap-4">
+                        {/* Image Upload/Display */}
+                        <div className="relative group shrink-0">
+                            <div className="w-20 h-20 rounded-full border-2 border-gray-200 bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
+                                {imageUrl ? (
+                                    <img src={imageUrl} alt="Character" className="w-full h-full object-cover" />
+                                ) : (
+                                    <ImageIcon size={32} className="text-gray-300" />
+                                )}
+                            </div>
+                            <label className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                                <Camera size={20} />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                onImageUrlChange(reader.result as string);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                />
+                            </label>
+                        </div>
+
+                        <div className="space-y-1 flex-1">
                             <label className="text-[11px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
                                 <User size={12} /> Character Name
                             </label>

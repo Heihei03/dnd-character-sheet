@@ -320,6 +320,7 @@ export interface Bio {
 export interface Character {
   id: number;
   name: string;
+  imageUrl?: string;
   maxHp: number;
   hp: number;
   tempHp: number;
@@ -380,6 +381,7 @@ export interface NormalizedCharacter extends Character {
   resources: Resource[];
   conditions: Condition[];
   bio: Bio;
+  imageUrl?: string;
   critRule: CritRule;
   critRange: number;
 }

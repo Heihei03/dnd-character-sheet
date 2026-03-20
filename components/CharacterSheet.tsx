@@ -292,6 +292,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   const handleSubSpeciesChange = (value: string) => handleChange("subSpecies", value);
   const handleBackgroundChange = (value: string) => handleChange("background", value);
   const handleExpChange = (value: number | undefined) => handleChange("exp", value);
+  const handleImageUrlChange = (value: string) => handleChange("imageUrl", value);
 
   const handleUpdateSenses = (senses: Sense[]) => {
     setCharacter(prev => prev ? { ...prev, senses } : null);
@@ -611,6 +612,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           onClassChange={handleClassChange}
           onAddClass={addClass}
           onRemoveClass={removeClass}
+          imageUrl={characterWithDefaults.imageUrl}
+          onImageUrlChange={handleImageUrlChange}
         />
       </div>
 
