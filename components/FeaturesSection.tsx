@@ -331,7 +331,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                         {/* Subclass Selection */}
                                         {classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass && (
                                             <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                                                <label className="text-[10px] font-bold uppercase text-gray-400 whitespace-nowrap">Subclass Feature?</label>
+                                                <label className="text-xs font-bold uppercase text-gray-400 whitespace-nowrap">Subclass Feature?</label>
                                                 <select
                                                     value={formData.subclass || ""}
                                                     onChange={(e) => setFormData({ ...formData, subclass: e.target.value })}
@@ -347,7 +347,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
 
                                         {/* Level Selection */}
                                         <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200 mt-1">
-                                            <label className="text-[10px] font-bold uppercase text-gray-400 whitespace-nowrap">Level Gained</label>
+                                            <label className="text-xs font-bold uppercase text-gray-400 whitespace-nowrap">Level Gained</label>
                                             <input
                                                 type="number"
                                                 min="1"
@@ -422,7 +422,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                     onClick={() => toggleExpand(feature.id)}
                                 >
                                     <div className="flex items-center gap-3 overflow-hidden flex-1">
-                                        <div className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded whitespace-nowrap ${feature.origin === "Class" ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300" :
+                                        <div className={`text-xs font-black uppercase px-1.5 py-0.5 rounded whitespace-nowrap ${feature.origin === "Class" ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300" :
                                             feature.origin === "Species" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" :
                                                 feature.origin === "Background" ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300" :
                                                     feature.origin === "Item" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" :
@@ -435,7 +435,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                         {feature.modifiers && feature.modifiers.length > 0 && (
                                             <div className="hidden sm:flex gap-1 overflow-hidden">
                                                 {feature.modifiers.map(mod => (
-                                                    <span key={mod.id} className={`text-[9px] font-bold px-1.5 rounded uppercase tracking-tighter ${mod.type === "Sense" ? "bg-amber-100 text-amber-700" :
+                                                    <span key={mod.id} className={`text-[11px] font-bold px-1.5 rounded uppercase tracking-tighter ${mod.type === "Sense" ? "bg-amber-100 text-amber-700" :
                                                         mod.type === "Speed" ? "bg-emerald-100 text-emerald-700" :
                                                             mod.type === "Bonus" ? "bg-rose-100 text-rose-700" :
                                                                 "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
@@ -469,7 +469,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                     title="Quick Roll"
                                                 >
                                                     <Dices className="w-4 h-4" />
-                                                    {rollableMod.type === "Roll" && <span className="text-[10px] font-bold font-mono">{rollableMod.value}</span>}
+                                                    {rollableMod.type === "Roll" && <span className="text-xs font-bold font-mono">{rollableMod.value}</span>}
                                                 </button>
                                             );
                                         })()}
@@ -557,7 +557,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                                                         <div key={mod.id} className={`flex flex-col border-b border-gray-100 dark:border-gray-800 pb-2 ${isResource ? "sm:col-span-2" : ""}`}>
                                                             <div className="flex items-center justify-between mb-1">
                                                                 <div className="flex flex-col">
-                                                                    <span className="text-[10px] uppercase font-bold text-gray-400 leading-tight">{mod.type}</span>
+                                                                    <span className="text-xs uppercase font-bold text-gray-400 leading-tight">{mod.type}</span>
                                                                     <span className="font-semibold text-gray-700 dark:text-gray-200">{isResource ? resourceName : mod.subType}</span>
                                                                 </div>
                                                                 {!isResource && mod.type !== "Resistance" && mod.type !== "Immunity" && mod.type !== "Vulnerability" && (
@@ -593,7 +593,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
 
                                         {(feature.effects && feature.effects.length > 0) && (
                                             <div className="space-y-1">
-                                                <div className="text-[10px] font-bold uppercase text-gray-400">Additional Effects</div>
+                                                <div className="text-xs font-bold uppercase text-gray-400">Additional Effects</div>
                                                 <ul className="list-disc list-inside space-y-0.5 text-gray-600 dark:text-gray-400">
                                                     {feature.effects.map((effect, idx) => (
                                                         <li key={idx}>{effect}</li>

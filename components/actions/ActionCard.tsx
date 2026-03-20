@@ -122,7 +122,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                         <div className="min-w-[140px] flex items-center gap-2">
                             <h4 className="font-bold">{action.name}</h4>
                             {action.isAttack && (
-                                <span className="text-[10px] bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider border border-red-100 dark:border-red-800/50">
+                                <span className="text-xs bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider border border-red-100 dark:border-red-800/50">
                                     Attack
                                 </span>
                             )}
@@ -134,7 +134,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                         title="Roll Attack"
                                         className="hover:underline flex items-center gap-1.5"
                                     >
-                                        <Dices className="w-3 h-3 opacity-70" />
+                                        <Dices className="w-3.5 h-3.5 opacity-70" />
                                         {(() => {
                                             const atkAbilityMod = getAbilityModifier(
                                                 abilityScores[
@@ -190,7 +190,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                             title="Roll Damage/Effect"
                                             className="font-mono font-bold hover:underline cursor-pointer flex items-center gap-1.5 text-blue-600 dark:text-blue-400"
                                         >
-                                            <Dices className="w-3 h-3" />
+                                            <Dices className="w-3.5 h-3.5" />
                                             {upcastedDamage || upcastedHealing}
                                             {action.versatileDamage
                                                 ? ` / ${action.versatileDamage}`
@@ -223,7 +223,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                                             parseInt(e.target.value)
                                                         )
                                                     }
-                                                    className="bg-transparent text-[10px] font-bold text-blue-700 dark:text-blue-300 focus:outline-none"
+                                                    className="bg-transparent text-xs font-bold text-blue-700 dark:text-blue-300 focus:outline-none"
                                                 >
                                                     {Array.from(
                                                         {
@@ -287,7 +287,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3">
                                 {action.activation && (
                                     <div>
-                                        <div className="text-[10px] font-bold uppercase text-gray-400">
+                                        <div className="text-xs font-bold uppercase text-gray-400">
                                             Activation
                                         </div>
                                         <div className="font-medium">
@@ -297,7 +297,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                 )}
                                 {(upcastedDamage || upcastedHealing) && (
                                     <div>
-                                        <div className="text-[10px] font-bold uppercase text-gray-400">
+                                        <div className="text-xs font-bold uppercase text-gray-400">
                                             Damage/Effect
                                         </div>
                                         <div className="font-medium">
@@ -312,7 +312,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                                         : "text-blue-600 dark:text-blue-400"
                                                 }`}
                                             >
-                                                <Dices className="w-3 h-3" />
+                                                <Dices className="w-3.5 h-3.5" />
                                                 {upcastedDamage ||
                                                     upcastedHealing}
                                             </button>
@@ -325,7 +325,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                 )}
                                 {(action.range || action.reach) && (
                                     <div>
-                                        <div className="text-[10px] font-bold uppercase text-gray-400">
+                                        <div className="text-xs font-bold uppercase text-gray-400">
                                             Range/Reach
                                         </div>
                                         <div className="font-medium">
@@ -339,7 +339,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                 )}
                                 {action.target && (
                                     <div>
-                                        <div className="text-[10px] font-bold uppercase text-gray-400">
+                                        <div className="text-xs font-bold uppercase text-gray-400">
                                             Target
                                         </div>
                                         <div className="font-medium">
@@ -362,7 +362,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
                         {action.atHigherLevels && (
                             <div className="mt-2 p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded border border-blue-100 dark:border-blue-800/50 italic text-xs text-gray-600 dark:text-gray-400">
-                                <strong className="text-blue-700 dark:text-blue-300 text-[10px] uppercase not-italic font-bold">
+                                <strong className="text-blue-700 dark:text-blue-300 text-xs uppercase not-italic font-bold">
                                     At Higher Levels:{" "}
                                 </strong>
                                 {action.atHigherLevels}

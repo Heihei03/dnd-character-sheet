@@ -178,7 +178,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
                     <div className="flex flex-col">
-                        <label className="text-[10px] font-bold uppercase text-gray-400 mb-1">Crit Range</label>
+                        <label className="text-xs font-bold uppercase text-gray-400 mb-1">Crit Range</label>
                         <input
                             type="number"
                             value={critRange || 20}
@@ -189,13 +189,13 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                         />
                     </div>
                     <div className="flex flex-col">
-                        <label className="text-[10px] font-bold uppercase text-gray-400 mb-1">Crit Damage Rule</label>
+                        <label className="text-xs font-bold uppercase text-gray-400 mb-1">Crit Damage Rule</label>
                         <div className="flex gap-1.5">
                             {(['double-dice', 'max-plus-roll', 'double-total'] as const).map((rule) => (
                                 <button
                                     key={rule}
                                     onClick={() => onCritRuleChange?.(rule)}
-                                    className={`text-[10px] font-bold uppercase py-2 px-3 rounded-md transition-all border whitespace-nowrap ${
+                                    className={`text-xs font-bold uppercase py-2 px-3 rounded-md transition-all border whitespace-nowrap ${
                                         critRule === rule 
                                             ? 'bg-blue-600 border-blue-500 text-white shadow-sm' 
                                             : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-600'
@@ -237,7 +237,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                     groupedActions[type].length > 0 && (
                         <div key={type} className="space-y-4">
                             <h3 className="text-lg font-bold border-b pb-1 flex items-center gap-2">
-                                <span className={`w-2 h-2 rounded-full ${
+                                <span className={`w-2.5 h-2.5 rounded-full ${
                                     type === "Action" ? "bg-blue-500" :
                                         type === "Bonus Action" ? "bg-orange-500" :
                                             type === "Reaction" ? "bg-purple-500" :
@@ -278,7 +278,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 {rollActions.length > 0 && (
                     <div className="space-y-4">
                         <h3 className="text-lg font-bold border-b pb-1 flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                             Rolls
                         </h3>
                         <div className="grid grid-cols-1 gap-3">

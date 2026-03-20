@@ -138,7 +138,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         isAttack: e.target.checked
                                     })
                                 }
-                                className="w-3.5 h-3.5"
+                                className="w-4 h-4"
                             />
                             <label htmlFor="isAttack" className="cursor-pointer">is attack?</label>
                         </div>

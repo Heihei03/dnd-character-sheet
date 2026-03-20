@@ -131,7 +131,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                         <SlidersHorizontal className="w-4 h-4" />
                         <span>Filters</span>
                         {activeFilterCount > 0 && (
-                            <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold bg-blue-500 text-white rounded-full">
+                            <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold bg-blue-500 text-white rounded-full">
                                 {activeFilterCount}
                             </span>
                         )}
@@ -146,7 +146,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                         {filtersToRender.map((filter) => (
                             <div key={filter.id} className={`flex flex-col gap-1.5 flex-1 min-w-[140px] ${filter.className || ""}`}>
                                 {filter.placeholder && (
-                                    <label className="text-[10px] uppercase font-bold text-gray-400 px-1">
+                                    <label className="text-xs uppercase font-bold text-gray-400 px-1">
                                         {filter.placeholder}
                                     </label>
                                 )}
@@ -176,7 +176,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                                 onClick={handleClearAll}
                                 className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
                             >
-                                <RotateCcw className="w-3 h-3" />
+                                <RotateCcw className="w-3.5 h-3.5" />
                                 Clear All Filters
                             </button>
                         </div>

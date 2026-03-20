@@ -93,8 +93,8 @@ const CharacterHeader = ({
                         </div>
 
                         <div className="space-y-1 flex-1">
-                            <label className="text-[11px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                <User size={12} /> Character Name
+                            <label className="text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                <User size={14} /> Character Name
                             </label>
                             <input
                                 type="text"
@@ -109,8 +109,8 @@ const CharacterHeader = ({
                     {/* Classes and Levels */}
                     <div className="md:col-span-4 p-4 space-y-2 relative group">
                         <div className="flex justify-between items-center mb-1">
-                            <label className="text-[11px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                <GraduationCap size={12} /> Class & Level
+                            <label className="text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                <GraduationCap size={14} /> Class & Level
                             </label>
                             <button
                                 onClick={() => setIsEditingClasses(true)}
@@ -127,7 +127,7 @@ const CharacterHeader = ({
                                         <span className="text-xl font-black text-gray-900 dark:text-gray-100 italic">
                                             {cls.subclass ? `${cls.subclass} ` : ""}{cls.name}
                                         </span>
-                                        <span className="text-[10px] font-black bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800">
+                                        <span className="text-xs font-black bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800">
                                             LV {cls.level}
                                         </span>
                                     </div>
@@ -136,7 +136,7 @@ const CharacterHeader = ({
                         </div>
 
                         <div className="absolute bottom-2 left-3 flex items-center gap-1 pointer-events-none">
-                            <span className="text-[10px] uppercase font-black text-gray-400">Total Lv</span>
+                            <span className="text-xs uppercase font-black text-gray-400">Total Lv</span>
                             <span className="text-xs font-black text-blue-600">{totalLevel}</span>
                         </div>
 
@@ -167,7 +167,7 @@ const CharacterHeader = ({
                                                     ))}
                                                 </select>
                                                 <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded-md px-2 py-1.5 border border-gray-200 dark:border-gray-700">
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">Lv</span>
+                                                    <span className="text-xs font-bold text-gray-400 uppercase">Lv</span>
                                                     <input
                                                         type="number"
                                                         value={cls.level}
@@ -187,7 +187,7 @@ const CharacterHeader = ({
                                                 )}
                                             </div>
                                             <div className="flex flex-col gap-1">
-                                                <label className="text-[9px] uppercase font-bold text-gray-400 ml-1">Subclass</label>
+                                                <label className="text-[11px] uppercase font-bold text-gray-400 ml-1">Subclass</label>
                                                 <input
                                                     type="text"
                                                     value={cls.subclass || ""}
@@ -201,14 +201,14 @@ const CharacterHeader = ({
 
                                     <button
                                         onClick={onAddClass}
-                                        className="w-full py-2 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-colors border border-blue-100 dark:border-blue-800/50 mt-2"
+                                        className="w-full py-2 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-colors border border-blue-100 dark:border-blue-800/50 mt-2"
                                     >
-                                        <Plus size={12} /> Add Multiclass
+                                        <Plus size={14} /> Add Multiclass
                                     </button>
 
                                     <button
                                         onClick={() => setIsEditingClasses(false)}
-                                        className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm transition-all active:scale-[0.98] mt-4"
+                                        className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-lg shadow-sm transition-all active:scale-[0.98] mt-4"
                                     >
                                         Save & Close
                                     </button>
@@ -222,8 +222,8 @@ const CharacterHeader = ({
                         {/* Top row: Species */}
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1">
-                                <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                    <BookOpen size={10} /> Species
+                                <label className="text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                    <BookOpen size={12} /> Species
                                 </label>
                                 <input
                                     type="text"
@@ -234,8 +234,8 @@ const CharacterHeader = ({
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                    <BookOpen size={10} /> Sub Species
+                                <label className="text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                    <BookOpen size={12} /> Sub Species
                                 </label>
                                 <input
                                     type="text"
@@ -251,8 +251,8 @@ const CharacterHeader = ({
                         <div className="flex items-stretch gap-4">
                             <div className="flex-1 flex flex-col justify-between py-px">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                        <Trophy size={10} /> Background
+                                    <label className="text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                        <Trophy size={12} /> Background
                                     </label>
                                     <input
                                         type="text"
@@ -264,8 +264,8 @@ const CharacterHeader = ({
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                        <Star size={10} /> Experience
+                                    <label className="text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                        <Star size={12} /> Experience
                                     </label>
                                     <div className="flex items-center gap-1 border-b border-gray-200 hover:border-gray-400 focus-within:border-blue-500 transition-all">
                                         <input

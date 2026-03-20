@@ -38,10 +38,10 @@ const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ itemName, featu
     return (
         <div className="md:col-span-2 mt-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
             <div className="flex justify-between items-center">
-                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Item Features & Modifiers</h4>
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Item Features & Modifiers</h4>
                 <button
                     onClick={addFeature}
-                    className="text-[10px] bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-2 py-1 rounded font-bold uppercase transition-colors"
+                    className="text-xs bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-2 py-1 rounded font-bold uppercase transition-colors"
                 >
                     + Add Feature
                 </button>
@@ -86,10 +86,10 @@ const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ itemName, featu
 
                 {features.length === 0 && (
                     <div className="text-center py-6 border-2 border-dashed border-gray-50 dark:border-gray-900 rounded-xl">
-                        <p className="text-[10px] text-gray-400 italic font-medium uppercase tracking-tight">No active features or modifiers for this item</p>
+                        <p className="text-xs text-gray-400 italic font-medium uppercase tracking-tight">No active features or modifiers for this item</p>
                         <button
                             onClick={addFeature}
-                            className="mt-1 text-[10px] text-blue-600 font-bold uppercase hover:underline"
+                            className="mt-1 text-xs text-blue-600 font-bold uppercase hover:underline"
                         >
                             + Add One Now
                         </button>

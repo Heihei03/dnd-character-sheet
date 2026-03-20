@@ -237,7 +237,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                     </label>
                     <div className="flex-1"></div>
                     <div className="flex items-center gap-2">
-                        <label className="text-[10px] text-gray-400 font-bold uppercase">Type:</label>
+                        <label className="text-xs text-gray-400 font-bold uppercase">Type:</label>
                         <select value={newItemType} onChange={(e) => {
                             const type = e.target.value as any;
                             setNewItemType(type);
@@ -260,7 +260,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {newItemType === "armor" && (
                             <div className="flex flex-col gap-2 p-3 bg-blue-50/30 rounded border border-blue-100">
-                                <label className="text-[10px] font-bold text-blue-800 uppercase">Armor Selection</label>
+                                <label className="text-xs font-bold text-blue-800 uppercase">Armor Selection</label>
                                 <select
                                     value={newItemArmorDetails?.baseArmor || "Custom"}
                                     onChange={(e) => handleBaseArmorSelect(e.target.value)}
@@ -278,7 +278,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                 {newItemArmorDetails && (
                                     <div className="grid grid-cols-2 gap-2 mt-1">
                                         <div>
-                                            <label className="block text-[10px] text-gray-500 font-semibold uppercase">AC</label>
+                                            <label className="block text-xs text-gray-500 font-semibold uppercase">AC</label>
                                             <input
                                                 type="number"
                                                 value={newItemArmorDetails.ac}
@@ -287,7 +287,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] text-gray-500 font-semibold uppercase">Category</label>
+                                            <label className="block text-xs text-gray-500 font-semibold uppercase">Category</label>
                                             <select
                                                 value={newItemArmorDetails.category}
                                                 onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, category: e.target.value as any })}
@@ -299,7 +299,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] text-gray-500 font-semibold uppercase">STR Req</label>
+                                            <label className="block text-xs text-gray-500 font-semibold uppercase">STR Req</label>
                                             <input
                                                 type="number"
                                                 value={newItemArmorDetails.strengthRequirement || ""}
@@ -315,7 +315,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                                 onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, stealthDisadvantage: e.target.checked })}
                                                 className="w-4 h-4"
                                             />
-                                            <label className="text-[10px] text-gray-500 font-semibold uppercase">Stealth Disadv</label>
+                                            <label className="text-xs text-gray-500 font-semibold uppercase">Stealth Disadv</label>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <input
@@ -324,11 +324,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                                 onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, dexBonus: e.target.checked })}
                                                 className="w-4 h-4"
                                             />
-                                            <label className="text-[10px] text-gray-500 font-semibold uppercase">DEX Bonus</label>
+                                            <label className="text-xs text-gray-500 font-semibold uppercase">DEX Bonus</label>
                                         </div>
                                         {newItemArmorDetails.dexBonus && (
                                             <div>
-                                                <label className="block text-[10px] text-gray-500 font-semibold uppercase">DEX Cap</label>
+                                                <label className="block text-xs text-gray-500 font-semibold uppercase">DEX Cap</label>
                                                 <input
                                                     type="number"
                                                     value={newItemArmorDetails.dexCap || ""}
@@ -345,7 +345,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
 
                         {newItemType === "shield" && (
                             <div className="flex flex-col gap-2 p-3 bg-blue-50/30 rounded border border-blue-100">
-                                <label className="text-[10px] font-bold text-blue-800 uppercase">Shield Selection</label>
+                                <label className="text-xs font-bold text-blue-800 uppercase">Shield Selection</label>
                                 <select
                                     value={newItemArmorDetails?.baseArmor || "Shield"}
                                     onChange={(e) => handleBaseArmorSelect(e.target.value)}
@@ -360,7 +360,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                 </select>
                                 {newItemArmorDetails && (
                                     <div>
-                                        <label className="block text-[10px] text-gray-500 font-semibold uppercase">Shield AC Bonus</label>
+                                        <label className="block text-xs text-gray-500 font-semibold uppercase">Shield AC Bonus</label>
                                         <input
                                             type="number"
                                             value={newItemArmorDetails.ac}
@@ -374,7 +374,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
 
                         {newItemType === "container" && (
                             <div className="flex flex-col gap-2 p-3 bg-green-50/30 rounded border border-green-100">
-                                <label className="text-[10px] font-bold text-green-800 uppercase">Container Selection</label>
+                                <label className="text-xs font-bold text-green-800 uppercase">Container Selection</label>
                                 <select
                                     value={newItemContainerDetails?.capacityWeight ? newItemName : "Custom"}
                                     onChange={(e) => handleBaseContainerSelect(e.target.value)}
@@ -389,7 +389,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                 {newItemContainerDetails && (
                                     <div className="grid grid-cols-2 gap-2 mt-1">
                                         <div>
-                                            <label className="block text-[10px] text-gray-500 font-semibold uppercase">Capacity (lbs)</label>
+                                            <label className="block text-xs text-gray-500 font-semibold uppercase">Capacity (lbs)</label>
                                             <input
                                                 type="number"
                                                 value={newItemContainerDetails.capacityWeight ?? ""}
@@ -399,7 +399,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] text-gray-500 font-semibold uppercase">Wt Multiplier</label>
+                                            <label className="block text-xs text-gray-500 font-semibold uppercase">Wt Multiplier</label>
                                             <input
                                                 type="number"
                                                 step="0.1"
@@ -415,7 +415,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
 
                         {newItemType === "weapon" && newItemWeaponDetails && (
                             <div className="flex flex-col gap-2 p-3 bg-red-50/30 rounded border border-red-100">
-                                <label className="text-[10px] font-bold text-red-800 uppercase">Weapon Selection</label>
+                                <label className="text-xs font-bold text-red-800 uppercase">Weapon Selection</label>
                                 <select
                                     value={newItemWeaponDetails.baseWeapon || "Custom"}
                                     onChange={(e) => handleBaseWeaponSelect(e.target.value)}
@@ -482,7 +482,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
 
                         {newItemType === "tool" && newItemToolDetails && (
                             <div className="flex flex-col gap-2 p-3 bg-purple-50/30 rounded border border-purple-100">
-                                <label className="text-[10px] font-bold text-purple-800 uppercase">Tool Selection</label>
+                                <label className="text-xs font-bold text-purple-800 uppercase">Tool Selection</label>
                                 <select
                                     value={newItemToolDetails.baseTool || "Custom"}
                                     onChange={(e) => handleBaseToolSelect(e.target.value)}
@@ -496,7 +496,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                 <div className="grid grid-cols-1 gap-2 mt-1">
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="flex flex-col gap-1">
-                                            <label className="text-[10px] font-bold text-gray-500 uppercase">Category</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase">Category</label>
                                             <select
                                                 value={newItemToolDetails.category}
                                                 onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, category: e.target.value as any })}
@@ -509,7 +509,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                             </select>
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <label className="text-[10px] font-bold text-gray-500 uppercase">Ability</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase">Ability</label>
                                             <input
                                                 type="text"
                                                 value={newItemToolDetails.ability}
@@ -520,7 +520,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase">Utilize (2024 Rule)</label>
+                                        <label className="text-xs font-bold text-gray-500 uppercase">Utilize (2024 Rule)</label>
                                         <textarea
                                             value={newItemToolDetails.utilize}
                                             onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, utilize: e.target.value })}
@@ -529,7 +529,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                         />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase">Craft (2024 Rule)</label>
+                                        <label className="text-xs font-bold text-gray-500 uppercase">Craft (2024 Rule)</label>
                                         <textarea
                                             value={newItemToolDetails.craft}
                                             onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, craft: e.target.value })}

@@ -79,7 +79,7 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                         className="p-1 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
                         title="Currency Converter"
                     >
-                        <Settings className="w-4 h-4" />
+                        <Settings className="w-5 h-5" />
                     </button>
                 </div>
                 <div className="grid grid-cols-5 gap-2 text-center">
@@ -117,11 +117,11 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                             <div className="p-4 space-y-6">
                                 {/* Current Balances */}
                                 <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                    <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2 text-center">Current Total Balance</label>
+                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 text-center">Current Total Balance</label>
                                     <div className="grid grid-cols-5 gap-1">
                                         {["cp", "sp", "ep", "gp", "pp"].map(k => (
                                             <div key={k} className="text-center">
-                                                <div className="text-[8px] font-bold text-gray-500 uppercase">{k}</div>
+                                                <div className="text-[11px] font-bold text-gray-500 uppercase">{k}</div>
                                                 <div className="text-xs font-black text-gray-800">{currency[k as keyof Currency]}</div>
                                             </div>
                                         ))}
@@ -130,22 +130,22 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
 
                                 {/* Auto Consolidation */}
                                 <section className="space-y-2">
-                                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Wealth Management</label>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">Wealth Management</label>
                                     <button
                                         onClick={consolidateCurrencies}
                                         className="w-full py-3 bg-blue-600 text-white rounded-md font-bold text-sm shadow-md hover:bg-blue-700 transition-colors flex flex-col items-center group"
                                     >
                                         <span>Consolidate into Gold</span>
-                                        <span className="text-[9px] font-normal opacity-70 group-hover:opacity-100 transition-opacity">Converts cp/sp/ep to gp • Leaves pp intact</span>
+                                        <span className="text-[11px] font-normal opacity-70 group-hover:opacity-100 transition-opacity">Converts cp/sp/ep to gp • Leaves pp intact</span>
                                     </button>
                                 </section>
 
                                 <div className="border-t pt-4">
-                                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3">Manual Exchange</label>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Manual Exchange</label>
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2">
                                             <div className="flex-1">
-                                                <label className="block text-[9px] text-gray-400 uppercase font-bold mb-1">Exchange</label>
+                                                <label className="block text-[11px] text-gray-400 uppercase font-bold mb-1">Exchange</label>
                                                 <input
                                                     type="number"
                                                     value={convertAmount || ""}
@@ -155,7 +155,7 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                                                 />
                                             </div>
                                             <div className="flex-1">
-                                                <label className="block text-[9px] text-gray-400 uppercase font-bold mb-1">From</label>
+                                                <label className="block text-[11px] text-gray-400 uppercase font-bold mb-1">From</label>
                                                 <select
                                                     value={convertFrom}
                                                     onChange={(e) => setConvertFrom(e.target.value as keyof Currency)}
@@ -175,7 +175,7 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                                         </div>
 
                                         <div>
-                                            <label className="block text-[9px] text-gray-400 uppercase font-bold mb-1">Into</label>
+                                            <label className="block text-[11px] text-gray-400 uppercase font-bold mb-1">Into</label>
                                             <select
                                                 value={convertTo}
                                                 onChange={(e) => setConvertTo(e.target.value as keyof Currency)}

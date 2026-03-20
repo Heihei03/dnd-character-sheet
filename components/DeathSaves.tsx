@@ -23,7 +23,7 @@ const DeathSaves: React.FC<DeathSavesProps> = ({ deathSaves, onUpdate }) => {
             className={`w-6 h-6 rounded-full border-2 ${filled ? colorClass : "border-gray-300"
                 } flex items-center justify-center transition-all hover:scale-110 active:scale-95`}
         >
-            {filled && <div className={`w-3 h-3 rounded-full ${colorClass.replace("border-", "bg-")}`} />}
+            {filled && <div className={`w-3.5 h-3.5 rounded-full ${colorClass.replace("border-", "bg-")}`} />}
         </button>
     );
 

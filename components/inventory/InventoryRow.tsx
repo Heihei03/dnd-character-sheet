@@ -76,7 +76,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                 </td>
                 <td className="p-2">
                     <div className="flex items-center gap-1">
-                        {isNested && <CornerDownRight className="w-3 h-3 text-gray-300 ml-2" />}
+                        {isNested && <CornerDownRight className="w-3.5 h-3.5 text-gray-300 ml-2" />}
                         <div className="flex-1">
                             <input
                                 type="text"
@@ -85,7 +85,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                                 className="w-full p-1 border border-transparent hover:border-gray-200 rounded text-sm font-medium focus:bg-white"
                             />
                             {/* Item Metadata Summary */}
-                            <div className="px-1 text-[10px] text-gray-500 flex flex-wrap gap-x-2 gap-y-0.5">
+                            <div className="px-1 text-xs text-gray-500 flex flex-wrap gap-x-2 gap-y-0.5">
                                 {item.itemType === "weapon" && item.weaponDetails && (
                                     <React.Fragment>
                                         <span className="font-semibold text-red-700/70">{item.weaponDetails.damageDice} {item.weaponDetails.damageType}</span>
@@ -93,7 +93,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                                             <span className="italic">{item.weaponDetails.properties.join(", ")}</span>
                                         )}
                                         {item.weaponDetails.mastery && (
-                                            <span className="bg-red-50 text-red-600 px-1 rounded border border-red-100 font-bold uppercase text-[8px]">{item.weaponDetails.mastery}</span>
+                                            <span className="bg-red-50 text-red-600 px-1 rounded border border-red-100 font-bold uppercase text-[11px]">{item.weaponDetails.mastery}</span>
                                         )}
                                     </React.Fragment>
                                 )}

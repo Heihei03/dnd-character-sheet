@@ -54,7 +54,7 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, 
                   <span className="capitalize font-bold text-sm text-gray-600 dark:text-gray-400">{key}</span>
                   <div className="flex items-center gap-2">
                     {hasModifier && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 uppercase">
+                      <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 uppercase">
                         {effectiveData.value > baseData.value ? `+${effectiveData.value - baseData.value}` : effectiveData.value - baseData.value} ft
                       </span>
                     )}
@@ -64,7 +64,7 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, 
 
                 <div className="flex gap-2 items-center">
                   <div className="flex-1 space-y-1">
-                    <label className="text-[9px] uppercase font-bold text-gray-400 ml-1">Base</label>
+                    <label className="text-[11px] uppercase font-bold text-gray-400 ml-1">Base</label>
                     <div className="flex gap-2 items-center">
                       <input
                         type="number"
@@ -93,7 +93,7 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, 
 
                 {fromFeatureId && (
                   <div className="flex items-center gap-2 pt-1 border-t border-gray-100 dark:border-gray-700 mt-1">
-                    <span className="text-[9px] uppercase font-bold text-gray-400">Modifier Source:</span>
+                    <span className="text-[11px] uppercase font-bold text-gray-400">Modifier Source:</span>
                     <FeatureNavigationBadge
                       featureId={fromFeatureId}
                       onNavigateToFeature={() => onNavigateToFeature?.(fromFeatureId)}

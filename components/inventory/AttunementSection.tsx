@@ -22,7 +22,7 @@ const AttunementSection: React.FC<AttunementSectionProps> = ({
                 {[0, 1, 2].map(i => (
                     <div
                         key={i}
-                        className={`p-2 rounded border text-[10px] text-center h-10 flex items-center justify-center ${attunedItems[i]
+                        className={`p-2 rounded border text-xs text-center h-10 flex items-center justify-center ${attunedItems[i]
                             ? "bg-purple-50 border-purple-200 font-bold"
                             : "bg-gray-50 border-gray-200 text-gray-400 border-dashed"
                             }`}
@@ -38,7 +38,7 @@ const AttunementSection: React.FC<AttunementSectionProps> = ({
                             <span className="font-medium">{item.name}</span>
                             <button
                                 onClick={() => updateItem(item.id, "attuned", !item.attuned)}
-                                className={`px-2 py-1 rounded text-[10px] font-bold transition-colors ${item.attuned
+                                className={`px-2 py-1 rounded text-xs font-bold transition-colors ${item.attuned
                                     ? "bg-purple-600 text-white"
                                     : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                                     }`}
@@ -48,7 +48,7 @@ const AttunementSection: React.FC<AttunementSectionProps> = ({
                         </div>
                     ))}
                     {attunableItems.length === 0 && (
-                        <div className="text-gray-400 italic text-[10px] text-center p-2">
+                        <div className="text-gray-400 italic text-xs text-center p-2">
                             No attunable items in inventory
                         </div>
                     )}

@@ -88,7 +88,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                     onClick={addModifier}
                     className="text-[11px] font-bold text-blue-600 hover:text-blue-800 uppercase tracking-wider flex items-center gap-1"
                 >
-                    <Plus className="w-3 h-3" /> Add Modifier
+                    <Plus className="w-3.5 h-3.5" /> Add Modifier
                 </button>
             </div>
             <div className="space-y-2">
@@ -194,7 +194,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                         </div>
                                     </div>
                                 ) : (mod.type === "New Action" || mod.type === "Resource") ? (
-                                    <div className="flex items-center h-full px-1.5 italic text-gray-400 text-[10px]">
+                                    <div className="flex items-center h-full px-1.5 italic text-gray-400 text-xs">
                                         Configure below...
                                     </div>
                                 ) : mod.type === "Proficiency" ? (
@@ -230,14 +230,14 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                     onClick={() => removeModifier(mod.id)}
                                     className="p-1 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                                 >
-                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
                             <div className="col-span-12">
                                 {mod.type === "Resource" && (
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 mt-1 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-top-1">
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">Resource Name</label>
+                                            <label className="text-xs uppercase font-bold text-gray-400">Resource Name</label>
                                             <input
                                                 type="text"
                                                 value={(() => {
@@ -258,7 +258,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">Max Scaling</label>
+                                            <label className="text-xs uppercase font-bold text-gray-400">Max Scaling</label>
                                             <select
                                                 value={(() => {
                                                     try {
@@ -291,7 +291,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             </select>
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">
+                                            <label className="text-xs uppercase font-bold text-gray-400">
                                                 {(() => {
                                                     try {
                                                         const data = JSON.parse(mod.value as string || "{}");
@@ -332,13 +332,13 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                                 try {
                                                     const data = JSON.parse(mod.value as string || "{}");
                                                     return (data.useProficiencyBonus || data.useAbilityMod || data.useCharacterLevel) && (
-                                                        <div className="text-[9px] text-gray-500 italic">Use 0.5 for half, etc.</div>
+                                                        <div className="text-[11px] text-gray-500 italic">Use 0.5 for half, etc.</div>
                                                     );
                                                 } catch { return null; }
                                             })()}
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">
+                                            <label className="text-xs uppercase font-bold text-gray-400">
                                                 {(() => {
                                                     try {
                                                         const data = JSON.parse(mod.value as string || "{}");
@@ -365,7 +365,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">Regain On</label>
+                                            <label className="text-xs uppercase font-bold text-gray-400">Regain On</label>
                                             <select
                                                 value={(() => {
                                                     try {
@@ -389,7 +389,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             </select>
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">Regain Amount</label>
+                                            <label className="text-xs uppercase font-bold text-gray-400">Regain Amount</label>
                                             <input
                                                 type="text"
                                                 value={(() => {
@@ -414,7 +414,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                 {mod.type === "New Action" && (
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 mt-1 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-top-1">
                                         <div className="md:col-span-2 space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">Action Name</label>
+                                            <label className="text-xs uppercase font-bold text-gray-400">Action Name</label>
                                             <input
                                                 type="text"
                                                 value={(() => {
@@ -433,7 +433,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">Type</label>
+                                            <label className="text-xs uppercase font-bold text-gray-400">Type</label>
                                             <select
                                                 value={(() => {
                                                     try {
@@ -459,7 +459,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             </select>
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">Damage Dice</label>
+                                            <label className="text-xs uppercase font-bold text-gray-400">Damage Dice</label>
                                             <input
                                                 type="text"
                                                 value={(() => {
@@ -478,7 +478,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">Ability</label>
+                                            <label className="text-xs uppercase font-bold text-gray-400">Ability</label>
                                             <select
                                                 value={(() => {
                                                     try {
@@ -503,7 +503,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                             </select>
                                         </div>
                                         <div className="md:col-span-2 space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-gray-400">Resource Link</label>
+                                            <label className="text-xs uppercase font-bold text-gray-400">Resource Link</label>
                                             <select
                                                 value={(() => {
                                                     try {
@@ -559,9 +559,9 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                     id={`attune-${mod.id}`}
                                     checked={!!mod.requiresAttunement}
                                     onChange={(e) => updateModifier(mod.id, { requiresAttunement: e.target.checked })}
-                                    className="w-3 h-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    className="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <label htmlFor={`attune-${mod.id}`} className="text-[10px] font-bold text-gray-400 uppercase cursor-pointer select-none">
+                                <label htmlFor={`attune-${mod.id}`} className="text-xs font-bold text-gray-400 uppercase cursor-pointer select-none">
                                     Attunement Required
                                 </label>
                             </div>

@@ -85,7 +85,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                                     className="flex items-center justify-center transition-transform active:scale-95"
                                     title={isProficient ? "Proficient" : "Not Proficient"}
                                 >
-                                    <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-3.5 h-3.5" />
+                                    <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-4 h-4" />
                                 </button>
                             )}
                         </div>
@@ -97,14 +97,14 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                                 className={`absolute bottom-1 right-1 p-1 rounded-md transition-all z-10 ${isConcMode ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800' : 'text-gray-300 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                                 title={isConcMode ? "Switch to Saving Throw" : "Switch to Concentration"}
                             >
-                                <Target className="w-3.5 h-3.5" />
+                                <Target className="w-4 h-4" />
                             </button>
                         )}
 
                         {/* ADV/DIS Badges - Top Right */}
                         <div className="absolute top-1 right-1 flex flex-col gap-1 pointer-events-none">
-                            {advantage && <span className="text-[8px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800">ADV</span>}
-                            {disadvantage && <span className="text-[8px] font-black bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800">DIS</span>}
+                            {advantage && <span className="text-[11px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800">ADV</span>}
+                            {disadvantage && <span className="text-[11px] font-black bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800">DIS</span>}
                         </div>
                     </div>
                 );
@@ -112,10 +112,10 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
 
             {allNotes.length > 0 && (
                 <div className="mt-2 pt-1 border-t border-gray-100 dark:border-gray-800">
-                    <h4 className="text-[8px] uppercase font-bold text-gray-400 mb-1">Bonuses</h4>
+                    <h4 className="text-[11px] uppercase font-bold text-gray-400 mb-1">Bonuses</h4>
                     <ul className="space-y-0.5">
                         {allNotes.map((note, i) => (
-                            <li key={i} className="text-[9px] text-gray-500 dark:text-gray-400 italic leading-tight">
+                            <li key={i} className="text-[11px] text-gray-500 dark:text-gray-400 italic leading-tight">
                                 • {note}
                             </li>
                         ))}

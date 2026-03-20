@@ -37,13 +37,13 @@ const ResourcePipTracker: React.FC<ResourcePipTrackerProps> = ({
                             {resource.name}
                         </h4>
                         {resource.fromFeature && !compact && (
-                            <span className="text-[8px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 py-0.5 rounded font-bold uppercase tracking-tighter whitespace-nowrap">
+                            <span className="text-[11px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 py-0.5 rounded font-bold uppercase tracking-tighter whitespace-nowrap">
                                 Feature
                             </span>
                         )}
                     </div>
                     {!compact && (
-                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+                        <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">
                             {resource.regainAmount && resource.regainAmount !== "All" 
                                 ? `${resource.regainAmount} on ${resource.regain}` 
                                 : resource.regain}
@@ -55,13 +55,13 @@ const ResourcePipTracker: React.FC<ResourcePipTrackerProps> = ({
                     className="p-1 text-gray-400 hover:text-blue-500 transition-colors shrink-0"
                     title="Reset to max"
                 >
-                    <RotateCcw className={compact ? "w-2.5 h-2.5" : "w-3 h-3"} />
+                    <RotateCcw className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} />
                 </button>
             </div>
 
             <div className={`flex items-center justify-between gap-3 ${compact ? 'mt-1' : 'mt-2'}`}>
                 <div className="flex-1">
-                    <div className="flex justify-between text-[10px] mb-1">
+                    <div className="flex justify-between text-xs mb-1">
                         <span className="font-mono font-bold text-gray-900 dark:text-gray-100 italic">
                             {resource.value} <span className="text-gray-400 font-normal">/ {resource.max}</span>
                         </span>
@@ -74,7 +74,7 @@ const ResourcePipTracker: React.FC<ResourcePipTrackerProps> = ({
                                 <button
                                     key={i}
                                     onClick={() => handleSetToLevel(isAvailable ? i : i + 1)}
-                                    className={`${compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} rounded-full border-2 transition-all duration-200 ${isAvailable
+                                    className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} rounded-full border-2 transition-all duration-200 ${isAvailable
                                         ? "bg-blue-500 border-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.3)]"
                                         : "bg-transparent border-gray-200 dark:border-gray-700 hover:border-blue-300"
                                         }`}
@@ -91,14 +91,14 @@ const ResourcePipTracker: React.FC<ResourcePipTrackerProps> = ({
                         disabled={resource.value <= 0}
                         className={`${compact ? 'w-6 h-6' : 'w-7 h-7'} flex items-center justify-center bg-gray-50 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded-lg border border-gray-100 dark:border-gray-700 transition-all disabled:opacity-20`}
                     >
-                        <Minus className={compact ? "w-2.5 h-2.5" : "w-3 h-3"} />
+                        <Minus className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} />
                     </button>
                     <button
                         onClick={() => handleUpdateValue(1)}
                         disabled={resource.value >= resource.max}
                         className={`${compact ? 'w-6 h-6' : 'w-7 h-7'} flex items-center justify-center bg-gray-50 dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/20 text-gray-400 hover:text-green-500 rounded-lg border border-gray-100 dark:border-gray-700 transition-all disabled:opacity-20`}
                     >
-                        <Plus className={compact ? "w-2.5 h-2.5" : "w-3 h-3"} />
+                        <Plus className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} />
                     </button>
                 </div>
             </div>

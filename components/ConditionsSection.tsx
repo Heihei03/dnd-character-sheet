@@ -129,7 +129,7 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
                                         )}
                                         <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">{condition.name}</span>
                                         {condition.fromFeature && (
-                                            <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 tracking-wider">Feature</span>
+                                            <span className="text-xs font-bold uppercase px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 tracking-wider">Feature</span>
                                         )}
                                     </div>
                                     <div className="flex items-center gap-3 shrink-0">

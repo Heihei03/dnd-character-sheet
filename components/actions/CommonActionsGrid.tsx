@@ -37,7 +37,7 @@ const CommonActionsGrid: React.FC<CommonActionsGridProps> = ({
                                 {action.name}
                             </span>
                             <span
-                                className={`text-[8px] px-1 py-0.5 rounded uppercase font-black shrink-0
+                                className={`text-[11px] px-1 py-0.5 rounded uppercase font-black shrink-0
                                 ${
                                     action.type === "Action"
                                         ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
@@ -55,7 +55,7 @@ const CommonActionsGrid: React.FC<CommonActionsGridProps> = ({
                             </span>
                         </div>
                         {expandedIds.has(action.id) && (
-                            <div className="mt-2 text-[10px] text-gray-600 dark:text-gray-400 leading-snug border-t border-blue-100 dark:border-blue-900/40 pt-2 animate-in fade-in slide-in-from-top-1">
+                            <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 leading-snug border-t border-blue-100 dark:border-blue-900/40 pt-2 animate-in fade-in slide-in-from-top-1">
                                 {action.description}
                             </div>
                         )}

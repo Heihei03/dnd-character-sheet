@@ -63,7 +63,7 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                     onClick={() => setShowAdd(!showAdd)}
                     className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors flex items-center gap-1"
                 >
-                    {showAdd ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />} {showAdd ? "Cancel" : "Add"}
+                    {showAdd ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />} {showAdd ? "Cancel" : "Add"}
                 </button>
             </div>
             <div className="flex flex-wrap gap-1.5 max-w-full">
@@ -91,7 +91,7 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                                         className="text-blue-300 hover:text-red-500 dark:text-blue-700 dark:hover:text-red-400 transition-colors px-0.5 ml-0.5 flex items-center justify-center font-bold"
                                         title="Remove"
                                     >
-                                        <X className="w-3.5 h-3.5" />
+                                        <X className="w-4 h-4" />
                                     </button>
                                 )}
                             </FeatureItemPill>

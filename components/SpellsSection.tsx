@@ -221,7 +221,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                         }}
                                     />
                                     <div className="flex items-center justify-end gap-2 px-2">
-                                        <label className="text-[10px] font-bold uppercase text-gray-400">Total Max:</label>
+                                        <label className="text-xs font-bold uppercase text-gray-400">Total Max:</label>
                                         <input
                                             type="number"
                                             min="0"

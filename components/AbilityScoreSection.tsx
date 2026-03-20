@@ -97,7 +97,7 @@ const AbilityScoreSection = ({
                     <span className="text-sm font-bold text-purple-600">
                       {effectiveScore}
                     </span>
-                    <span className="text-[10px] text-gray-400 line-through decoration-purple-400/50" title={`Base Score: ${score}`}>
+                    <span className="text-xs text-gray-400 line-through decoration-purple-400/50" title={`Base Score: ${score}`}>
                       ({score})
                     </span>
                   </div>
@@ -107,7 +107,7 @@ const AbilityScoreSection = ({
                       onClick={() => setAbilityScore(key, Math.max(0, score - 1))}
                       className="text-gray-400 hover:text-blue-500 w-5 flex items-center justify-center transition-colors px-1"
                     >
-                      <Minus className="w-3.5 h-3.5 stroke-[3]" />
+                      <Minus className="w-4 h-4 stroke-[3]" />
                     </button>
                     <input
                       type="number"
@@ -119,7 +119,7 @@ const AbilityScoreSection = ({
                       onClick={() => setAbilityScore(key, score + 1)}
                       className="text-gray-400 hover:text-blue-500 w-5 flex items-center justify-center transition-colors px-1"
                     >
-                      <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                      <Plus className="w-4 h-4 stroke-[3]" />
                     </button>
                   </div>
                 )}

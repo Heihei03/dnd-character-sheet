@@ -64,7 +64,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                             </span>
                                             {(skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
                                                 <span
-                                                    className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
+                                                    className="text-[11px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
                                                     title="Granted by Feature - Click to view"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -78,10 +78,10 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                                 </span>
                                             )}
                                             {advantage && (
-                                                <span className="text-[10px] font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV</span>
+                                                <span className="text-xs font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV</span>
                                             )}
                                             {disadvantage && (
-                                                <span className="text-[10px] font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DIS</span>
+                                                <span className="text-xs font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DIS</span>
                                             )}
                                         </div>
                                     </div>

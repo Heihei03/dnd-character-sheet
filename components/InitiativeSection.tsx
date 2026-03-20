@@ -70,10 +70,10 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                 <h2 className="text-2xl font-bold text-center">Initiative</h2>
                 <div className="flex gap-1 mt-1">
                     {advantage && (
-                        <span className="text-[10px] font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded border border-green-200 dark:border-green-800" title="Advantage">ADVANTAGE</span>
+                        <span className="text-xs font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded border border-green-200 dark:border-green-800" title="Advantage">ADVANTAGE</span>
                     )}
                     {disadvantage && (
-                        <span className="text-[10px] font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DISADVANTAGE</span>
+                        <span className="text-xs font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DISADVANTAGE</span>
                     )}
                 </div>
             </div>

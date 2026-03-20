@@ -44,7 +44,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2 flex items-center gap-4 bg-gray-50 dark:bg-gray-900/50 p-2 rounded border border-gray-100 dark:border-gray-800">
                 <div className="flex items-center gap-2">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase whitespace-nowrap">Item Type:</label>
+                    <label className="text-xs font-bold text-gray-400 uppercase whitespace-nowrap">Item Type:</label>
                     <select
                         value={item.itemType || "other"}
                         onChange={(e) => updateItem(item.id, "itemType", e.target.value)}
@@ -61,7 +61,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
             </div>
 
             <div className="md:col-span-2 space-y-2">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase">Description</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase">Description</label>
                 <textarea
                     value={item.description || ""}
                     onChange={e => updateItem(item.id, "description", e.target.value)}
@@ -75,7 +75,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             type="checkbox"
                             checked={item.equippable || false}
                             onChange={e => updateItem(item.id, "equippable", e.target.checked)}
-                            className="w-3 h-3"
+                            className="w-3.5 h-3.5"
                         />
                         Equippable
                     </label>
@@ -84,14 +84,14 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             type="checkbox"
                             checked={item.attunable || false}
                             onChange={e => updateItem(item.id, "attunable", e.target.checked)}
-                            className="w-3 h-3"
+                            className="w-3.5 h-3.5"
                         />
                         Attunable
                     </label>
                 </div>
             </div>
             <div className="md:col-span-2 space-y-2">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase">Location / Container</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase">Location / Container</label>
                 <select
                     value={item.parentId || ""}
                     onChange={(e) => updateItem(item.id, "parentId", e.target.value || undefined)}
@@ -108,25 +108,25 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
 
                 {item.isContainer && item.containerDetails && (
                     <div className="p-2 bg-green-50 rounded border border-green-100 space-y-2 mt-2">
-                        <label className="block text-[10px] font-bold text-green-800 uppercase">Container Settings</label>
+                        <label className="block text-xs font-bold text-green-800 uppercase">Container Settings</label>
                         <div className="grid grid-cols-2 gap-2">
                             <div>
-                                <label className="block text-[9px] text-gray-500">Capacity (lbs)</label>
+                                <label className="block text-[11px] text-gray-500">Capacity (lbs)</label>
                                 <input
                                     type="number"
                                     value={item.containerDetails.capacityWeight ?? ""}
                                     onChange={e => updateItem(item.id, "containerDetails", { ...item.containerDetails, capacityWeight: parseInt(e.target.value) || undefined })}
-                                    className="w-full p-1 border rounded text-[10px]"
+                                    className="w-full p-1 border rounded text-xs"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[9px] text-gray-500">Wt Mult</label>
+                                <label className="block text-[11px] text-gray-500">Wt Mult</label>
                                 <input
                                     type="number"
                                     step="0.1"
                                     value={item.containerDetails.contentsWeightMultiplier}
                                     onChange={e => updateItem(item.id, "containerDetails", { ...item.containerDetails, contentsWeightMultiplier: parseFloat(e.target.value) || 0 })}
-                                    className="w-full p-1 border rounded text-[10px]"
+                                    className="w-full p-1 border rounded text-xs"
                                 />
                             </div>
                         </div>
@@ -137,10 +137,10 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
             {/* Nested Specific Detail Editors */}
             {item.itemType === "weapon" && item.weaponDetails && (
                 <div className="md:col-span-2 mt-2 p-3 bg-red-50/30 rounded border border-red-100">
-                    <label className="block text-[10px] font-bold text-red-800 uppercase mb-2">Weapon Stats</label>
+                    <label className="block text-xs font-bold text-red-800 uppercase mb-2">Weapon Stats</label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
                         <div>
-                            <label className="block text-[9px] text-gray-500">Category</label>
+                            <label className="block text-[11px] text-gray-500">Category</label>
                             <select
                                 value={item.weaponDetails.category}
                                 onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, category: e.target.value as any })}
@@ -151,7 +151,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[9px] text-gray-500">Range</label>
+                            <label className="block text-[11px] text-gray-500">Range</label>
                             <select
                                 value={item.weaponDetails.rangeType}
                                 onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, rangeType: e.target.value as any })}
@@ -162,7 +162,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[9px] text-gray-500">Damage</label>
+                            <label className="block text-[11px] text-gray-500">Damage</label>
                             <input
                                 type="text"
                                 value={item.weaponDetails.damageDice}
@@ -172,7 +172,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             />
                         </div>
                         <div>
-                            <label className="block text-[9px] text-gray-500">Type</label>
+                            <label className="block text-[11px] text-gray-500">Type</label>
                             <input
                                 type="text"
                                 value={item.weaponDetails.damageType}
@@ -184,7 +184,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div>
-                            <label className="block text-[9px] text-gray-500">Properties</label>
+                            <label className="block text-[11px] text-gray-500">Properties</label>
                             <input
                                 type="text"
                                 value={item.weaponDetails.properties.join(", ")}
@@ -197,7 +197,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             />
                         </div>
                         <div>
-                            <label className="block text-[9px] text-gray-500">Mastery</label>
+                            <label className="block text-[11px] text-gray-500">Mastery</label>
                             <input
                                 type="text"
                                 value={item.weaponDetails.mastery || ""}
@@ -212,11 +212,11 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
 
             {(item.itemType === "armor" || item.itemType === "shield") && item.armorDetails && (
                 <div className="md:col-span-2 mt-2 p-3 bg-blue-50/30 rounded border border-blue-100">
-                    <label className="block text-[10px] font-bold text-blue-800 uppercase mb-2">Armor Stats</label>
+                    <label className="block text-xs font-bold text-blue-800 uppercase mb-2">Armor Stats</label>
                     <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
                         {/* ... armor inputs ... */}
                         <div>
-                            <label className="block text-[9px] text-gray-500">AC</label>
+                            <label className="block text-[11px] text-gray-500">AC</label>
                             <input
                                 type="number"
                                 value={item.armorDetails.ac}
@@ -225,7 +225,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             />
                         </div>
                         <div>
-                            <label className="block text-[9px] text-gray-500">Category</label>
+                            <label className="block text-[11px] text-gray-500">Category</label>
                             <select
                                 value={item.armorDetails.category}
                                 onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, category: e.target.value as any })}
@@ -238,7 +238,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[9px] text-gray-500">STR Req</label>
+                            <label className="block text-[11px] text-gray-500">STR Req</label>
                             <input
                                 type="number"
                                 value={item.armorDetails.strengthRequirement ?? ""}
@@ -248,7 +248,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             />
                         </div>
                         <div className="flex flex-col items-center">
-                            <label className="block text-[9px] text-gray-500">Stealth Dis</label>
+                            <label className="block text-[11px] text-gray-500">Stealth Dis</label>
                             <input
                                 type="checkbox"
                                 checked={item.armorDetails.stealthDisadvantage}
@@ -257,7 +257,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             />
                         </div>
                         <div className="flex flex-col items-center">
-                            <label className="block text-[9px] text-gray-500">DEX Bonus</label>
+                            <label className="block text-[11px] text-gray-500">DEX Bonus</label>
                             <input
                                 type="checkbox"
                                 checked={item.armorDetails.dexBonus}
@@ -267,7 +267,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                         </div>
                         {item.armorDetails.dexBonus && (
                             <div className="col-span-full md:col-start-5">
-                                <label className="block text-[9px] text-gray-500">DEX Cap</label>
+                                <label className="block text-[11px] text-gray-500">DEX Cap</label>
                                 <input
                                     type="number"
                                     value={item.armorDetails.dexCap ?? ""}
@@ -283,11 +283,11 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
 
             {item.itemType === "tool" && item.toolDetails && (
                 <div className="md:col-span-2 mt-2 p-3 bg-purple-50/30 rounded border border-purple-100">
-                    <label className="block text-[10px] font-bold text-purple-800 uppercase mb-2">Tool Details</label>
+                    <label className="block text-xs font-bold text-purple-800 uppercase mb-2">Tool Details</label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="grid grid-cols-2 gap-2">
                             <div>
-                                <label className="block text-[9px] text-gray-500">Category</label>
+                                <label className="block text-[11px] text-gray-500">Category</label>
                                 <select
                                     value={item.toolDetails.category}
                                     onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, category: e.target.value as any })}
@@ -300,7 +300,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[9px] text-gray-500">Ability</label>
+                                <label className="block text-[11px] text-gray-500">Ability</label>
                                 <input
                                     type="text"
                                     value={item.toolDetails.ability}
@@ -312,7 +312,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                         </div>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[9px] text-gray-500">Utilize (2024 Rule)</label>
+                                <label className="block text-[11px] text-gray-500">Utilize (2024 Rule)</label>
                                 <textarea
                                     value={item.toolDetails.utilize}
                                     onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, utilize: e.target.value })}
@@ -321,7 +321,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                                 />
                             </div>
                             <div>
-                                <label className="block text-[9px] text-gray-500">Craft (2024 Rule)</label>
+                                <label className="block text-[11px] text-gray-500">Craft (2024 Rule)</label>
                                 <textarea
                                     value={item.toolDetails.craft}
                                     onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, craft: e.target.value })}
@@ -342,7 +342,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
 
             {itemResources.length > 0 && (
                 <div className="md:col-span-2 space-y-3 mt-2 border-t pt-4">
-                    <label className="block text-[10px] font-bold text-blue-800 uppercase">Item Resources</label>
+                    <label className="block text-xs font-bold text-blue-800 uppercase">Item Resources</label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {itemResources.map(resource => (
                             <ResourcePipTracker

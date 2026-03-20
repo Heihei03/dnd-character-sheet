@@ -134,7 +134,7 @@ const HPSection = ({
       <div className="grid grid-cols-3 gap-2">
         <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-colors">
            <Heart className="absolute -right-2 -top-2 w-10 h-10 text-red-500 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
-           <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Current</span>
+           <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Current</span>
            <input
             type="number"
             value={hpInput}
@@ -145,7 +145,7 @@ const HPSection = ({
 
         <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-colors">
            <Activity className="absolute -right-2 -top-2 w-10 h-10 text-gray-400 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
-           <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Max HP</span>
+           <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Max HP</span>
            <input
             type="number"
             value={maxHpInput}
@@ -156,7 +156,7 @@ const HPSection = ({
 
         <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-colors">
            <Shield className="absolute -right-2 -top-2 w-10 h-10 text-blue-500 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
-           <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Temp HP</span>
+           <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Temp HP</span>
            <input
             type="number"
             value={tempHpInput}
@@ -173,7 +173,7 @@ const HPSection = ({
             className={cn("h-full rounded-full transition-all duration-700 ease-out flex items-center justify-center shadow-sm", barColor)}
             style={{ width: `${Math.min(100, hpPercentage)}%` }}
           >
-            {hpPercentage > 30 && <span className="text-[9px] font-black text-white drop-shadow-sm">{Math.round(hpPercentage)}%</span>}
+            {hpPercentage > 30 && <span className="text-[11px] font-black text-white drop-shadow-sm">{Math.round(hpPercentage)}%</span>}
           </div>
         </div>
         {tempHp > 0 && (
@@ -195,7 +195,7 @@ const HPSection = ({
         </Button>
         
         <div className="flex-1 flex flex-col items-center">
-          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Adjustment</span>
+          <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Adjustment</span>
           <input
             type="number"
             value={hpDiff || ""}
@@ -217,8 +217,8 @@ const HPSection = ({
 
       {/* Hit Dice */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">
-          <Dna className="w-3 h-3" />
+        <div className="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-[0.2em] px-1">
+          <Dna className="w-3.5 h-3.5" />
           <span>Hit Dice Management</span>
           <div className="flex-1 h-px bg-gray-100"></div>
         </div>
@@ -230,10 +230,10 @@ const HPSection = ({
             return (
               <div key={index} className="flex items-center justify-between bg-white px-3 py-2.5 rounded-xl border border-gray-100 shadow-sm transition-all hover:border-blue-200 group">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-tight leading-none">{cls.name}</span>
+                  <span className="text-[11px] font-black text-gray-400 uppercase tracking-tight leading-none">{cls.name}</span>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="text-sm font-black text-gray-700">d{sides}</span>
-                    <span className="text-[9px] font-bold text-gray-400">Dice</span>
+                    <span className="text-[11px] font-bold text-gray-400">Dice</span>
                   </div>
                 </div>
 
@@ -254,7 +254,7 @@ const HPSection = ({
                     onClick={() => handleRollHitDice(index)}
                     disabled={available <= 0}
                     variant="primary"
-                    className="text-[10px] font-black uppercase px-3 py-1.5 h-auto rounded-lg shadow-sm tracking-widest"
+                    className="text-xs font-black uppercase px-3 py-1.5 h-auto rounded-lg shadow-sm tracking-widest"
                     title="Roll Hit Die to Heal"
                   >
                     Roll

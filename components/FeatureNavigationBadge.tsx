@@ -16,7 +16,7 @@ const FeatureNavigationBadge: React.FC<FeatureNavigationBadgeProps> = ({
     if (variant === "compact") {
         return (
             <span
-                className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 tracking-wider cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors shrink-0"
+                className="text-xs font-bold uppercase px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 tracking-wider cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors shrink-0"
                 title="Granted by Feature - Click to view"
                 onClick={(e) => {
                     e.stopPropagation();
@@ -31,7 +31,7 @@ const FeatureNavigationBadge: React.FC<FeatureNavigationBadgeProps> = ({
     if (variant === "badge") {
         return (
             <span
-                className="text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-bold uppercase tracking-tight cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-bold uppercase tracking-tight cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
                 title="Granted by Feature - Click to view"
                 onClick={(e) => {
                     e.stopPropagation();
@@ -46,7 +46,7 @@ const FeatureNavigationBadge: React.FC<FeatureNavigationBadgeProps> = ({
     // Default variant
     return (
         <span
-            className="text-[8px] font-bold uppercase px-1 bg-current/10 rounded tracking-tighter"
+            className="text-[11px] font-bold uppercase px-1 bg-current/10 rounded tracking-tighter"
         >
             Feature
         </span>

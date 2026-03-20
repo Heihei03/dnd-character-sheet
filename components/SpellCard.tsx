@@ -279,7 +279,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                             className="w-5 h-5 cursor-pointer accent-blue-600"
                                         />
                                     </div>
-                                    <p className="text-[10px] text-blue-600/70 dark:text-blue-400/70 italic leading-tight">
+                                    <p className="text-xs text-blue-600/70 dark:text-blue-400/70 italic leading-tight">
                                         Cantrip damage/healing will increase at levels 5, 11, and 17.
                                     </p>
                                 </div>
@@ -392,7 +392,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         className="w-5 h-5 cursor-pointer accent-blue-600 rounded border-gray-300"
                                     />
                                 </div>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight italic">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight italic">
                                     {localSpell.level === 0
                                         ? "Cantrips are always prepared and show in the Actions tab."
                                         : "Level 1+ spells must be prepared to show up in the Actions & Attacks tab."}
@@ -423,7 +423,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                             className="w-4 h-4 cursor-pointer accent-blue-600"
                                         />
                                         {spell.prepared && (
-                                            <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-tighter text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800">
+                                            <span className="flex items-center gap-1 text-xs font-black uppercase tracking-tighter text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800">
                                                 Prepared
                                             </span>
                                         )}
@@ -431,7 +431,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 )}
                                 <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{spell.name}</h3>
                                 {spell.classSource && (
-                                    <span className="text-[10px] bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700 font-bold uppercase tracking-tight">
+                                    <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700 font-bold uppercase tracking-tight">
                                         {spell.classSource}
                                     </span>
                                 )}
@@ -442,11 +442,11 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         variant="badge" 
                                     />
                                 )}
-                                {spell.isRitual && <span className="text-[10px] bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800 font-bold uppercase tracking-tight">Ritual</span>}
-                                {spell.requiresConcentration && <span className="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 font-bold uppercase tracking-tight">Concentration</span>}
-                                {spell.hasAttack && <span className="text-[10px] bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800 font-bold uppercase tracking-tight">Attack</span>}
-                                {spell.hasSave && <span className="text-[10px] bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded-full border border-orange-200 dark:border-orange-800 font-bold uppercase tracking-tight">Save</span>}
-                                {spell.hasHeal && <span className="text-[10px] bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800 font-bold uppercase tracking-tight">Heal</span>}
+                                {spell.isRitual && <span className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800 font-bold uppercase tracking-tight">Ritual</span>}
+                                {spell.requiresConcentration && <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 font-bold uppercase tracking-tight">Concentration</span>}
+                                {spell.hasAttack && <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800 font-bold uppercase tracking-tight">Attack</span>}
+                                {spell.hasSave && <span className="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded-full border border-orange-200 dark:border-orange-800 font-bold uppercase tracking-tight">Save</span>}
+                                {spell.hasHeal && <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800 font-bold uppercase tracking-tight">Heal</span>}
                                 <span className="text-sm text-gray-500 italic ml-1 dark:text-gray-400">{spell.school}</span>
 
                                 {/* Upcasting Selector */}
@@ -455,8 +455,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         className="ml-auto flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg border border-blue-100 dark:border-blue-800"
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        <Zap className="w-3 h-3 text-blue-500" />
-                                        <label className="text-[10px] font-bold uppercase text-blue-600 dark:text-blue-400">Cast At:</label>
+                                        <Zap className="w-3.5 h-3.5 text-blue-500" />
+                                        <label className="text-xs font-bold uppercase text-blue-600 dark:text-blue-400">Cast At:</label>
                                         <select
                                             value={castLevel}
                                             onChange={(e) => setCastLevel(parseInt(e.target.value))}
@@ -471,11 +471,11 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             </div>
 
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm text-gray-700 dark:text-gray-300">
-                                <div className="flex flex-col"><span className="text-[10px] uppercase font-bold text-gray-400 leading-tight">Casting Time</span>{spell.castingTime}</div>
-                                <div className="flex flex-col"><span className="text-[10px] uppercase font-bold text-gray-400 leading-tight">Range</span>{spell.range}</div>
-                                <div className="flex flex-col"><span className="text-[10px] uppercase font-bold text-gray-400 leading-tight">Duration</span>{spell.duration}</div>
+                                <div className="flex flex-col"><span className="text-xs uppercase font-bold text-gray-400 leading-tight">Casting Time</span>{spell.castingTime}</div>
+                                <div className="flex flex-col"><span className="text-xs uppercase font-bold text-gray-400 leading-tight">Range</span>{spell.range}</div>
+                                <div className="flex flex-col"><span className="text-xs uppercase font-bold text-gray-400 leading-tight">Duration</span>{spell.duration}</div>
                                 <div className="flex flex-col col-span-1 lg:col-span-1">
-                                    <span className="text-[10px] uppercase font-bold text-gray-400 leading-tight">Components</span>
+                                    <span className="text-xs uppercase font-bold text-gray-400 leading-tight">Components</span>
                                     <span>
                                         {Array.isArray(spell.components as any)
                                             ? (spell.components as any).join(", ")
@@ -488,7 +488,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     </span>
                                 </div>
                                 {spell.hasAoe && (
-                                    <div className="flex flex-col"><span className="text-[10px] uppercase font-bold text-blue-400 leading-tight">AoE</span>{spell.aoeSize} {spell.aoeShape}</div>
+                                    <div className="flex flex-col"><span className="text-xs uppercase font-bold text-blue-400 leading-tight">AoE</span>{spell.aoeSize} {spell.aoeShape}</div>
                                 )}
                                 {spell.spellcastingAbility && (
                                     <>
@@ -499,8 +499,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                             const saveDC = 8 + abilityModifier + proficiencyBonus;
                                             return (
                                                 <>
-                                                    {spell.hasAttack && <div className="flex flex-col"><span className="text-[10px] uppercase font-bold text-red-400 leading-tight">Attack</span>+{attackBonus}</div>}
-                                                    {spell.hasSave && <div className="flex flex-col"><span className="text-[10px] uppercase font-bold text-orange-400 leading-tight">Save DC</span>{saveDC} {spell.saveType ? `(${spell.saveType.slice(0, 3).toUpperCase()})` : ''}</div>}
+                                                    {spell.hasAttack && <div className="flex flex-col"><span className="text-xs uppercase font-bold text-red-400 leading-tight">Attack</span>+{attackBonus}</div>}
+                                                    {spell.hasSave && <div className="flex flex-col"><span className="text-xs uppercase font-bold text-orange-400 leading-tight">Save DC</span>{saveDC} {spell.saveType ? `(${spell.saveType.slice(0, 3).toUpperCase()})` : ''}</div>}
                                                 </>
                                             )
                                         })()}
@@ -508,7 +508,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 )}
                                 {(spell.hasAttack || spell.hasSave || spell.damageOnly) && spell.damage && (
                                     <div className="flex flex-col col-span-2">
-                                        <span className="text-[10px] uppercase font-bold text-red-500 leading-tight">
+                                        <span className="text-xs uppercase font-bold text-red-500 leading-tight">
                                             Damage {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
                                         </span>
                                         <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-blue-600 dark:text-blue-400" : ""}`}>
@@ -518,7 +518,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 )}
                                 {spell.hasHeal && spell.healing && (
                                     <div className="flex flex-col col-span-2">
-                                        <span className="text-[10px] uppercase font-bold text-green-500 leading-tight">
+                                        <span className="text-xs uppercase font-bold text-green-500 leading-tight">
                                             Healing {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
                                         </span>
                                         <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-blue-600 dark:text-blue-400" : ""}`}>

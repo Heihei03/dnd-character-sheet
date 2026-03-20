@@ -56,7 +56,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
                     {roll.label}
                   </span>
-                  <span className="text-[10px] text-gray-500">
+                  <span className="text-xs text-gray-500">
                     {new Date(roll.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                   </span>
                 </div>
@@ -78,7 +78,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                       {roll.total}
                     </span>
                     {roll.damageType && (
-                      <span className="text-[10px] font-bold uppercase text-orange-400">
+                      <span className="text-xs font-bold uppercase text-orange-400">
                         {roll.damageType}
                       </span>
                     )}
@@ -89,20 +89,20 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                   <div className="pt-2 border-t border-gray-700/50 flex justify-end">
                     <button
                       onClick={() => onRollDamage(roll.damageFormula!, roll.label.replace(" Attack", ""), roll.damageType, roll.isCritical, roll.critExtraDamage, roll.critRule)}
-                      className="text-[10px] font-bold uppercase flex items-center gap-1.5 px-2 py-1 bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 rounded transition-colors"
+                      className="text-xs font-bold uppercase flex items-center gap-1.5 px-2 py-1 bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 rounded transition-colors"
                     >
-                      <Dices className="w-3 h-3" /> Roll Damage ({roll.damageFormula})
+                      <Dices className="w-3.5 h-3.5" /> Roll Damage ({roll.damageFormula})
                     </button>
                   </div>
                 )}
                 
                 {roll.isCritical && (
-                  <div className="text-[10px] font-bold text-yellow-500 uppercase tracking-tighter">
+                  <div className="text-xs font-bold text-yellow-500 uppercase tracking-tighter">
                     Critical Hit!
                   </div>
                 )}
                 {roll.isFumble && (
-                  <div className="text-[10px] font-bold text-red-500 uppercase tracking-tighter">
+                  <div className="text-xs font-bold text-red-500 uppercase tracking-tighter">
                     Critical Failure!
                   </div>
                 )}
