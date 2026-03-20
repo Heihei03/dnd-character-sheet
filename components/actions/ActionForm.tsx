@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import EntityForm from "../ui/EntityForm";
-import { Action, ActionType, AbilityScores, Resource } from "../../types/character";
+import { Action, ActionType, AbilityScores, Resource, CritRule } from "../../types/character";
 import { DAMAGE_TYPES } from "../../utils/constants";
 import { getAbilityModifier } from "../../utils/character-utils";
 
@@ -331,7 +331,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Reach
@@ -366,6 +366,67 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                 placeholder="20/60 ft"
                             />
                         </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase text-gray-500">
+                                Crit Range Override
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.critRange || ""}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        critRange: e.target.value === "" ? undefined : parseInt(e.target.value),
+                                    })
+                                }
+                                min={1}
+                                max={20}
+                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                placeholder="Global Default"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase text-gray-500">
+                                Crit Extra Damage
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.critExtraDamage || ""}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        critExtraDamage: e.target.value,
+                                    })
+                                }
+                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                placeholder="e.g. 1d8"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase text-gray-500">
+                                Crit Rule Override
+                            </label>
+                            <select
+                                value={formData.critRule || ""}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        critRule: (e.target.value as CritRule) || undefined,
+                                    })
+                                }
+                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                            >
+                                <option value="">Global Default</option>
+                                <option value="double-dice">Double Dice</option>
+                                <option value="max-plus-roll">Max Roll</option>
+                                <option value="double-total">Double Total</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Activation
@@ -400,6 +461,9 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                 placeholder="One creature..."
                             />
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Resource Name

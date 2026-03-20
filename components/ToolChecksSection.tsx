@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AbilityScores, ToolProficiency, ProficiencyLevel } from "../types/character";
+import { AbilityScores, ToolProficiency, ProficiencyLevel, CritRule } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, ABILITY_NAMES } from "../utils/character-utils";
@@ -12,7 +12,7 @@ interface ToolChecksSectionProps {
     onUpdate: (value: ToolProficiency[]) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
-    rollDice: (sides: number, modifier: number, label: string, damageFormula?: string, damageType?: string) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
     onNavigateToFeature?: (featureId: string) => void;
 }
 
@@ -63,7 +63,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                         <ProficiencyIcon level={tool.level} />
                                     </button>
                                     <div className="flex items-baseline gap-2">
-                                        <span className="font-medium cursor-pointer" onClick={() => rollDice(20, totalBonus, `${tool.name} Check`)}>
+                                        <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check`)}>
                                             {tool.name}
                                         </span>
                                         {tool.fromFeature && (
@@ -95,7 +95,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => rollDice(20, totalBonus, `${tool.name} Check (${tool.ability})`)}
+                                    onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check (${tool.ability})`)}
                                     className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >

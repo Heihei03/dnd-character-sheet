@@ -24,7 +24,8 @@ import {
   Resource, 
   Spell, 
   SpellSlot,
-  Bio
+  Bio,
+  CritRule
 } from "../types/character";
 
 // Utils
@@ -54,8 +55,12 @@ interface CharacterTabsProps {
   handleUpdateActions: (actions: Action[]) => void;
   handleUpdateBio: (field: keyof Bio, value: string) => void;
   handleUpdateFeatures: (features: Feature[]) => void;
-  rollDice: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string) => void;
-  rollDamage: (damageString: string, label?: string, damageType?: string) => void;
+  rollDice: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+  rollDamage: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, extraDamage?: string, ruleOverride?: CritRule) => void;
+  critRule?: "double-dice" | "max-plus-roll" | "double-total";
+  onCritRuleChange?: (rule: "double-dice" | "max-plus-roll" | "double-total") => void;
+  critRange?: number;
+  onCritRangeChange?: (range: number) => void;
 }
 
 const CharacterTabs: React.FC<CharacterTabsProps> = ({
@@ -80,6 +85,10 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
   handleUpdateFeatures,
   rollDice,
   rollDamage,
+  critRule,
+  onCritRuleChange,
+  critRange,
+  onCritRangeChange,
 }) => {
   const handleNavigateToFeature = (featureId: string) => {
     setActiveTab("features");
@@ -172,6 +181,10 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           rollDamage={rollDamage}
           resources={effectiveResources}
           onUpdateResources={handleUpdateResources}
+          critRule={critRule}
+          onCritRuleChange={onCritRuleChange}
+          critRange={critRange}
+          onCritRangeChange={onCritRangeChange}
         />
       )}
 

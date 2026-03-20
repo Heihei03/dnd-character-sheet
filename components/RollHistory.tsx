@@ -1,5 +1,5 @@
 import React from 'react';
-import { RollEntry } from '../types/character';
+import { RollEntry, CritRule } from '../types/character';
 import { X, Trash2, History, Dices } from 'lucide-react';
 import Button from './ui/button';
 import { Card, CardContent } from './ui/card';
@@ -8,7 +8,7 @@ interface RollHistoryProps {
   history: RollEntry[];
   onClear: () => void;
   onClose: () => void;
-  onRollDamage: (formula: string, label: string, type?: string) => void;
+  onRollDamage: (formula: string, label: string, type?: string, isCritical?: boolean, extraDamage?: string, ruleOverride?: CritRule) => void;
 }
 
 const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, onRollDamage }) => {
@@ -88,7 +88,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                 {roll.damageFormula && (
                   <div className="pt-2 border-t border-gray-700/50 flex justify-end">
                     <button
-                      onClick={() => onRollDamage(roll.damageFormula!, roll.label.replace(" Attack", ""), roll.damageType)}
+                      onClick={() => onRollDamage(roll.damageFormula!, roll.label.replace(" Attack", ""), roll.damageType, roll.isCritical, roll.critExtraDamage, roll.critRule)}
                       className="text-[10px] font-bold uppercase flex items-center gap-1.5 px-2 py-1 bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 rounded transition-colors"
                     >
                       <Dices className="w-3 h-3" /> Roll Damage ({roll.damageFormula})

@@ -45,7 +45,8 @@ import {
   SpellSlot,
   ToolProficiency,
   Bio,
-  RollEntry
+  RollEntry,
+  CritRule
 } from "../types/character";
 
 // Utils
@@ -442,7 +443,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setCharacter(prev => prev ? { ...prev, spellSlots } : null);
   };
 
-  const rollDice = (sides: number, modifier: number = 0, label: string = "", damageFormula?: string, damageType?: string) => {
+  const rollDice = (sides: number, modifier: number = 0, label: string = "", damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => {
+    const effectiveCritRange = critRange || characterWithDefaults.critRange || 20;
     const baseRoll = Math.floor(Math.random() * sides) + 1;
     const total = baseRoll + modifier;
     const formula = `d${sides}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}`;
@@ -465,56 +467,100 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       type: 'generic',
       damageFormula,
       damageType,
+      critExtraDamage,
+      critRule,
       formatted,
-      isCritical: sides === 20 && baseRoll === 20,
+      isCritical: sides === 20 && baseRoll >= effectiveCritRange,
       isFumble: sides === 20 && baseRoll === 1
     };
     
-    setRollHistory(prev => [newEntry, ...prev].slice(0, 50)); // Keep last 50 rolls
+    setRollHistory(prev => [newEntry, ...prev].slice(0, 50));
   };
 
-  const rollDamage = (damageString: string, label: string = "", damageType?: string) => {
+  const rollDamage = (
+    damageString: string,
+    label: string = "",
+    damageType?: string,
+    isCritical: boolean = false,
+    extraDamage?: string,
+    ruleOverride?: CritRule
+  ) => {
     if (!damageString) return;
 
-    const match = damageString.trim().match(/^(\d+)[dD](\d+)(?:\s*([+-])\s*(\d+))?/);
-    if (!match) {
-      const formatted = `${label ? label + ": " : ""} ${damageString} ${damageType ? damageType : ""}`.trim();
+    const critRule = ruleOverride || characterWithDefaults.critRule || 'double-dice';
+    
+    const parseDice = (str: string) => {
+      const match = str.trim().match(/^(\d+)[dD](\d+)(?:\s*([+-])\s*(\d+))?/);
+      if (!match) return null;
+      return {
+        count: parseInt(match[1], 10),
+        sides: parseInt(match[2], 10),
+        sign: match[3] || "+",
+        mod: parseInt(match[4] || "0", 10)
+      };
+    };
+
+    const mainDice = parseDice(damageString);
+    if (!mainDice) {
+      const formatted = `${label ? label + (isCritical ? " (CRIT)" : "") + ": " : ""}${damageString} ${damageType ? damageType : ""}`.trim();
       setRollResult(formatted);
       return;
     }
 
-    const count = parseInt(match[1], 10);
-    const sides = parseInt(match[2], 10);
-    const sign = match[3];
-    const mod = match[4] ? parseInt(match[4], 10) : 0;
-
     let total = 0;
-    const rolls = [];
-    for (let i = 0; i < count; i++) {
-      const r = Math.floor(Math.random() * sides) + 1;
-      total += r;
-      rolls.push(r);
+    const rolls: number[] = [];
+    const { count, sides, sign, mod } = mainDice;
+
+    const rollDicePool = (c: number, s: number) => {
+      for (let i = 0; i < c; i++) {
+        const r = Math.floor(Math.random() * s) + 1;
+        rolls.push(r);
+        total += r;
+      }
+    };
+
+    if (isCritical) {
+      if (critRule === 'double-dice') {
+        rollDicePool(count * 2, sides);
+      } else if (critRule === 'max-plus-roll') {
+        const maxVal = count * sides;
+        total += maxVal;
+        rolls.push(maxVal); 
+        rollDicePool(count, sides);
+      } else if (critRule === 'double-total') {
+        rollDicePool(count, sides);
+        total *= 2;
+      }
+      
+      if (extraDamage) {
+        const extra = parseDice(extraDamage);
+        if (extra) {
+          rollDicePool(extra.count, extra.sides);
+        }
+      }
+    } else {
+      rollDicePool(count, sides);
     }
 
-    let modifierTotal = 0;
-    if (sign && mod) {
-      modifierTotal = sign === "-" ? -mod : mod;
-      total += modifierTotal;
-    }
+    const modifierTotal = sign === "-" ? -mod : mod;
+    total += modifierTotal;
 
-    const formatted = `${label ? label + ": " : ""}${damageString} (${rolls.join(" + ")}${modifierTotal !== 0 ? ` ${sign} ${mod}` : ""}) = ${total} ${damageType ? damageType : ""}`.trim();
+    const critLabel = isCritical ? " (CRIT)" : "";
+    const formatted = `${label ? label + critLabel + ": " : ""}${damageString}${isCritical && extraDamage ? ` + ${extraDamage}` : ""} (${rolls.join(" + ")}${modifierTotal !== 0 ? ` ${sign} ${mod}` : ""}) = ${total} ${damageType ? damageType : ""}`.trim();
+    
     setRollResult(formatted);
 
     const newEntry: RollEntry = {
       id: Math.random().toString(36).substring(2, 9),
       timestamp: Date.now(),
-      label: label || "Damage Roll",
-      formula: damageString,
+      label: (label || "Damage Roll") + critLabel,
+      formula: isCritical ? (extraDamage ? `${damageString} + ${extraDamage} (Crit)` : `${damageString} (Crit)`) : damageString,
       rolls,
       modifier: modifierTotal,
       total,
       type: 'damage',
       damageType,
+      isCritical,
       formatted
     };
 
@@ -657,6 +703,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               handleUpdateFeatures={(value: Feature[]) => handleChange("features", value)}
               rollDice={rollDice}
               rollDamage={rollDamage}
+              critRule={characterWithDefaults.critRule}
+              onCritRuleChange={(rule) => handleChange("critRule", rule)}
+              critRange={characterWithDefaults.critRange}
+              onCritRangeChange={(range) => handleChange("critRange", range)}
             />
           </div>
 

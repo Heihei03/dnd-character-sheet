@@ -1,5 +1,5 @@
 import React from "react";
-import { Skills, AbilityScores, ProficiencyLevel, Character } from "../types/character";
+import { Skills, AbilityScores, ProficiencyLevel, Character, CritRule } from "../types/character";
 import { SKILL_LIST } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
@@ -12,7 +12,7 @@ interface SkillsSectionProps {
     setSkills: (key: string, value: string) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
-    rollDice: (sides: number, modifier: number, label: string, damageFormula?: string, damageType?: string) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
     onNavigateToFeature?: (featureId: string) => void;
 }
 
@@ -59,7 +59,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     </button>
                                     <div className="flex flex-col">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-medium cursor-pointer" onClick={() => rollDice(20, totalBonus, skill.name)}>
+                                            <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, skill.name)}>
                                                 {skill.name} <span className="text-gray-500 text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
                                             </span>
                                             {(skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
@@ -87,7 +87,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => rollDice(20, totalBonus, skill.name)}
+                                    onClick={() => rollDice?.(20, totalBonus, skill.name)}
                                     className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >

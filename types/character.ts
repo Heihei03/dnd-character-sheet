@@ -244,12 +244,17 @@ export interface Action {
   scalesWithCharacterLevel?: boolean;
   resourceId?: string;
   isAttack?: boolean;
+  critRange?: number;
+  critExtraDamage?: string;
+  critRule?: CritRule;
 }
 
 export interface SpellSlot {
   level: number;
   max: number;
   expended: number;
+  experience?: number;
+  critRule?: "double-dice" | "max-plus-roll" | "double-total";
 }
 
 export interface Spell {
@@ -345,7 +350,11 @@ export interface Character {
   background: string;
   exp?: number;
   bio?: Bio;
+  critRule?: CritRule;
+  critRange?: number;
 }
+
+export type CritRule = 'double-dice' | 'max-plus-roll' | 'double-total';
 
 export interface NormalizedCharacter extends Character {
   classes: CharacterClass[];
@@ -371,6 +380,8 @@ export interface NormalizedCharacter extends Character {
   resources: Resource[];
   conditions: Condition[];
   bio: Bio;
+  critRule: CritRule;
+  critRange: number;
 }
 export interface RollEntry {
   id: string;
@@ -383,6 +394,8 @@ export interface RollEntry {
   type: 'check' | 'damage' | 'save' | 'generic';
   damageType?: string;
   damageFormula?: string;
+  critExtraDamage?: string;
+  critRule?: CritRule;
   isCritical?: boolean;
   isFumble?: boolean;
   formatted: string;

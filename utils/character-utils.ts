@@ -989,6 +989,8 @@ export const normalizeCharacter = (character: any): NormalizedCharacter => {
         subSpecies: character.subSpecies ?? "",
         background: character.background ?? "",
         exp: character.exp ?? 0,
+        critRule: character.critRule ?? 'double-dice',
+        critRange: character.critRange ?? 20,
     };
 };
 

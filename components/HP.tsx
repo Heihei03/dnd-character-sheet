@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Button from "./ui/button";
-import { CharacterClass, AbilityScores } from "../types/character";
+import { CharacterClass, AbilityScores, CritRule } from "../types/character";
 import { classHitDice } from "../utils/constants";
 import { Plus, Minus, Heart, Shield, Activity, Dna } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -17,7 +17,7 @@ interface HPSectionProps {
   classes: CharacterClass[];
   abilityScores: AbilityScores;
   onUpdateClasses: (classes: CharacterClass[]) => void;
-  rollDice: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string) => void;
+  rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
 }
 
 const HPSection = ({
@@ -84,7 +84,7 @@ const HPSection = ({
     };
     onUpdateClasses(updatedClasses);
 
-    rollDice(sides, conMod, `Hit Die (${cls.name})`);
+    rollDice?.(sides, conMod, `Hit Die (${cls.name})`);
   };
 
   const handleMaxHpChange = (e: React.ChangeEvent<HTMLInputElement>) => {

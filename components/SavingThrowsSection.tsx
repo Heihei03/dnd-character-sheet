@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SavingThrows, Character } from "../types/character";
+import { SavingThrows, Character, CritRule } from "../types/character";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
 import { Target } from "lucide-react";
@@ -9,7 +9,7 @@ interface SavingThrowsSectionProps {
     proficiencyBonus: number;
     setSavingThrows: (key: string, value: boolean) => void;
     abilityScores: { [key: string]: number };
-    rollDice: (sides: number, modifier: number, label: string, damageFormula?: string, damageType?: string) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
 }
 
 const calculateModifier = (score: number): number => {
@@ -57,7 +57,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         <div className="h-8 flex items-center justify-center w-full relative px-2">
                             <div
                                 className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-blue-500' : 'text-gray-400 hover:text-blue-500'}`}
-                                onClick={() => rollDice(20, modifier, label)}
+                                onClick={() => rollDice?.(20, modifier, label)}
                             >
                                 {showConc ? "Concentration" : `${key.slice(0, 3)} Save`}
                             </div>
@@ -65,9 +65,9 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
 
                         {/* Modifier Slot - Taking remaining space */}
                         <div className="flex-1 flex items-center justify-center w-full">
-                            <button
-                                onClick={() => rollDice(20, modifier, label)}
-                                className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-blue-500 hover:text-blue-600' : 'text-blue-600 hover:text-blue-800'}`}
+                            <button 
+                                onClick={() => rollDice?.(20, modifier, `${key.charAt(0).toUpperCase() + key.slice(1)} Saving Throw`)}
+                                className={`text-xl font-bold p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${showConc ? 'text-blue-500 hover:text-blue-600' : 'text-blue-600 hover:text-blue-800'}`}
                             >
                                 {displayModifier}
                             </button>

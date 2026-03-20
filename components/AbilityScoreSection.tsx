@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { Minus, Plus } from "lucide-react";
 
+import { CritRule } from "../types/character";
+
 // Define types for props
 interface AbilityScoreSectionProps {
   abilityScores: { [key: string]: number };
   effectiveAbilityScores: { [key: string]: number };
   setAbilityScore: (key: string, value: number) => void;
-  rollDice: (sides: number, modifier: number, label: string, damageFormula?: string, damageType?: string) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
 }
 
 const AbilityScoreSection = ({
@@ -70,7 +72,7 @@ const AbilityScoreSection = ({
               <div
                 className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${isOverridden ? "text-purple-600 dark:text-purple-400" : "text-gray-400 hover:text-blue-500"
                   }`}
-                onClick={() => rollDice(20, modifier, key)}
+                onClick={() => rollDice?.(20, modifier, key)}
                 title={isOverridden ? "Overridden by item/feature" : ""}
               >
                 {key}
@@ -80,7 +82,7 @@ const AbilityScoreSection = ({
             {/* Modifier Slot - Taking remaining space */}
             <div className="flex-1 flex items-center justify-center w-full">
               <button
-                onClick={() => rollDice(20, modifier, key)}
+                onClick={() => rollDice?.(20, modifier, key)}
                 className="text-4xl font-black text-blue-600 hover:text-blue-800 transition-all hover:scale-110"
               >
                 {formattedModifier}
@@ -118,6 +120,12 @@ const AbilityScoreSection = ({
                       className="text-gray-400 hover:text-blue-500 w-5 flex items-center justify-center transition-colors px-1"
                     >
                       <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                    </button>
+                    <button
+                      onClick={() => rollDice?.(20, modifier, `${key} Roll`)}
+                      className="p-1 px-2 text-xs font-bold uppercase bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                    >
+                      Roll
                     </button>
                   </div>
                 )}

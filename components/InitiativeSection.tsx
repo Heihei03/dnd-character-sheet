@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Settings, X } from "lucide-react";
-import { Initiative, Character } from "../types/character";
+import { Initiative, Character, CritRule } from "../types/character";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
 
 interface InitiativeSectionProps {
@@ -10,7 +10,7 @@ interface InitiativeSectionProps {
     dexModifier: number;
     proficiencyBonus: number;
     onUpdate: (initiative: Initiative) => void;
-    rollDice: (sides: number, modifier: number, label: string, damageFormula?: string, damageType?: string) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
     dexScore: number;
 }
 
@@ -51,7 +51,7 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
     };
 
     const handleRoll = () => {
-        rollDice(20, displayModifier, "Initiative");
+        rollDice?.(20, totalModifier, "Initiative");
     };
 
     return (

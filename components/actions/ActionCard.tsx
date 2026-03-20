@@ -2,7 +2,7 @@ import React from "react";
 import { ChevronDown, Dices, Pencil, Trash2, Zap } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import ResourcePipTracker from "../ResourcePipTracker";
-import { Action, AbilityScores, Resource } from "../../types/character";
+import { Action, AbilityScores, Resource, CritRule } from "../../types/character";
 import {
     getAbilityModifier,
     resolveRollExpression,
@@ -21,11 +21,13 @@ interface ActionCardProps {
     onToggleExpand: () => void;
     onEdit?: () => void;
     onDelete?: () => void;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
     rollDamage?: (
         damageString: string,
         label?: string,
-        damageType?: string
+        damageType?: string,
+        isCritical?: boolean,
+        extraDamage?: string
     ) => void;
     resource?: Resource;
     onUpdateResourceValue?: (id: string, value: number) => void;
@@ -91,7 +93,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                 proficiencyBonus
             );
 
-            rollDice(20, total, `${action.name} Attack`, resolvedDamage, action.damageType);
+            rollDice(20, total, `${action.name} Attack`, resolvedDamage, action.damageType, action.critRange, action.critExtraDamage, action.critRule);
         }
     };
 
