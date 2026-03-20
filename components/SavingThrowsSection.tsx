@@ -66,7 +66,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         {/* Modifier Slot - Taking remaining space */}
                         <div className="flex-1 flex items-center justify-center w-full">
                             <button 
-                                onClick={() => rollDice?.(20, modifier, `${key.charAt(0).toUpperCase() + key.slice(1)} Saving Throw`)}
+                                onClick={() => rollDice?.(20, modifier, label)}
                                 className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-blue-500 hover:text-blue-600' : 'text-blue-600 hover:text-blue-800'}`}
                             >
                                 {displayModifier}
@@ -101,10 +101,10 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                             </button>
                         )}
 
-                        {/* ADV/DIS Badges - Top Right */}
-                        <div className="absolute top-1 right-1 flex flex-col gap-1 pointer-events-none">
-                            {advantage && <span className="text-[11px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800">ADV</span>}
-                            {disadvantage && <span className="text-[11px] font-black bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800">DIS</span>}
+                        {/* ADV/DIS Badges - Bottom Left */}
+                        <div className="absolute bottom-1 left-1 flex flex-col gap-1 pointer-events-none">
+                            {advantage && <span className="text-[11px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800 uppercase leading-tight">ADV</span>}
+                            {disadvantage && <span className="text-[11px] font-black bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800 uppercase leading-tight">DIS</span>}
                         </div>
                     </div>
                 );
