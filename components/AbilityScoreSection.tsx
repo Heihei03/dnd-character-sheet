@@ -121,12 +121,6 @@ const AbilityScoreSection = ({
                     >
                       <Plus className="w-3.5 h-3.5 stroke-[3]" />
                     </button>
-                    <button
-                      onClick={() => rollDice?.(20, modifier, `${key} Roll`)}
-                      className="p-1 px-2 text-xs font-bold uppercase bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
-                    >
-                      Roll
-                    </button>
                   </div>
                 )}
               </div>
