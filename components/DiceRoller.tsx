@@ -30,7 +30,7 @@ const DiceRoller = ({ rollResult, rollDice, onToggleHistory }: DiceRollerProps) 
       <Button onClick={() => rollDice(8)} className="py-1 px-2 text-xs">d8</Button>
       <Button onClick={() => rollDice(10)} className="py-1 px-2 text-xs">d10</Button>
       <Button onClick={() => rollDice(12)} className="py-1 px-2 text-xs">d12</Button>
-      <Button onClick={() => rollDice(20)} className="py-1 px-2 text-xs font-bold text-blue-400 border-blue-400/30">d20</Button>
+      <Button onClick={() => rollDice(20)} className="py-1 px-2 text-xs">d20</Button>
     </div>
     {rollResult && (
       <div className="p-2 bg-gray-900/50 rounded border border-gray-700">
