@@ -58,14 +58,14 @@ const CharacterHeader = ({
     const nextLevelExp = totalLevel < 20 ? EXP_THRESHOLDS[totalLevel] : null;
 
     return (
-        <Card className="w-full max-w-6xl mx-auto bg-white shadow-md border-t-4 border-blue-500 overflow-hidden">
+        <Card className="w-full max-w-screen-2xl mx-auto bg-white shadow-md border-t-4 border-blue-500 overflow-hidden">
             <CardContent className="p-0">
                 <div className="grid grid-cols-1 md:grid-cols-12">
                     {/* Character Name and Basics */}
-                    <div className="md:col-span-4 p-4 bg-gray-50/50 border-r border-gray-100 flex items-center gap-4">
+                    <div className="md:col-span-4 p-6 bg-gray-50/50 border-r border-gray-100 flex items-center gap-6">
                         {/* Image Upload/Display */}
                         <div className="relative group shrink-0">
-                            <div className="w-20 h-20 rounded-full border-2 border-gray-200 bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
+                            <div className="w-40 h-40 rounded-full border-4 border-white bg-gray-100 flex items-center justify-center overflow-hidden shadow-md">
                                 {imageUrl ? (
                                     <img src={imageUrl} alt="Character" className="w-full h-full object-cover" />
                                 ) : (
