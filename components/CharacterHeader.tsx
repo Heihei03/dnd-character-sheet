@@ -218,74 +218,77 @@ const CharacterHeader = ({
                     </div>
 
                     {/* Meta Info (Species, Background, EXP) */}
-                    <div className="md:col-span-4 p-4 bg-gray-50/50 border-l border-gray-100 grid grid-cols-1 gap-3">
-                        <div className="grid grid-cols-1 gap-3">
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-1">
-                                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                        <BookOpen size={10} /> Species
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={species}
-                                        onChange={(e) => onSpeciesChange(e.target.value)}
-                                        className="w-full text-sm font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-blue-500 focus:outline-none transition-all py-0.5"
-                                        placeholder="Human..."
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                        <BookOpen size={10} /> Sub Species
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={subSpecies || ""}
-                                        onChange={(e) => onSubSpeciesChange(e.target.value)}
-                                        className="w-full text-sm font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-blue-500 focus:outline-none transition-all py-0.5"
-                                        placeholder="Wood Elf..."
-                                    />
-                                </div>
-                            </div>
+                    <div className="md:col-span-4 p-4 bg-gray-50/50 border-l border-gray-100 flex flex-col gap-3">
+                        {/* Top row: Species */}
+                        <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1">
                                 <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                    <Trophy size={10} /> Background
+                                    <BookOpen size={10} /> Species
                                 </label>
                                 <input
                                     type="text"
-                                    value={background}
-                                    onChange={(e) => onBackgroundChange(e.target.value)}
+                                    value={species}
+                                    onChange={(e) => onSpeciesChange(e.target.value)}
                                     className="w-full text-sm font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-blue-500 focus:outline-none transition-all py-0.5"
-                                    placeholder="Soldier..."
+                                    placeholder="Human..."
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                    <BookOpen size={10} /> Sub Species
+                                </label>
+                                <input
+                                    type="text"
+                                    value={subSpecies || ""}
+                                    onChange={(e) => onSubSpeciesChange(e.target.value)}
+                                    className="w-full text-sm font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-blue-500 focus:outline-none transition-all py-0.5"
+                                    placeholder="Wood Elf..."
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-end justify-between gap-4">
-                            <div className="flex-1 space-y-1">
-                                <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                    <Star size={10} /> Experience
-                                </label>
-                                <div className="flex items-center gap-1 border-b border-gray-200 hover:border-gray-400 focus-within:border-blue-500 transition-all">
+                        {/* Bottom 2-row block: Background/Experience + Proficiency Badge */}
+                        <div className="flex items-stretch gap-4">
+                            <div className="flex-1 flex flex-col justify-between py-px">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                        <Trophy size={10} /> Background
+                                    </label>
                                     <input
-                                        type="number"
-                                        value={exp ?? ""}
-                                        onChange={(e) => onExpChange(e.target.value === "" ? undefined : parseInt(e.target.value, 10))}
-                                        className="flex-1 text-sm font-medium bg-transparent focus:outline-none py-0.5"
-                                        placeholder="Current..."
+                                        type="text"
+                                        value={background}
+                                        onChange={(e) => onBackgroundChange(e.target.value)}
+                                        className="w-full text-sm font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-blue-500 focus:outline-none transition-all py-0.5"
+                                        placeholder="Soldier..."
                                     />
-                                    {nextLevelExp !== null && (
-                                        <div className="flex items-center text-gray-400 text-xs font-bold">
-                                            <span>/</span>
-                                            <span className="ml-1">{nextLevelExp.toLocaleString()}</span>
-                                        </div>
-                                    )}
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                        <Star size={10} /> Experience
+                                    </label>
+                                    <div className="flex items-center gap-1 border-b border-gray-200 hover:border-gray-400 focus-within:border-blue-500 transition-all">
+                                        <input
+                                            type="number"
+                                            value={exp ?? ""}
+                                            onChange={(e) => onExpChange(e.target.value === "" ? undefined : parseInt(e.target.value, 10))}
+                                            className="flex-1 text-sm font-medium bg-transparent focus:outline-none py-0.5"
+                                            placeholder="Current..."
+                                        />
+                                        {nextLevelExp !== null && (
+                                            <div className="flex items-center text-gray-400 text-xs font-bold">
+                                                <span>/</span>
+                                                <span className="ml-1">{nextLevelExp.toLocaleString()}</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Proficiency Bonus Badge */}
-                            <div className="flex flex-col items-center justify-center bg-blue-600 text-white rounded-lg p-2 min-w-[64px] shadow-sm">
-                                <span className="text-[8px] uppercase font-black leading-none mb-1">Proficiency</span>
-                                <span className="text-xl font-black leading-none">+{proficiencyBonus}</span>
+                            {/* Proficiency Bonus Badge - Spans Background + Experience */}
+                            <div className="flex flex-col items-center justify-center bg-blue-600 text-white rounded-xl p-4 min-w-[128px] shadow-lg border-2 border-blue-400/30">
+                                <span className="text-xs uppercase font-black tracking-widest leading-none mb-2 opacity-90 text-blue-100">Proficiency</span>
+                                <span className="text-5xl font-black leading-none animate-in zoom-in duration-500">+{proficiencyBonus}</span>
                             </div>
                         </div>
                     </div>
