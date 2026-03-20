@@ -56,7 +56,7 @@ interface CharacterTabsProps {
   handleUpdateBio: (field: keyof Bio, value: string) => void;
   handleUpdateFeatures: (features: Feature[]) => void;
   rollDice: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
-  rollDamage: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, extraDamage?: string, ruleOverride?: CritRule) => void;
+  rollDamage: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, critExtraDamage?: string, ruleOverride?: CritRule) => void;
   critRule?: "double-dice" | "max-plus-roll" | "double-total";
   onCritRuleChange?: (rule: "double-dice" | "max-plus-roll" | "double-total") => void;
   critRange?: number;

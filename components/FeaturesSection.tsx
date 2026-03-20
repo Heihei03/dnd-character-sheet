@@ -44,7 +44,7 @@ interface FeaturesSectionProps {
     proficiencyBonus: number;
     totalLevel: number;
     rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
-    rollDamage?: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, extraDamage?: string, ruleOverride?: CritRule) => void;
+    rollDamage?: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, critExtraDamage?: string, ruleOverride?: CritRule) => void;
     species?: string;
     subSpecies?: string;
     background?: string;

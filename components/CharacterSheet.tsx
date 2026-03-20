@@ -62,7 +62,9 @@ import {
   getEffectiveSpeed,
   getEffectiveToolProficiencies,
   getEffectiveWeaponProficiencies,
-  normalizeCharacter
+  normalizeCharacter,
+  parseDice,
+  getDisplayFormula
 } from "../utils/character-utils";
 
 interface CharacterSheetProps {
@@ -483,24 +485,12 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     label: string = "",
     damageType?: string,
     isCritical: boolean = false,
-    extraDamage?: string,
+    critExtraDamage?: string,
     ruleOverride?: CritRule
   ) => {
     if (!damageString) return;
 
     const critRule = ruleOverride || characterWithDefaults.critRule || 'double-dice';
-    
-    const parseDice = (str: string) => {
-      const match = str.trim().match(/^(\d+)[dD](\d+)(?:\s*([+-])\s*(\d+))?/);
-      if (!match) return null;
-      return {
-        count: parseInt(match[1], 10),
-        sides: parseInt(match[2], 10),
-        sign: match[3] || "+",
-        mod: parseInt(match[4] || "0", 10)
-      };
-    };
-
     const mainDice = parseDice(damageString);
     if (!mainDice) {
       const formatted = `${label ? label + (isCritical ? " (CRIT)" : "") + ": " : ""}${damageString} ${damageType ? damageType : ""}`.trim();
@@ -533,8 +523,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         total *= 2;
       }
       
-      if (extraDamage) {
-        const extra = parseDice(extraDamage);
+      if (critExtraDamage) {
+        const extra = parseDice(critExtraDamage);
         if (extra) {
           rollDicePool(extra.count, extra.sides);
         }
@@ -546,8 +536,16 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     const modifierTotal = sign === "-" ? -mod : mod;
     total += modifierTotal;
 
+    // Determine the display formula based on crit rules
+    const displayFormula = getDisplayFormula(damageString, isCritical, critRule, critExtraDamage);
+
     const critLabel = isCritical ? " (CRIT)" : "";
-    const formatted = `${label ? label + critLabel + ": " : ""}${damageString}${isCritical && extraDamage ? ` + ${extraDamage}` : ""} (${rolls.join(" + ")}${modifierTotal !== 0 ? ` ${sign} ${mod}` : ""}) = ${total} ${damageType ? damageType : ""}`.trim();
+    let breakdown = `(${rolls.join(" + ")})${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"} ${mod}` : ""}`;
+    if (isCritical && critRule === 'double-total') {
+      const diceSum = rolls.length > 1 ? `(${rolls.join(" + ")})` : rolls[0];
+      breakdown = `(${diceSum} × 2)${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"} ${mod}` : ""}`;
+    }
+    const formatted = `${label ? label + critLabel + ": " : ""}${displayFormula} ${breakdown} = ${total} ${damageType ? damageType : ""}`.trim();
     
     setRollResult(formatted);
 
@@ -555,13 +553,15 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       id: Math.random().toString(36).substring(2, 9),
       timestamp: Date.now(),
       label: (label || "Damage Roll") + critLabel,
-      formula: isCritical ? (extraDamage ? `${damageString} + ${extraDamage} (Crit)` : `${damageString} (Crit)`) : damageString,
+      formula: isCritical ? `${displayFormula} (Crit)` : damageString,
       rolls,
       modifier: modifierTotal,
       total,
       type: 'damage',
       damageType,
       isCritical,
+      critRule,
+      critExtraDamage,
       formatted
     };
 

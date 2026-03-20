@@ -8,6 +8,46 @@ import { TOOL_DATA } from "../data/tools";
 
 export const getAbilityModifier = (score: number) => Math.floor((score - 10) / 2);
 
+export const parseDice = (str: string) => {
+    const match = str.trim().match(/^(\d+)[dD](\d+)(?:(\s*[+-]\s*)(\d+))?/);
+    if (!match) return null;
+    return {
+        count: parseInt(match[1], 10),
+        sides: parseInt(match[2], 10),
+        sign: match[3]?.includes("-") ? "-" : "+",
+        mod: parseInt(match[4] || "0", 10)
+    };
+};
+
+export const getDisplayFormula = (
+    damageString: string,
+    isCritical: boolean,
+    critRule: "double-dice" | "max-plus-roll" | "double-total" = "double-dice",
+    extraDamage?: string
+): string => {
+    if (!isCritical) return damageString;
+
+    const dice = parseDice(damageString);
+    if (!dice) return damageString;
+
+    const { count, sides, sign, mod } = dice;
+    let formula = damageString;
+
+    if (critRule === 'double-dice') {
+        formula = `${count * 2}d${sides}${mod !== 0 ? ` ${sign}${mod}` : ""}`;
+    } else if (critRule === 'max-plus-roll') {
+        formula = `max(${count}d${sides}) + ${count}d${sides}${mod !== 0 ? ` ${sign}${mod}` : ""}`;
+    } else if (critRule === 'double-total') {
+        formula = `(${count}d${sides}) × 2${mod !== 0 ? ` ${sign}${mod}` : ""}`;
+    }
+
+    if (extraDamage) {
+        formula += ` + ${extraDamage}`;
+    }
+
+    return formula;
+};
+
 export const getProficiencyMultiplier = (level: ProficiencyLevel) => {
     switch (level) {
         case "half": return 0.5;

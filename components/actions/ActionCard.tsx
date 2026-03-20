@@ -27,7 +27,8 @@ interface ActionCardProps {
         label?: string,
         damageType?: string,
         isCritical?: boolean,
-        extraDamage?: string
+        critExtraDamage?: string,
+        ruleOverride?: CritRule
     ) => void;
     resource?: Resource;
     onUpdateResourceValue?: (id: string, value: number) => void;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { RollEntry, CritRule } from '../types/character';
 import { X, Trash2, History, Dices } from 'lucide-react';
+import { getDisplayFormula } from '../utils/character-utils';
 import Button from './ui/button';
 import { Card, CardContent } from './ui/card';
 
@@ -8,7 +9,7 @@ interface RollHistoryProps {
   history: RollEntry[];
   onClear: () => void;
   onClose: () => void;
-  onRollDamage: (formula: string, label: string, type?: string, isCritical?: boolean, extraDamage?: string, ruleOverride?: CritRule) => void;
+  onRollDamage: (formula: string, label: string, type?: string, isCritical?: boolean, critExtraDamage?: string, ruleOverride?: CritRule) => void;
 }
 
 const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, onRollDamage }) => {
@@ -66,9 +67,16 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                     <span className="text-sm font-mono text-gray-300">
                       {roll.formula}
                     </span>
-                    <span className="text-xs text-gray-500">
-                      ({roll.rolls.join(' + ')}{roll.modifier !== 0 ? ` ${roll.modifier > 0 ? '+' : '-'} ${Math.abs(roll.modifier)}` : ''})
-                    </span>
+                    {(() => {
+                      const diceSum = roll.rolls.length > 1 ? `(${roll.rolls.join(' + ')})` : roll.rolls[0];
+                      const modStr = roll.modifier !== 0 ? ` ${roll.modifier > 0 ? '+' : '-'} ${Math.abs(roll.modifier)}` : '';
+                      const isDoubleTotal = roll.isCritical && roll.critRule === 'double-total';
+                      return (
+                        <span className="text-xs text-gray-500">
+                          ({isDoubleTotal ? `${diceSum} × 2` : roll.rolls.join(' + ')}{modStr})
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div className="flex flex-col items-end">
                     <span className={`text-2xl font-bold ${
@@ -91,7 +99,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                       onClick={() => onRollDamage(roll.damageFormula!, roll.label.replace(" Attack", ""), roll.damageType, roll.isCritical, roll.critExtraDamage, roll.critRule)}
                       className="text-xs font-bold uppercase flex items-center gap-1.5 px-2 py-1 bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 rounded transition-colors"
                     >
-                      <Dices className="w-3.5 h-3.5" /> Roll Damage ({roll.damageFormula})
+                      <Dices className="w-3.5 h-3.5" /> Roll Damage ({getDisplayFormula(roll.damageFormula!, roll.isCritical || false, roll.critRule || 'double-dice', roll.critExtraDamage)})
                     </button>
                   </div>
                 )}
