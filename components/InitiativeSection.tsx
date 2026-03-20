@@ -10,7 +10,7 @@ interface InitiativeSectionProps {
     dexModifier: number;
     proficiencyBonus: number;
     onUpdate: (initiative: Initiative) => void;
-    rollDice: (sides: number, modifier: number, label: string) => void;
+    rollDice: (sides: number, modifier: number, label: string, damageFormula?: string, damageType?: string) => void;
     dexScore: number;
 }
 

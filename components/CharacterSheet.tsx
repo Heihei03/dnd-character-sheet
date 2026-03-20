@@ -442,7 +442,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setCharacter(prev => prev ? { ...prev, spellSlots } : null);
   };
 
-  const rollDice = (sides: number, modifier: number = 0, label: string = "") => {
+  const rollDice = (sides: number, modifier: number = 0, label: string = "", damageFormula?: string, damageType?: string) => {
     const baseRoll = Math.floor(Math.random() * sides) + 1;
     const total = baseRoll + modifier;
     const formula = `d${sides}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}`;
@@ -463,6 +463,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       modifier,
       total,
       type: 'generic',
+      damageFormula,
+      damageType,
       formatted,
       isCritical: sides === 20 && baseRoll === 20,
       isFumble: sides === 20 && baseRoll === 1
@@ -726,6 +728,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           history={rollHistory}
           onClear={clearHistory}
           onClose={() => setShowHistory(false)}
+          onRollDamage={rollDamage}
         />
       )}
 

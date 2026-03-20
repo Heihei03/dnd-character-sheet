@@ -54,7 +54,7 @@ interface CharacterTabsProps {
   handleUpdateActions: (actions: Action[]) => void;
   handleUpdateBio: (field: keyof Bio, value: string) => void;
   handleUpdateFeatures: (features: Feature[]) => void;
-  rollDice: (sides: number, modifier?: number, label?: string) => void;
+  rollDice: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string) => void;
   rollDamage: (damageString: string, label?: string, damageType?: string) => void;
 }
 

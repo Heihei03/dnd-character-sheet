@@ -43,7 +43,7 @@ interface FeaturesSectionProps {
     abilityScores: AbilityScores;
     proficiencyBonus: number;
     totalLevel: number;
-    rollDice?: (sides: number, modifier?: number, label?: string) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string) => void;
     rollDamage?: (damageString: string, label?: string, damageType?: string) => void;
     species?: string;
     subSpecies?: string;

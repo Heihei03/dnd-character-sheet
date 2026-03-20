@@ -382,6 +382,7 @@ export interface RollEntry {
   total: number;
   type: 'check' | 'damage' | 'save' | 'generic';
   damageType?: string;
+  damageFormula?: string;
   isCritical?: boolean;
   isFumble?: boolean;
   formatted: string;

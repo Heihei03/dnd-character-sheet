@@ -12,7 +12,7 @@ interface ToolChecksSectionProps {
     onUpdate: (value: ToolProficiency[]) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
-    rollDice: (sides: number, modifier: number, label: string) => void;
+    rollDice: (sides: number, modifier: number, label: string, damageFormula?: string, damageType?: string) => void;
     onNavigateToFeature?: (featureId: string) => void;
 }
 

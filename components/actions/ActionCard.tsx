@@ -21,7 +21,7 @@ interface ActionCardProps {
     onToggleExpand: () => void;
     onEdit?: () => void;
     onDelete?: () => void;
-    rollDice?: (sides: number, modifier?: number, label?: string) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string) => void;
     rollDamage?: (
         damageString: string,
         label?: string,
@@ -82,7 +82,16 @@ const ActionCard: React.FC<ActionCardProps> = ({
                 (action.proficient ? proficiencyBonus : 0) +
                 atkAbilityMod +
                 (action.attackBonus || 0);
-            rollDice(20, total, `${action.name} Attack`);
+
+            const expr = upcastedDamage || upcastedHealing || "";
+            const resolvedDamage = resolveRollExpression(
+                expr,
+                abilityScores,
+                totalLevel,
+                proficiencyBonus
+            );
+
+            rollDice(20, total, `${action.name} Attack`, resolvedDamage, action.damageType);
         }
     };
 

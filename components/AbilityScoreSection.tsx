@@ -8,7 +8,7 @@ interface AbilityScoreSectionProps {
   abilityScores: { [key: string]: number };
   effectiveAbilityScores: { [key: string]: number };
   setAbilityScore: (key: string, value: number) => void;
-  rollDice: (sides: number, modifier: number, label: string) => void;
+  rollDice: (sides: number, modifier: number, label: string, damageFormula?: string, damageType?: string) => void;
 }
 
 const AbilityScoreSection = ({

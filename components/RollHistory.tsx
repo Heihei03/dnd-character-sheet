@@ -1,6 +1,6 @@
 import React from 'react';
 import { RollEntry } from '../types/character';
-import { X, Trash2, History } from 'lucide-react';
+import { X, Trash2, History, Dices } from 'lucide-react';
 import Button from './ui/button';
 import { Card, CardContent } from './ui/card';
 
@@ -8,9 +8,10 @@ interface RollHistoryProps {
   history: RollEntry[];
   onClear: () => void;
   onClose: () => void;
+  onRollDamage: (formula: string, label: string, type?: string) => void;
 }
 
-const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose }) => {
+const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, onRollDamage }) => {
   return (
     <div className="fixed right-0 top-0 h-full w-80 bg-gray-900/95 backdrop-blur-md border-l border-gray-800 shadow-2xl z-50 flex flex-col transition-all duration-300 ease-in-out animate-in slide-in-from-right">
       <div className="p-4 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
@@ -50,7 +51,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose }) 
               roll.isFumble ? 'border-l-red-500' : 
               roll.type === 'damage' ? 'border-l-orange-500' : 'border-l-blue-500'
             } bg-gray-800/50 hover:bg-gray-800 transition-colors`}>
-              <CardContent className="p-3 space-y-1">
+              <CardContent className="p-3 space-y-2">
                 <div className="flex justify-between items-start">
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
                     {roll.label}
@@ -83,6 +84,17 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose }) 
                     )}
                   </div>
                 </div>
+
+                {roll.damageFormula && (
+                  <div className="pt-2 border-t border-gray-700/50 flex justify-end">
+                    <button
+                      onClick={() => onRollDamage(roll.damageFormula!, roll.label.replace(" Attack", ""), roll.damageType)}
+                      className="text-[10px] font-bold uppercase flex items-center gap-1.5 px-2 py-1 bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 rounded transition-colors"
+                    >
+                      <Dices className="w-3 h-3" /> Roll Damage ({roll.damageFormula})
+                    </button>
+                  </div>
+                )}
                 
                 {roll.isCritical && (
                   <div className="text-[10px] font-bold text-yellow-500 uppercase tracking-tighter">

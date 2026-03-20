@@ -9,7 +9,7 @@ interface SavingThrowsSectionProps {
     proficiencyBonus: number;
     setSavingThrows: (key: string, value: boolean) => void;
     abilityScores: { [key: string]: number };
-    rollDice: (sides: number, modifier: number, label: string) => void;
+    rollDice: (sides: number, modifier: number, label: string, damageFormula?: string, damageType?: string) => void;
 }
 
 const calculateModifier = (score: number): number => {

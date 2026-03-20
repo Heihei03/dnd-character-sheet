@@ -17,7 +17,7 @@ interface HPSectionProps {
   classes: CharacterClass[];
   abilityScores: AbilityScores;
   onUpdateClasses: (classes: CharacterClass[]) => void;
-  rollDice: (sides: number, modifier?: number, label?: string) => void;
+  rollDice: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string) => void;
 }
 
 const HPSection = ({
