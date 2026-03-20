@@ -67,7 +67,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         <div className="flex-1 flex items-center justify-center w-full">
                             <button 
                                 onClick={() => rollDice?.(20, modifier, `${key.charAt(0).toUpperCase() + key.slice(1)} Saving Throw`)}
-                                className={`text-4xl font-black p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${showConc ? 'text-blue-500 hover:text-blue-600' : 'text-blue-600 hover:text-blue-800'}`}
+                                className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-blue-500 hover:text-blue-600' : 'text-blue-600 hover:text-blue-800'}`}
                             >
                                 {displayModifier}
                             </button>
