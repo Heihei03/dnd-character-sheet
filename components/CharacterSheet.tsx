@@ -14,6 +14,7 @@ import ConditionsSection from "./ConditionsSection";
 import DeathSaves from "./DeathSaves";
 import DefensesSection from "./DefensesSection";
 import DiceRoller from "./DiceRoller";
+import RollHistory from "./RollHistory";
 import HPSection from "./HP";
 import InitiativeSection from "./InitiativeSection";
 import ProficienciesLanguagesSection from "./ProficienciesLanguagesSection";
@@ -43,7 +44,8 @@ import {
   Spell,
   SpellSlot,
   ToolProficiency,
-  Bio
+  Bio,
+  RollEntry
 } from "../types/character";
 
 // Utils
@@ -76,6 +78,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setFocusedFeatureId(featureId);
   };
   const [rollResult, setRollResult] = useState<string | null>(null);
+  const [rollHistory, setRollHistory] = useState<RollEntry[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Ensure character is not null before rendering the component
   if (!character) {
@@ -441,12 +445,30 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   const rollDice = (sides: number, modifier: number = 0, label: string = "") => {
     const baseRoll = Math.floor(Math.random() * sides) + 1;
     const total = baseRoll + modifier;
+    const formula = `d${sides}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}`;
     const formatted =
       `${label ? label + ": " : ""}d${sides}` +
       `${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}` +
       ` (${baseRoll}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""} ${modifier}` : ""})` +
       ` = ${total}`;
+    
     setRollResult(formatted);
+    
+    const newEntry: RollEntry = {
+      id: Math.random().toString(36).substring(2, 9),
+      timestamp: Date.now(),
+      label: label || `d${sides} Roll`,
+      formula,
+      rolls: [baseRoll],
+      modifier,
+      total,
+      type: 'generic',
+      formatted,
+      isCritical: sides === 20 && baseRoll === 20,
+      isFumble: sides === 20 && baseRoll === 1
+    };
+    
+    setRollHistory(prev => [newEntry, ...prev].slice(0, 50)); // Keep last 50 rolls
   };
 
   const rollDamage = (damageString: string, label: string = "", damageType?: string) => {
@@ -454,7 +476,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
     const match = damageString.trim().match(/^(\d+)[dD](\d+)(?:\s*([+-])\s*(\d+))?/);
     if (!match) {
-      setRollResult(`${label ? label + ": " : ""} ${damageString} ${damageType ? damageType : ""}`.trim());
+      const formatted = `${label ? label + ": " : ""} ${damageString} ${damageType ? damageType : ""}`.trim();
+      setRollResult(formatted);
       return;
     }
 
@@ -479,6 +502,26 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
     const formatted = `${label ? label + ": " : ""}${damageString} (${rolls.join(" + ")}${modifierTotal !== 0 ? ` ${sign} ${mod}` : ""}) = ${total} ${damageType ? damageType : ""}`.trim();
     setRollResult(formatted);
+
+    const newEntry: RollEntry = {
+      id: Math.random().toString(36).substring(2, 9),
+      timestamp: Date.now(),
+      label: label || "Damage Roll",
+      formula: damageString,
+      rolls,
+      modifier: modifierTotal,
+      total,
+      type: 'damage',
+      damageType,
+      formatted
+    };
+
+    setRollHistory(prev => [newEntry, ...prev].slice(0, 50));
+  };
+
+  const clearHistory = () => {
+    setRollHistory([]);
+    setRollResult(null);
   };
 
   const handleUpdateResources = (resources: Resource[]) => {
@@ -675,7 +718,16 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       <DiceRoller
         rollDice={(sides: number) => rollDice(sides)}
         rollResult={rollResult}
+        onToggleHistory={() => setShowHistory(!showHistory)}
       />
+
+      {showHistory && (
+        <RollHistory
+          history={rollHistory}
+          onClear={clearHistory}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
 
     </div>
 

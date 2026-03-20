@@ -372,3 +372,17 @@ export interface NormalizedCharacter extends Character {
   conditions: Condition[];
   bio: Bio;
 }
+export interface RollEntry {
+  id: string;
+  timestamp: number;
+  label: string;
+  formula: string;
+  rolls: number[];
+  modifier: number;
+  total: number;
+  type: 'check' | 'damage' | 'save' | 'generic';
+  damageType?: string;
+  isCritical?: boolean;
+  isFumble?: boolean;
+  formatted: string;
+}
