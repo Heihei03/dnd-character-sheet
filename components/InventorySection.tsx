@@ -187,7 +187,8 @@ const InventorySection: React.FC<InventorySectionProps> = ({
         const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                              (item.description || "").toLowerCase().includes(searchQuery.toLowerCase());
         const itemType = item.itemType || "other";
-        const matchesType = selectedCategory === "All" || itemType === selectedCategory;
+        const matchesType = selectedCategory === "All" || 
+                           (selectedCategory === "Wondrous" ? item.isWondrous : itemType === selectedCategory);
         return matchesSearch && matchesType;
     });
 
@@ -218,7 +219,8 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                     ...INVENTORY_ITEM_TYPES.map(type => ({ 
                         label: type.charAt(0).toUpperCase() + type.slice(1), 
                         value: type 
-                    }))
+                    })),
+                    { label: "Wondrous", value: "Wondrous" }
                 ]}
             />
 

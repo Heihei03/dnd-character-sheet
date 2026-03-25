@@ -88,6 +88,15 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                         />
                         Attunable
                     </label>
+                    <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={item.isWondrous || false}
+                            onChange={e => updateItem(item.id, "isWondrous", e.target.checked)}
+                            className="w-3.5 h-3.5"
+                        />
+                        Wondrous
+                    </label>
                 </div>
             </div>
             <div className="md:col-span-2 space-y-2">

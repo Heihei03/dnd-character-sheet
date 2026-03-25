@@ -114,6 +114,7 @@ export interface InventoryItem {
   toolDetails?: ToolDetails;
   isContainer?: boolean;
   parentId?: string;
+  isWondrous?: boolean;
   description?: string;
   features?: Feature[];
 }

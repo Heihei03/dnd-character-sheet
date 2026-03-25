@@ -37,6 +37,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
     const [newItemEquippable, setNewItemEquippable] = useState(false);
     const [newItemAttunable, setNewItemAttunable] = useState(false);
     const [newItemType, setNewItemType] = useState<"weapon" | "armor" | "shield" | "container" | "tool" | "other">("other");
+    const [newItemWondrous, setNewItemWondrous] = useState(false);
     const [newItemWeaponDetails, setNewItemWeaponDetails] = useState<WeaponDetails | undefined>(undefined);
     const [newItemArmorDetails, setNewItemArmorDetails] = useState<ArmorDetails | undefined>(undefined);
     const [newItemContainerDetails, setNewItemContainerDetails] = useState<ContainerDetails | undefined>(undefined);
@@ -168,6 +169,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
             containerDetails: newItemContainerDetails,
             toolDetails: newItemToolDetails,
             isContainer: newItemType === "container",
+            isWondrous: newItemWondrous,
             description: newItemDescription,
             features: newItemFeatures,
         };
@@ -187,6 +189,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
         setNewItemToolDetails(undefined);
         setNewItemDescription("");
         setNewItemFeatures([]);
+        setNewItemWondrous(false);
     };
 
     return (
@@ -234,6 +237,10 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                     <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
                         <input type="checkbox" checked={newItemAttunable} onChange={(e) => setNewItemAttunable(e.target.checked)} className="w-4 h-4" />
                         Attunable
+                    </label>
+                    <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+                        <input type="checkbox" checked={newItemWondrous} onChange={(e) => setNewItemWondrous(e.target.checked)} className="w-4 h-4" />
+                        Wondrous
                     </label>
                     <div className="flex-1"></div>
                     <div className="flex items-center gap-2">

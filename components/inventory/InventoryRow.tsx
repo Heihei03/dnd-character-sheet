@@ -120,6 +120,9 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                                         <span className="text-gray-400 italic">• {item.toolDetails.ability}</span>
                                     </React.Fragment>
                                 )}
+                                {item.isWondrous && (
+                                    <span className="bg-amber-50 text-amber-700 px-1.5 rounded border border-amber-200 font-bold uppercase text-[10px] tracking-wider">Wondrous</span>
+                                )}
                             </div>
                         </div>
                     </div>
