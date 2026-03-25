@@ -4,7 +4,8 @@ import { useState } from "react";
 import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
-import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, Settings, X, Shield, Camera, Image as ImageIcon } from "lucide-react";
+import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Shield, Camera, Image as ImageIcon } from "lucide-react";
+import SettingsButton from "./ui/SettingsButton";
 import ConfirmationModal from "./ui/ConfirmationModal";
 
 interface CharacterHeaderProps {
@@ -112,13 +113,10 @@ const CharacterHeader = ({
                             <label className="text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
                                 <GraduationCap size={14} /> Class & Level
                             </label>
-                            <button
+                            <SettingsButton
                                 onClick={() => setIsEditingClasses(true)}
-                                className="p-1 px-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-400 hover:text-blue-600 focus:outline-none"
                                 title="Edit Classes"
-                            >
-                                <Settings size={20} />
-                            </button>
+                            />
                         </div>
                         <div className="space-y-2">
                             {classes.map((cls, index) => (

@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Settings, X } from "lucide-react";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import SettingsButton from "./ui/SettingsButton";
 import { Initiative, Character, CritRule } from "../types/character";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
 
@@ -57,13 +59,14 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
     return (
         <div className="relative p-2">
             {/* Settings Toggle Button */}
-            <button
+            <SettingsButton
                 onClick={() => setShowSettings(!showSettings)}
-                className="absolute top-0 right-0 p-1.5 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 z-20"
+                className={cn(
+                    "absolute top-0 right-0 z-20",
+                    showSettings ? 'bg-blue-100 text-blue-600' : ''
+                )}
                 title="Settings"
-            >
-                <Settings className="w-5 h-5" />
-            </button>
+            />
 
             {/* Header */}
             <div className="flex flex-col items-center mb-4">

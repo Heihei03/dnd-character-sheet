@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Currency } from "../types/character";
 import { Card, CardContent } from "./ui/card";
-import { Settings, X, ArrowLeftRight } from "lucide-react";
+import { X, ArrowLeftRight } from "lucide-react";
+import SettingsButton from "./ui/SettingsButton";
 
 interface CurrencySectionProps {
     currency: Currency;
@@ -74,13 +75,11 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                 <div className="flex justify-between items-center mb-4">
                     <div className="w-8"></div> {/* Spacer */}
                     <h2 className="text-xl font-bold text-center">Currency</h2>
-                    <button
+                    <SettingsButton
                         onClick={() => setIsModalOpen(true)}
-                        className="p-1 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                        className="hover:bg-gray-100"
                         title="Currency Converter"
-                    >
-                        <Settings className="w-5 h-5" />
-                    </button>
+                    />
                 </div>
                 <div className="grid grid-cols-5 gap-2 text-center">
                     {["cp", "sp", "ep", "gp", "pp"].map((key) => (
