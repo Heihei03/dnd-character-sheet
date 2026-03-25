@@ -2,10 +2,11 @@ import React from "react";
 import { ChevronDown, Dices, Pencil, Trash2, Zap } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import ResourcePipTracker from "../ResourcePipTracker";
-import { Action, AbilityScores, Resource, CritRule } from "../../types/character";
+import { Action, AbilityScores, Resource, CritRule, Character } from "../../types/character";
 import {
     getAbilityModifier,
     resolveRollExpression,
+    getAdvantageDisadvantage,
 } from "../../utils/character-utils";
 import {
     calculateScaledCantripValue,
@@ -21,7 +22,7 @@ interface ActionCardProps {
     onToggleExpand: () => void;
     onEdit?: () => void;
     onDelete?: () => void;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
     rollDamage?: (
         damageString: string,
         label?: string,
@@ -34,6 +35,7 @@ interface ActionCardProps {
     onUpdateResourceValue?: (id: string, value: number) => void;
     currentCastLevel: number;
     onCastLevelChange: (level: number) => void;
+    character: Character;
 }
 
 const ActionCard: React.FC<ActionCardProps> = ({
@@ -51,6 +53,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
     onUpdateResourceValue,
     currentCastLevel,
     onCastLevelChange,
+    character,
 }) => {
     const damageToUse = action.damage || "";
     const upcastedDamage =
@@ -94,7 +97,9 @@ const ActionCard: React.FC<ActionCardProps> = ({
                 proficiencyBonus
             );
 
-            rollDice(20, total, `${action.name} Attack`, resolvedDamage, action.damageType, action.critRange, action.critExtraDamage, action.critRule);
+            const { advantage, disadvantage } = getAdvantageDisadvantage(character, `${action.name} Attack`);
+
+            rollDice(20, total, `${action.name} Attack`, resolvedDamage, action.damageType, action.critRange, action.critExtraDamage, action.critRule, advantage, disadvantage);
         }
     };
 

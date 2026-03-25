@@ -12,7 +12,7 @@ interface SkillsSectionProps {
     setSkills: (key: string, value: string) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
     onNavigateToFeature?: (featureId: string) => void;
 }
 
@@ -59,7 +59,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     </button>
                                     <div className="flex flex-col">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, skill.name)}>
+                                            <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}>
                                                 {skill.name} <span className="text-gray-500 text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
                                             </span>
                                             {(skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
@@ -87,7 +87,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => rollDice?.(20, totalBonus, skill.name)}
+                                    onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
                                     className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >

@@ -75,6 +75,7 @@ interface CharacterSheetProps {
 const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter }) => {
   const [activeTab, setActiveTab] = useState<string>("inventory");
   const [focusedFeatureId, setFocusedFeatureId] = useState<string | null>(null);
+  const [globalRollMode, setGlobalRollMode] = useState<'normal' | 'advantage' | 'disadvantage'>('normal');
 
   const handleNavigateToFeature = (featureId: string) => {
     setActiveTab("features");
@@ -446,25 +447,71 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     setCharacter(prev => prev ? { ...prev, spellSlots } : null);
   };
 
-  const rollDice = (sides: number, modifier: number = 0, label: string = "", damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => {
+  const rollDice = (
+    sides: number,
+    modifier: number = 0,
+    label: string = "",
+    damageFormula?: string,
+    damageType?: string,
+    critRange?: number,
+    critExtraDamage?: string,
+    critRule?: CritRule,
+    specificAdvantage?: boolean,
+    specificDisadvantage?: boolean
+  ) => {
     const effectiveCritRange = critRange || characterWithDefaults.critRange || 20;
+
+    let finalAdvantage = specificAdvantage || globalRollMode === 'advantage';
+    let finalDisadvantage = specificDisadvantage || globalRollMode === 'disadvantage';
+
+    // ADV + DIS = Normal (standard 5e rule)
+    if (finalAdvantage && finalDisadvantage) {
+      finalAdvantage = false;
+      finalDisadvantage = false;
+    }
+
+    const rolls: number[] = [];
     const baseRoll = Math.floor(Math.random() * sides) + 1;
-    const total = baseRoll + modifier;
-    const formula = `d${sides}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}`;
+    rolls.push(baseRoll);
+
+    let resultRoll = baseRoll;
+    let secondaryRoll: number | null = null;
+
+    if (sides === 20 && (finalAdvantage || finalDisadvantage)) {
+      secondaryRoll = Math.floor(Math.random() * sides) + 1;
+      rolls.push(secondaryRoll);
+      if (finalAdvantage) {
+        resultRoll = Math.max(baseRoll, secondaryRoll);
+      } else {
+        resultRoll = Math.min(baseRoll, secondaryRoll);
+      }
+    }
+
+    const total = resultRoll + modifier;
+    
+    let formula = `d${sides}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}`;
+    if (sides === 20 && (finalAdvantage || finalDisadvantage)) {
+        formula = `${finalAdvantage ? 'ADV' : 'DIS'} ${formula}`;
+    }
+
+    let breakdown = `(${baseRoll}${secondaryRoll !== null ? `, ${secondaryRoll}` : ""})`;
+    if (modifier !== 0) {
+        breakdown += ` ${modifier >= 0 ? "+" : "-"} ${Math.abs(modifier)}`;
+    }
+
     const formatted =
-      `${label ? label + ": " : ""}d${sides}` +
-      `${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}` +
-      ` (${baseRoll}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""} ${modifier}` : ""})` +
+      `${label ? label + ": " : ""}${formula}` +
+      ` ${breakdown}` +
       ` = ${total}`;
-    
+
     setRollResult(formatted);
-    
+
     const newEntry: RollEntry = {
       id: Math.random().toString(36).substring(2, 9),
       timestamp: Date.now(),
       label: label || `d${sides} Roll`,
       formula,
-      rolls: [baseRoll],
+      rolls,
       modifier,
       total,
       type: 'generic',
@@ -473,10 +520,10 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       critExtraDamage,
       critRule,
       formatted,
-      isCritical: sides === 20 && baseRoll >= effectiveCritRange,
-      isFumble: sides === 20 && baseRoll === 1
+      isCritical: sides === 20 && resultRoll >= effectiveCritRange,
+      isFumble: sides === 20 && resultRoll === 1
     };
-    
+
     setRollHistory(prev => [...prev.slice(-49), newEntry]);
   };
 
@@ -636,6 +683,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
                       effectiveAbilityScores={effectiveAbilityScores}
                       setAbilityScore={handleAbilityScoreChange}
                       rollDice={rollDice}
+                      character={characterWithDefaults}
                     />
                   </div>
                   <div className="flex-1 pl-2 flex flex-col items-center">
@@ -671,6 +719,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               proficiencyBonus={proficiencyBonus}
               rollDice={rollDice}
               onNavigateToFeature={handleNavigateToFeature}
+              character={characterWithDefaults}
             />
             <ProficienciesLanguagesSection
               weaponProficiencies={effectiveWeaponProficiencies}
@@ -711,6 +760,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               critRange={characterWithDefaults.critRange}
               onCritRangeChange={(range) => handleChange("critRange", range)}
             />
+
           </div>
 
           {/* Right Column */}
@@ -774,6 +824,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         rollDice={(sides: number) => rollDice(sides)}
         rollResult={rollResult}
         onToggleHistory={() => setShowHistory(!showHistory)}
+        globalRollMode={globalRollMode}
+        setGlobalRollMode={setGlobalRollMode}
       />
 
       {showHistory && (

@@ -3,14 +3,16 @@
 import { useState, useEffect } from "react";
 import { Minus, Plus } from "lucide-react";
 
-import { CritRule } from "../types/character";
+import { Character, CritRule } from "../types/character";
+import { getAdvantageDisadvantage } from "../utils/character-utils";
 
 // Define types for props
 interface AbilityScoreSectionProps {
   abilityScores: { [key: string]: number };
   effectiveAbilityScores: { [key: string]: number };
   setAbilityScore: (key: string, value: number) => void;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+  rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
+  character: Character;
 }
 
 const AbilityScoreSection = ({
@@ -18,6 +20,7 @@ const AbilityScoreSection = ({
   effectiveAbilityScores,
   setAbilityScore,
   rollDice,
+  character,
 }: AbilityScoreSectionProps) => {
   const [abilityScoresInput, setAbilityScoresInput] = useState<{ [key: string]: string }>({});
 
@@ -59,6 +62,7 @@ const AbilityScoreSection = ({
         const isOverridden = effectiveScore > score;
         const modifier = calculateModifier(effectiveScore);
         const formattedModifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+        const { advantage, disadvantage } = getAdvantageDisadvantage(character, `${key} Checks`);
         return (
           <div
             key={key}
@@ -72,7 +76,7 @@ const AbilityScoreSection = ({
               <div
                 className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${isOverridden ? "text-purple-600 dark:text-purple-400" : "text-gray-400 hover:text-blue-500"
                   }`}
-                onClick={() => rollDice?.(20, modifier, key)}
+                onClick={() => rollDice?.(20, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
                 title={isOverridden ? "Overridden by item/feature" : ""}
               >
                 {key}
@@ -82,7 +86,7 @@ const AbilityScoreSection = ({
             {/* Modifier Slot - Taking remaining space */}
             <div className="flex-1 flex items-center justify-center w-full">
               <button
-                onClick={() => rollDice?.(20, modifier, key)}
+                onClick={() => rollDice?.(20, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
                 className="text-4xl font-black text-blue-600 hover:text-blue-800 transition-all hover:scale-110"
               >
                 {formattedModifier}

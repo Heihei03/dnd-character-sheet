@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { AbilityScores, ToolProficiency, ProficiencyLevel, CritRule } from "../types/character";
+import { AbilityScores, ToolProficiency, ProficiencyLevel, CritRule, Character } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
-import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, ABILITY_NAMES } from "../utils/character-utils";
+import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, ABILITY_NAMES, getAdvantageDisadvantage } from "../utils/character-utils";
 import FeatureNavigationBadge from "./FeatureNavigationBadge";
 
 interface ToolChecksSectionProps {
@@ -12,8 +12,9 @@ interface ToolChecksSectionProps {
     onUpdate: (value: ToolProficiency[]) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
     onNavigateToFeature?: (featureId: string) => void;
+    character: Character;
 }
 
 const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
@@ -23,6 +24,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
     proficiencyBonus,
     rollDice,
     onNavigateToFeature,
+    character,
 }) => {
     const handleUpdateTool = (index: number, updates: Partial<ToolProficiency>) => {
         const newTools = [...toolProficiencies];
@@ -49,6 +51,8 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                         const totalBonus = modifier + bonus;
                         const sign = totalBonus >= 0 ? "+" : "";
 
+                        const { advantage, disadvantage } = getAdvantageDisadvantage(character, `${tool.name} Check`);
+
                         return (
                             <div
                                 key={`${tool.name}-${index}`}
@@ -63,7 +67,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                         <ProficiencyIcon level={tool.level} />
                                     </button>
                                     <div className="flex items-baseline gap-2">
-                                        <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check`)}>
+                                        <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}>
                                             {tool.name}
                                         </span>
                                         {tool.fromFeature && (
@@ -95,7 +99,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check (${tool.ability})`)}
+                                    onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check (${tool.ability})`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
                                     className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >

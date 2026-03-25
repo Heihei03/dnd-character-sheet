@@ -14,7 +14,7 @@ import ActionForm from "./actions/ActionForm";
 import CommonActionsGrid from "./actions/CommonActionsGrid";
 
 // Types
-import { AbilityScores, Action, ActionType, Resource, CritRule } from "../types/character";
+import { AbilityScores, Action, ActionType, Resource, CritRule, Character } from "../types/character";
 
 interface ActionsSectionProps {
     actions: Action[];
@@ -22,7 +22,7 @@ interface ActionsSectionProps {
     abilityScores: AbilityScores;
     proficiencyBonus: number;
     totalLevel: number;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
     rollDamage?: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, critExtraDamage?: string, ruleOverride?: CritRule) => void;
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
@@ -30,6 +30,7 @@ interface ActionsSectionProps {
     onCritRuleChange?: (rule: "double-dice" | "max-plus-roll" | "double-total") => void;
     critRange?: number;
     onCritRangeChange?: (range: number) => void;
+    character: Character;
 }
 
 const ACTION_TYPES: ActionType[] = ["Action", "Bonus Action", "Reaction", "Free Action"];
@@ -47,7 +48,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     critRule = "double-dice",
     onCritRuleChange,
     critRange = 20,
-    onCritRangeChange
+    onCritRangeChange,
+    character
 }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingAction, setEditingAction] = useState<Partial<Action> | null>(null);
@@ -267,6 +269,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                             onUpdateResourceValue={onUpdateResources ? handleUpdateResourceValue : undefined}
                                             currentCastLevel={castLevels[action.id] || action.baseLevel || 0}
                                             onCastLevelChange={(level) => setCastLevels(prev => ({ ...prev, [action.id]: level }))}
+                                            character={character}
                                         />
                                     );
                                 })}
@@ -295,6 +298,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                     rollDamage={rollDamage}
                                     currentCastLevel={0}
                                     onCastLevelChange={() => {}}
+                                    character={character}
                                 />
                             ))}
                         </div>

@@ -55,7 +55,7 @@ interface CharacterTabsProps {
   handleUpdateActions: (actions: Action[]) => void;
   handleUpdateBio: (field: keyof Bio, value: string) => void;
   handleUpdateFeatures: (features: Feature[]) => void;
-  rollDice: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+  rollDice: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
   rollDamage: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, critExtraDamage?: string, ruleOverride?: CritRule) => void;
   critRule?: "double-dice" | "max-plus-roll" | "double-total";
   onCritRuleChange?: (rule: "double-dice" | "max-plus-roll" | "double-total") => void;
@@ -185,6 +185,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           onCritRuleChange={onCritRuleChange}
           critRange={critRange}
           onCritRangeChange={onCritRangeChange}
+          character={character as any}
         />
       )}
 

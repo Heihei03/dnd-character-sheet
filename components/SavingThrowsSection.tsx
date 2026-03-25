@@ -9,7 +9,7 @@ interface SavingThrowsSectionProps {
     proficiencyBonus: number;
     setSavingThrows: (key: string, value: boolean) => void;
     abilityScores: { [key: string]: number };
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
 }
 
 const calculateModifier = (score: number): number => {
@@ -57,7 +57,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         <div className="h-8 flex items-center justify-center w-full relative px-2">
                             <div
                                 className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-blue-500' : 'text-gray-400 hover:text-blue-500'}`}
-                                onClick={() => rollDice?.(20, modifier, label)}
+                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
                             >
                                 {showConc ? "Concentration" : `${key.slice(0, 3)} Save`}
                             </div>
@@ -66,7 +66,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         {/* Modifier Slot - Taking remaining space */}
                         <div className="flex-1 flex items-center justify-center w-full">
                             <button 
-                                onClick={() => rollDice?.(20, modifier, label)}
+                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
                                 className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-blue-500 hover:text-blue-600' : 'text-blue-600 hover:text-blue-800'}`}
                             >
                                 {displayModifier}

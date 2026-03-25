@@ -10,7 +10,7 @@ interface InitiativeSectionProps {
     dexModifier: number;
     proficiencyBonus: number;
     onUpdate: (initiative: Initiative) => void;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
     dexScore: number;
 }
 
@@ -51,7 +51,7 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
     };
 
     const handleRoll = () => {
-        rollDice?.(20, totalModifier, "Initiative");
+        rollDice?.(20, totalModifier, "Initiative", undefined, undefined, undefined, undefined, undefined, advantage, disadvantage);
     };
 
     return (
