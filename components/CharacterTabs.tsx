@@ -25,7 +25,9 @@ import {
   Spell, 
   SpellSlot,
   Bio,
-  CritRule
+  CritRule,
+  RollDiceFunc,
+  RollDamageFunc
 } from "../types/character";
 
 // Utils
@@ -55,10 +57,10 @@ interface CharacterTabsProps {
   handleUpdateActions: (actions: Action[]) => void;
   handleUpdateBio: (field: keyof Bio, value: string) => void;
   handleUpdateFeatures: (features: Feature[]) => void;
-  rollDice: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
-  rollDamage: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, critExtraDamage?: string, ruleOverride?: CritRule) => void;
-  critRule?: "double-dice" | "max-plus-roll" | "double-total";
-  onCritRuleChange?: (rule: "double-dice" | "max-plus-roll" | "double-total") => void;
+  rollDice: RollDiceFunc;
+  rollDamage: RollDamageFunc;
+  critRule?: CritRule;
+  onCritRuleChange?: (rule: CritRule) => void;
   critRange?: number;
   onCritRangeChange?: (range: number) => void;
 }

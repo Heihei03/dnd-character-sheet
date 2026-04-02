@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../types/modifiers";
@@ -17,6 +17,8 @@ interface FeatureModifierEditorProps {
 
 const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers, onUpdate, parentName }) => {
     const [modToDelete, setModToDelete] = useState<string | null>(null);
+    const [inputValues, setInputValues] = useState<Record<string, string>>({});
+
     const addModifier = () => {
         const newModifier: FeatureModifier = {
             id: Date.now().toString(),
@@ -74,6 +76,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                 return [...ACTION_TYPES];
             case "Advantage":
             case "Disadvantage":
+            case "Extra Advantage":
                 return ROLL_TYPES;
             default:
                 return [];
@@ -184,7 +187,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                                         if (val) {
                                                             const currentSpells = ((mod.value as string) || "").split(",").filter(s => s.trim());
                                                             if (!currentSpells.includes(val)) {
-                                                                updateModifier(mod.id, { value: [...currentSpells, val].join(",") });
+                                                                 updateModifier(mod.id, { value: [...currentSpells, val].join(",") });
                                                             }
                                                             target.value = "";
                                                         }
@@ -207,6 +210,76 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                                         <option value="Expertise">Expertise</option>
                                         <option value="Half Proficient">Half Proficient</option>
                                     </select>
+                                ) : (mod.type === "Extra Advantage" || mod.type === "Advantage" || mod.type === "Disadvantage") ? (
+                                    <div className="space-y-2">
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {(mod.subType || "").split(",").filter(s => s.trim()).map((tag, idx) => (
+                                                <div key={idx} className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-[10px] px-2 py-0.5 rounded border border-green-100 dark:border-green-800 shadow-sm">
+                                                    <span className="font-bold text-green-700 dark:text-green-400 uppercase">{tag.trim()}</span>
+                                                    <button
+                                                        onClick={() => {
+                                                            const currentTags = (mod.subType || "").split(",").filter(s => s.trim());
+                                                            const newTags = currentTags.filter((_, i) => i !== idx);
+                                                            updateModifier(mod.id, { subType: newTags.join(", ") });
+                                                        }}
+                                                        className="text-green-400 hover:text-red-500 transition-colors"
+                                                    >
+                                                        <X className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="flex gap-2">
+                                            {mod.type === "Extra Advantage" && (
+                                                <input
+                                                    type="number"
+                                                    value={mod.value || 0}
+                                                    onChange={(e) => updateModifier(mod.id, { value: parseInt(e.target.value) || 0 })}
+                                                    className="w-12 text-xs p-1 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-mono"
+                                                    placeholder="1"
+                                                    min="1"
+                                                />
+                                            )}
+                                            <div className="relative flex-1">
+                                                <input
+                                                    type="text"
+                                                    list={`roll-type-list-${mod.id}`}
+                                                    value={inputValues[mod.id] || ""}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        setInputValues({...inputValues, [mod.id]: val});
+                                                        
+                                                        // Check if the value matches one of the options exactly (which happens when selecting from datalist)
+                                                        if (ROLL_TYPES.includes(val)) {
+                                                            const currentTags = (mod.subType || "").split(",").filter(s => s.trim());
+                                                            if (!currentTags.includes(val)) {
+                                                                updateModifier(mod.id, { subType: [...currentTags, val].join(", ") });
+                                                            }
+                                                            setInputValues({...inputValues, [mod.id]: ""});
+                                                        }
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            const val = (e.target as HTMLInputElement).value.trim();
+                                                            if (val) {
+                                                                const currentTags = (mod.subType || "").split(",").filter(s => s.trim());
+                                                                if (!currentTags.includes(val)) {
+                                                                    updateModifier(mod.id, { subType: [...currentTags, val].join(", ") });
+                                                                }
+                                                                setInputValues({...inputValues, [mod.id]: ""});
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="w-full text-xs p-1 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
+                                                    placeholder="Add target (e.g. Dexterity Attacks)..."
+                                                />
+                                                <datalist id={`roll-type-list-${mod.id}`}>
+                                                    {ROLL_TYPES.map(t => <option key={t} value={t} />)}
+                                                </datalist>
+                                            </div>
+                                        </div>
+                                    </div>
                                 ) : (
                                     <div className="relative">
                                         <input

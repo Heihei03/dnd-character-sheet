@@ -403,3 +403,26 @@ export interface RollEntry {
   isFumble?: boolean;
   formatted: string;
 }
+
+export type RollDiceFunc = (
+  sides: number,
+  modifier?: number,
+  label?: string,
+  damageFormula?: string,
+  damageType?: string,
+  critRange?: number,
+  critExtraDamage?: string,
+  critRule?: CritRule,
+  advantage?: boolean,
+  disadvantage?: boolean,
+  extraAdvantage?: number
+) => void;
+
+export type RollDamageFunc = (
+  damageString: string,
+  label?: string,
+  damageType?: string,
+  isCritical?: boolean,
+  critExtraDamage?: string,
+  ruleOverride?: CritRule
+) => void;

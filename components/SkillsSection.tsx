@@ -1,5 +1,5 @@
 import React from "react";
-import { Skills, AbilityScores, ProficiencyLevel, Character, CritRule } from "../types/character";
+import { Skills, AbilityScores, ProficiencyLevel, Character, RollDiceFunc } from "../types/character";
 import { SKILL_LIST } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
@@ -12,7 +12,7 @@ interface SkillsSectionProps {
     setSkills: (key: string, value: string) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
+    rollDice?: RollDiceFunc;
     onNavigateToFeature?: (featureId: string) => void;
 }
 
@@ -42,7 +42,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
 
                         const sign = totalBonus >= 0 ? "+" : "";
 
-                        const { advantage, disadvantage } = getAdvantageDisadvantage(character, `${skill.name} Checks`);
+                        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${skill.name} Checks`, skill.ability);
 
                         return (
                             <div
@@ -55,11 +55,13 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                         className="w-8 h-8 flex items-center justify-center focus:outline-none hover:text-blue-600 transition-transform active:scale-95"
                                         title={`Current: ${proficiencyLevel}`}
                                     >
-                                        <ProficiencyIcon level={proficiencyLevel} />
+                                        <div className="scale-75">
+                                            <ProficiencyIcon level={proficiencyLevel} />
+                                        </div>
                                     </button>
                                     <div className="flex flex-col">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}>
+                                            <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}>
                                                 {skill.name} <span className="text-gray-500 text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
                                             </span>
                                             {(skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
@@ -78,7 +80,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                                 </span>
                                             )}
                                             {advantage && (
-                                                <span className="text-xs font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV</span>
+                                                <span className="text-xs font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV{extraAdvantage > 0 ? `+${extraAdvantage}` : ''}</span>
                                             )}
                                             {disadvantage && (
                                                 <span className="text-xs font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DIS</span>
@@ -87,7 +89,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
+                                    onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
                                     className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >

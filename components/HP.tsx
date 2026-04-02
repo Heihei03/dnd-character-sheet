@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Button from "./ui/button";
-import { CharacterClass, AbilityScores, CritRule } from "../types/character";
+import { CharacterClass, AbilityScores, RollDiceFunc } from "../types/character";
 import { classHitDice } from "../utils/constants";
 import { Plus, Minus, Heart, Shield, Activity, Dna } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -17,7 +17,7 @@ interface HPSectionProps {
   classes: CharacterClass[];
   abilityScores: AbilityScores;
   onUpdateClasses: (classes: CharacterClass[]) => void;
-  rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
+  rollDice?: RollDiceFunc;
 }
 
 const HPSection = ({

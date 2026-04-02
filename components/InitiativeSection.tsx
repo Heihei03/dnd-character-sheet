@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SettingsButton from "./ui/SettingsButton";
-import { Initiative, Character, CritRule } from "../types/character";
+import { Initiative, Character, RollDiceFunc } from "../types/character";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
 
 interface InitiativeSectionProps {
@@ -12,7 +12,7 @@ interface InitiativeSectionProps {
     dexModifier: number;
     proficiencyBonus: number;
     onUpdate: (initiative: Initiative) => void;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
+    rollDice?: RollDiceFunc;
     dexScore: number;
 }
 
@@ -37,7 +37,11 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
     const tiebreakerValue = initiative.showDexTiebreaker ? dexScore / 100 : 0;
     const displayModifier = totalModifier + tiebreakerValue;
 
-    const { advantage, disadvantage } = getAdvantageDisadvantage(character, "Initiative");
+    const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, "Initiative", "dexterity");
+
+    const handleRoll = () => {
+        rollDice?.(20, totalModifier, "Initiative", undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage);
+    };
 
     const handleMiscChange = (val: string) => {
         const num = parseInt(val) || 0;
@@ -50,10 +54,6 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
 
     const handleToggleTiebreaker = () => {
         onUpdate({ ...initiative, showDexTiebreaker: !initiative.showDexTiebreaker });
-    };
-
-    const handleRoll = () => {
-        rollDice?.(20, totalModifier, "Initiative", undefined, undefined, undefined, undefined, undefined, advantage, disadvantage);
     };
 
     return (
@@ -73,10 +73,10 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                 <h2 className="text-2xl font-bold text-center">Initiative</h2>
                 <div className="flex gap-1 mt-1">
                     {advantage && (
-                        <span className="text-xs font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded border border-green-200 dark:border-green-800" title="Advantage">ADVANTAGE</span>
+                        <span className="text-xs font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded border border-green-200 dark:border-green-800 uppercase" title="Advantage">ADVANTAGE{extraAdvantage > 0 ? `+${extraAdvantage}` : ''}</span>
                     )}
                     {disadvantage && (
-                        <span className="text-xs font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DISADVANTAGE</span>
+                        <span className="text-xs font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800 uppercase" title="Disadvantage">DISADVANTAGE</span>
                     )}
                 </div>
             </div>
@@ -85,9 +85,9 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
             <div className="flex flex-col items-center">
                 <div
                     onClick={handleRoll}
-                    className="min-w-20 h-20 px-4 flex items-center justify-center border-4 border-blue-500 rounded-xl cursor-pointer hover:bg-blue-50 transition-colors group shadow-sm bg-white"
+                    className="min-w-24 h-24 px-4 flex items-center justify-center border-4 border-blue-500 rounded-xl cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group shadow-sm bg-white dark:bg-gray-950 active:scale-95"
                 >
-                    <span className="text-3xl font-bold text-blue-600 group-hover:scale-110 transition-transform">
+                    <span className="text-4xl font-black text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                         {displayModifier >= 0 ? "+" : ""}{displayModifier}
                     </span>
                 </div>
@@ -95,12 +95,12 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
 
             {/* Settings Overlay - Absolute positioned to avoid shifting items below */}
             {showSettings && (
-                <div className="absolute top-10 right-0 z-50 w-64 p-4 bg-white border border-gray-200 rounded-xl shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
-                    <div className="flex items-center justify-between border-b pb-2 mb-2">
-                        <span className="font-bold text-gray-700 font-sans">Settings</span>
+                <div className="absolute top-10 right-0 z-50 w-64 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
+                    <div className="flex items-center justify-between border-b dark:border-gray-800 pb-2 mb-2">
+                        <span className="font-bold text-gray-700 dark:text-gray-300">Settings</span>
                         <button
                             onClick={() => setShowSettings(false)}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -108,17 +108,17 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
 
                     <div className="grid grid-cols-1 gap-3">
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-600 font-sans">Misc Bonus</span>
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Misc Bonus</span>
                             <input
                                 type="number"
                                 value={initiative.miscBonus}
                                 onChange={(e) => handleMiscChange(e.target.value)}
-                                className="w-16 p-1 border border-gray-300 rounded text-right focus:outline-none focus:ring-1 focus:ring-blue-500 font-sans"
+                                className="w-16 p-1 border border-gray-300 dark:border-gray-700 rounded text-right focus:outline-none focus:ring-1 focus:ring-blue-500 bg-transparent dark:text-gray-200"
                             />
                         </div>
 
                         <label className="flex items-center justify-between cursor-pointer group">
-                            <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900 font-sans">Jack of All Trades</span>
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Jack of All Trades</span>
                             <input
                                 type="checkbox"
                                 checked={initiative.useJackOfAllTrades}
@@ -128,7 +128,7 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                         </label>
 
                         <label className="flex items-center justify-between cursor-pointer group">
-                            <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900 font-sans">Dex Tiebreaker</span>
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Dex Tiebreaker</span>
                             <input
                                 type="checkbox"
                                 checked={initiative.showDexTiebreaker}

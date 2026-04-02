@@ -14,7 +14,7 @@ import ActionForm from "./actions/ActionForm";
 import CommonActionsGrid from "./actions/CommonActionsGrid";
 
 // Types
-import { AbilityScores, Action, ActionType, Resource, CritRule, Character } from "../types/character";
+import { Action, Resource, AbilityScores, Character, RollDiceFunc, RollDamageFunc, CritRule, ActionType } from "../types/character";
 
 interface ActionsSectionProps {
     actions: Action[];
@@ -22,12 +22,12 @@ interface ActionsSectionProps {
     abilityScores: AbilityScores;
     proficiencyBonus: number;
     totalLevel: number;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
-    rollDamage?: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, critExtraDamage?: string, ruleOverride?: CritRule) => void;
+    rollDice?: RollDiceFunc;
+    rollDamage?: RollDamageFunc;
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
-    critRule?: "double-dice" | "max-plus-roll" | "double-total";
-    onCritRuleChange?: (rule: "double-dice" | "max-plus-roll" | "double-total") => void;
+    critRule?: CritRule;
+    onCritRuleChange?: (rule: CritRule) => void;
     critRange?: number;
     onCritRangeChange?: (range: number) => void;
     character: Character;

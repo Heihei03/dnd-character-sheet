@@ -26,7 +26,7 @@ import FeatureModifierEditor from "./FeatureModifierEditor";
 import ResourcePipTracker from "./ResourcePipTracker";
 
 // Types
-import { AbilityScores, CharacterClass, Feature, Resource, CritRule } from "../types/character";
+import { Feature, Character, AbilityScores, CritRule, RollDiceFunc, RollDamageFunc, Resource, CharacterClass } from "../types/character";
 
 // Utils
 import { resolveRollExpression } from "../utils/character-utils";
@@ -43,8 +43,8 @@ interface FeaturesSectionProps {
     abilityScores: AbilityScores;
     proficiencyBonus: number;
     totalLevel: number;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule) => void;
-    rollDamage?: (damageString: string, label?: string, damageType?: string, isCritical?: boolean, critExtraDamage?: string, ruleOverride?: CritRule) => void;
+    rollDice?: RollDiceFunc;
+    rollDamage?: RollDamageFunc;
     species?: string;
     subSpecies?: string;
     background?: string;

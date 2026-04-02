@@ -457,7 +457,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     critExtraDamage?: string,
     critRule?: CritRule,
     specificAdvantage?: boolean,
-    specificDisadvantage?: boolean
+    specificDisadvantage?: boolean,
+    extraAdvantage: number = 0
   ) => {
     const effectiveCritRange = critRange || characterWithDefaults.critRange || 20;
 
@@ -475,13 +476,21 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     rolls.push(baseRoll);
 
     let resultRoll = baseRoll;
-    let secondaryRoll: number | null = null;
 
     if (sides === 20 && (finalAdvantage || finalDisadvantage)) {
-      secondaryRoll = Math.floor(Math.random() * sides) + 1;
+      const secondaryRoll = Math.floor(Math.random() * sides) + 1;
       rolls.push(secondaryRoll);
       if (finalAdvantage) {
         resultRoll = Math.max(baseRoll, secondaryRoll);
+        
+        // Handle Extra Advantage (e.g. Elven Accuracy)
+        if (extraAdvantage > 0) {
+            for (let i = 0; i < extraAdvantage; i++) {
+                const extraRoll = Math.floor(Math.random() * sides) + 1;
+                rolls.push(extraRoll);
+                resultRoll = Math.max(resultRoll, extraRoll);
+            }
+        }
       } else {
         resultRoll = Math.min(baseRoll, secondaryRoll);
       }
@@ -491,10 +500,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     
     let formula = `d${sides}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}`;
     if (sides === 20 && (finalAdvantage || finalDisadvantage)) {
-        formula = `${finalAdvantage ? 'ADV' : 'DIS'} ${formula}`;
+        const advPrefix = finalAdvantage ? (extraAdvantage > 0 ? `ADV+${extraAdvantage}` : 'ADV') : 'DIS';
+        formula = `${advPrefix} ${formula}`;
     }
 
-    let breakdown = `(${baseRoll}${secondaryRoll !== null ? `, ${secondaryRoll}` : ""})`;
+    let breakdown = `(${rolls.join(", ")})`;
     if (modifier !== 0) {
         breakdown += ` ${modifier >= 0 ? "+" : "-"} ${Math.abs(modifier)}`;
     }

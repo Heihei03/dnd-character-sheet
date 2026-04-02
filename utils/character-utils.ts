@@ -720,32 +720,51 @@ export const getEffectiveResources = (character: Character, proficiencyBonus: nu
     return combined;
 };
 
-export const getAdvantageDisadvantage = (character: Character, key: string): { advantage: boolean, disadvantage: boolean, notes: string[] } => {
+export const getAdvantageDisadvantage = (character: Character, key: string, ability?: string): { advantage: boolean, disadvantage: boolean, extraAdvantage: number, notes: string[] } => {
     const activeFeatures = getAllActiveFeatures(character);
     const advMods = getFeatureModifiersByType(activeFeatures, "Advantage");
     const disMods = getFeatureModifiersByType(activeFeatures, "Disadvantage");
+    const extraAdvMods = getFeatureModifiersByType(activeFeatures, "Extra Advantage");
 
-    const matches = (mod: FeatureModifier, target: string) => {
-        const sub = (mod.subType || "").toLowerCase();
+    const matches = (mod: FeatureModifier, target: string, ability?: string) => {
+        const subTypes = (mod.subType || "").split(",").map(s => s.trim().toLowerCase());
         const t = (target || "").toLowerCase();
+        const a = (ability || "").toLowerCase();
 
-        // Exact match
-        if (sub === t) return true;
+        return subTypes.some(sub => {
+            if (sub === "") return false;
 
-        // "Saving Throws" matches specific saves (e.g. "Wisdom Saves")
-        if (sub === "saving throws" && t.endsWith("saves")) return true;
+            // Exact match
+            if (sub === t) return true;
 
-        // "Checks" or "Ability Checks" matches specific checks (e.g. "Perception Checks")
-        if ((sub === "checks" || sub === "ability checks") && t.endsWith("checks")) return true;
+            // "Saving Throws" matches specific saves (e.g. "Wisdom Saves")
+            if (sub === "saving throws" && t.endsWith("saves")) return true;
 
-        return false;
+            // "Checks" or "Ability Checks" matches specific checks (e.g. "Perception Checks")
+            if ((sub === "checks" || sub === "ability checks") && t.endsWith("checks")) return true;
+
+            // Ability-based matches
+            if (a) {
+                // "Dexterity" matches any Dexterity-based roll
+                if (sub === a) return true;
+                // "Dexterity Attacks" matches attacks using Dexterity
+                if (sub === `${a} attacks` && t.includes("attack")) return true;
+                // "Dexterity Checks" matches checks using Dexterity
+                if (sub === `${a} checks` && (t.includes("check") || t.includes("skill"))) return true;
+                // "Dexterity Saves" matches saves using Dexterity
+                if (sub === `${a} saves` && t.includes("save")) return true;
+            }
+
+            return false;
+        });
     };
 
-    const relevantAdv = advMods.filter(m => matches(m, key));
-    const relevantDis = disMods.filter(m => matches(m, key));
+    const relevantAdv = advMods.filter(m => matches(m, key, ability));
+    const relevantDis = disMods.filter(m => matches(m, key, ability));
+    const relevantExtraAdv = extraAdvMods.filter(m => matches(m, key, ability));
 
     // Notes for more specific or contextual modifiers
-    const notes = [...advMods, ...disMods]
+    const notes = [...advMods, ...disMods, ...extraAdvMods]
         .filter(m => {
             const sub = (m.subType || "").toLowerCase();
             const t = (key || "").toLowerCase();
@@ -762,11 +781,12 @@ export const getAdvantageDisadvantage = (character: Character, key: string): { a
 
             return false;
         })
-        .map(m => `${m.type === "Advantage" ? "ADV" : "DIS"}: ${m.subType}${m.value ? ` (${m.value})` : ""}`);
+        .map(m => `${m.type === "Advantage" ? "ADV" : m.type === "Extra Advantage" ? "EXTRA ADV" : "DIS"}: ${m.subType}${m.value ? ` (${m.value})` : ""}`);
 
     return {
         advantage: relevantAdv.length > 0,
         disadvantage: relevantDis.length > 0,
+        extraAdvantage: relevantExtraAdv.reduce((sum, m) => sum + (Number(m.value) || 0), 0),
         notes: notes
     };
 };

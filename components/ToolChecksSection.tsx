@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AbilityScores, ToolProficiency, ProficiencyLevel, CritRule, Character } from "../types/character";
+import { AbilityScores, Character, RollDiceFunc, ToolProficiency } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, ABILITY_NAMES, getAdvantageDisadvantage } from "../utils/character-utils";
@@ -12,7 +12,7 @@ interface ToolChecksSectionProps {
     onUpdate: (value: ToolProficiency[]) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
+    rollDice?: RollDiceFunc;
     onNavigateToFeature?: (featureId: string) => void;
     character: Character;
 }
@@ -51,7 +51,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                         const totalBonus = modifier + bonus;
                         const sign = totalBonus >= 0 ? "+" : "";
 
-                        const { advantage, disadvantage } = getAdvantageDisadvantage(character, `${tool.name} Check`);
+                        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${tool.name} Check`, abilityKey);
 
                         return (
                             <div
@@ -64,10 +64,12 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                         className={`w-8 h-8 flex items-center justify-center focus:outline-none transition-transform active:scale-95 ${tool.fromFeature ? "cursor-default" : "hover:text-blue-600"}`}
                                         title={tool.fromFeature ? `Granted by Feature: ${tool.level}` : `Proficiency: ${tool.level}`}
                                     >
-                                        <ProficiencyIcon level={tool.level} />
+                                        <div className="scale-75">
+                                            <ProficiencyIcon level={tool.level} />
+                                        </div>
                                     </button>
                                     <div className="flex items-baseline gap-2">
-                                        <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}>
+                                        <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}>
                                             {tool.name}
                                         </span>
                                         {tool.fromFeature && (
@@ -95,11 +97,17 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                                 </select>
                                             )}
                                             <span>)</span>
+                                            {advantage && (
+                                                <span className="ml-1 text-[10px] font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-0.5 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV{extraAdvantage > 0 ? `+${extraAdvantage}` : ''}</span>
+                                            )}
+                                            {disadvantage && (
+                                                <span className="ml-1 text-[10px] font-black bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-0.5 rounded border border-red-200 dark:border-red-800" title="Disadvantage">DIS</span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check (${tool.ability})`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
+                                    onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check (${tool.ability})`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
                                     className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >

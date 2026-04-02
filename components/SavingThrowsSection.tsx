@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SavingThrows, Character, CritRule } from "../types/character";
+import { SavingThrows, Character, CritRule, AbilityScores, RollDiceFunc } from "../types/character";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
 import { Target } from "lucide-react";
@@ -8,8 +8,8 @@ interface SavingThrowsSectionProps {
     character: Character;
     proficiencyBonus: number;
     setSavingThrows: (key: string, value: boolean) => void;
-    abilityScores: { [key: string]: number };
-    rollDice?: (sides: number, modifier?: number, label?: string, damageFormula?: string, damageType?: string, critRange?: number, critExtraDamage?: string, critRule?: CritRule, advantage?: boolean, disadvantage?: boolean) => void;
+    abilityScores: AbilityScores;
+    rollDice?: RollDiceFunc;
 }
 
 const calculateModifier = (score: number): number => {
@@ -48,7 +48,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                 const displayModifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
                 const label = showConc ? "Concentration" : `${formatKey(key)} Save`;
 
-                const { advantage, disadvantage, notes } = getAdvantageDisadvantage(character, label);
+                const { advantage, disadvantage, extraAdvantage, notes } = getAdvantageDisadvantage(character, label, key);
                 notes.forEach(n => { if (!allNotes.includes(n)) allNotes.push(n); });
 
                 return (
@@ -57,7 +57,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         <div className="h-8 flex items-center justify-center w-full relative px-2">
                             <div
                                 className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-blue-500' : 'text-gray-400 hover:text-blue-500'}`}
-                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
+                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
                             >
                                 {showConc ? "Concentration" : `${key.slice(0, 3)} Save`}
                             </div>
@@ -66,7 +66,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         {/* Modifier Slot - Taking remaining space */}
                         <div className="flex-1 flex items-center justify-center w-full">
                             <button 
-                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage)}
+                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
                                 className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-blue-500 hover:text-blue-600' : 'text-blue-600 hover:text-blue-800'}`}
                             >
                                 {displayModifier}
@@ -103,7 +103,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
 
                         {/* ADV/DIS Badges - Bottom Left */}
                         <div className="absolute bottom-1 left-1 flex flex-col gap-1 pointer-events-none">
-                            {advantage && <span className="text-[11px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800 uppercase leading-tight">ADV</span>}
+                            {advantage && <span className="text-[11px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800 uppercase leading-tight">ADV{extraAdvantage > 0 ? `+${extraAdvantage}` : ''}</span>}
                             {disadvantage && <span className="text-[11px] font-black bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800 uppercase leading-tight">DIS</span>}
                         </div>
                     </div>
