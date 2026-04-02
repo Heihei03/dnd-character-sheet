@@ -211,10 +211,10 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 </div>
             </div>
 
-            {(isAdding || editingAction) && (
+            {isAdding && (
                 <ActionForm
-                    initialData={editingAction || undefined}
-                    isEditing={!!editingAction}
+                    initialData={undefined}
+                    isEditing={false}
                     resources={resources}
                     abilityScores={abilityScores}
                     proficiencyBonus={proficiencyBonus}
@@ -249,6 +249,22 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                             </h3>
                             <div className="grid grid-cols-1 gap-3">
                                 {groupedActions[type].map(action => {
+                                    if (editingAction && editingAction.id === action.id) {
+                                        return (
+                                            <div key={action.id} className="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-lg border-2 border-blue-100 dark:border-blue-900/30 my-1 shadow-inner">
+                                                <ActionForm
+                                                    initialData={editingAction}
+                                                    isEditing={true}
+                                                    resources={resources}
+                                                    abilityScores={abilityScores}
+                                                    proficiencyBonus={proficiencyBonus}
+                                                    onSave={handleSave}
+                                                    onCancel={() => setEditingAction(null)}
+                                                />
+                                            </div>
+                                        );
+                                    }
+
                                     const resource = resources.find(r => r.id === action.resourceId) || 
                                                      resources.find(r => r.name.toLowerCase() === action.resourceName?.toLowerCase());
                                     
@@ -285,22 +301,40 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                             Rolls
                         </h3>
                         <div className="grid grid-cols-1 gap-3">
-                            {rollActions.map(action => (
-                                <ActionCard
-                                    key={action.id}
-                                    action={action}
-                                    abilityScores={abilityScores}
-                                    proficiencyBonus={proficiencyBonus}
-                                    totalLevel={totalLevel}
-                                    isExpanded={expandedIds.has(action.id)}
-                                    onToggleExpand={() => toggleExpand(action.id)}
-                                    rollDice={rollDice}
-                                    rollDamage={rollDamage}
-                                    currentCastLevel={0}
-                                    onCastLevelChange={() => {}}
-                                    character={character}
-                                />
-                            ))}
+                            {rollActions.map(action => {
+                                if (editingAction && editingAction.id === action.id) {
+                                    return (
+                                        <div key={action.id} className="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-lg border-2 border-blue-100 dark:border-blue-900/30 my-1 shadow-inner">
+                                            <ActionForm
+                                                initialData={editingAction}
+                                                isEditing={true}
+                                                resources={resources}
+                                                abilityScores={abilityScores}
+                                                proficiencyBonus={proficiencyBonus}
+                                                onSave={handleSave}
+                                                onCancel={() => setEditingAction(null)}
+                                            />
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <ActionCard
+                                        key={action.id}
+                                        action={action}
+                                        abilityScores={abilityScores}
+                                        proficiencyBonus={proficiencyBonus}
+                                        totalLevel={totalLevel}
+                                        isExpanded={expandedIds.has(action.id)}
+                                        onToggleExpand={() => toggleExpand(action.id)}
+                                        rollDice={rollDice}
+                                        rollDamage={rollDamage}
+                                        currentCastLevel={0}
+                                        onCastLevelChange={() => {}}
+                                        character={character}
+                                    />
+                                );
+                            })}
                         </div>
                     </div>
                 )}
