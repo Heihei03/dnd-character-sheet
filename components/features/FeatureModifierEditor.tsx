@@ -1,13 +1,13 @@
 "use client";
 
+import React, { useState } from "react";
 import { Plus, Trash2, X } from "lucide-react";
-import { useState } from "react";
-import ConfirmationModal from "./ui/ConfirmationModal";
-import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../types/modifiers";
-import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES, REGAIN_TYPES, ROLL_TYPES } from "../utils/constants";
-import { TOOL_DATA } from "../data/tools";
-import { ABILITY_NAMES } from "../utils/character-utils";
-import { ACTION_TYPES } from "../types/character";
+import ConfirmationModal from "../ui/ConfirmationModal";
+import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../../types/modifiers";
+import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES, REGAIN_TYPES, ROLL_TYPES } from "../../utils/constants";
+import { TOOL_DATA } from "../../data/tools";
+import { ABILITY_NAMES } from "../../utils/character-utils";
+import { ACTION_TYPES } from "../../types/character";
 
 interface FeatureModifierEditorProps {
     modifiers: FeatureModifier[];

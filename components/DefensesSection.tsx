@@ -5,7 +5,7 @@ import { Defenses, DefenseEntry } from "../types/character";
 import { DAMAGE_TYPES, CONDITION_TYPES } from "../utils/constants";
 import { Trash2, Plus } from "lucide-react";
 import ConfirmationModal from "./ui/ConfirmationModal";
-import FeatureItemPill from "./FeatureItemPill";
+import FeatureItemPill from "./features/FeatureItemPill";
 
 interface DefensesSectionProps {
     defenses: Defenses;

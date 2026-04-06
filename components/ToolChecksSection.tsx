@@ -5,7 +5,7 @@ import { AbilityScores, Character, RollDiceFunc, ToolProficiency } from "../type
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, ABILITY_NAMES, getAdvantageDisadvantage } from "../utils/character-utils";
-import FeatureNavigationBadge from "./FeatureNavigationBadge";
+import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
 
 interface ToolChecksSectionProps {
     toolProficiencies: ToolProficiency[];

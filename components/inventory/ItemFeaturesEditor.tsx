@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Feature } from "../../types/character";
-import FeatureModifierEditor from "../FeatureModifierEditor";
+import FeatureModifierEditor from "../features/FeatureModifierEditor";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import ConfirmationModal from "../ui/ConfirmationModal";

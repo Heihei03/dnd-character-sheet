@@ -7,7 +7,7 @@ import { ARMOR_DATA } from "../data/armor";
 import { TOOL_DATA } from "../data/tools";
 import { Plus, X } from "lucide-react";
 import Button from "./ui/button";
-import FeatureItemPill from "./FeatureItemPill";
+import FeatureItemPill from "./features/FeatureItemPill";
 import { ToolProficiency } from "../types/character";
 
 interface ProficiencyListProps {

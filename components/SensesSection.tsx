@@ -6,7 +6,7 @@ import { SENSES_LIST } from "../utils/constants";
 import { Trash2, Plus } from "lucide-react";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import Button from "./ui/button";
-import FeatureNavigationBadge from "./FeatureNavigationBadge";
+import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
 
 interface SensesSectionProps {
     senses: Sense[];

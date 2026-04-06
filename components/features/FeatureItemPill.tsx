@@ -22,14 +22,14 @@ const FeatureItemPill: React.FC<FeatureItemPillProps> = ({
     const isClickable = isFromFeature && featureId && onNavigateToFeature;
 
     const baseClasses = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold transition-all";
-    
+
     // Support either providing a specific colorClass (like DefensesSection) or fallback to the blue theme (like ProficienciesSection)
     let appliedColorClass = colorClass;
-    
+
     if (!appliedColorClass) {
-       appliedColorClass = isFromFeature
-           ? "bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 border"
-           : "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/50 text-blue-700 dark:text-blue-300 border";
+        appliedColorClass = isFromFeature
+            ? "bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 border"
+            : "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/50 text-blue-700 dark:text-blue-300 border";
     }
 
     const featureClasses = isFromFeature

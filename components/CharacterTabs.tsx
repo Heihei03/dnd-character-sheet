@@ -8,7 +8,7 @@ import { Card, CardContent } from "./ui/card";
 // Components
 import ActionsSection from "./ActionsSection";
 import CurrencySection from "./CurrencySection";
-import FeaturesSection from "./FeaturesSection";
+import FeaturesSection from "./features/FeaturesSection";
 import InventorySection from "./InventorySection";
 import SpellsSection from "./SpellsSection";
 import BioSection from "./BioSection";

@@ -5,7 +5,7 @@ import { Spell, AbilityScores, CharacterClass } from "../types/character";
 import { DAMAGE_TYPES, SPELL_SCHOOLS, SPELL_AOE_SHAPES } from "../utils/constants";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../utils/dice-utils";
 import ConfirmationModal from "./ui/ConfirmationModal";
-import FeatureNavigationBadge from "./FeatureNavigationBadge";
+import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
 
 interface SpellCardProps {
     spell: Spell;

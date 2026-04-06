@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Speed } from "../types/character";
 import { speedTypes } from "../utils/constants";
-import FeatureNavigationBadge from "./FeatureNavigationBadge";
+import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
 
 interface SpeedSectionProps {
   baseSpeed: Speed;
