@@ -5,7 +5,7 @@ import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import Select from "./ui/Select";
 import { Card, CardContent } from "./ui/card";
-import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Shield, Camera, Image as ImageIcon } from "lucide-react";
+import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Shield, Camera, Image as ImageIcon, Home } from "lucide-react";
 import SettingsButton from "./ui/SettingsButton";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import ThemeSettings from "./ThemeSettings";
@@ -30,6 +30,8 @@ interface CharacterHeaderProps {
     onRemoveClass: (index: number) => void;
     imageUrl?: string;
     onImageUrlChange: (value: string) => void;
+    onDelete?: () => void;
+    onReturn?: () => void;
 }
 
 const EXP_THRESHOLDS = [
@@ -56,9 +58,12 @@ const CharacterHeader = ({
     onRemoveClass,
     imageUrl,
     onImageUrlChange,
+    onDelete,
+    onReturn,
 }: CharacterHeaderProps) => {
     const [isEditingClasses, setIsEditingClasses] = useState(false);
     const [isEditingSettings, setIsEditingSettings] = useState(false);
+    const [isDeletingCharacter, setIsDeletingCharacter] = useState(false);
     const [classIndexToRemove, setClassIndexToRemove] = useState<number | null>(null);
     const nextLevelExp = totalLevel < 20 ? EXP_THRESHOLDS[totalLevel] : null;
 
@@ -219,13 +224,33 @@ const CharacterHeader = ({
                                 <span className="text-5xl font-black leading-none animate-in zoom-in duration-500">+{proficiencyBonus}</span>
                             </div>
 
-                            {/* Global Settings Trigger */}
+                            {/* Global Actions */}
                             <div className="flex flex-col gap-2">
-                                <SettingsButton
-                                    onClick={() => setIsEditingSettings(true)}
-                                    title="Display Settings"
-                                    className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-primary/50 text-gray-500 hover:text-primary transition-all"
-                                />
+                                <div className="flex items-center gap-1.5 p-1 bg-background/50 rounded-full border border-border shadow-inner">
+                                    {onReturn && (
+                                        <button
+                                            onClick={onReturn}
+                                            title="Return to Selection"
+                                            className="p-1.5 rounded-full transition-colors text-muted-foreground hover:text-primary hover:bg-secondary"
+                                        >
+                                            <Home size={18} />
+                                        </button>
+                                    )}
+                                    <SettingsButton
+                                        onClick={() => setIsEditingSettings(true)}
+                                        title="Display Settings"
+                                        className="p-1.5"
+                                    />
+                                    {onDelete && (
+                                        <button
+                                            onClick={() => setIsDeletingCharacter(true)}
+                                            title="Delete Character"
+                                            className="p-1.5 rounded-full transition-colors text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -245,6 +270,18 @@ const CharacterHeader = ({
                 title="Remove Class"
                 message={`Are you sure you want to remove the ${classes[classIndexToRemove ?? 0]?.name} class?`}
                 confirmText="Remove"
+            />
+
+            <ConfirmationModal
+                isOpen={isDeletingCharacter}
+                onClose={() => setIsDeletingCharacter(false)}
+                onConfirm={() => {
+                    if (onDelete) onDelete();
+                    setIsDeletingCharacter(false);
+                }}
+                title="Delete Character"
+                message={`Are you sure you want to delete ${name}? This action is final and all character data will be lost forever.`}
+                confirmText="Delete"
             />
         </Card>
 

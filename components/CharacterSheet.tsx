@@ -19,9 +19,11 @@ import { Character, Feature } from "../types/character";
 interface CharacterSheetProps {
   character: Character | null;
   setCharacter: React.Dispatch<React.SetStateAction<Character | null>>;
+  onDelete?: () => void;
+  onReturn?: () => void;
 }
 
-const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter }) => {
+const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter, onDelete, onReturn }) => {
   const {
     characterWithDefaults,
     activeTab,
@@ -110,6 +112,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           onRemoveClass={removeClass}
           imageUrl={characterWithDefaults.imageUrl}
           onImageUrlChange={handleImageUrlChange}
+          onDelete={onDelete}
+          onReturn={onReturn}
         />
       </div>
 

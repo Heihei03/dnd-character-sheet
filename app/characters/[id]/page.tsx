@@ -62,7 +62,7 @@ const CharacterPage = () => {
 
 
   const handleDelete = async () => {
-    if (character && window.confirm("Are you sure you want to delete this character?")) {
+    if (character) {
       try {
         await deleteCharacter(character.id);
         router.push("/"); // Redirect after deletion
@@ -76,22 +76,13 @@ const CharacterPage = () => {
   if (!character) return <p>Character not found.</p>;
 
   return (
-    <div className="flex flex-col items-center p-8">
-      <CharacterSheet character={character} setCharacter={setCharacter} />
-
-      <button
-        onClick={() => router.push("/")}
-        className="mt-4 py-2 px-4 bg-blue-500 text-white rounded-lg"
-      >
-        Return to Character Select
-      </button>
-
-      <button
-        onClick={handleDelete}
-        className="mt-4 py-2 px-4 bg-red-500 text-white rounded-lg"
-      >
-        Delete Character
-      </button>
+    <div className="flex flex-col items-center p-8 overflow-x-hidden">
+      <CharacterSheet 
+        character={character} 
+        setCharacter={setCharacter} 
+        onDelete={handleDelete}
+        onReturn={() => router.push("/")}
+      />
     </div>
   );
 };
