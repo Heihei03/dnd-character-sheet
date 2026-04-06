@@ -121,7 +121,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                         <div className="min-w-[140px] flex items-center gap-2">
                             <h4 className="font-bold">{action.name}</h4>
                             {action.isAttack && (
-                                <span className="text-xs bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider border border-red-100 dark:border-red-800/50">
+                                <span className="text-xs bg-primary/10 dark:bg-primary/20 text-primary px-1.5 py-0.5 rounded font-black uppercase tracking-[0.1em] border border-primary/30">
                                     Attack
                                 </span>
                             )}
@@ -178,7 +178,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                 action.activation) && (
                                 <div className="hidden sm:flex items-center gap-3 text-xs text-gray-500">
                                     {action.activation && (
-                                        <span className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">
+                                        <span className="bg-secondary/50 dark:bg-secondary/30 px-2 py-0.5 rounded font-bold">
                                             {action.activation}
                                         </span>
                                     )}
@@ -280,7 +280,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                     </div>
                 </div>
                 {isExpanded && (
-                    <div className="p-4 pt-0 border-t border-gray-100 dark:border-gray-800 space-y-4 bg-gray-50/50 dark:bg-gray-900/50 text-sm animate-in slide-in-from-top-2 duration-200">
+                    <div className="p-4 pt-0 border-t border-border space-y-4 bg-secondary/10 dark:bg-secondary/5 text-sm animate-in slide-in-from-top-2 duration-200">
                         {(action.isAttack ||
                             action.baseLevel !== undefined) && (
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3">
@@ -348,7 +348,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                             </div>
                         )}
                         <div
-                            className={`whitespace-pre-wrap leading-relaxed text-gray-700 dark:text-gray-300 ${
+                            className={`whitespace-pre-wrap leading-relaxed text-foreground/80 ${
                                 action.isAttack ||
                                 action.baseLevel !== undefined
                                     ? ""
