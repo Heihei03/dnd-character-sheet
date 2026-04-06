@@ -8,6 +8,7 @@ import { TOOL_DATA } from "../data/tools";
 import { Plus, X } from "lucide-react";
 import Button from "./ui/button";
 import FeatureItemPill from "./features/FeatureItemPill";
+import ThemedAutocomplete from "./ui/ThemedAutocomplete";
 import { ToolProficiency, Character } from "../types/character";
 
 interface ProficiencyListProps {
@@ -103,32 +104,26 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
             </div>
             {showAdd && (
                 <div className="flex gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <div className="flex-1 relative">
-                        <input
-                            type="text"
-                            autoFocus
-                            value={newItem}
-                            onChange={(e) => setNewItem(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") addItem();
-                                if (e.key === "Escape") setShowAdd(false);
-                            }}
-                            placeholder={`Add ${title.toLowerCase().split(' ')[0]}...`}
-                            className="w-full p-2 text-sm border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none transition-all"
-                            list={`${field}-options-visible`}
-                        />
-                        <datalist id={`${field}-options-visible`}>
-                            {options.map((opt) => (
-                                <option key={opt} value={opt} />
-                            ))}
-                        </datalist>
-                    </div>
-                    <Button
+                    <ThemedAutocomplete
+                        value={newItem}
+                        onChange={setNewItem}
+                        options={options}
+                        placeholder={`Add ${title.toLowerCase().split(' ')[0]}...`}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                addItem();
+                            }
+                            if (e.key === "Escape") setShowAdd(false);
+                        }}
+                        className="flex-1"
+                    />
+                    <button
                         onClick={addItem}
-                        className="py-1"
+                        className="p-2 bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.05] active:scale-[0.95] transition-all flex items-center justify-center min-w-[44px]"
                     >
-                        Add
-                    </Button>
+                        <Plus className="w-5 h-5" />
+                    </button>
                 </div>
             )}
         </div>

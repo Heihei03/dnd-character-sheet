@@ -6,6 +6,7 @@ import { DAMAGE_TYPES, CONDITION_TYPES } from "../utils/constants";
 import { Trash2, Plus } from "lucide-react";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import FeatureItemPill from "./features/FeatureItemPill";
+import ThemedAutocomplete from "./ui/ThemedAutocomplete";
 
 interface DefensesSectionProps {
     defenses: Defenses;
@@ -88,21 +89,24 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                     </FeatureItemPill>
                 ))}
             </div>
-            <div className="flex gap-1 relative">
-                <input
-                    type="text"
-                    list="defense-types-list"
+            <div className="flex gap-2 items-center pt-1">
+                <ThemedAutocomplete
                     value={newValue}
-                    onChange={(e) => setNewValue(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && addDefense(category, newValue, setNewValue)}
+                    onChange={setNewValue}
+                    options={ALL_DEFENSE_TYPES}
                     placeholder={`Add ${title.toLowerCase()}...`}
-                    className="flex-1 text-sm p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded focus:ring-2 focus:ring-primary focus:outline-none transition-all font-sans min-w-0"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            addDefense(category, newValue, setNewValue);
+                        }
+                    }}
                 />
                 <button
                     onClick={() => addDefense(category, newValue, setNewValue)}
-                    className="px-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold flex items-center justify-center min-w-[34px]"
+                    className="p-2.5 bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.05] active:scale-[0.95] transition-all flex items-center justify-center min-w-[44px]"
                 >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-5 h-5" />
                 </button>
             </div>
         </div>
@@ -115,9 +119,6 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
             </div>
 
             <div className="space-y-5 px-1">
-                <datalist id="defense-types-list">
-                    {ALL_DEFENSE_TYPES.map(type => <option key={type} value={type} />)}
-                </datalist>
                 <DefenseList
                     title="Resistances"
                     items={defenses.resistances}
@@ -133,7 +134,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                     category="immunities"
                     newValue={newImmunity}
                     setNewValue={setNewImmunity}
-                    colorClass="bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-100 dark:border-purple-800/50 shadow-sm"
+                    colorClass="bg-secondary text-secondary-foreground border border-secondary/20 shadow-sm"
                     onNavigateToFeature={onNavigateToFeature}
                 />
                 <DefenseList
@@ -142,7 +143,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                     category="vulnerabilities"
                     newValue={newVulnerability}
                     setNewValue={setNewVulnerability}
-                    colorClass="bg-orange-50 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border border-orange-100 dark:border-orange-800/50 shadow-sm"
+                    colorClass="bg-muted text-muted-foreground border border-border shadow-sm"
                     onNavigateToFeature={onNavigateToFeature}
                 />
             </div>

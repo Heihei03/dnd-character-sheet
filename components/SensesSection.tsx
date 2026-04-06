@@ -5,9 +5,9 @@ import { Sense } from "../types/character";
 import { SENSES_LIST } from "../utils/constants";
 import { Trash2, Plus } from "lucide-react";
 import ConfirmationModal from "./ui/ConfirmationModal";
-import Button from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
+import ThemedAutocomplete from "./ui/ThemedAutocomplete";
 
 interface SensesSectionProps {
     senses: Sense[];
@@ -74,33 +74,39 @@ const SensesSection: React.FC<SensesSectionProps> = ({
                         ))}
                     </div>
                     <div className="flex gap-2 items-center pt-2">
-                        <div className="flex-[2] relative">
-                            <input
-                                type="text"
-                                list="senses-list"
+                        <div className="flex-1 relative">
+                            <ThemedAutocomplete
                                 value={newSense.name}
-                                onChange={(e) => setNewSense({ ...newSense, name: e.target.value })}
+                                onChange={(val) => setNewSense({ ...newSense, name: val })}
+                                options={SENSES_LIST}
                                 placeholder="Sense name..."
-                                className="w-full text-sm p-2 bg-background border border-border rounded-lg outline-none focus:ring-1 focus:ring-primary transition-all shadow-inner"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        addSense();
+                                    }
+                                }}
                             />
-                            <datalist id="senses-list">
-                                {SENSES_LIST.map(sense => <option key={sense} value={sense} />)}
-                            </datalist>
                         </div>
                         <input
                             type="text"
                             value={newSense.value}
                             onChange={(e) => setNewSense({ ...newSense, value: e.target.value })}
-                            onKeyDown={(e) => e.key === 'Enter' && addSense()}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    addSense();
+                                }
+                            }}
                             placeholder="Range..."
-                            className="flex-1 text-sm p-2 bg-background border border-border rounded-lg outline-none focus:ring-1 focus:ring-primary transition-all shadow-inner"
+                            className="w-24 text-sm p-2.5 bg-background border border-border rounded-xl outline-none focus:ring-1 focus:ring-primary transition-all shadow-inner font-medium placeholder:text-muted-foreground/50"
                         />
-                        <Button
+                        <button
                             onClick={addSense}
-                            className="px-4 py-2 bg-primary text-white hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20"
+                            className="p-2.5 bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.05] active:scale-[0.95] transition-all flex items-center justify-center min-w-[44px]"
                         >
-                            <Plus className="w-4 h-4" />
-                        </Button>
+                            <Plus className="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
             </CardContent>

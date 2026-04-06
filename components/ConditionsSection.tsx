@@ -6,6 +6,7 @@ import { CONDITION_TYPES } from "../utils/constants";
 import { CONDITION_DATA } from "../data/conditions";
 import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import ConfirmationModal from "./ui/ConfirmationModal";
+import ThemedAutocomplete from "./ui/ThemedAutocomplete";
 
 interface ConditionsSectionProps {
     conditions: Condition[];
@@ -88,17 +89,17 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
             </div>
 
             <div className="space-y-3">
-                <div className="flex flex-col gap-2 p-3 bg-red-50 dark:bg-red-950/20 rounded-md border border-red-100 dark:border-red-900/30">
+                <div className="flex flex-col gap-2 p-3 bg-primary/5 dark:bg-primary/20 rounded-md border border-primary/20 dark:border-primary/30">
                     <div className="flex justify-between items-center">
-                        <span className="font-semibold text-red-800 dark:text-red-300">Exhaustion</span>
+                        <span className="font-semibold text-primary">Exhaustion</span>
                         <div className="flex items-center gap-2">
                             <button onClick={() => updateExhaustion(exhaustionLevel - 1)} disabled={exhaustionLevel === 0} className="w-6 h-6 flex items-center justify-center rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 disabled:opacity-50 hover:bg-gray-50 transition-colors">-</button>
-                            <span className="w-4 text-center font-bold text-red-700 dark:text-red-400">{exhaustionLevel}</span>
+                            <span className="w-4 text-center font-bold text-primary">{exhaustionLevel}</span>
                             <button onClick={() => updateExhaustion(exhaustionLevel + 1)} disabled={exhaustionLevel === 6} className="w-6 h-6 flex items-center justify-center rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 disabled:opacity-50 hover:bg-gray-50 transition-colors">+</button>
                         </div>
                     </div>
                     {exhaustionLevel > 0 && (
-                        <div className="text-xs text-red-600 dark:text-red-400 mt-1 leading-snug">
+                        <div className="text-xs text-foreground/70 mt-1 leading-snug">
                             {exhaustionLevel >= 1 && <div><span className="font-bold">1:</span> Disadvantage on ability checks</div>}
                             {exhaustionLevel >= 2 && <div><span className="font-bold">2:</span> Speed halved</div>}
                             {exhaustionLevel >= 3 && <div><span className="font-bold">3:</span> Disadvantage on attack rolls and saving throws</div>}
@@ -155,25 +156,25 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
                         );
                     })}
                 </div>
-                <div className="flex gap-1 relative">
-                    <input
-                        type="text"
-                        list="conditions-list"
+                <div className="flex gap-2 items-center">
+                    <ThemedAutocomplete
                         value={newConditionName}
-                        onChange={(e) => setNewConditionName(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && addCondition()}
+                        onChange={setNewConditionName}
+                        options={CONDITION_TYPES.filter(type => type !== "Exhaustion")}
                         placeholder="Add condition..."
-                        className="flex-1 text-sm p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded focus:ring-2 focus:ring-primary focus:outline-none transition-all font-sans min-w-0"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                addCondition();
+                            }
+                        }}
                     />
                     <button
                         onClick={addCondition}
-                        className="px-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold flex items-center justify-center min-w-[34px]"
+                        className="p-2.5 bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.05] active:scale-[0.95] transition-all flex items-center justify-center min-w-[44px]"
                     >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-5 h-5" />
                     </button>
-                    <datalist id="conditions-list">
-                        {CONDITION_TYPES.filter(type => type !== "Exhaustion").map(type => <option key={type} value={type} />)}
-                    </datalist>
                 </div>
             </div>
 
