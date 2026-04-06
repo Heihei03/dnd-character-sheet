@@ -21,7 +21,7 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, 
   };
 
   return (
-    <div className="border p-3 rounded shadow-sm bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 transition-all">
+    <div className="border border-border p-3 rounded shadow-sm bg-card text-card-foreground transition-all">
       {/* Collapsed Header */}
       <div
         className="flex justify-between items-center cursor-pointer group"
@@ -30,11 +30,11 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, 
         <div className="flex flex-col">
           <span className="font-bold text-xs uppercase text-gray-400 tracking-wider">Speed</span>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black text-gray-900 dark:text-gray-100">{effectiveSpeed.walk.value}</span>
-            <span className="text-sm font-bold text-gray-400">ft</span>
+            <span className="text-2xl font-black text-foreground">{effectiveSpeed.walk.value}</span>
+            <span className="text-sm font-bold text-muted-foreground">ft</span>
           </div>
         </div>
-        <div className={`text-gray-400 group-hover:text-blue-500 transition-all duration-300 ${expanded ? "rotate-180" : "rotate-0"}`}>
+        <div className={`text-gray-400 group-hover:text-primary transition-all duration-300 ${expanded ? "rotate-180" : "rotate-0"}`}>
           <ChevronDown className="w-5 h-5" />
         </div>
       </div>
@@ -49,12 +49,12 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, 
             const fromFeatureId = effectiveData.from;
 
             return (
-              <div key={key} className="space-y-1 bg-gray-50 dark:bg-gray-800/50 p-2 rounded">
+              <div key={key} className="space-y-1 bg-secondary/50 p-2 rounded">
                 <div className="flex justify-between items-center">
-                  <span className="capitalize font-bold text-sm text-gray-600 dark:text-gray-400">{key}</span>
+                  <span className="capitalize font-bold text-sm text-muted-foreground">{key}</span>
                   <div className="flex items-center gap-2">
                     {hasModifier && (
-                      <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 uppercase">
+                      <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase">
                         {effectiveData.value > baseData.value ? `+${effectiveData.value - baseData.value}` : effectiveData.value - baseData.value} ft
                       </span>
                     )}
@@ -72,7 +72,7 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, 
                         onChange={(e) =>
                           handleChange(key, parseInt(e.target.value) || 0, baseData.from)
                         }
-                        className="w-16 text-sm p-1 border rounded dark:bg-gray-900 text-center"
+                        className="w-16 text-sm p-1 border border-border rounded bg-background text-center focus:outline-none focus:ring-1 focus:ring-primary"
                       />
                       <input
                         type="text"
@@ -85,7 +85,7 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, 
                             e.target.value || undefined
                           )
                         }
-                        className="flex-1 text-xs p-1 border rounded dark:bg-gray-900"
+                        className="flex-1 text-xs p-1 border border-border rounded bg-background"
                       />
                     </div>
                   </div>

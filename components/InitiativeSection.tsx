@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import SettingsButton from "./ui/SettingsButton";
 import { Initiative, Character, RollDiceFunc } from "../types/character";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
+import ModalScrollLock from "./ui/ModalScrollLock";
 
 interface InitiativeSectionProps {
     character: Character;
@@ -63,7 +64,7 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                 onClick={() => setShowSettings(!showSettings)}
                 className={cn(
                     "absolute top-0 right-0 z-20",
-                    showSettings ? 'bg-blue-100 text-blue-600' : ''
+                    showSettings ? 'bg-primary/10 text-primary' : ''
                 )}
                 title="Settings"
             />
@@ -85,57 +86,76 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
             <div className="flex flex-col items-center">
                 <div
                     onClick={handleRoll}
-                    className="min-w-24 h-24 px-4 flex items-center justify-center border-4 border-blue-500 rounded-xl cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group shadow-sm bg-white dark:bg-gray-950 active:scale-95"
+                    className="min-w-24 h-24 px-4 flex items-center justify-center border-4 border-primary rounded-xl cursor-pointer hover:bg-primary/5 transition-all group shadow-sm bg-card active:scale-95"
                 >
-                    <span className="text-4xl font-black text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                    <span className="text-4xl font-black text-primary group-hover:scale-110 transition-transform">
                         {displayModifier >= 0 ? "+" : ""}{displayModifier}
                     </span>
                 </div>
             </div>
 
-            {/* Settings Overlay - Absolute positioned to avoid shifting items below */}
+            {/* Settings Modal */}
             {showSettings && (
-                <div className="absolute top-10 right-0 z-50 w-64 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
-                    <div className="flex items-center justify-between border-b dark:border-gray-800 pb-2 mb-2">
-                        <span className="font-bold text-gray-700 dark:text-gray-300">Settings</span>
-                        <button
-                            onClick={() => setShowSettings(false)}
-                            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-3">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Misc Bonus</span>
-                            <input
-                                type="number"
-                                value={initiative.miscBonus}
-                                onChange={(e) => handleMiscChange(e.target.value)}
-                                className="w-16 p-1 border border-gray-300 dark:border-gray-700 rounded text-right focus:outline-none focus:ring-1 focus:ring-blue-500 bg-transparent dark:text-gray-200"
-                            />
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <ModalScrollLock isOpen={showSettings} />
+                    <div className="bg-background w-full max-w-xs rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/30">
+                            <div>
+                                <h2 className="text-lg font-black uppercase tracking-wider text-foreground">Initiative</h2>
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">Tactical Settings</p>
+                            </div>
+                            <button
+                                onClick={() => setShowSettings(false)}
+                                className="p-2 hover:bg-secondary rounded-full transition-colors text-muted-foreground hover:text-foreground"
+                            >
+                                <X size={20} />
+                            </button>
                         </div>
 
-                        <label className="flex items-center justify-between cursor-pointer group">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Jack of All Trades</span>
-                            <input
-                                type="checkbox"
-                                checked={initiative.useJackOfAllTrades}
-                                onChange={handleToggleJack}
-                                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                            />
-                        </label>
+                        <div className="p-6 space-y-5">
+                            <div className="flex items-center justify-between p-3 bg-secondary/20 rounded-xl border border-border">
+                                <span className="text-xs font-bold uppercase tracking-tight text-foreground">Misc Bonus</span>
+                                <input
+                                    type="number"
+                                    value={initiative.miscBonus}
+                                    onChange={(e) => handleMiscChange(e.target.value)}
+                                    className="w-16 p-2 border border-border rounded-lg text-center font-black text-sm focus:ring-1 focus:ring-primary outline-none bg-background shadow-sm"
+                                />
+                            </div>
 
-                        <label className="flex items-center justify-between cursor-pointer group">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Dex Tiebreaker</span>
-                            <input
-                                type="checkbox"
-                                checked={initiative.showDexTiebreaker}
-                                onChange={handleToggleTiebreaker}
-                                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                            />
-                        </label>
+                            <div className="space-y-3">
+                                <label className="flex items-center justify-between p-3 bg-secondary/10 rounded-xl border border-border/50 cursor-pointer group transition-all hover:bg-secondary/20">
+                                    <span className="text-xs font-bold uppercase tracking-tight text-muted-foreground group-hover:text-foreground">Jack of All Trades</span>
+                                    <input
+                                        type="checkbox"
+                                        checked={initiative.useJackOfAllTrades}
+                                        onChange={handleToggleJack}
+                                        className="w-5 h-5 text-primary rounded-lg focus:ring-primary accent-primary cursor-pointer"
+                                    />
+                                </label>
+
+                                <label className="flex items-center justify-between p-3 bg-secondary/10 rounded-xl border border-border/50 cursor-pointer group transition-all hover:bg-secondary/20">
+                                    <span className="text-xs font-bold uppercase tracking-tight text-muted-foreground group-hover:text-foreground">Dex Tiebreaker</span>
+                                    <input
+                                        type="checkbox"
+                                        checked={initiative.showDexTiebreaker}
+                                        onChange={handleToggleTiebreaker}
+                                        className="w-5 h-5 text-primary rounded-lg focus:ring-primary accent-primary cursor-pointer"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="px-6 py-4 bg-secondary/30 border-t border-border flex justify-end">
+                            <button
+                                onClick={() => setShowSettings(false)}
+                                className="px-8 py-2.5 bg-primary text-primary-foreground text-xs font-black uppercase tracking-[0.2em] rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            >
+                                Done
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -13,7 +13,7 @@ const SettingsButton = React.forwardRef<HTMLButtonElement, SettingsButtonProps>(
                 ref={ref}
                 type="button"
                 className={cn(
-                    "p-1.5 rounded-full transition-colors text-gray-400 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed",
+                    "p-1.5 rounded-full transition-colors text-muted-foreground hover:text-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed",
                     className
                 )}
                 {...props}

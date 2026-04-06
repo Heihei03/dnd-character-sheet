@@ -42,13 +42,13 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2 flex items-center gap-4 bg-gray-50 dark:bg-gray-900/50 p-2 rounded border border-gray-100 dark:border-gray-800">
+            <div className="md:col-span-2 flex items-center gap-4 bg-secondary/30 p-2 rounded border border-border">
                 <div className="flex items-center gap-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase whitespace-nowrap">Item Type:</label>
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase whitespace-nowrap">Item Type:</label>
                     <select
                         value={item.itemType || "other"}
                         onChange={(e) => updateItem(item.id, "itemType", e.target.value)}
-                        className="text-xs border rounded p-1 bg-white dark:bg-gray-950 min-w-[120px]"
+                        className="text-xs border border-border rounded p-1 bg-background min-w-[120px] focus:ring-1 focus:ring-primary outline-none"
                     >
                         <option value="other">Other</option>
                         <option value="weapon">Weapon</option>
@@ -61,11 +61,11 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
             </div>
 
             <div className="md:col-span-2 space-y-2">
-                <label className="block text-xs font-bold text-gray-400 uppercase">Description</label>
+                <label className="block text-[10px] font-bold text-muted-foreground uppercase">Description</label>
                 <textarea
                     value={item.description || ""}
                     onChange={e => updateItem(item.id, "description", e.target.value)}
-                    className="w-full p-2 border rounded text-xs bg-white"
+                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                     rows={6}
                     placeholder="No description..."
                 />
@@ -75,7 +75,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             type="checkbox"
                             checked={item.equippable || false}
                             onChange={e => updateItem(item.id, "equippable", e.target.checked)}
-                            className="w-3.5 h-3.5"
+                            className="w-3.5 h-3.5 accent-primary"
                         />
                         Equippable
                     </label>
@@ -84,7 +84,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             type="checkbox"
                             checked={item.attunable || false}
                             onChange={e => updateItem(item.id, "attunable", e.target.checked)}
-                            className="w-3.5 h-3.5"
+                            className="w-3.5 h-3.5 accent-primary"
                         />
                         Attunable
                     </label>
@@ -93,18 +93,18 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             type="checkbox"
                             checked={item.isWondrous || false}
                             onChange={e => updateItem(item.id, "isWondrous", e.target.checked)}
-                            className="w-3.5 h-3.5"
+                            className="w-3.5 h-3.5 accent-primary"
                         />
                         Wondrous
                     </label>
                 </div>
             </div>
             <div className="md:col-span-2 space-y-2">
-                <label className="block text-xs font-bold text-gray-400 uppercase">Location / Container</label>
+                <label className="block text-[10px] font-bold text-muted-foreground uppercase">Location / Container</label>
                 <select
                     value={item.parentId || ""}
                     onChange={(e) => updateItem(item.id, "parentId", e.target.value || undefined)}
-                    className="w-full p-2 border rounded text-xs bg-white"
+                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                 >
                     <option value="">Carried (Root)</option>
                     {containers
@@ -116,26 +116,26 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                 </select>
 
                 {item.isContainer && item.containerDetails && (
-                    <div className="p-2 bg-green-50 rounded border border-green-100 space-y-2 mt-2">
-                        <label className="block text-xs font-bold text-green-800 uppercase">Container Settings</label>
-                        <div className="grid grid-cols-2 gap-2">
+                    <div className="p-3 bg-primary/5 rounded border border-primary/20 space-y-3 mt-2">
+                        <label className="block text-[10px] font-black text-primary uppercase tracking-widest">Container Settings</label>
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-[11px] text-gray-500">Capacity (lbs)</label>
+                                <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Capacity (lbs)</label>
                                 <input
                                     type="number"
                                     value={item.containerDetails.capacityWeight ?? ""}
                                     onChange={e => updateItem(item.id, "containerDetails", { ...item.containerDetails, capacityWeight: parseInt(e.target.value) || undefined })}
-                                    className="w-full p-1 border rounded text-xs"
+                                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[11px] text-gray-500">Wt Mult</label>
+                                <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Wt Mult</label>
                                 <input
                                     type="number"
                                     step="0.1"
                                     value={item.containerDetails.contentsWeightMultiplier}
                                     onChange={e => updateItem(item.id, "containerDetails", { ...item.containerDetails, contentsWeightMultiplier: parseFloat(e.target.value) || 0 })}
-                                    className="w-full p-1 border rounded text-xs"
+                                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                 />
                             </div>
                         </div>
@@ -145,55 +145,55 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
 
             {/* Nested Specific Detail Editors */}
             {item.itemType === "weapon" && item.weaponDetails && (
-                <div className="md:col-span-2 mt-2 p-3 bg-red-50/30 rounded border border-red-100">
-                    <label className="block text-xs font-bold text-red-800 uppercase mb-2">Weapon Stats</label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
+                <div className="md:col-span-2 mt-2 p-3 bg-primary/5 rounded border border-primary/20 space-y-3">
+                    <label className="block text-[10px] font-black text-primary uppercase tracking-widest mb-1">Weapon Stats</label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-2">
                         <div>
-                            <label className="block text-[11px] text-gray-500">Category</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Category</label>
                             <select
                                 value={item.weaponDetails.category}
                                 onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, category: e.target.value as any })}
-                                className="w-full p-1 border rounded text-xs bg-white"
+                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                             >
                                 <option value="Simple">Simple</option>
                                 <option value="Martial">Martial</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[11px] text-gray-500">Range</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Range</label>
                             <select
                                 value={item.weaponDetails.rangeType}
                                 onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, rangeType: e.target.value as any })}
-                                className="w-full p-1 border rounded text-xs bg-white"
+                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                             >
                                 <option value="Melee">Melee</option>
                                 <option value="Ranged">Ranged</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[11px] text-gray-500">Damage</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Damage</label>
                             <input
                                 type="text"
                                 value={item.weaponDetails.damageDice}
                                 onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageDice: e.target.value })}
-                                className="w-full p-1 border rounded text-xs"
+                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none font-mono"
                                 placeholder="1d6"
                             />
                         </div>
                         <div>
-                            <label className="block text-[11px] text-gray-500">Type</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Type</label>
                             <input
                                 type="text"
                                 value={item.weaponDetails.damageType}
                                 onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageType: e.target.value })}
-                                className="w-full p-1 border rounded text-xs"
+                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                 placeholder="slashing"
                             />
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-[11px] text-gray-500">Properties</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Properties</label>
                             <input
                                 type="text"
                                 value={item.weaponDetails.properties.join(", ")}
@@ -201,18 +201,18 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                                     ...item.weaponDetails,
                                     properties: e.target.value.split(",").map(p => p.trim()).filter(p => p !== "")
                                 })}
-                                className="w-full p-1 border rounded text-xs"
+                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                 placeholder="Finesse, Light, etc."
                             />
                         </div>
                         <div>
-                            <label className="block text-[11px] text-gray-500">Mastery</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Mastery</label>
                             <input
                                 type="text"
                                 value={item.weaponDetails.mastery || ""}
                                 onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, mastery: e.target.value })}
                                 placeholder="Vex, Nick, etc."
-                                className="w-full p-1 border rounded text-xs"
+                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                             />
                         </div>
                     </div>
@@ -220,25 +220,24 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
             )}
 
             {(item.itemType === "armor" || item.itemType === "shield") && item.armorDetails && (
-                <div className="md:col-span-2 mt-2 p-3 bg-blue-50/30 rounded border border-blue-100">
-                    <label className="block text-xs font-bold text-blue-800 uppercase mb-2">Armor Stats</label>
-                    <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-                        {/* ... armor inputs ... */}
+                <div className="md:col-span-2 mt-2 p-3 bg-primary/5 rounded border border-primary/20 space-y-3">
+                    <label className="block text-[10px] font-black text-primary uppercase tracking-widest mb-1">Armor Stats</label>
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
                         <div>
-                            <label className="block text-[11px] text-gray-500">AC</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">AC</label>
                             <input
                                 type="number"
                                 value={item.armorDetails.ac}
                                 onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, ac: parseInt(e.target.value) || 0 })}
-                                className="w-full p-1 border rounded text-xs"
+                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                             />
                         </div>
                         <div>
-                            <label className="block text-[11px] text-gray-500">Category</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Category</label>
                             <select
                                 value={item.armorDetails.category}
                                 onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, category: e.target.value as any })}
-                                className="w-full p-1 border rounded text-xs bg-white"
+                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                             >
                                 <option value="Light">Light</option>
                                 <option value="Medium">Medium</option>
@@ -247,41 +246,41 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[11px] text-gray-500">STR Req</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">STR Req</label>
                             <input
                                 type="number"
                                 value={item.armorDetails.strengthRequirement ?? ""}
                                 onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, strengthRequirement: parseInt(e.target.value) || undefined })}
-                                className="w-full p-1 border rounded text-xs"
+                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                 placeholder="None"
                             />
                         </div>
                         <div className="flex flex-col items-center">
-                            <label className="block text-[11px] text-gray-500">Stealth Dis</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Stealth</label>
                             <input
                                 type="checkbox"
                                 checked={item.armorDetails.stealthDisadvantage}
                                 onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, stealthDisadvantage: e.target.checked })}
-                                className="w-4 h-4 mt-1"
+                                className="w-4 h-4 mt-1 accent-primary"
                             />
                         </div>
                         <div className="flex flex-col items-center">
-                            <label className="block text-[11px] text-gray-500">DEX Bonus</label>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">DEX Bonus</label>
                             <input
                                 type="checkbox"
                                 checked={item.armorDetails.dexBonus}
                                 onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, dexBonus: e.target.checked })}
-                                className="w-4 h-4 mt-1"
+                                className="w-4 h-4 mt-1 accent-primary"
                             />
                         </div>
                         {item.armorDetails.dexBonus && (
                             <div className="col-span-full md:col-start-5">
-                                <label className="block text-[11px] text-gray-500">DEX Cap</label>
+                                <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">DEX Cap</label>
                                 <input
                                     type="number"
                                     value={item.armorDetails.dexCap ?? ""}
                                     onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, dexCap: parseInt(e.target.value) || undefined })}
-                                    className="w-full p-1 border rounded text-xs"
+                                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                     placeholder="No Cap"
                                 />
                             </div>
@@ -291,16 +290,16 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
             )}
 
             {item.itemType === "tool" && item.toolDetails && (
-                <div className="md:col-span-2 mt-2 p-3 bg-purple-50/30 rounded border border-purple-100">
-                    <label className="block text-xs font-bold text-purple-800 uppercase mb-2">Tool Details</label>
+                <div className="md:col-span-2 mt-2 p-3 bg-primary/5 rounded border border-primary/20 space-y-3">
+                    <label className="block text-[10px] font-black text-primary uppercase tracking-widest mb-1">Tool Details</label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-[11px] text-gray-500">Category</label>
+                                <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Category</label>
                                 <select
                                     value={item.toolDetails.category}
                                     onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, category: e.target.value as any })}
-                                    className="w-full p-1 border rounded text-xs bg-white"
+                                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                 >
                                     <option value="Artisan Tool">Artisan Tool</option>
                                     <option value="Other Tool">Other Tool</option>
@@ -309,32 +308,32 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[11px] text-gray-500">Ability</label>
+                                <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Ability</label>
                                 <input
                                     type="text"
                                     value={item.toolDetails.ability}
                                     onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, ability: e.target.value })}
-                                    className="w-full p-1 border rounded text-xs"
+                                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                     placeholder="Dexterity"
                                 />
                             </div>
                         </div>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[11px] text-gray-500">Utilize (2024 Rule)</label>
+                                <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Utilize (2024 Rule)</label>
                                 <textarea
                                     value={item.toolDetails.utilize}
                                     onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, utilize: e.target.value })}
-                                    className="w-full p-1 border rounded text-xs bg-white"
+                                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                     rows={2}
                                 />
                             </div>
                             <div>
-                                <label className="block text-[11px] text-gray-500">Craft (2024 Rule)</label>
+                                <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Craft (2024 Rule)</label>
                                 <textarea
                                     value={item.toolDetails.craft}
                                     onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, craft: e.target.value })}
-                                    className="w-full p-1 border rounded text-xs bg-white"
+                                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                                     rows={2}
                                 />
                             </div>

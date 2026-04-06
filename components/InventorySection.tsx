@@ -252,13 +252,13 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                             <span>Equipment</span>
                             <button
                                 onClick={() => setIsReorderMode(!isReorderMode)}
-                                className={`p-1 rounded hover:bg-gray-100 transition-all ${isReorderMode ? "text-blue-600 bg-blue-50" : "text-gray-400"}`}
+                                className={`p-1 rounded hover:bg-secondary/50 transition-all ${isReorderMode ? "text-primary bg-primary/10" : "text-muted-foreground/40"}`}
                                 title={isReorderMode ? "Lock Order" : "Unlock Order (Drag to Reorder)"}
                             >
                                 {isReorderMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                             </button>
                         </div>
-                        <span className="text-xs font-normal text-gray-400">{equipment.length} items</span>
+                        <span className="text-xs font-normal text-muted-foreground/60">{equipment.length} items</span>
                     </h3>
                     <DndContext
                         sensors={sensors}
@@ -293,13 +293,13 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                             <span>Other Inventory</span>
                             <button
                                 onClick={() => setIsReorderMode(!isReorderMode)}
-                                className={`p-1 rounded hover:bg-gray-100 transition-all ${isReorderMode ? "text-blue-600 bg-blue-50" : "text-gray-400"}`}
+                                className={`p-1 rounded hover:bg-secondary/50 transition-all ${isReorderMode ? "text-primary bg-primary/10" : "text-muted-foreground/40"}`}
                                 title={isReorderMode ? "Lock Order" : "Unlock Order (Drag to Reorder)"}
                             >
                                 {isReorderMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                             </button>
                         </div>
-                        <span className="text-xs font-normal text-gray-400">{otherItems.length} items</span>
+                        <span className="text-xs font-normal text-muted-foreground/60">{otherItems.length} items</span>
                     </h3>
                     <DndContext
                         sensors={sensors}

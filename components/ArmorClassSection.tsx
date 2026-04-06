@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArmorClass, AbilityScores } from "../types/character";
 import { calculateAC } from "../utils/acUtils";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import Select from "./ui/Select";
 
 interface ArmorClassSectionProps {
     armorClass: ArmorClass;
@@ -36,14 +37,14 @@ const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
     ];
 
     return (
-        <div className="border p-3 rounded bg-white shadow-sm">
+        <div className="border border-gray-200 dark:border-gray-800 p-3 rounded bg-white dark:bg-gray-950 shadow-sm transition-colors">
             <div
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <span className="font-bold text-lg">Armor Class</span>
                 <div className="flex items-center gap-2">
-                    <span className="text-2xl font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg border-2 border-blue-100">
+                    <span className="text-2xl font-black text-primary bg-primary/5 px-3 py-1 rounded-lg border-2 border-primary/20 transition-all">
                         {currentAC}
                     </span>
                     {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
@@ -51,19 +52,19 @@ const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
             </div>
 
             {isExpanded && (
-                <div className="mt-4 space-y-4 border-t pt-4">
+                <div className="mt-4 space-y-4 border-t border-border pt-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-500 uppercase">Base AC</label>
+                            <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground ml-1">Base AC</label>
                             <input
                                 type="number"
                                 value={armorClass.baseAC}
                                 onChange={(e) => handleChange("baseAC", parseInt(e.target.value) || 0)}
-                                className="p-2 border rounded text-center font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                className="p-2 border border-border rounded text-center font-bold text-sm focus:ring-1 focus:ring-primary focus:outline-none bg-background transition-all"
                             />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-500 uppercase">Manual Override</label>
+                            <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground ml-1">Manual Override</label>
                             <input
                                 type="number"
                                 placeholder="Auto"
@@ -72,25 +73,25 @@ const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
                                     const val = e.target.value === "" ? undefined : parseInt(e.target.value);
                                     handleChange("manualOverride", val);
                                 }}
-                                className="p-2 border rounded text-center font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none bg-gray-50"
+                                className="p-2 border border-border rounded text-center font-bold text-sm focus:ring-1 focus:ring-primary focus:outline-none bg-secondary/30 transition-all"
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-3 bg-gray-50 p-3 rounded-lg">
+                    <div className="space-y-4 bg-secondary/20 p-4 rounded-xl border border-border/50">
                         <div className="flex items-center justify-between">
-                            <label className="text-sm font-medium text-gray-700">Add DEX Bonus</label>
+                            <label className="text-xs font-bold uppercase tracking-tight text-foreground">Add DEX Bonus</label>
                             <input
                                 type="checkbox"
                                 checked={armorClass.hasDexBonus}
                                 onChange={(e) => handleChange("hasDexBonus", e.target.checked)}
-                                className="w-5 h-5 accent-blue-500"
+                                className="w-5 h-5 accent-primary cursor-pointer rounded"
                             />
                         </div>
 
                         {armorClass.hasDexBonus && (
-                            <div className="flex items-center justify-between pl-4 border-l-2 border-blue-200">
-                                <label className="text-sm text-gray-600">DEX Cap</label>
+                            <div className="flex items-center justify-between pl-4 border-l-2 border-primary/30">
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-tight">DEX Cap</label>
                                 <input
                                     type="number"
                                     placeholder="None"
@@ -99,45 +100,44 @@ const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
                                         const val = e.target.value === "" ? undefined : parseInt(e.target.value);
                                         handleChange("dexCap", val);
                                     }}
-                                    className="w-20 p-1 border rounded text-center text-sm"
+                                    className="w-16 p-1.5 border border-border rounded-lg text-center text-xs font-bold bg-background"
                                 />
                             </div>
                         )}
 
-                        <div className="flex flex-col gap-1">
-                            <label className="text-sm font-medium text-gray-700">Secondary Ability Bonus</label>
-                            <select
-                                value={armorClass.secondaryAbility || ""}
-                                onChange={(e) => handleChange("secondaryAbility", e.target.value || undefined)}
-                                className="p-2 border rounded text-sm bg-white"
-                            >
-                                <option value="">None</option>
-                                {abilityOptions.map((ability) => (
-                                    <option key={ability} value={ability}>
-                                        {(ability as string).charAt(0).toUpperCase() + (ability as string).slice(1)}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Secondary Ability Bonus</label>
+                            <Select
+                                value={(armorClass.secondaryAbility as string) || ""}
+                                onValueChange={(val) => handleChange("secondaryAbility", (val === "" ? undefined : val) as any)}
+                                options={[
+                                    { label: "None", value: "" },
+                                    ...abilityOptions.map((ability) => ({
+                                        label: (ability as string).charAt(0).toUpperCase() + (ability as string).slice(1),
+                                        value: (ability as string)
+                                    }))
+                                ]}
+                            />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-500 uppercase">Shield</label>
+                            <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground ml-1">Shield</label>
                             <input
                                 type="number"
                                 value={armorClass.shieldBonus}
                                 onChange={(e) => handleChange("shieldBonus", parseInt(e.target.value) || 0)}
-                                className="p-2 border rounded text-center font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                className="p-2 border border-border rounded text-center font-bold text-sm focus:ring-1 focus:ring-primary focus:outline-none bg-background transition-all"
                             />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-500 uppercase">Misc Bonus</label>
+                            <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground ml-1">Misc Bonus</label>
                             <input
                                 type="number"
                                 value={armorClass.miscBonus}
                                 onChange={(e) => handleChange("miscBonus", parseInt(e.target.value) || 0)}
-                                className="p-2 border rounded text-center font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                className="p-2 border border-border rounded text-center font-bold text-sm focus:ring-1 focus:ring-primary focus:outline-none bg-background transition-all"
                             />
                         </div>
                     </div>

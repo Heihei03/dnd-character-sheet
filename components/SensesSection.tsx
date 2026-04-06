@@ -6,6 +6,7 @@ import { SENSES_LIST } from "../utils/constants";
 import { Trash2, Plus } from "lucide-react";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import Button from "./ui/button";
+import { Card, CardContent } from "./ui/card";
 import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
 
 interface SensesSectionProps {
@@ -37,70 +38,72 @@ const SensesSection: React.FC<SensesSectionProps> = ({
     };
 
     return (
-        <div className="border p-3 rounded bg-white dark:bg-gray-950 shadow-sm transition-all font-sans space-y-4">
-            <div className="flex justify-between items-center border-b pb-2">
-                <span className="font-bold text-lg">Senses</span>
-            </div>
-
-            <div className="space-y-3">
-                <div className="grid grid-cols-1 gap-2">
-                    {senses.length === 0 && <span className="text-sm text-gray-400 italic">No special senses.</span>}
-                    {senses.map((sense, idx) => (
-                        <div key={idx} className={`flex justify-between items-center bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded border border-gray-200 dark:border-gray-800 text-sm ${sense.fromFeature ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-950/20' : ''}`}>
-                            <div className="flex items-center gap-2 truncate mr-2">
-                                <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">{sense.name}</span>
-                                {sense.fromFeature && (
-                                    <FeatureNavigationBadge 
-                                        featureId={sense.fromFeatureId} 
-                                        onNavigateToFeature={onNavigateToFeature} 
-                                        variant="compact" 
-                                    />
-                                )}
-                            </div>
-                            <div className="flex items-center gap-3 shrink-0">
-                                <span className="font-bold text-blue-600 dark:text-blue-400">{sense.value}</span>
-                                {!sense.fromFeature && (
-                                    <button
-                                        onClick={() => setSenseToDelete(sense)}
-                                        className="text-gray-400 hover:text-red-500 transition-colors"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    ))}
+        <Card className="w-full">
+            <CardContent className="p-6">
+                <div className="flex justify-between items-center border-b border-border pb-3 mb-4">
+                    <h2 className="text-2xl font-bold">Senses</h2>
                 </div>
-                <div className="flex gap-2 items-center">
-                    <div className="flex-[2] relative">
+
+                <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-2">
+                        {senses.length === 0 && <span className="text-sm text-muted-foreground/60 italic p-2">No special senses.</span>}
+                        {senses.map((sense, idx) => (
+                            <div key={idx} className={`flex justify-between items-center bg-secondary/30 px-3 py-2.5 rounded-lg border border-border text-sm transition-all ${sense.fromFeature ? 'border-primary/20 bg-primary/5' : 'hover:bg-secondary/50'}`}>
+                                <div className="flex items-center gap-2 truncate mr-2">
+                                    <span className="font-bold text-foreground truncate">{sense.name}</span>
+                                    {sense.fromFeature && (
+                                        <FeatureNavigationBadge 
+                                            featureId={sense.fromFeatureId} 
+                                            onNavigateToFeature={onNavigateToFeature} 
+                                            variant="compact" 
+                                        />
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-3 shrink-0">
+                                    <span className="font-black text-primary font-mono">{sense.value}</span>
+                                    {!sense.fromFeature && (
+                                        <button
+                                            onClick={() => setSenseToDelete(sense)}
+                                            className="p-1 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded transition-all"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex gap-2 items-center pt-2">
+                        <div className="flex-[2] relative">
+                            <input
+                                type="text"
+                                list="senses-list"
+                                value={newSense.name}
+                                onChange={(e) => setNewSense({ ...newSense, name: e.target.value })}
+                                placeholder="Sense name..."
+                                className="w-full text-sm p-2 bg-background border border-border rounded-lg outline-none focus:ring-1 focus:ring-primary transition-all shadow-inner"
+                            />
+                            <datalist id="senses-list">
+                                {SENSES_LIST.map(sense => <option key={sense} value={sense} />)}
+                            </datalist>
+                        </div>
                         <input
                             type="text"
-                            list="senses-list"
-                            value={newSense.name}
-                            onChange={(e) => setNewSense({ ...newSense, name: e.target.value })}
-                            placeholder="Sense..."
-                            className="w-full text-sm p-2 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded outline-none focus:ring-2 focus:ring-blue-500 transition-all font-sans min-w-0"
+                            value={newSense.value}
+                            onChange={(e) => setNewSense({ ...newSense, value: e.target.value })}
+                            onKeyDown={(e) => e.key === 'Enter' && addSense()}
+                            placeholder="Range..."
+                            className="flex-1 text-sm p-2 bg-background border border-border rounded-lg outline-none focus:ring-1 focus:ring-primary transition-all shadow-inner"
                         />
-                        <datalist id="senses-list">
-                            {SENSES_LIST.map(sense => <option key={sense} value={sense} />)}
-                        </datalist>
+                        <Button
+                            onClick={addSense}
+                            className="px-4 py-2 bg-primary text-white hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20"
+                        >
+                            <Plus className="w-4 h-4" />
+                        </Button>
                     </div>
-                    <input
-                        type="text"
-                        value={newSense.value}
-                        onChange={(e) => setNewSense({ ...newSense, value: e.target.value })}
-                        onKeyDown={(e) => e.key === 'Enter' && addSense()}
-                        placeholder="Range..."
-                        className="flex-1 text-sm p-2 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded outline-none focus:ring-2 focus:ring-blue-500 transition-all font-sans min-w-0"
-                    />
-                    <Button
-                        onClick={addSense}
-                        className="px-3"
-                    >
-                        <Plus className="w-4 h-4" />
-                    </Button>
                 </div>
-            </div>
+            </CardContent>
 
             <ConfirmationModal
                 isOpen={senseToDelete !== null}
@@ -115,7 +118,7 @@ const SensesSection: React.FC<SensesSectionProps> = ({
                 message={`Are you sure you want to remove "${senseToDelete?.name}"?`}
                 confirmText="Remove"
             />
-        </div>
+        </Card>
     );
 };
 

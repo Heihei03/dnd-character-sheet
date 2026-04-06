@@ -173,34 +173,34 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 ]}
             />
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-6 bg-secondary/30 p-5 rounded-xl border border-border shadow-sm">
                 <div className="flex-1">
-                    <h4 className="text-sm font-bold uppercase text-gray-500 tracking-wider mb-0.5">Global Roll Settings</h4>
-                    <p className="text-[11px] text-gray-400">Default settings for all your attacks.</p>
+                    <h4 className="text-[10px] font-black uppercase text-primary tracking-[0.2em] mb-1">Global Roll Settings</h4>
+                    <p className="text-[11px] text-muted-foreground/70 font-medium">Configure default critical rules for all automated attacks.</p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+                <div className="flex flex-col sm:flex-row gap-6 items-stretch sm:items-center">
                     <div className="flex flex-col">
-                        <label className="text-xs font-bold uppercase text-gray-400 mb-1">Crit Range</label>
+                        <label className="text-[10px] font-black uppercase text-muted-foreground mb-1.5 tracking-tighter ml-1">Crit Range</label>
                         <input
                             type="number"
                             value={critRange || 20}
                             onChange={(e) => onCritRangeChange?.(parseInt(e.target.value) || 20)}
-                            className="w-16 h-8 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-center text-sm font-bold focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-20 h-9 bg-background border border-border rounded-lg text-center text-sm font-black focus:ring-1 focus:ring-primary outline-none transition-all shadow-inner"
                             min="1"
                             max="20"
                         />
                     </div>
                     <div className="flex flex-col">
-                        <label className="text-xs font-bold uppercase text-gray-400 mb-1">Crit Damage Rule</label>
-                        <div className="flex gap-1.5">
+                        <label className="text-[10px] font-black uppercase text-muted-foreground mb-1.5 tracking-tighter ml-1">Crit Damage Rule</label>
+                        <div className="flex gap-1.5 p-1 bg-background/50 rounded-lg border border-border">
                             {(['double-dice', 'max-plus-roll', 'double-total'] as const).map((rule) => (
                                 <button
                                     key={rule}
                                     onClick={() => onCritRuleChange?.(rule)}
-                                    className={`text-xs font-bold uppercase py-2 px-3 rounded-md transition-all border whitespace-nowrap ${
+                                    className={`text-[10px] font-black uppercase py-2 px-3 rounded-md transition-all whitespace-nowrap tracking-tight ${
                                         critRule === rule 
-                                            ? 'bg-blue-600 border-blue-500 text-white shadow-sm' 
-                                            : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-600'
+                                            ? 'bg-primary text-white shadow-md shadow-primary/20 scale-105' 
+                                            : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
                                     }`}
                                 >
                                     {rule.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}

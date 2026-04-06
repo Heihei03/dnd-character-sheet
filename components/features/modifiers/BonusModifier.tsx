@@ -16,14 +16,14 @@ const BonusModifier: React.FC<BonusModifierProps> = ({ modifier, onUpdate }) => 
                 type="number"
                 value={modifier.value || 0}
                 onChange={(e) => onUpdate({ value: parseInt(e.target.value) || 0 })}
-                className="w-16 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-mono"
+                className="w-16 text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent font-mono"
             />
             <input
                 type="text"
                 list={`bonus-type-${modifier.id}`}
                 value={modifier.subType || ""}
                 onChange={(e) => onUpdate({ subType: e.target.value })}
-                className="flex-1 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
+                className="flex-1 text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent"
                 placeholder="Target (AC, Init...)"
             />
             <datalist id={`bonus-type-${modifier.id}`}>

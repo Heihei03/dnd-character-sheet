@@ -74,6 +74,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedOrigin, setSelectedOrigin] = useState("All");
+    const [highlightedId, setHighlightedId] = useState<string | null>(null);
     const [featureToDelete, setFeatureToDelete] = useState<string | null>(null);
 
     useEffect(() => {
@@ -85,18 +86,21 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                 return next;
             });
 
+            // Set the highlight state
+            setHighlightedId(focusedId);
+
             // Scroll to it after a short delay to ensure it's rendered/expanded
             const timer = setTimeout(() => {
                 const element = document.getElementById(`feature-${focusedId}`);
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // Visual feedback: briefly highlight is now handled by FeatureItem's "highlighted" prop logic if we want, 
-                    // but the element.classList approach still works as long as ID matches.
-                    element.classList.add('ring-2', 'ring-blue-500', 'ring-opacity-50', 'relative', 'z-10');
-                    setTimeout(() => {
-                        element.classList.remove('ring-2', 'ring-blue-500', 'ring-opacity-50', 'relative', 'z-10');
-                    }, 2000);
                 }
+                
+                // Keep the highlight for 2 seconds
+                setTimeout(() => {
+                    setHighlightedId(null);
+                }, 2000);
+
                 // Reset focusedId so it can be re-triggered
                 if (onFocusedIdChange) {
                     onFocusedIdChange(null);
@@ -203,7 +207,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
         });
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 pb-20">
             <SectionHeader
                 title="Features & Traits"
                 buttonLabel="Add Feature"
@@ -238,7 +242,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                 </div>
             )}
 
-            <div className="grid grid-cols-1 gap-0">
+            <div className="grid grid-cols-1 gap-1 p-2 overflow-visible">
                 {allFeatures.length === 0 ? (
                     <Card className="border-dashed">
                         <CardContent className="p-12 text-center text-gray-500 italic">
@@ -252,6 +256,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                             feature={feature}
                             isEditing={feature.id === editingId}
                             isExpanded={expandedIds.has(feature.id)}
+                            highlighted={feature.id === highlightedId}
                             onToggleExpand={() => toggleExpand(feature.id)}
                             onStartEdit={() => setEditingId(feature.id)}
                             onCancelEdit={() => setEditingId(null)}

@@ -111,8 +111,8 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`py-1.5 px-3 rounded-lg text-sm font-bold transition-all ${activeTab === tab.id
-                ? "bg-blue-500 text-white shadow-md scale-105"
-                : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                ? "bg-primary text-primary-foreground shadow-md scale-105"
+                : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-400"
               }`}
           >
             {tab.label}

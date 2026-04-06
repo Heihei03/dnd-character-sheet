@@ -16,7 +16,7 @@ const RollModifier: React.FC<RollModifierProps> = ({ modifier, onUpdate }) => {
                 type="text"
                 value={modifier.value || ""}
                 onChange={(e) => onUpdate({ value: e.target.value })}
-                className="w-24 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-mono"
+                className="w-24 text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent font-mono"
                 placeholder="Dice..."
             />
             <input
@@ -24,7 +24,7 @@ const RollModifier: React.FC<RollModifierProps> = ({ modifier, onUpdate }) => {
                 list={`roll-type-${modifier.id}`}
                 value={modifier.subType || ""}
                 onChange={(e) => onUpdate({ subType: e.target.value })}
-                className="flex-1 text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
+                className="flex-1 text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent"
                 placeholder="Type (Fire, Healing...)"
             />
             <datalist id={`roll-type-${modifier.id}`}>

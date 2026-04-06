@@ -120,7 +120,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                         onChange={(e) =>
                             setFormData({ ...formData, name: e.target.value })
                         }
-                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
+                        className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none font-medium text-foreground"
                         placeholder="Action name..."
                     />
                 </div>
@@ -138,7 +138,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         isAttack: e.target.checked
                                     })
                                 }
-                                className="w-4 h-4"
+                                className="w-4 h-4 cursor-pointer accent-primary"
                             />
                             <label htmlFor="isAttack" className="cursor-pointer">is attack?</label>
                         </div>
@@ -151,7 +151,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                 type: e.target.value as ActionType,
                             })
                         }
-                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
+                        className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none font-medium text-foreground"
                     >
                         {ACTION_TYPES.map((opt) => (
                             <option key={opt} value={opt}>
@@ -176,7 +176,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         proficient: e.target.checked,
                                     })
                                 }
-                                className="w-4 h-4"
+                                className="w-4 h-4 cursor-pointer accent-primary"
                             />
                             <label
                                 htmlFor="proficient"
@@ -199,7 +199,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                             undefined,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                             >
                                 <option value="">None</option>
                                 <option value="strength">Strength</option>
@@ -224,7 +224,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                             parseInt(e.target.value) || 0,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="0"
                             />
                         </div>
@@ -240,7 +240,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         damageType: e.target.value,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                             >
                                 {DAMAGE_TYPES.map((dt) => (
                                     <option key={dt} value={dt}>
@@ -265,7 +265,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         damageDice: e.target.value,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="1d8"
                             />
                         </div>
@@ -282,7 +282,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         versatileDice: e.target.value,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="1d10"
                             />
                         </div>
@@ -300,7 +300,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                             undefined,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                             >
                                 <option value="">None</option>
                                 <option value="strength">Strength</option>
@@ -325,7 +325,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                             parseInt(e.target.value) || 0,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="0"
                             />
                         </div>
@@ -345,7 +345,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         reach: e.target.value,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="5 ft"
                             />
                         </div>
@@ -362,7 +362,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         range: e.target.value,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="20/60 ft"
                             />
                         </div>
@@ -383,7 +383,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                 }
                                 min={1}
                                 max={20}
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="Global Default"
                             />
                         </div>
@@ -400,7 +400,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         critExtraDamage: e.target.value,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="e.g. 1d8"
                             />
                         </div>
@@ -416,7 +416,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         critRule: (e.target.value as CritRule) || undefined,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                             >
                                 <option value="">Global Default</option>
                                 <option value="double-dice">Double Dice</option>
@@ -440,7 +440,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         activation: e.target.value,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="1 Action..."
                             />
                         </div>
@@ -457,7 +457,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         target: e.target.value,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                                 placeholder="One creature..."
                             />
                         </div>
@@ -478,7 +478,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                         resourceName: e.target.value,
                                     })
                                 }
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none font-medium text-foreground"
                                 placeholder="e.g. Ki Points"
                             />
                             <datalist id="resource-suggestions">
@@ -503,7 +503,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             description: e.target.value,
                         })
                     }
-                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-24"
+                    className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none h-24 text-foreground"
                     placeholder="Describe the action..."
                 />
             </div>

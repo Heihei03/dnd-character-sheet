@@ -56,12 +56,12 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
     };
 
     return (
-        <div className="space-y-2 pb-3 border-b border-gray-100 dark:border-gray-800 last:border-0 last:pb-0">
+        <div className="space-y-2 pb-3 border-b border-border last:border-0 last:pb-0">
             <div className="flex justify-between items-center">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-tight">{title}</h3>
+                <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-tight">{title}</h3>
                 <button
                     onClick={() => setShowAdd(!showAdd)}
-                    className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors flex items-center gap-1"
+                    className="text-xs text-primary hover:opacity-80 font-medium transition-colors flex items-center gap-1"
                 >
                     {showAdd ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />} {showAdd ? "Cancel" : "Add"}
                 </button>
@@ -88,7 +88,7 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                                             e.stopPropagation();
                                             removeItem(index);
                                         }}
-                                        className="text-blue-300 hover:text-red-500 dark:text-blue-700 dark:hover:text-red-400 transition-colors px-0.5 ml-0.5 flex items-center justify-center font-bold"
+                                        className="text-primary/50 hover:text-red-500 transition-colors px-0.5 ml-0.5 flex items-center justify-center font-bold"
                                         title="Remove"
                                     >
                                         <X className="w-4 h-4" />
@@ -98,7 +98,7 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                         );
                     })
                 ) : (
-                    <span className="text-gray-400 dark:text-gray-600 text-xs italic py-1">No proficiencies added</span>
+                    <span className="text-muted-foreground/50 text-xs italic py-1">No proficiencies added</span>
                 )}
             </div>
             {showAdd && (
@@ -114,7 +114,7 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                                 if (e.key === "Escape") setShowAdd(false);
                             }}
                             placeholder={`Add ${title.toLowerCase().split(' ')[0]}...`}
-                            className="w-full p-2 text-sm border dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-blue-500 outline-none"
+                            className="w-full p-2 text-sm border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none transition-all"
                             list={`${field}-options-visible`}
                         />
                         <datalist id={`${field}-options-visible`}>

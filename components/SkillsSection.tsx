@@ -4,6 +4,7 @@ import { SKILL_LIST } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, getAdvantageDisadvantage } from "../utils/character-utils";
+import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
 
 interface SkillsSectionProps {
     character: Character;
@@ -47,12 +48,12 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                         return (
                             <div
                                 key={skill.key}
-                                className="flex items-center justify-between p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                className="flex items-center justify-between p-2 rounded hover:bg-secondary/40 transition-colors"
                             >
                                 <div className="flex items-center gap-3">
                                     <button
                                         onClick={() => setSkills(skill.key, cycleProficiency(proficiencyLevel))}
-                                        className="w-8 h-8 flex items-center justify-center focus:outline-none hover:text-blue-600 transition-transform active:scale-95"
+                                        className="w-8 h-8 flex items-center justify-center focus:outline-none hover:text-primary transition-transform active:scale-95"
                                         title={`Current: ${proficiencyLevel}`}
                                     >
                                         <div className="scale-75">
@@ -62,22 +63,14 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     <div className="flex flex-col">
                                         <div className="flex items-center gap-2">
                                             <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}>
-                                                {skill.name} <span className="text-gray-500 text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
+                                                {skill.name} <span className="text-muted-foreground text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
                                             </span>
-                                            {(skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
-                                                <span
-                                                    className="text-[11px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1 rounded border border-blue-200 dark:border-blue-800 uppercase tracking-tighter cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
-                                                    title="Granted by Feature - Click to view"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        const sourceId = skillSources[skill.key];
-                                                        if (sourceId && onNavigateToFeature) {
-                                                            onNavigateToFeature(sourceId);
-                                                        }
-                                                    }}
-                                                >
-                                                    Feature
-                                                </span>
+                                            {skillSources[skill.key] && (skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
+                                                <FeatureNavigationBadge
+                                                    featureId={skillSources[skill.key]}
+                                                    onNavigateToFeature={onNavigateToFeature}
+                                                    variant="compact"
+                                                />
                                             )}
                                             {advantage && (
                                                 <span className="text-xs font-black bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800" title="Advantage">ADV{extraAdvantage > 0 ? `+${extraAdvantage}` : ''}</span>
@@ -90,7 +83,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                 </div>
                                 <button
                                     onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
-                                    className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
+                                    className="font-bold text-lg min-w-[3ch] text-right text-primary hover:opacity-80 transition-colors"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >
                                     {sign}{totalBonus}

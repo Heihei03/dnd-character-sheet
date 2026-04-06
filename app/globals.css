@@ -114,10 +114,32 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border transition-colors duration-200;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-200;
+  }
+  
+  /* Refined global focus states */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  /* Reset default outlines for elements that handle focus themselves */
+  input:focus, select:focus, textarea:focus, button:focus {
+    outline: none !important;
+  }
+
+  /* Standardized themed focus ring for all inputs */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent) !important;
+  }
+
+  /* Map the theme primary to the browser accent-color */
+  input[type="checkbox"], input[type="radio"], input[type="range"] {
+    accent-color: var(--primary) !important;
   }
 }
 
@@ -129,19 +151,15 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(156, 163, 175, 0.3);
-    border-radius: 20px;
-    border: 2px solid transparent;
-    background-clip: content-box;
+    @apply bg-primary/30 rounded-full border-2 border-transparent bg-clip-content;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(156, 163, 175, 0.5);
-    background-clip: content-box;
+    @apply bg-primary/50 bg-clip-content;
   }
 }
 
 /* For Firefox */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+  scrollbar-color: var(--primary) transparent;
 }

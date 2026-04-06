@@ -119,7 +119,7 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
                             <div key={idx} className="flex flex-col">
                                 <div
                                     onClick={() => toggleExpand(condition.name)}
-                                    className={`flex justify-between items-center bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded-t border-x border-t border-gray-200 dark:border-gray-800 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${!isExpanded ? 'rounded-b border-b' : ''} ${condition.fromFeature ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-950/20' : ''}`}
+                                    className={`flex justify-between items-center bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded-t border-x border-t border-gray-200 dark:border-gray-800 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${!isExpanded ? 'rounded-b border-b' : ''} ${condition.fromFeature ? 'border-primary/30 dark:border-primary/50 bg-primary/5 dark:bg-primary/10' : ''}`}
                                 >
                                     <div className="flex items-center gap-2 truncate mr-2">
                                         {description ? (
@@ -129,7 +129,7 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
                                         )}
                                         <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">{condition.name}</span>
                                         {condition.fromFeature && (
-                                            <span className="text-xs font-bold uppercase px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 tracking-wider">Feature</span>
+                                            <span className="text-xs font-bold uppercase px-1.5 py-0.5 bg-primary/10 text-primary rounded border border-primary/20 dark:border-primary/40 tracking-wider">Feature</span>
                                         )}
                                     </div>
                                     <div className="flex items-center gap-3 shrink-0">
@@ -163,7 +163,7 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({
                         onChange={(e) => setNewConditionName(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && addCondition()}
                         placeholder="Add condition..."
-                        className="flex-1 text-sm p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all font-sans min-w-0"
+                        className="flex-1 text-sm p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded focus:ring-2 focus:ring-primary focus:outline-none transition-all font-sans min-w-0"
                     />
                     <button
                         onClick={addCondition}

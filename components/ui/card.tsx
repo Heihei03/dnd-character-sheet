@@ -15,7 +15,7 @@ export interface CardContentProps {
 
 export function Card({ children, className = "", id }: CardProps) {
   return (
-    <div id={id} className={cn("bg-white shadow-md rounded-lg overflow-hidden", className)}>
+    <div id={id} className={cn("bg-card text-card-foreground shadow-md rounded-lg border border-border", className)}>
       {children}
     </div>
   );

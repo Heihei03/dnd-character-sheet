@@ -28,28 +28,28 @@ const EntityForm: React.FC<EntityFormProps> = ({
     const finalSaveLabel = saveLabel || defaultSaveLabel;
 
     return (
-        <Card className={`border-blue-200 bg-blue-50/30 dark:bg-blue-900/10 dark:border-blue-800 ${className}`}>
+        <Card className={`border-primary/20 bg-primary/5 dark:bg-primary/10 shadow-lg ${className}`}>
             <CardContent className="p-6 space-y-4">
-                <div className="flex justify-between items-center border-b border-blue-100 dark:border-blue-800 pb-2">
-                    <h3 className="font-bold text-lg">{title}</h3>
+                <div className="flex justify-between items-center border-b border-primary/10 pb-3 mb-2">
+                    <h3 className="font-black text-xs uppercase tracking-widest text-primary">{title}</h3>
                     <button 
                         onClick={onCancel}
-                        className="p-1 hover:bg-blue-100 dark:hover:bg-blue-800 rounded-full transition-colors text-gray-500"
+                        className="p-1.5 hover:bg-primary/20 rounded-full transition-all text-muted-foreground hover:text-primary active:scale-95"
                         title="Cancel"
                     >
                         <X className="w-5 h-5" />
                     </button>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-6">
                     {children}
                 </div>
 
-                <div className="flex justify-end gap-3 pt-2 border-t border-blue-100 dark:border-blue-800">
-                    <Button variant="ghost" onClick={onCancel}>
+                <div className="flex justify-end gap-3 pt-4 border-t border-primary/10">
+                    <Button variant="ghost" onClick={onCancel} className="text-xs font-black uppercase tracking-widest px-6 py-2 hover:bg-secondary/80">
                         {cancelLabel}
                     </Button>
-                    <Button onClick={onSave}>
+                    <Button onClick={onSave} className="text-xs font-black uppercase tracking-widest px-8 py-2 bg-primary text-white hover:scale-105 shadow-xl shadow-primary/20">
                         {finalSaveLabel}
                     </Button>
                 </div>

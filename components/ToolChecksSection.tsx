@@ -6,6 +6,12 @@ import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, ABILITY_NAMES, getAdvantageDisadvantage } from "../utils/character-utils";
 import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
+import Select from "./ui/Select";
+
+const ABILITY_OPTIONS = ABILITY_NAMES.map(ability => ({
+    label: ability.substring(0, 3).toUpperCase(),
+    value: ability
+}));
 
 interface ToolChecksSectionProps {
     toolProficiencies: ToolProficiency[];
@@ -56,12 +62,12 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                         return (
                             <div
                                 key={`${tool.name}-${index}`}
-                                className="flex items-center justify-between p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                className="flex items-center justify-between p-2 rounded hover:bg-secondary/40 transition-colors"
                             >
                                 <div className="flex items-center gap-3">
                                     <button
                                         onClick={() => !tool.fromFeature && handleUpdateTool(index, { level: cycleProficiency(tool.level) })}
-                                        className={`w-8 h-8 flex items-center justify-center focus:outline-none transition-transform active:scale-95 ${tool.fromFeature ? "cursor-default" : "hover:text-blue-600"}`}
+                                        className={`w-8 h-8 flex items-center justify-center focus:outline-none transition-transform active:scale-95 ${tool.fromFeature ? "cursor-default" : "hover:text-primary"}`}
                                         title={tool.fromFeature ? `Granted by Feature: ${tool.level}` : `Proficiency: ${tool.level}`}
                                     >
                                         <div className="scale-75">
@@ -79,22 +85,17 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                                 variant="compact" 
                                             />
                                         )}
-                                        <div className="flex items-center text-[11px] text-gray-500 font-bold uppercase tracking-tight">
+                                        <div className="flex items-center text-[11px] text-muted-foreground font-bold uppercase tracking-tight">
                                             <span>(</span>
                                             {tool.fromFeature ? (
-                                                <span className="cursor-default">{tool.ability.substring(0, 3)}</span>
+                                                <span className="cursor-default tracking-tight uppercase font-bold">{tool.ability.substring(0, 3)}</span>
                                             ) : (
-                                                <select
+                                                <Select
+                                                    variant="inline"
                                                     value={tool.ability}
-                                                    onChange={(e) => handleUpdateTool(index, { ability: e.target.value })}
-                                                    className="bg-transparent border-none p-0 h-auto w-fit text-inherit focus:ring-0 cursor-pointer uppercase font-bold tracking-tight hover:text-blue-600"
-                                                >
-                                                    {ABILITY_NAMES.map(ability => (
-                                                        <option key={ability} value={ability}>
-                                                            {ability.substring(0, 3)}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                    onValueChange={(val) => handleUpdateTool(index, { ability: val })}
+                                                    options={ABILITY_OPTIONS}
+                                                />
                                             )}
                                             <span>)</span>
                                             {advantage && (
@@ -108,7 +109,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                 </div>
                                 <button
                                     onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check (${tool.ability})`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
-                                    className="font-bold text-lg min-w-[3ch] text-right text-blue-600 hover:text-blue-800"
+                                    className="font-bold text-lg min-w-[3ch] text-right text-primary hover:opacity-80 transition-colors"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >
                                     {sign}{totalBonus}

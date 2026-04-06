@@ -40,16 +40,16 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
     const modalContent = (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <Card className="w-full max-w-md shadow-2xl border-none overflow-hidden animate-in zoom-in-95 duration-200 bg-white dark:bg-gray-950">
+            <Card className="w-full max-w-md shadow-2xl border-none overflow-hidden animate-in zoom-in-95 duration-200">
                 <CardContent className="p-0">
-                    <div className="flex justify-between items-center p-4 border-b dark:border-gray-800">
+                    <div className="flex justify-between items-center p-4 border-b border-border">
                         <div className="flex items-center gap-2">
                             {confirmVariant === "danger" && <AlertTriangle className="w-5 h-5 text-red-500" />}
                             <h3 className="font-bold text-gray-900 dark:text-gray-100">{title}</h3>
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                        className="p-1 hover:bg-secondary rounded-full transition-colors text-muted-foreground hover:text-foreground"
                         >
                             <X size={18} />
                         </button>
@@ -59,7 +59,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                             {message}
                         </p>
                     </div>
-                    <div className="flex justify-end gap-3 p-4 bg-gray-50 dark:bg-gray-900/50 border-t dark:border-gray-800">
+                    <div className="flex justify-end gap-3 p-4 bg-secondary/30 border-t border-border">
                         <Button
                             variant="ghost"
                             onClick={onClose}

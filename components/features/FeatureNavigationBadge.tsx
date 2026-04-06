@@ -16,7 +16,7 @@ const FeatureNavigationBadge: React.FC<FeatureNavigationBadgeProps> = ({
     if (variant === "compact") {
         return (
             <span
-                className="text-xs font-bold uppercase px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 tracking-wider cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors shrink-0"
+                className="text-[11px] font-bold uppercase px-1 py-0.5 bg-primary/10 text-primary rounded border border-primary/20 tracking-tighter cursor-pointer hover:bg-primary/20 transition-colors shrink-0"
                 title="Granted by Feature - Click to view"
                 onClick={(e) => {
                     e.stopPropagation();
@@ -31,7 +31,7 @@ const FeatureNavigationBadge: React.FC<FeatureNavigationBadgeProps> = ({
     if (variant === "badge") {
         return (
             <span
-                className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-bold uppercase tracking-tight cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                className="text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20 font-bold uppercase tracking-tight cursor-pointer hover:bg-primary/20 transition-colors"
                 title="Granted by Feature - Click to view"
                 onClick={(e) => {
                     e.stopPropagation();
@@ -46,7 +46,11 @@ const FeatureNavigationBadge: React.FC<FeatureNavigationBadgeProps> = ({
     // Default variant
     return (
         <span
-            className="text-[11px] font-bold uppercase px-1 bg-current/10 rounded tracking-tighter"
+            className="text-[11px] font-bold uppercase px-1 bg-primary/10 text-primary border border-primary/20 rounded tracking-tighter cursor-pointer hover:bg-primary/20 transition-colors"
+            onClick={(e) => {
+                e.stopPropagation();
+                onNavigateToFeature(featureId);
+            }}
         >
             Feature
         </span>

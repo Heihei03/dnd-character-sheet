@@ -96,11 +96,11 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
     return (
         <Card
             id={`feature-${feature.id}`}
-            className={`overflow-hidden group border-none rounded-none shadow-none hover:shadow transition-all duration-200 ${highlighted ? "ring-2 ring-blue-500 ring-opacity-50 relative z-10" : ""}`}
+            className={`overflow-visible group border-none rounded-none shadow-none hover:shadow-md transition-all duration-300 ${highlighted ? "ring-4 ring-primary/40 ring-offset-2 my-2 relative z-10" : ""}`}
         >
             <CardContent className="p-0">
                 <div
-                    className="p-3 px-4 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                    className="p-3 px-4 flex justify-between items-center cursor-pointer hover:bg-secondary/30 transition-colors"
                     onClick={onToggleExpand}
                 >
                     <div className="flex items-center gap-3 overflow-hidden flex-1">
@@ -117,11 +117,12 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
                         {feature.modifiers && feature.modifiers.length > 0 && (
                             <div className="hidden sm:flex gap-1 overflow-hidden">
                                 {feature.modifiers.map(mod => (
-                                    <span key={mod.id} className={`text-[11px] font-bold px-1.5 rounded uppercase tracking-tighter ${mod.type === "Sense" ? "bg-amber-100 text-amber-700" :
-                                        mod.type === "Speed" ? "bg-emerald-100 text-emerald-700" :
-                                            mod.type === "Bonus" ? "bg-rose-100 text-rose-700" :
-                                                "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                                        }`}>
+                                    <span key={mod.id} className={`text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest ${
+                                        mod.type === "Sense" ? "bg-amber-500/10 text-amber-600" :
+                                        mod.type === "Speed" ? "bg-emerald-500/10 text-emerald-600" :
+                                        mod.type === "Bonus" ? "bg-rose-500/10 text-rose-600" :
+                                        "bg-primary/5 text-primary"
+                                    }`}>
                                         {mod.subType || mod.type}
                                     </span>
                                 ))}
@@ -147,7 +148,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
                             return (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); handleRoll(rollableMod, feature.name); }}
-                                    className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors flex items-center gap-1.5"
+                                    className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-all flex items-center gap-1.5 border border-transparent hover:border-primary/20"
                                     title="Quick Roll"
                                 >
                                     <Dices className="w-4 h-4" />
@@ -193,46 +194,51 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
                             </div>
                         )}
 
-                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onStartEdit(); }}
+                            className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-all"
+                        >
+                            <Pencil className="w-4 h-4" />
+                        </button>
+                        {feature.origin !== "Item" && (
                             <button
-                                onClick={(e) => { e.stopPropagation(); onStartEdit(); }}
-                                className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                                className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/5 rounded-md transition-all"
                             >
-                                <Pencil className="w-4 h-4" />
+                                <Trash2 className="w-4 h-4" />
                             </button>
-                            {feature.origin !== "Item" && (
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
-                            )}
-                            <ChevronDown className={`w-4 h-4 text-gray-400 transform transition-transform ${isExpanded ? "rotate-180" : ""}`} />
-                        </div>
+                        )}
+                        <ChevronDown className={`w-4 h-4 text-muted-foreground transform transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+                    </div>
                     </div>
                 </div>
 
                 {isExpanded && (
-                    <div className="p-4 pt-0 border-t border-gray-100 dark:border-gray-800 space-y-4 bg-gray-50/50 dark:bg-gray-900/50 text-sm animate-in slide-in-from-top-2 duration-200">
-                        <div className="whitespace-pre-wrap pt-3 leading-relaxed text-gray-700 dark:text-gray-300">
+                    <div className="p-5 pt-0 border-t border-border space-y-6 bg-secondary/10 text-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="whitespace-pre-wrap pt-4 leading-relaxed text-foreground/80 font-medium">
                             {feature.description}
                         </div>
 
-                        <FeatureModifierDisplay
-                            modifiers={feature.modifiers || []}
-                            featureName={feature.name}
-                            resources={resources}
-                            onUpdateResourceValue={onUpdateResourceValue}
-                            onRoll={handleRoll}
-                        />
+                        <div className="border-t border-border/50 pt-4">
+                            <FeatureModifierDisplay
+                                modifiers={feature.modifiers || []}
+                                featureName={feature.name}
+                                resources={resources}
+                                onUpdateResourceValue={onUpdateResourceValue}
+                                onRoll={handleRoll}
+                            />
+                        </div>
 
                         {(feature.effects && feature.effects.length > 0) && (
-                            <div className="space-y-1">
-                                <div className="text-xs font-bold uppercase text-gray-400">Additional Effects</div>
-                                <ul className="list-disc list-inside space-y-0.5 text-gray-600 dark:text-gray-400">
+                            <div className="space-y-2 p-3 bg-background rounded-lg border border-border shadow-inner">
+                                <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-2 border-b border-border/50 pb-1">Additional Effects</div>
+                                <ul className="space-y-1.5">
                                     {feature.effects.map((effect, idx) => (
-                                        <li key={idx}>{effect}</li>
+                                        <li key={idx} className="flex gap-2 text-foreground/70">
+                                            <span className="text-primary mt-1">•</span>
+                                            <span>{effect}</span>
+                                        </li>
                                     ))}
                                 </ul>
                             </div>

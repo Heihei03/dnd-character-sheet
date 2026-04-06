@@ -28,8 +28,8 @@ const FeatureItemPill: React.FC<FeatureItemPillProps> = ({
 
     if (!appliedColorClass) {
         appliedColorClass = isFromFeature
-            ? "bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 border"
-            : "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/50 text-blue-700 dark:text-blue-300 border";
+            ? "bg-primary/10 border-primary/20 text-primary border"
+            : "bg-secondary/30 border-border text-muted-foreground border";
     }
 
     const featureClasses = isFromFeature

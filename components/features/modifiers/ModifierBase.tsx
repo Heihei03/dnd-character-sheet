@@ -16,7 +16,7 @@ const ModifierBase: React.FC<ModifierBaseProps> = ({ modifier, onUpdate, onRemov
     const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
     return (
-        <div className="grid grid-cols-12 gap-2 items-start bg-white dark:bg-gray-950 p-2 rounded border border-gray-100 dark:border-gray-800 transition-all hover:border-gray-200 dark:hover:border-gray-700">
+        <div className="grid grid-cols-12 gap-2 items-start bg-card text-card-foreground p-2 rounded border border-border transition-all hover:border-primary/30">
             {/* Type Selector */}
             <div className="col-span-3">
                 <select
@@ -44,16 +44,16 @@ const ModifierBase: React.FC<ModifierBaseProps> = ({ modifier, onUpdate, onRemov
             </div>
 
             {/* Footer: Attunement Checkbox and Delete Confirmation */}
-            <div className="col-span-12 flex items-center gap-1.5 pt-1.5 border-t border-gray-50 dark:border-gray-900 mt-1">
+            <div className="col-span-12 flex items-center gap-1.5 pt-1.5 border-t border-border mt-1">
                 <div className="flex items-center gap-1.5">
                     <input
                         type="checkbox"
                         id={`attune-${modifier.id}`}
                         checked={!!modifier.requiresAttunement}
                         onChange={(e) => onUpdate({ requiresAttunement: e.target.checked })}
-                        className="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-3.5 h-3.5 rounded border-border text-primary focus:ring-primary accent-primary"
                     />
-                    <label htmlFor={`attune-${modifier.id}`} className="text-[10px] font-bold text-gray-400 uppercase cursor-pointer select-none">
+                    <label htmlFor={`attune-${modifier.id}`} className="text-[10px] font-bold text-muted-foreground uppercase cursor-pointer select-none">
                         Attunement Required
                     </label>
                 </div>

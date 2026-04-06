@@ -13,7 +13,7 @@ const ProficiencyModifier: React.FC<ProficiencyModifierProps> = ({ modifier, onU
         <select
             value={modifier.value || "Proficient"}
             onChange={(e) => onUpdate({ value: e.target.value })}
-            className="w-full text-xs p-1.5 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-medium"
+            className="w-full text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent font-medium"
         >
             <option value="Proficient">Proficient</option>
             <option value="Expertise">Expertise</option>

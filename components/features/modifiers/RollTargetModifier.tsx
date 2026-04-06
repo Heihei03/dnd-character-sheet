@@ -31,11 +31,11 @@ const RollTargetModifier: React.FC<RollTargetModifierProps> = ({ modifier, onUpd
         <div className="space-y-2">
             <div className="flex flex-wrap gap-1.5">
                 {tags.map((tag: string, idx: number) => (
-                    <div key={idx} className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-[10px] px-2 py-0.5 rounded border border-green-100 dark:border-green-800 shadow-sm">
-                        <span className="font-bold text-green-700 dark:text-green-400 uppercase">{tag.trim()}</span>
+                    <div key={idx} className="flex items-center gap-1 bg-primary/10 text-[10px] px-2 py-0.5 rounded border border-primary/20 shadow-sm">
+                        <span className="font-bold text-primary uppercase">{tag.trim()}</span>
                         <button
                             onClick={() => removeTag(idx)}
-                            className="text-green-400 hover:text-red-500 transition-colors"
+                            className="text-primary hover:text-red-500 transition-colors"
                         >
                             <X className="w-3 h-3" />
                         </button>
@@ -48,7 +48,7 @@ const RollTargetModifier: React.FC<RollTargetModifierProps> = ({ modifier, onUpd
                         type="number"
                         value={modifier.value || 0}
                         onChange={(e) => onUpdate({ value: parseInt(e.target.value) || 0 })}
-                        className="w-12 text-xs p-1 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent font-mono"
+                        className="w-12 text-xs p-1 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent font-mono"
                         placeholder="1"
                         min="1"
                     />
@@ -71,7 +71,7 @@ const RollTargetModifier: React.FC<RollTargetModifierProps> = ({ modifier, onUpd
                                 addTag(inputValue);
                             }
                         }}
-                        className="w-full text-xs p-1 border-b border-dashed border-gray-200 dark:border-gray-800 focus:border-blue-500 focus:ring-0 bg-transparent"
+                        className="w-full text-xs p-1 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent"
                         placeholder="Add target (e.g. Dexterity Attacks)..."
                     />
                     <datalist id={`roll-type-list-${modifier.id}`}>

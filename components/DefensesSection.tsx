@@ -96,7 +96,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                     onChange={(e) => setNewValue(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && addDefense(category, newValue, setNewValue)}
                     placeholder={`Add ${title.toLowerCase()}...`}
-                    className="flex-1 text-sm p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all font-sans min-w-0"
+                    className="flex-1 text-sm p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded focus:ring-2 focus:ring-primary focus:outline-none transition-all font-sans min-w-0"
                 />
                 <button
                     onClick={() => addDefense(category, newValue, setNewValue)}
@@ -124,7 +124,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                     category="resistances"
                     newValue={newResistance}
                     setNewValue={setNewResistance}
-                    colorClass="bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-100 dark:border-blue-800/50 shadow-sm"
+                    colorClass="bg-primary/10 text-primary border border-primary/20 dark:border-primary/40 shadow-sm"
                     onNavigateToFeature={onNavigateToFeature}
                 />
                 <DefenseList

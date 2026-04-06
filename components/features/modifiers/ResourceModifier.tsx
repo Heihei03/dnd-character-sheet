@@ -26,14 +26,14 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
     const isScaling = data.useProficiencyBonus || data.useAbilityMod || data.useCharacterLevel;
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 mt-1 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-top-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 mt-1 bg-secondary/50 rounded-lg border border-border animate-in fade-in slide-in-from-top-1">
             <div className="space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Resource Name</label>
                 <input
                     type="text"
                     value={data.name || ""}
                     onChange={(e) => updateData({ name: e.target.value })}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                     placeholder={parentName || "e.g. Ki Points"}
                 />
             </div>
@@ -54,7 +54,7 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
                         };
                         updateData(updates);
                     }}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                 >
                     <option value="fixed">Fixed</option>
                     <option value="pb">Prof. Bonus</option>
@@ -73,7 +73,7 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
                     value={data.multiplier || 1}
                     disabled={!isScaling}
                     onChange={(e) => updateData({ multiplier: parseFloat(e.target.value) || 1 })}
-                    className={`w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900 ${!isScaling ? "bg-gray-100 text-gray-400" : ""}`}
+                    className={`w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none ${!isScaling ? "opacity-50 grayscale" : ""}`}
                     placeholder="1"
                     step="0.1"
                     min="0"
@@ -90,7 +90,7 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
                     type="number"
                     value={data.max || 0}
                     onChange={(e) => updateData({ max: parseInt(e.target.value) || 0 })}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                     placeholder="0"
                     min="0"
                 />
@@ -106,7 +106,7 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
                             value: JSON.stringify({ ...data, regain })
                         });
                     }}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                 >
                     {REGAIN_TYPES.map((r: string) => <option key={r} value={r}>{r}</option>)}
                 </select>
@@ -117,7 +117,7 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
                     type="text"
                     value={data.regainAmount || "All"}
                     onChange={(e) => updateData({ regainAmount: e.target.value })}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                     placeholder="All, 1d6 + 1, etc."
                 />
             </div>

@@ -11,17 +11,17 @@ const ExpandableSection: React.FC<ExpandableSectionProps> = ({ title, children }
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="border rounded-lg mb-3">
+        <div className="border border-border rounded-lg mb-3 overflow-hidden">
             <button
                 onClick={() => setOpen(!open)}
-                className="w-full flex justify-between items-center p-3 bg-gray-200 hover:bg-gray-300 rounded-lg"
+                className="w-full flex justify-between items-center p-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground transition-colors"
             >
-                <span className="font-semibold">{title}</span>
-                <span><ChevronDown className={`w-5 h-5 transform transition-transform duration-200 ${open ? "rotate-180" : ""}`} /></span>
+                <span className="font-semibold uppercase text-xs tracking-widest">{title}</span>
+                <span><ChevronDown className={`w-4 h-4 transform transition-transform duration-200 ${open ? "rotate-180" : ""}`} /></span>
             </button>
 
             {open && (
-                <div className="p-3 bg-white">
+                <div className="p-3 bg-card text-card-foreground border-t border-border">
                     {children}
                 </div>
             )}

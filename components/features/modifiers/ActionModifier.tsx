@@ -25,14 +25,14 @@ const ActionModifier: React.FC<ActionModifierProps> = ({ modifier, onUpdate, par
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 mt-1 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-top-1">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 mt-1 bg-secondary/50 rounded-lg border border-border animate-in fade-in slide-in-from-top-1">
             <div className="md:col-span-2 space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Action Name</label>
                 <input
                     type="text"
                     value={data.name || ""}
                     onChange={(e) => updateData({ name: e.target.value })}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                     placeholder={parentName || "Action Name"}
                 />
             </div>
@@ -46,7 +46,7 @@ const ActionModifier: React.FC<ActionModifierProps> = ({ modifier, onUpdate, par
                             value: JSON.stringify({ ...data, type: e.target.value })
                         });
                     }}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                 >
                     {ACTION_TYPES.map((t: string) => <option key={t} value={t}>{t}</option>)}
                 </select>
@@ -57,7 +57,7 @@ const ActionModifier: React.FC<ActionModifierProps> = ({ modifier, onUpdate, par
                     type="text"
                     value={data.damageDice || ""}
                     onChange={(e) => updateData({ damageDice: e.target.value })}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900 font-mono"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none font-mono"
                     placeholder="1d8"
                 />
             </div>
@@ -66,7 +66,7 @@ const ActionModifier: React.FC<ActionModifierProps> = ({ modifier, onUpdate, par
                 <select
                     value={data.damageAbility || ""}
                     onChange={(e) => updateData({ damageAbility: e.target.value })}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                 >
                     <option value="">None</option>
                     <option value="strength">STR</option>
@@ -97,7 +97,7 @@ const ActionModifier: React.FC<ActionModifierProps> = ({ modifier, onUpdate, par
                             resourceName: resName || undefined 
                         });
                     }}
-                    className="w-full text-xs p-1.5 border rounded bg-white dark:bg-gray-900"
+                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                 >
                     <option value="">No Link</option>
                     {availableResources

@@ -96,7 +96,7 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                 <label className="text-xs font-bold uppercase text-gray-500">Modifiers</label>
                 <button
                     onClick={addModifier}
-                    className="text-[11px] font-bold text-blue-600 hover:text-blue-800 uppercase tracking-wider flex items-center gap-1 transition-colors"
+                    className="text-[11px] font-bold text-primary hover:text-primary/80 uppercase tracking-wider flex items-center gap-1 transition-colors"
                 >
                     <Plus className="w-3.5 h-3.5" /> Add Modifier
                 </button>
@@ -115,8 +115,8 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
                 ))}
                 
                 {modifiers.length === 0 && (
-                    <div className="text-center py-6 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-lg">
-                        <p className="text-xs text-gray-400 italic">No modifiers added yet. Boost your feature with mechanical effects!</p>
+                    <div className="text-center py-6 border-2 border-dashed border-border rounded-lg">
+                        <p className="text-xs text-muted-foreground italic uppercase tracking-tight font-medium">No modifiers added yet</p>
                     </div>
                 )}
             </div>

@@ -22,10 +22,10 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
   }, [history]);
 
   return (
-    <div className="fixed right-0 top-0 h-full w-80 bg-gray-900/95 backdrop-blur-md border-l border-gray-800 shadow-2xl z-50 flex flex-col transition-all duration-300 ease-in-out animate-in slide-in-from-right">
-      <div className="p-4 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-        <h2 className="text-xl font-bold flex items-center gap-2 text-white">
-          <History className="w-5 h-5 text-blue-400" /> Roll History
+    <div className="fixed right-0 top-0 h-full w-80 bg-background/95 backdrop-blur-md border-l border-border shadow-2xl z-50 flex flex-col transition-all duration-300 ease-in-out animate-in slide-in-from-right">
+      <div className="p-4 border-b border-border flex justify-between items-center bg-secondary/20">
+        <h2 className="text-xl font-bold flex items-center gap-2">
+          <History className="w-5 h-5 text-primary" /> Roll History
         </h2>
         <div className="flex gap-2">
           {history.length > 0 && (
@@ -39,7 +39,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
           )}
           <button 
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white transition-colors"
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
             title="Close"
           >
             <X className="w-5 h-5" />
@@ -61,8 +61,8 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
             <Card key={roll.id} className={`shrink-0 border-l-4 ${
               roll.isCritical ? 'border-l-yellow-400' : 
               roll.isFumble ? 'border-l-red-500' : 
-              roll.type === 'damage' ? 'border-l-orange-500' : 'border-l-blue-500'
-            } bg-gray-800/50 hover:bg-gray-800 transition-colors`}>
+              roll.type === 'damage' ? 'border-l-orange-500' : 'border-l-primary'
+            } bg-secondary/10 hover:bg-secondary/20 transition-colors border-y-0 border-r-0 rounded-none shadow-none`}>
               <CardContent className="p-3 space-y-2">
                 <div className="flex justify-between items-start">
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
@@ -75,7 +75,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                 
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col">
-                    <span className="text-sm font-mono text-gray-300">
+                    <span className="text-sm font-mono text-foreground/80">
                       {roll.formula}
                     </span>
                     {(() => {
@@ -92,7 +92,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                   <div className="flex flex-col items-end">
                     <span className={`text-2xl font-bold ${
                       roll.isCritical ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]' : 
-                      roll.isFumble ? 'text-red-500' : 'text-white'
+                      roll.isFumble ? 'text-red-500' : 'text-foreground'
                     }`}>
                       {roll.total}
                     </span>
@@ -105,10 +105,10 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                 </div>
 
                 {roll.damageFormula && (
-                  <div className="pt-2 border-t border-gray-700/50 flex justify-end">
+                  <div className="pt-2 border-t border-border flex justify-end">
                     <button
                       onClick={() => onRollDamage(roll.damageFormula!, roll.label.replace(" Attack", ""), roll.damageType, roll.isCritical, roll.critExtraDamage, roll.critRule)}
-                      className="text-xs font-bold uppercase flex items-center gap-1.5 px-2 py-1 bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 rounded transition-colors"
+                      className="text-xs font-bold uppercase flex items-center gap-1.5 px-2 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded transition-colors"
                     >
                       <Dices className="w-3.5 h-3.5" /> Roll Damage ({getDisplayFormula(roll.damageFormula!, roll.isCritical || false, roll.critRule || 'double-dice', roll.critExtraDamage)})
                     </button>

@@ -59,7 +59,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Name</label>
                         <input
-                            className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700"
+                            className="border border-border rounded px-3 py-2 w-full bg-background focus:ring-1 focus:ring-primary outline-none"
                             value={localSpell.name || ""}
                             onChange={(e) => handleLocalUpdate("name", e.target.value)}
                         />
@@ -67,7 +67,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Level</label>
                         <select
-                            className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700 font-medium"
+                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
                             value={localSpell.level}
                             onChange={(e) => handleLocalUpdate("level", parseInt(e.target.value) || 0)}
                         >
@@ -80,7 +80,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">School</label>
                         <select
-                            className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700 font-medium"
+                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
                             value={localSpell.school || "Evocation"}
                             onChange={(e) => handleLocalUpdate("school", e.target.value)}
                         >
@@ -92,7 +92,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Casting Time</label>
                         <input
-                            className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700"
+                            className="border border-border rounded px-3 py-2 w-full bg-background focus:ring-1 focus:ring-primary outline-none"
                             value={localSpell.castingTime || ""}
                             onChange={(e) => handleLocalUpdate("castingTime", e.target.value)}
                         />
@@ -102,7 +102,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Range</label>
                         <input
-                            className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700"
+                            className="border border-border rounded px-3 py-2 w-full bg-background focus:ring-1 focus:ring-primary outline-none"
                             value={localSpell.range || ""}
                             onChange={(e) => handleLocalUpdate("range", e.target.value)}
                         />
@@ -110,7 +110,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Duration</label>
                         <input
-                            className="border rounded px-3 py-2 w-full dark:bg-gray-900 dark:border-gray-700"
+                            className="border border-border rounded px-3 py-2 w-full bg-background focus:ring-1 focus:ring-primary outline-none"
                             value={localSpell.duration || ""}
                             onChange={(e) => handleLocalUpdate("duration", e.target.value)}
                         />
@@ -125,6 +125,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                     type="checkbox"
                                     checked={localSpell.components?.v}
                                     onChange={(e) => handleLocalComponentUpdate("v", e.target.checked)}
+                                    className="accent-primary"
                                 /> V
                             </label>
                             <label className="flex items-center gap-1 text-sm cursor-pointer">
@@ -132,6 +133,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                     type="checkbox"
                                     checked={localSpell.components?.s}
                                     onChange={(e) => handleLocalComponentUpdate("s", e.target.checked)}
+                                    className="accent-primary"
                                 /> S
                             </label>
                             <label className="flex items-center gap-1 text-sm cursor-pointer">
@@ -139,12 +141,13 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                     type="checkbox"
                                     checked={localSpell.components?.m}
                                     onChange={(e) => handleLocalComponentUpdate("m", e.target.checked)}
+                                    className="accent-primary"
                                 /> M
                             </label>
                         </div>
                         {localSpell.components?.m && (
                             <input
-                                className="border rounded px-3 py-1 w-full mt-1 text-sm dark:bg-gray-900 dark:border-gray-700"
+                                className="border border-border rounded px-3 py-1 w-full mt-1 text-sm bg-background focus:ring-1 focus:ring-primary outline-none"
                                 placeholder="Material..."
                                 value={localSpell.material || ""}
                                 onChange={(e) => handleLocalUpdate("material", e.target.value)}
@@ -155,33 +158,33 @@ const SpellForm: React.FC<SpellFormProps> = ({
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Flags & AoE</label>
                         <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                             <label className="flex items-center gap-2 text-xs">
-                                <input type="checkbox" checked={localSpell.isRitual || false} onChange={(e) => handleLocalUpdate("isRitual", e.target.checked)} /> Ritual
+                                <input type="checkbox" className="accent-primary" checked={localSpell.isRitual || false} onChange={(e) => handleLocalUpdate("isRitual", e.target.checked)} /> Ritual
                             </label>
                             <label className="flex items-center gap-2 text-xs">
-                                <input type="checkbox" checked={localSpell.requiresConcentration || false} onChange={(e) => handleLocalUpdate("requiresConcentration", e.target.checked)} /> Concentration
+                                <input type="checkbox" className="accent-primary" checked={localSpell.requiresConcentration || false} onChange={(e) => handleLocalUpdate("requiresConcentration", e.target.checked)} /> Concentration
                             </label>
                             <label className="flex items-center gap-2 text-xs">
-                                <input type="checkbox" checked={localSpell.hasAttack || false} onChange={(e) => handleLocalUpdate("hasAttack", e.target.checked)} /> Attack
+                                <input type="checkbox" className="accent-primary" checked={localSpell.hasAttack || false} onChange={(e) => handleLocalUpdate("hasAttack", e.target.checked)} /> Attack
                             </label>
                             <label className="flex items-center gap-2 text-xs">
-                                <input type="checkbox" checked={localSpell.hasSave || false} onChange={(e) => handleLocalUpdate("hasSave", e.target.checked)} /> Save
+                                <input type="checkbox" className="accent-primary" checked={localSpell.hasSave || false} onChange={(e) => handleLocalUpdate("hasSave", e.target.checked)} /> Save
                             </label>
                             <label className="flex items-center gap-2 text-xs">
-                                <input type="checkbox" checked={localSpell.hasHeal || false} onChange={(e) => handleLocalUpdate("hasHeal", e.target.checked)} /> Heal
+                                <input type="checkbox" className="accent-primary" checked={localSpell.hasHeal || false} onChange={(e) => handleLocalUpdate("hasHeal", e.target.checked)} /> Heal
                             </label>
-                            <label className="flex items-center gap-2 text-xs font-bold text-blue-600">
-                                <input type="checkbox" checked={localSpell.hasAoe || false} onChange={(e) => handleLocalUpdate("hasAoe", e.target.checked)} /> AoE
+                            <label className="flex items-center gap-2 text-xs font-bold text-primary">
+                                <input type="checkbox" className="accent-primary" checked={localSpell.hasAoe || false} onChange={(e) => handleLocalUpdate("hasAoe", e.target.checked)} /> AoE
                             </label>
                         </div>
                     </div>
                 </div>
 
                 {localSpell.hasAoe && (
-                    <div className="grid grid-cols-2 gap-4 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="grid grid-cols-2 gap-4 p-3 bg-primary/10 rounded-lg border border-primary/20 animate-in fade-in slide-in-from-top-2 duration-200">
                         <div>
                             <label className="block text-xs font-bold uppercase text-blue-700 dark:text-blue-300 mb-1">AoE Shape</label>
                             <select
-                                className="border rounded px-2 py-1 w-full text-sm dark:bg-gray-800"
+                                className="border border-border rounded px-2 py-1 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none"
                                 value={localSpell.aoeShape || ""}
                                 onChange={(e) => handleLocalUpdate("aoeShape", e.target.value)}
                             >
@@ -194,7 +197,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                         <div>
                             <label className="block text-xs font-bold uppercase text-blue-700 dark:text-blue-300 mb-1">AoE Size</label>
                             <input
-                                className="border rounded px-2 py-1 w-full text-sm dark:bg-gray-800"
+                                className="border border-border rounded px-2 py-1 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none"
                                 placeholder="e.g. 15 ft"
                                 value={localSpell.aoeSize || ""}
                                 onChange={(e) => handleLocalUpdate("aoeSize", e.target.value)}
@@ -207,7 +210,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Spellcasting Ability</label>
                         <select
-                            className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700 font-medium"
+                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
                             value={localSpell.spellcastingAbility || ""}
                             onChange={(e) => handleLocalUpdate("spellcastingAbility", e.target.value || undefined)}
                         >
@@ -223,7 +226,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Source Class</label>
                         <select
-                            className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-900 dark:border-gray-700 font-medium"
+                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
                             value={localSpell.classSource || ""}
                             onChange={(e) => handleLocalUpdate("classSource", e.target.value || undefined)}
                         >
@@ -236,14 +239,14 @@ const SpellForm: React.FC<SpellFormProps> = ({
                 </div>
 
                 {localSpell.level === 0 && (
-                    <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50 space-y-1">
+                    <div className="bg-primary/10 p-3 rounded-lg border border-primary/20 space-y-1">
                         <div className="flex items-center justify-between">
-                            <label className="text-sm font-bold text-blue-700 dark:text-blue-300">Scales with Character Level</label>
+                            <label className="text-sm font-bold text-primary">Scales with Character Level</label>
                             <input
                                 type="checkbox"
                                 checked={localSpell.scalesWithCharacterLevel || false}
                                 onChange={(e) => handleLocalUpdate("scalesWithCharacterLevel", e.target.checked)}
-                                className="w-5 h-5 cursor-pointer accent-blue-600"
+                                className="w-5 h-5 cursor-pointer accent-primary"
                             />
                         </div>
                         <p className="text-xs text-blue-600/70 dark:text-blue-400/70 italic leading-tight">
@@ -253,14 +256,14 @@ const SpellForm: React.FC<SpellFormProps> = ({
                 )}
 
                 {(localSpell.hasAttack || localSpell.hasSave || localSpell.damageOnly || localSpell.hasHeal) && (
-                    <div className="space-y-4 p-3 bg-gray-50 dark:bg-gray-900/40 rounded-lg border dark:border-gray-800">
+                    <div className="space-y-4 p-3 bg-secondary/30 rounded-lg border border-border">
                         <div className="grid grid-cols-2 gap-4">
                             {(localSpell.hasAttack || localSpell.hasSave || localSpell.damageOnly) && (
                                 <>
                                     <div>
                                         <label className="block text-sm mb-1 font-medium text-gray-500 uppercase text-[10px]">Base Damage / Effect</label>
                                         <input
-                                            className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800 font-mono"
+                                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-mono"
                                             placeholder="e.g. 8d6"
                                             value={localSpell.damage || ""}
                                             onChange={(e) => handleLocalUpdate("damage", e.target.value)}
@@ -269,7 +272,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                     <div>
                                         <label className="block text-sm mb-1 font-medium text-gray-500 uppercase text-[10px]">At Higher Levels (Damage)</label>
                                         <input
-                                            className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800 font-mono"
+                                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-mono"
                                             placeholder="e.g. 1d6"
                                             value={localSpell.higherLevelDamage || ""}
                                             onChange={(e) => handleLocalUpdate("higherLevelDamage", e.target.value)}
@@ -278,7 +281,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                     <div>
                                         <label className="block text-sm mb-1 font-medium text-gray-500 uppercase text-[10px]">Damage Type</label>
                                         <select
-                                            className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800"
+                                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none"
                                             value={localSpell.damageType || ""}
                                             onChange={(e) => handleLocalUpdate("damageType", e.target.value || undefined)}
                                         >
@@ -292,7 +295,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                         <div>
                                             <label className="block text-sm mb-1 font-medium text-gray-500 uppercase text-[10px]">Save Type</label>
                                             <select
-                                                className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800 font-medium"
+                                                className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
                                                 value={localSpell.saveType || ""}
                                                 onChange={(e) => handleLocalUpdate("saveType", e.target.value || undefined)}
                                             >
@@ -313,7 +316,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                     <div>
                                         <label className="block text-sm mb-1 font-medium text-gray-500 uppercase text-[10px]">Base Healing</label>
                                         <input
-                                            className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800 font-mono"
+                                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-mono"
                                             placeholder="e.g. 1d4 + 4"
                                             value={localSpell.healing || ""}
                                             onChange={(e) => handleLocalUpdate("healing", e.target.value)}
@@ -322,7 +325,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                     <div>
                                         <label className="block text-sm mb-1 font-medium text-gray-500 uppercase text-[10px]">At Higher Levels (Healing)</label>
                                         <input
-                                            className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800 font-mono"
+                                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-mono"
                                             placeholder="e.g. 1d4"
                                             value={localSpell.higherLevelHealing || ""}
                                             onChange={(e) => handleLocalUpdate("higherLevelHealing", e.target.value)}
@@ -334,7 +337,7 @@ const SpellForm: React.FC<SpellFormProps> = ({
                         <div className="space-y-1">
                             <label className="block text-xs font-bold uppercase text-gray-400">At Higher Levels (Description)</label>
                             <textarea
-                                className="border rounded px-3 py-2 w-full text-sm dark:bg-gray-800 min-h-[60px]"
+                                className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none min-h-[60px]"
                                 placeholder="The damage increases by 1d6 for each slot level above 3rd..."
                                 value={localSpell.atHigherLevels || ""}
                                 onChange={(e) => handleLocalUpdate("atHigherLevels", e.target.value)}
@@ -346,20 +349,20 @@ const SpellForm: React.FC<SpellFormProps> = ({
                 <div className="space-y-2">
                     <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Description</label>
                     <textarea 
-                        className="border rounded px-3 py-2 w-full min-h-[100px] dark:bg-gray-900 dark:border-gray-700 font-serif text-sm" 
+                        className="border border-border rounded px-3 py-2 w-full min-h-[100px] bg-background focus:ring-1 focus:ring-primary outline-none font-serif text-sm" 
                         value={localSpell.description || ""} 
                         onChange={(e) => handleLocalUpdate("description", e.target.value)} 
                     />
                 </div>
                 
-                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50 space-y-2">
+                <div className="bg-primary/10 p-3 rounded-lg border border-primary/20 space-y-2">
                     <div className="flex items-center justify-between">
                         <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Prepared for Combat</label>
                         <input
                             type="checkbox"
                             checked={localSpell.prepared || false}
                             onChange={(e) => handleLocalUpdate("prepared", e.target.checked)}
-                            className="w-5 h-5 cursor-pointer accent-blue-600 rounded border-gray-300"
+                            className="w-5 h-5 cursor-pointer accent-primary rounded border-border"
                         />
                     </div>
                     <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight italic">

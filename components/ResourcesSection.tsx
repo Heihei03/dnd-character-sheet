@@ -21,10 +21,10 @@ const ResourcesSection: React.FC<ResourcesSectionProps> = ({ resources = [], onU
     }
 
     return (
-        <Card className="overflow-hidden border-blue-100 dark:border-blue-900 shadow-sm">
-            <div className="p-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+        <Card className="overflow-hidden border-border shadow-sm">
+            <div className="p-4 bg-secondary/30 border-b border-border flex justify-between items-center">
                 <h3 className="text-lg font-bold flex items-center gap-2">
-                    <div className="w-2 h-5 bg-blue-500 rounded-full" />
+                    <div className="w-2 h-5 bg-primary rounded-full" />
                     Resources
                 </h3>
             </div>

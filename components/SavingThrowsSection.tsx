@@ -52,11 +52,11 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                 notes.forEach(n => { if (!allNotes.includes(n)) allNotes.push(n); });
 
                 return (
-                    <div key={key} className="flex flex-col items-center h-[110px] w-32 border rounded-lg p-2 shadow-sm transition-all hover:shadow-lg relative bg-gray-50 border-gray-300 dark:bg-gray-900 dark:border-gray-800">
+                    <div key={key} className="flex flex-col items-center h-[110px] w-32 border border-border rounded-lg p-2 shadow-sm transition-all hover:shadow-lg relative bg-secondary/30">
                         {/* Name & Conc Button Integration Slot - Fixed Height */}
                         <div className="h-8 flex items-center justify-center w-full relative px-2">
                             <div
-                                className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-blue-500' : 'text-gray-400 hover:text-blue-500'}`}
+                                className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
                                 onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
                             >
                                 {showConc ? "Concentration" : `${key.slice(0, 3)} Save`}
@@ -67,7 +67,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         <div className="flex-1 flex items-center justify-center w-full">
                             <button 
                                 onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
-                                className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-blue-500 hover:text-blue-600' : 'text-blue-600 hover:text-blue-800'}`}
+                                className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-primary hover:opacity-80' : 'text-primary hover:opacity-90'}`}
                             >
                                 {displayModifier}
                             </button>
@@ -94,7 +94,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         {isConstitution && (
                             <button
                                 onClick={() => setIsConcMode(!isConcMode)}
-                                className={`absolute bottom-1 right-1 p-1 rounded-md transition-all z-10 ${isConcMode ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800' : 'text-gray-300 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                className={`absolute bottom-1 right-1 p-1 rounded-md transition-all z-10 ${isConcMode ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground/40 hover:text-primary hover:bg-primary/5'}`}
                                 title={isConcMode ? "Switch to Saving Throw" : "Switch to Concentration"}
                             >
                                 <Target className="w-4 h-4" />
@@ -111,11 +111,11 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
             })}
 
             {allNotes.length > 0 && (
-                <div className="mt-2 pt-1 border-t border-gray-100 dark:border-gray-800">
-                    <h4 className="text-[11px] uppercase font-bold text-gray-400 mb-1">Bonuses</h4>
+                <div className="mt-2 pt-1 border-t border-border">
+                    <h4 className="text-[11px] uppercase font-bold text-muted-foreground mb-1">Bonuses</h4>
                     <ul className="space-y-0.5">
                         {allNotes.map((note, i) => (
-                            <li key={i} className="text-[11px] text-gray-500 dark:text-gray-400 italic leading-tight">
+                            <li key={i} className="text-[11px] text-muted-foreground italic leading-tight">
                                 • {note}
                             </li>
                         ))}

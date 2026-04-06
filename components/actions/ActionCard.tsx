@@ -111,7 +111,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
     };
 
     return (
-        <Card className="overflow-hidden group hover:border-blue-400 transition-colors">
+        <Card className="overflow-hidden group hover:border-primary/50 transition-colors">
             <CardContent className="p-0">
                 <div
                     className="p-3 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
@@ -126,7 +126,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                 </span>
                             )}
                             {action.isAttack && (
-                                <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded font-mono font-bold">
+                                <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded font-mono font-bold border border-primary/20">
                                     <button
                                         type="button"
                                         onClick={handleAttackRoll}
@@ -187,7 +187,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                             type="button"
                                             onClick={handleDamageRoll}
                                             title="Roll Damage/Effect"
-                                            className="font-mono font-bold hover:underline cursor-pointer flex items-center gap-1.5 text-blue-600 dark:text-blue-400"
+                                            className="font-mono font-bold hover:underline cursor-pointer flex items-center gap-1.5 text-primary"
                                         >
                                             <Dices className="w-3.5 h-3.5" />
                                             {upcastedDamage || upcastedHealing}
@@ -211,10 +211,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                     {action.baseLevel !== undefined &&
                                         action.baseLevel > 0 && (
                                             <div
-                                                className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800"
+                                                className="flex items-center gap-1 bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                <Zap className="w-2.5 h-2.5 text-blue-500" />
+                                                <Zap className="w-2.5 h-2.5 text-primary" />
                                                 <select
                                                     value={currentCastLevel}
                                                     onChange={(e) =>
@@ -222,7 +222,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                                             parseInt(e.target.value)
                                                         )
                                                     }
-                                                    className="bg-transparent text-xs font-bold text-blue-700 dark:text-blue-300 focus:outline-none"
+                                                    className="bg-transparent text-xs font-bold text-primary focus:outline-none"
                                                 >
                                                     {Array.from(
                                                         {
@@ -254,7 +254,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                     e.stopPropagation();
                                     onEdit();
                                 }}
-                                className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                className="p-1 text-gray-400 hover:text-primary transition-colors"
                             >
                                 <Pencil className="w-4 h-4" />
                             </button>
@@ -305,10 +305,9 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                                 onClick={handleDamageRoll}
                                                 title="Roll"
                                                 className={`hover:underline cursor-pointer font-bold flex items-center gap-1.5 ${
-                                                    currentCastLevel >
-                                                    (action.baseLevel || 0)
-                                                        ? "text-blue-600 dark:text-blue-400"
-                                                        : "text-blue-600 dark:text-blue-400"
+                                                    currentCastLevel > (action.baseLevel || 0)
+                                                        ? "text-primary"
+                                                        : "text-primary"
                                                 }`}
                                             >
                                                 <Dices className="w-3.5 h-3.5" />
@@ -360,8 +359,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
                         </div>
 
                         {action.atHigherLevels && (
-                            <div className="mt-2 p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded border border-blue-100 dark:border-blue-800/50 italic text-xs text-gray-600 dark:text-gray-400">
-                                <strong className="text-blue-700 dark:text-blue-300 text-xs uppercase not-italic font-bold">
+                            <div className="mt-2 p-2 bg-primary/5 rounded border border-primary/10 italic text-xs text-gray-600 dark:text-gray-400">
+                                <strong className="text-primary text-xs uppercase not-italic font-bold">
                                     At Higher Levels:{" "}
                                 </strong>
                                 {action.atHigherLevels}

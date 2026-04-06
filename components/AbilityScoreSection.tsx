@@ -67,14 +67,14 @@ const AbilityScoreSection = ({
           <div
             key={key}
             className={`flex flex-col items-center h-[110px] w-32 border rounded-lg p-2 shadow-sm transition-all hover:shadow-lg relative ${isOverridden
-              ? "bg-purple-50 border-purple-200 dark:bg-purple-900/10 dark:border-purple-800"
-              : "bg-gray-50 border-gray-300 dark:bg-gray-900 dark:border-gray-800"
+              ? "bg-primary/10 border-primary/30"
+              : "bg-secondary/30 border-border"
               }`}
           >
             {/* Ability Name Slot - Fixed Height */}
             <div className="h-8 flex items-center justify-center w-full px-2">
               <div
-                className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${isOverridden ? "text-purple-600 dark:text-purple-400" : "text-gray-400 hover:text-blue-500"
+                className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${isOverridden ? "text-primary dark:text-primary" : "text-muted-foreground hover:text-primary"
                   }`}
                 onClick={() => rollDice?.(20, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
                 title={isOverridden ? "Overridden by item/feature" : ""}
@@ -87,7 +87,7 @@ const AbilityScoreSection = ({
             <div className="flex-1 flex items-center justify-center w-full">
               <button
                 onClick={() => rollDice?.(20, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
-                className="text-4xl font-black text-blue-600 hover:text-blue-800 transition-all hover:scale-110"
+                className="text-4xl font-black text-primary hover:opacity-80 transition-all hover:scale-110"
               >
                 {formattedModifier}
               </button>
@@ -98,10 +98,10 @@ const AbilityScoreSection = ({
               <div className="relative flex items-center justify-center bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-full px-2 py-0.5 min-w-[2.75rem] shadow-sm">
                 {isOverridden ? (
                   <div className="flex items-center gap-1">
-                    <span className="text-sm font-bold text-purple-600">
+                    <span className="text-sm font-bold text-primary">
                       {effectiveScore}
                     </span>
-                    <span className="text-xs text-gray-400 line-through decoration-purple-400/50" title={`Base Score: ${score}`}>
+                    <span className="text-xs text-muted-foreground line-through decoration-primary/50" title={`Base Score: ${score}`}>
                       ({score})
                     </span>
                   </div>
@@ -109,7 +109,7 @@ const AbilityScoreSection = ({
                   <div className="flex items-center justify-center">
                     <button
                       onClick={() => setAbilityScore(key, Math.max(0, score - 1))}
-                      className="text-gray-400 hover:text-blue-500 w-5 flex items-center justify-center transition-colors px-1"
+                      className="text-gray-400 hover:text-primary w-5 flex items-center justify-center transition-colors px-1"
                     >
                       <Minus className="w-4 h-4 stroke-[3]" />
                     </button>
@@ -121,7 +121,7 @@ const AbilityScoreSection = ({
                     />
                     <button
                       onClick={() => setAbilityScore(key, score + 1)}
-                      className="text-gray-400 hover:text-blue-500 w-5 flex items-center justify-center transition-colors px-1"
+                      className="text-gray-400 hover:text-primary w-5 flex items-center justify-center transition-colors px-1"
                     >
                       <Plus className="w-4 h-4 stroke-[3]" />
                     </button>

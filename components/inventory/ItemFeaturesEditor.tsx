@@ -41,7 +41,7 @@ const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ itemName, featu
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Item Features & Modifiers</h4>
                 <button
                     onClick={addFeature}
-                    className="text-xs bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-2 py-1 rounded font-bold uppercase transition-colors"
+                    className="text-xs bg-secondary hover:bg-secondary/80 text-secondary-foreground px-2 py-1 rounded font-bold uppercase transition-colors"
                 >
                     + Add Feature
                 </button>
@@ -49,14 +49,14 @@ const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ itemName, featu
 
             <div className="space-y-4">
                 {features.map((feature) => (
-                    <div key={feature.id} className="p-3 bg-white dark:bg-gray-950 rounded-lg border border-gray-100 dark:border-gray-800 space-y-3 shadow-sm">
+                    <div key={feature.id} className="p-3 bg-card text-card-foreground rounded-lg border border-border space-y-3 shadow-sm">
                         <div className="flex justify-between items-start gap-2">
                             <div className="flex-1 space-y-2">
                                 <input
                                     type="text"
                                     value={feature.name}
                                     onChange={e => updateFeature(feature.id, { name: e.target.value })}
-                                    className="w-full text-sm font-bold bg-transparent border-b border-transparent hover:border-gray-200 focus:border-blue-500 focus:ring-0 p-0"
+                                    className="w-full text-sm font-bold bg-transparent border-b border-transparent hover:border-border focus:border-primary focus:ring-0 p-0"
                                     placeholder="Feature Name"
                                 />
                                 <textarea
@@ -85,11 +85,11 @@ const ItemFeaturesEditor: React.FC<ItemFeaturesEditorProps> = ({ itemName, featu
                 ))}
 
                 {features.length === 0 && (
-                    <div className="text-center py-6 border-2 border-dashed border-gray-50 dark:border-gray-900 rounded-xl">
+                    <div className="text-center py-6 border-2 border-dashed border-border rounded-xl">
                         <p className="text-xs text-gray-400 italic font-medium uppercase tracking-tight">No active features or modifiers for this item</p>
                         <button
                             onClick={addFeature}
-                            className="mt-1 text-xs text-blue-600 font-bold uppercase hover:underline"
+                            className="mt-1 text-xs text-primary font-bold uppercase hover:underline"
                         >
                             + Add One Now
                         </button>

@@ -50,7 +50,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
         : "";
 
     return (
-        <div className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/20 transition-colors">
+        <div className="p-4 hover:bg-secondary/20 transition-colors">
             <div
                 className="flex justify-between items-start cursor-pointer"
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -66,10 +66,10 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         onChange={(e) => handleUpdateSpell(spell.id, "prepared", e.target.checked)}
                                         onClick={(e) => e.stopPropagation()}
                                         title={spell.prepared ? "Unprepare spell" : "Prepare spell for combat"}
-                                        className="w-4 h-4 cursor-pointer accent-blue-600"
+                                        className="w-4 h-4 cursor-pointer accent-primary"
                                     />
                                     {spell.prepared && (
-                                        <span className="flex items-center gap-1 text-xs font-black uppercase tracking-tighter text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800">
+                                        <span className="flex items-center gap-1 text-xs font-black uppercase tracking-tighter text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">
                                             Prepared
                                         </span>
                                     )}
@@ -77,7 +77,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             )}
                             <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{spell.name}</h3>
                             {spell.classSource && (
-                                <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700 font-bold uppercase tracking-tight">
+                                <span className="text-xs bg-secondary text-muted-foreground px-2 py-0.5 rounded-full border border-border font-bold uppercase tracking-tight">
                                     {spell.classSource}
                                 </span>
                             )}
@@ -93,35 +93,35 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             {spell.hasAttack && <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800 font-bold uppercase tracking-tight">Attack</span>}
                             {spell.hasSave && <span className="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded-full border border-orange-200 dark:border-orange-800 font-bold uppercase tracking-tight">Save</span>}
                             {spell.hasHeal && <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800 font-bold uppercase tracking-tight">Heal</span>}
-                            <span className="text-sm text-gray-500 italic ml-1 dark:text-gray-400">{spell.school}</span>
+                            <span className="text-sm text-muted-foreground italic ml-1">{spell.school}</span>
 
                             {/* Upcasting Selector */}
                             {spell.level > 0 && (
                                 <div
-                                    className="ml-auto flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg border border-blue-100 dark:border-blue-800"
+                                    className="ml-auto flex items-center gap-2 bg-primary/10 px-2 py-1 rounded-lg border border-primary/20"
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    <Zap className="w-3.5 h-3.5 text-blue-500" />
-                                    <label className="text-xs font-bold uppercase text-blue-600 dark:text-blue-400">Cast At:</label>
+                                    <Zap className="w-3.5 h-3.5 text-primary" />
+                                    <label className="text-xs font-bold uppercase text-primary opacity-80">Cast At:</label>
                                     <select
                                         value={castLevel}
                                         onChange={(e) => setCastLevel(parseInt(e.target.value))}
-                                        className="bg-transparent text-xs font-bold text-blue-700 dark:text-blue-300 focus:outline-none cursor-pointer"
+                                        className="bg-transparent text-xs font-bold text-primary focus:outline-none cursor-pointer"
                                     >
                                         {Array.from({ length: 10 - spell.level }, (_, i) => spell.level + i).map(l => (
-                                            <option key={l} value={l} className="dark:bg-gray-900">Level {l}</option>
+                                            <option key={l} value={l} className="bg-background">Level {l}</option>
                                         ))}
                                     </select>
                                 </div>
                             )}
                         </div>
 
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm text-gray-700 dark:text-gray-300">
-                            <div className="flex flex-col"><span className="text-xs uppercase font-bold text-gray-400 leading-tight">Casting Time</span>{spell.castingTime}</div>
-                            <div className="flex flex-col"><span className="text-xs uppercase font-bold text-gray-400 leading-tight">Range</span>{spell.range}</div>
-                            <div className="flex flex-col"><span className="text-xs uppercase font-bold text-gray-400 leading-tight">Duration</span>{spell.duration}</div>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm text-foreground/80">
+                            <div className="flex flex-col"><span className="text-xs uppercase font-bold text-muted-foreground leading-tight">Casting Time</span>{spell.castingTime}</div>
+                            <div className="flex flex-col"><span className="text-xs uppercase font-bold text-muted-foreground leading-tight">Range</span>{spell.range}</div>
+                            <div className="flex flex-col"><span className="text-xs uppercase font-bold text-muted-foreground leading-tight">Duration</span>{spell.duration}</div>
                             <div className="flex flex-col col-span-1 lg:col-span-1">
-                                <span className="text-xs uppercase font-bold text-gray-400 leading-tight">Components</span>
+                                <span className="text-xs uppercase font-bold text-muted-foreground leading-tight">Components</span>
                                 <span>
                                     {Array.isArray(spell.components as any)
                                         ? (spell.components as any).join(", ")
@@ -134,7 +134,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 </span>
                             </div>
                             {spell.hasAoe && (
-                                <div className="flex flex-col"><span className="text-xs uppercase font-bold text-blue-400 leading-tight">AoE</span>{spell.aoeSize} {spell.aoeShape}</div>
+                                <div className="flex flex-col"><span className="text-xs uppercase font-bold text-primary opacity-60 leading-tight">AoE</span>{spell.aoeSize} {spell.aoeShape}</div>
                             )}
                             {spell.spellcastingAbility && (
                                 <>
@@ -157,7 +157,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     <span className="text-xs uppercase font-bold text-red-500 leading-tight">
                                         Damage {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
                                     </span>
-                                    <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-blue-600 dark:text-blue-400" : ""}`}>
+                                    <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-primary" : ""}`}>
                                         {upcastedDamage} {spell.damageType}
                                     </span>
                                 </div>
@@ -167,7 +167,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     <span className="text-xs uppercase font-bold text-green-500 leading-tight">
                                         Healing {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
                                     </span>
-                                    <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-blue-600 dark:text-blue-400" : ""}`}>
+                                    <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-primary" : ""}`}>
                                         {upcastedHealing}
                                     </span>
                                 </div>
@@ -176,11 +176,11 @@ const SpellCard: React.FC<SpellCardProps> = ({
 
                         {isExpanded && (
                             <>
-                                <p className="text-sm dark:text-gray-300 leading-relaxed font-serif whitespace-pre-wrap mt-2">{spell.description}</p>
+                                <p className="text-sm text-foreground/90 leading-relaxed font-serif whitespace-pre-wrap mt-2">{spell.description}</p>
 
                                 {spell.atHigherLevels && (
-                                    <div className="mt-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-800/50 italic text-sm text-gray-600 dark:text-gray-400">
-                                        <strong className="text-blue-700 dark:text-blue-300 text-xs uppercase not-italic">At Higher Levels: </strong>
+                                    <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/10 italic text-sm text-muted-foreground">
+                                        <strong className="text-primary text-xs uppercase not-italic">At Higher Levels: </strong>
                                         {spell.atHigherLevels}
                                     </div>
                                 )}
@@ -191,7 +191,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 <div className="flex gap-2 ml-4 flex-shrink-0 items-center">
                     {onEdit && (
                         <button
-                            className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            className="p-2 text-muted-foreground hover:text-primary transition-colors"
                             onClick={(e) => { e.stopPropagation(); onEdit(); }}
                         >
                             <Edit2 className="w-5 h-5" />
@@ -200,7 +200,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                     {!spell.fromFeature && onDelete && (
                         <>
                             <button
-                                className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                className="p-2 text-muted-foreground hover:text-red-500 transition-colors"
                                 onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(true); }}
                             >
                                 <Trash2 className="w-5 h-5" />
@@ -215,7 +215,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             />
                         </>
                     )}
-                    <ChevronDown className={`w-5 h-5 text-gray-400 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                    <ChevronDown className={`w-5 h-5 text-muted-foreground transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                 </div>
             </div>
         </div>

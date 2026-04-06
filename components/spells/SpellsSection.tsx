@@ -170,7 +170,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     return (
         <div className="space-y-6">
             <Card>
-                <div className="p-4 border-b flex justify-between items-center">
+                <div className="p-4 border-b border-border flex justify-between items-center">
                     <h3 className="text-xl font-semibold">Spell Slots</h3>
                     <div className="flex items-center space-x-2">
                         <input
@@ -187,7 +187,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                     onUpdateSpellSlots(updatedSlots.filter(s => s.max > 0 || s.expended > 0));
                                 }
                             }}
-                            className="w-4 h-4 cursor-pointer"
+                            className="w-4 h-4 cursor-pointer accent-primary"
                             id="auto-calc-slots"
                         />
                         <label htmlFor="auto-calc-slots" className="text-sm font-medium cursor-pointer flex items-center">
@@ -233,7 +233,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                                 }
                                             }}
                                             disabled={autoCalculateSlots}
-                                            className={`w-12 h-6 text-center text-xs border rounded ${autoCalculateSlots ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-gray-800'}`}
+                                            className={`w-12 h-6 text-center text-xs border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none ${autoCalculateSlots ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         />
                                     </div>
                                 </div>
@@ -364,17 +364,17 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
 
                 return (
                     <Card key={level}>
-                        <div className="p-4 bg-gray-100 rounded-t-lg border-b">
+                        <div className="p-4 bg-secondary/50 rounded-t-lg border-b border-border">
                             <h3 className="text-lg font-semibold">{level === 0 ? "Cantrips" : `Level ${level}`}</h3>
                         </div>
                         <CardContent className="p-0">
-                            <div className="divide-y">
+                            <div className="divide-y divide-border">
                                 {levelSpells.map((spell) => {
                                     const totalLevel = classes.reduce((sum, cls) => sum + cls.level, 0);
                                     
                                     if (editingSpellId === spell.id) {
                                         return (
-                                            <div key={spell.id} className="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-lg border-2 border-blue-100 dark:border-blue-900/30 my-2 shadow-inner mx-4">
+                                            <div key={spell.id} className="p-4 bg-secondary/30 rounded-lg border-2 border-primary/20 my-2 shadow-inner mx-4">
                                                 <SpellForm
                                                     spell={spell}
                                                     isEditing={true}

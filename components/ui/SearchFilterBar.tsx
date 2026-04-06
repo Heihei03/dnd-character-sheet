@@ -1,18 +1,16 @@
 "use client";
 
 import React from "react";
-import { Search, X, ChevronDown, SlidersHorizontal, RotateCcw } from "lucide-react";
+import { Search, X, SlidersHorizontal, RotateCcw } from "lucide-react";
+import Select, { SelectOption } from "./Select";
 
-export interface FilterOption {
-    label: string;
-    value: string;
-}
+export type { SelectOption as FilterOption };
 
 export interface FilterConfig {
     id: string;
     value: string;
     onValueChange: (value: string) => void;
-    options: FilterOption[];
+    options: SelectOption[];
     placeholder?: string;
     className?: string;
 }
@@ -24,7 +22,7 @@ interface SearchFilterBarProps {
     // Single filter (backward compatibility)
     filterValue?: string;
     onFilterChange?: (value: string) => void;
-    filterOptions?: FilterOption[];
+    filterOptions?: SelectOption[];
     filterPlaceholder?: string;
     // Multiple filters
     filters?: FilterConfig[];
@@ -86,7 +84,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                         placeholder={searchPlaceholder}
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                        className="w-full pl-10 pr-10 py-2 bg-background border border-border rounded-lg focus:outline-none transition-all text-sm shadow-sm"
                     />
                     {searchQuery && (
                         <button
@@ -100,21 +98,13 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
                 {/* Single filter (Legacy/Simple mode) */}
                 {!hasMultipleFilters && filtersToRender.length === 1 && (
-                    <div className="relative min-w-[120px] md:w-48">
-                        <select
+                    <div className="min-w-[120px] md:w-48">
+                        <Select
                             value={filtersToRender[0].value}
-                            onChange={(e) => filtersToRender[0].onValueChange(e.target.value)}
-                            className="w-full pl-3 pr-8 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm appearance-none cursor-pointer"
-                        >
-                            {filtersToRender[0].options.map(opt => (
-                                <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </option>
-                            ))}
-                        </select>
-                        <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-gray-400">
-                            <ChevronDown className="h-4 w-4" />
-                        </div>
+                            onValueChange={filtersToRender[0].onValueChange}
+                            options={filtersToRender[0].options}
+                            placeholder={filtersToRender[0].placeholder}
+                        />
                     </div>
                 )}
 
@@ -122,16 +112,16 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 {hasMultipleFilters && (
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-all
+                        className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-black uppercase tracking-widest transition-all
                             ${showFilters || activeFilterCount > 0 
-                                ? "border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" 
-                                : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:border-gray-300"}
+                                ? "border-primary bg-primary/10 text-primary shadow-md shadow-primary/20" 
+                                : "border-border bg-background text-muted-foreground hover:border-primary/30"}
                         `}
                     >
                         <SlidersHorizontal className="w-4 h-4" />
                         <span>Filters</span>
                         {activeFilterCount > 0 && (
-                            <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold bg-blue-500 text-white rounded-full">
+                            <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-black bg-primary text-white rounded-full ml-1">
                                 {activeFilterCount}
                             </span>
                         )}
@@ -141,40 +131,30 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
             {/* Collapsible filters section */}
             {hasMultipleFilters && showFilters && (
-                <div className="animate-in fade-in slide-in-from-top-2 duration-200 p-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-xl">
-                    <div className="flex flex-wrap gap-4">
+                <div className="animate-in fade-in slide-in-from-top-2 duration-200 p-5 bg-secondary/30 border border-border rounded-2xl shadow-inner">
+                    <div className="flex flex-wrap gap-5">
                         {filtersToRender.map((filter) => (
-                            <div key={filter.id} className={`flex flex-col gap-1.5 flex-1 min-w-[140px] ${filter.className || ""}`}>
+                            <div key={filter.id} className={`flex flex-col gap-2 flex-1 min-w-[150px] ${filter.className || ""}`}>
                                 {filter.placeholder && (
-                                    <label className="text-xs uppercase font-bold text-gray-400 px-1">
+                                    <label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground px-1">
                                         {filter.placeholder}
                                     </label>
                                 )}
-                                <div className="relative">
-                                    <select
-                                        value={filter.value}
-                                        onChange={(e) => filter.onValueChange(e.target.value)}
-                                        className="w-full pl-3 pr-8 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm appearance-none cursor-pointer"
-                                    >
-                                        {filter.options.map(opt => (
-                                            <option key={opt.value} value={opt.value}>
-                                                {opt.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-gray-400">
-                                        <ChevronDown className="h-4 w-4" />
-                                    </div>
-                                </div>
+                                <Select
+                                    value={filter.value}
+                                    onValueChange={filter.onValueChange}
+                                    options={filter.options}
+                                    placeholder={filter.placeholder}
+                                />
                             </div>
                         ))}
                     </div>
                     
                     {activeFilterCount > 0 && (
-                        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-800 flex justify-end">
+                        <div className="mt-4 pt-3 border-t border-border flex justify-end">
                             <button
                                 onClick={handleClearAll}
-                                className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                                className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 <RotateCcw className="w-3.5 h-3.5" />
                                 Clear All Filters

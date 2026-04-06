@@ -23,13 +23,13 @@ const DeathSaves: React.FC<DeathSavesProps> = ({ deathSaves, onUpdate }) => {
             className={`w-6 h-6 rounded-full border-2 ${filled ? colorClass : "border-gray-300"
                 } flex items-center justify-center transition-all hover:scale-110 active:scale-95`}
         >
-            {filled && <div className={`w-3.5 h-3.5 rounded-full ${colorClass.replace("border-", "bg-")}`} />}
+            {filled && <div className={`w-3.5 h-3.5 rounded-full ${colorClass.replace("border-", "bg-")} transition-all`} />}
         </button>
     );
 
     return (
-        <div className="flex flex-col gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
-            <h3 className="text-sm font-bold text-center uppercase tracking-wider text-gray-700 border-b pb-2">Death Saves</h3>
+        <div className="flex flex-col gap-4 p-4 bg-white dark:bg-gray-950 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm transition-colors">
+            <h3 className="text-sm font-bold text-center uppercase tracking-wider text-gray-700 dark:text-gray-300 border-b dark:border-gray-800 pb-2">Death Saves</h3>
             <div className="flex flex-col gap-3 mt-1">
                 <div className="flex justify-between items-center">
                     <label className="text-xs font-bold uppercase text-green-700">Successes</label>
@@ -38,7 +38,7 @@ const DeathSaves: React.FC<DeathSavesProps> = ({ deathSaves, onUpdate }) => {
                             <Circle
                                 key={`success-${i}`}
                                 filled={deathSaves.successes > i}
-                                colorClass="border-green-500"
+                                colorClass="border-green-500 dark:border-green-600"
                                 onClick={() => toggleSuccess(i)}
                             />
                         ))}
@@ -51,7 +51,7 @@ const DeathSaves: React.FC<DeathSavesProps> = ({ deathSaves, onUpdate }) => {
                             <Circle
                                 key={`failure-${i}`}
                                 filled={deathSaves.failures > i}
-                                colorClass="border-red-500"
+                                colorClass="border-red-500 dark:border-red-600"
                                 onClick={() => toggleFailure(i)}
                             />
                         ))}

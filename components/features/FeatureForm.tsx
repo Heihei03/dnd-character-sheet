@@ -50,7 +50,7 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                         type="text"
                         value={formData.name || ""}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 font-medium"
+                        className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
                         placeholder="Feature name..."
                     />
                 </div>
@@ -60,7 +60,7 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                         <select
                             value={formData.origin || "Class"}
                             onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                            className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700"
+                            className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                         >
                             {ORIGIN_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                         </select>
@@ -70,7 +70,7 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                                 <select
                                     value={formData.subOrigin || (classes.length > 0 ? classes[0].name : "")}
                                     onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value, subclass: "" })}
-                                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
+                                    className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none animate-in fade-in slide-in-from-left-2 duration-200"
                                 >
                                     {classes.map(cls => <option key={cls.name} value={cls.name}>{cls.name}</option>)}
                                 </select>
@@ -82,7 +82,7 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                                         <select
                                             value={formData.subclass || ""}
                                             onChange={(e) => setFormData({ ...formData, subclass: e.target.value })}
-                                            className="flex-1 p-1 text-xs border rounded dark:bg-gray-900 dark:border-gray-700"
+                                            className="flex-1 p-1 text-xs border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                                         >
                                             <option value="">None (Base Class)</option>
                                             <option value={classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass}>
@@ -101,7 +101,7 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                                         max="20"
                                         value={formData.level || ""}
                                         onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) || undefined })}
-                                        className="w-16 p-1 text-xs border rounded dark:bg-gray-900 dark:border-gray-700"
+                                        className="w-16 p-1 text-xs border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
                                         placeholder="Lvl..."
                                     />
                                 </div>
@@ -111,7 +111,7 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                             <select
                                 value={formData.subOrigin || (subSpecies || species || "")}
                                 onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value })}
-                                className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200"
+                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none animate-in fade-in slide-in-from-left-2 duration-200"
                             >
                                 <option value={species}>{species}</option>
                                 {subSpecies && <option value={subSpecies}>{subSpecies}</option>}
@@ -136,7 +136,7 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                 <textarea
                     value={formData.description || ""}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700 h-48"
+                    className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none h-48"
                     placeholder="Describe the feature..."
                 />
             </div>

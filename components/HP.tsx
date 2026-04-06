@@ -132,43 +132,43 @@ const HPSection = ({
     <div className="flex flex-col gap-6 p-2">
       {/* HP Cards */}
       <div className="grid grid-cols-3 gap-2">
-        <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-colors">
+        <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
            <Heart className="absolute -right-2 -top-2 w-10 h-10 text-red-500 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
            <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Current</span>
            <input
             type="number"
             value={hpInput}
             onChange={handleHpChange}
-            className="w-full bg-transparent text-2xl font-black text-center text-blue-600 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
+            className="w-full bg-transparent text-2xl font-black text-center text-primary focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
           />
         </div>
 
-        <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-colors">
+        <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
            <Activity className="absolute -right-2 -top-2 w-10 h-10 text-gray-400 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
            <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Max HP</span>
            <input
             type="number"
             value={maxHpInput}
             onChange={handleMaxHpChange}
-            className="w-full bg-transparent text-2xl font-black text-center text-gray-700 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
+            className="w-full bg-transparent text-2xl font-black text-center text-gray-700 dark:text-gray-200 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
           />
         </div>
 
-        <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-colors">
-           <Shield className="absolute -right-2 -top-2 w-10 h-10 text-blue-500 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
+        <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
+            <Shield className="absolute -right-2 -top-2 w-10 h-10 text-primary opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
            <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Temp HP</span>
            <input
             type="number"
             value={tempHpInput}
             onChange={handleTempHpChange}
-            className="w-full bg-transparent text-2xl font-black text-center text-sky-600 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
+            className="w-full bg-transparent text-2xl font-black text-center text-primary/80 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
           />
         </div>
       </div>
 
       {/* Visual HP Bar */}
       <div className="space-y-1.5">
-        <div className="h-4 w-full bg-gray-100 rounded-full border border-gray-200 p-0.5 flex items-center overflow-hidden shadow-inner">
+        <div className="h-4 w-full bg-gray-100 dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-800 p-0.5 flex items-center overflow-hidden shadow-inner">
           <div 
             className={cn("h-full rounded-full transition-all duration-700 ease-out flex items-center justify-center shadow-sm", barColor)}
             style={{ width: `${Math.min(100, hpPercentage)}%` }}
@@ -177,14 +177,14 @@ const HPSection = ({
           </div>
         </div>
         {tempHp > 0 && (
-          <div className="h-1.5 w-full bg-blue-50 rounded-full overflow-hidden border border-blue-100/50">
-            <div className="h-full bg-blue-400 w-full animate-pulse transition-all duration-500"></div>
+          <div className="h-1.5 w-full bg-primary/5 rounded-full overflow-hidden border border-primary/10">
+            <div className="h-full bg-primary/40 w-full animate-pulse transition-all duration-500"></div>
           </div>
         )}
       </div>
 
       {/* Damage / Heal Controls */}
-      <div className="flex items-center gap-3 p-1.5 bg-gray-50 rounded-xl border border-gray-200 shadow-inner">
+      <div className="flex items-center gap-3 p-1.5 bg-secondary rounded-xl border border-border shadow-inner">
         <Button
           onClick={() => handleAction("damage")}
           variant="danger"
@@ -201,7 +201,7 @@ const HPSection = ({
             value={hpDiff || ""}
             onChange={(e) => setHpDiff(Math.max(0, parseInt(e.target.value) || 0))}
             placeholder="0"
-            className="w-full bg-transparent text-xl font-black text-center focus:outline-none placeholder:text-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full bg-transparent text-xl font-black text-center text-gray-900 dark:text-gray-100 focus:outline-none placeholder:text-gray-300 dark:placeholder:text-gray-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
 
@@ -220,7 +220,7 @@ const HPSection = ({
         <div className="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-[0.2em] px-1">
           <Dna className="w-3.5 h-3.5" />
           <span>Hit Dice Management</span>
-          <div className="flex-1 h-px bg-gray-100"></div>
+          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800"></div>
         </div>
 
         <div className="grid grid-cols-1 gap-2">
@@ -228,24 +228,24 @@ const HPSection = ({
             const available = cls.level - (cls.usedHitDice || 0);
             const sides = classHitDice[cls.name.toLowerCase()] || 8;
             return (
-              <div key={index} className="flex items-center justify-between bg-white px-3 py-2.5 rounded-xl border border-gray-100 shadow-sm transition-all hover:border-blue-200 group">
+              <div key={index} className="flex items-center justify-between bg-card px-3 py-2.5 rounded-xl border border-border shadow-sm transition-all hover:border-primary/30 group">
                 <div className="flex flex-col">
                   <span className="text-[11px] font-black text-gray-400 uppercase tracking-tight leading-none">{cls.name}</span>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-sm font-black text-gray-700">d{sides}</span>
+                    <span className="text-sm font-black text-gray-700 dark:text-gray-300">d{sides}</span>
                     <span className="text-[11px] font-bold text-gray-400">Dice</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-lg border border-gray-100">
+                  <div className="flex items-center gap-1 px-2 py-1 bg-background rounded-lg border border-border">
                     <input
                       type="number"
                       value={available}
                       onChange={(e) => handleHitDiceChange(index, parseInt(e.target.value) || 0)}
                       min={0}
                       max={cls.level}
-                      className="w-5 text-sm font-black text-blue-600 bg-transparent text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-5 text-sm font-black text-primary bg-transparent text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <span className="text-xs font-black text-gray-300">/ {cls.level}</span>
                   </div>

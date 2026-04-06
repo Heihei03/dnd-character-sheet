@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
   title
 }) => {
   const variants = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
+    primary: "bg-primary text-primary-foreground hover:opacity-90 shadow-sm transition-opacity",
     secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700",
     ghost: "bg-transparent text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/50",
     danger: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
