@@ -130,8 +130,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     const otherActions = actions.filter(a => !a.id.startsWith("std-"));
 
     const filteredActions = otherActions.filter(action => {
-        const matchesSearch = action.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                             action.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = action.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            action.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesType = selectedType === "All" || action.type === selectedType;
         return matchesSearch && matchesType;
     });
@@ -154,11 +154,11 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
 
     return (
         <div className="space-y-6">
-            <SectionHeader 
-                title="Actions & Attacks" 
-                buttonLabel="Add Action" 
-                onAdd={() => { setIsAdding(true); setEditingAction(null); }} 
-                isAdding={isAdding || !!editingAction} 
+            <SectionHeader
+                title="Actions & Attacks"
+                buttonLabel="Add Action"
+                onAdd={() => { setIsAdding(true); setEditingAction(null); }}
+                isAdding={isAdding || !!editingAction}
             />
 
             <SearchFilterBar
@@ -175,12 +175,12 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-6 bg-secondary/30 p-5 rounded-xl border border-border shadow-sm">
                 <div className="flex-1">
-                    <h4 className="text-[10px] font-black uppercase text-primary tracking-[0.2em] mb-1">Global Roll Settings</h4>
+                    <h4 className="text-[11px] font-black uppercase text-primary tracking-[0.2em] mb-1">Global Roll Settings</h4>
                     <p className="text-[11px] text-muted-foreground/70 font-medium">Configure default critical rules for all automated attacks.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-6 items-stretch sm:items-center">
                     <div className="flex flex-col">
-                        <label className="text-[10px] font-black uppercase text-muted-foreground mb-1.5 tracking-tighter ml-1">Crit Range</label>
+                        <label className="text-[11px] font-black uppercase text-muted-foreground mb-1.5 tracking-tighter ml-1">Crit Range</label>
                         <input
                             type="number"
                             value={critRange || 20}
@@ -191,17 +191,16 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                         />
                     </div>
                     <div className="flex flex-col">
-                        <label className="text-[10px] font-black uppercase text-muted-foreground mb-1.5 tracking-tighter ml-1">Crit Damage Rule</label>
+                        <label className="text-[11px] font-black uppercase text-muted-foreground mb-1.5 tracking-tighter ml-1">Crit Damage Rule</label>
                         <div className="flex gap-1.5 p-1 bg-background/50 rounded-lg border border-border">
                             {(['double-dice', 'max-plus-roll', 'double-total'] as const).map((rule) => (
                                 <button
                                     key={rule}
                                     onClick={() => onCritRuleChange?.(rule)}
-                                    className={`text-[10px] font-black uppercase py-2 px-3 rounded-md transition-all whitespace-nowrap tracking-tight ${
-                                        critRule === rule 
-                                            ? 'bg-primary text-white shadow-md shadow-primary/20 scale-105' 
-                                            : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
-                                    }`}
+                                    className={`text-[11px] font-black uppercase py-2 px-3 rounded-md transition-all whitespace-nowrap tracking-tight ${critRule === rule
+                                        ? 'bg-primary text-white shadow-md shadow-primary/20 scale-105'
+                                        : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                                        }`}
                                 >
                                     {rule.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                                 </button>
@@ -239,11 +238,10 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                     groupedActions[type].length > 0 && (
                         <div key={type} className="space-y-4">
                             <h3 className="text-lg font-bold border-b pb-1 flex items-center gap-2">
-                                <span className={`w-2.5 h-2.5 rounded-full ${
-                                    type === "Action" ? "bg-blue-500" :
-                                        type === "Bonus Action" ? "bg-orange-500" :
-                                            type === "Reaction" ? "bg-purple-500" :
-                                                "bg-gray-500"
+                                <span className={`w-2.5 h-2.5 rounded-full ${type === "Action" ? "bg-blue-500" :
+                                    type === "Bonus Action" ? "bg-orange-500" :
+                                        type === "Reaction" ? "bg-purple-500" :
+                                            "bg-gray-500"
                                     }`} />
                                 {type}s
                             </h3>
@@ -265,9 +263,9 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                         );
                                     }
 
-                                    const resource = resources.find(r => r.id === action.resourceId) || 
-                                                     resources.find(r => r.name.toLowerCase() === action.resourceName?.toLowerCase());
-                                    
+                                    const resource = resources.find(r => r.id === action.resourceId) ||
+                                        resources.find(r => r.name.toLowerCase() === action.resourceName?.toLowerCase());
+
                                     return (
                                         <ActionCard
                                             key={action.id}
@@ -330,7 +328,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                         rollDice={rollDice}
                                         rollDamage={rollDamage}
                                         currentCastLevel={0}
-                                        onCastLevelChange={() => {}}
+                                        onCastLevelChange={() => { }}
                                         character={character}
                                     />
                                 );
