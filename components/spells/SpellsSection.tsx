@@ -2,21 +2,22 @@ import React, { useState } from "react";
 import { Calculator, Plus } from "lucide-react";
 
 // UI Components
-import Button from "./ui/button";
-import { Card, CardContent } from "./ui/card";
-import EntityForm from "./ui/EntityForm";
-import SectionHeader from "./ui/SectionHeader";
-import SearchFilterBar from "./ui/SearchFilterBar";
+import Button from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+import EntityForm from "../ui/EntityForm";
+import SectionHeader from "../ui/SectionHeader";
+import SearchFilterBar from "../ui/SearchFilterBar";
 
 // Components
-import ResourcePipTracker from "./ResourcePipTracker";
+import ResourcePipTracker from "../ResourcePipTracker";
 import SpellCard from "./SpellCard";
+import SpellForm from "./SpellForm";
 
 // Types
-import { AbilityScores, CharacterClass, Resource, Spell, SpellSlot } from "../types/character";
+import { AbilityScores, CharacterClass, Resource, Spell, SpellSlot } from "../../types/character";
 
 // Utils
-import { calculateSpellSlots } from "../utils/spell-utils";
+import { calculateSpellSlots } from "../../utils/spell-utils";
 
 interface SpellsSectionProps {
     classes: CharacterClass[];
@@ -134,28 +135,28 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     };
 
     const filteredSpells = spells.filter(spell => {
-        const matchesSearch = spell.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                             spell.description.toLowerCase().includes(searchQuery.toLowerCase());
-        
+        const matchesSearch = spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            spell.description.toLowerCase().includes(searchQuery.toLowerCase());
+
         const matchesLevel = selectedLevel === "All" || spell.level.toString() === selectedLevel;
         const matchesSchool = selectedSchool === "All" || spell.school === selectedSchool;
-        
-        const matchesPrepared = selectedPrepared === "All" || 
-                               (selectedPrepared === "Yes" ? spell.prepared : !spell.prepared);
-                               
-        const matchesRitual = selectedRitual === "All" || 
-                             (selectedRitual === "Yes" ? spell.isRitual : !spell.isRitual);
-                             
-        const matchesConcentration = selectedConcentration === "All" || 
-                                    (selectedConcentration === "Yes" ? spell.requiresConcentration : !spell.requiresConcentration);
-        
+
+        const matchesPrepared = selectedPrepared === "All" ||
+            (selectedPrepared === "Yes" ? spell.prepared : !spell.prepared);
+
+        const matchesRitual = selectedRitual === "All" ||
+            (selectedRitual === "Yes" ? spell.isRitual : !spell.isRitual);
+
+        const matchesConcentration = selectedConcentration === "All" ||
+            (selectedConcentration === "Yes" ? spell.requiresConcentration : !spell.requiresConcentration);
+
         const matchesClass = selectedClass === "All" || spell.classSource === selectedClass;
-        
-        const matchesType = selectedType === "All" || 
-                           (selectedType === "Attack" && spell.hasAttack) ||
-                           (selectedType === "Save" && spell.hasSave) ||
-                           (selectedType === "Utility" && !spell.hasAttack && !spell.hasSave);
-        
+
+        const matchesType = selectedType === "All" ||
+            (selectedType === "Attack" && spell.hasAttack) ||
+            (selectedType === "Save" && spell.hasSave) ||
+            (selectedType === "Utility" && !spell.hasAttack && !spell.hasSave);
+
         return matchesSearch && matchesLevel && matchesSchool && matchesPrepared && matchesRitual && matchesConcentration && matchesClass && matchesType;
     });
 
@@ -344,32 +345,16 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
 
             {newSpellDraft && (
                 <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                    <EntityForm
-                        title="New Spell"
-                        onSave={() => handleSaveNewSpell(newSpellDraft)}
+                    <SpellForm
+                        spell={newSpellDraft}
+                        isEditing={false}
+                        onSave={handleSaveNewSpell}
                         onCancel={handleCancelNewSpell}
-                        saveLabel="Add Spell"
-                        className="shadow-md p-0"
-                    >
-                        <SpellCard
-                            spell={newSpellDraft}
-                            level={newSpellDraft.level}
-                            editingSpellId={editingSpellId}
-                            setEditingSpellId={(id) => {
-                                if (id === null) handleCancelNewSpell();
-                                else setEditingSpellId(id);
-                            }}
-                            handleUpdateSpell={(id, field, value) => setNewSpellDraft({ ...newSpellDraft, [field]: value })}
-                            handleSaveSpell={handleSaveNewSpell}
-                            handleDeleteSpell={handleCancelNewSpell}
-                            abilityScores={abilityScores}
-                            proficiencyBonus={proficiencyBonus}
-                            totalLevel={classes.reduce((sum, cls) => sum + cls.level, 0)}
-                            classes={classes}
-                            hideFooter={true} // New prop to hide internal buttons
-                            onNavigateToFeature={onNavigateToFeature}
-                        />
-                    </EntityForm>
+                        abilityScores={abilityScores}
+                        proficiencyBonus={proficiencyBonus}
+                        totalLevel={classes.reduce((sum, cls) => sum + cls.level, 0)}
+                        classes={classes}
+                    />
                 </div>
             )}
 
@@ -386,20 +371,35 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                             <div className="divide-y">
                                 {levelSpells.map((spell) => {
                                     const totalLevel = classes.reduce((sum, cls) => sum + cls.level, 0);
+                                    
+                                    if (editingSpellId === spell.id) {
+                                        return (
+                                            <div key={spell.id} className="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-lg border-2 border-blue-100 dark:border-blue-900/30 my-2 shadow-inner mx-4">
+                                                <SpellForm
+                                                    spell={spell}
+                                                    isEditing={true}
+                                                    onSave={handleSaveLocalSpell}
+                                                    onCancel={() => setEditingSpellId(null)}
+                                                    abilityScores={abilityScores}
+                                                    proficiencyBonus={proficiencyBonus}
+                                                    totalLevel={totalLevel}
+                                                    classes={classes}
+                                                />
+                                            </div>
+                                        );
+                                    }
+
                                     return (
                                         <SpellCard
                                             key={spell.id}
                                             spell={spell}
                                             level={level}
-                                            editingSpellId={editingSpellId}
-                                            setEditingSpellId={setEditingSpellId}
-                                            handleUpdateSpell={handleUpdateSpell}
-                                            handleSaveSpell={handleSaveLocalSpell}
-                                            handleDeleteSpell={handleDeleteSpell}
                                             abilityScores={abilityScores}
                                             proficiencyBonus={proficiencyBonus}
                                             totalLevel={totalLevel}
-                                            classes={classes}
+                                            onEdit={() => setEditingSpellId(spell.id)}
+                                            onDelete={() => handleDeleteSpell(spell.id)}
+                                            handleUpdateSpell={handleUpdateSpell}
                                             onNavigateToFeature={onNavigateToFeature}
                                         />
                                     );

@@ -10,19 +10,19 @@ import ActionsSection from "./ActionsSection";
 import CurrencySection from "./CurrencySection";
 import FeaturesSection from "./features/FeaturesSection";
 import InventorySection from "./InventorySection";
-import SpellsSection from "./SpellsSection";
+import SpellsSection from "./spells/SpellsSection";
 import BioSection from "./BioSection";
 
 // Types
-import { 
+import {
   AbilityScores,
-  Action, 
+  Action,
   Currency,
-  Feature, 
+  Feature,
   InventoryItem,
-  NormalizedCharacter, 
-  Resource, 
-  Spell, 
+  NormalizedCharacter,
+  Resource,
+  Spell,
   SpellSlot,
   Bio,
   CritRule,
@@ -31,10 +31,10 @@ import {
 } from "../types/character";
 
 // Utils
-import { 
-  getAllActiveFeatures, 
-  getEffectiveActions, 
-  getEffectiveSpells 
+import {
+  getAllActiveFeatures,
+  getEffectiveActions,
+  getEffectiveSpells
 } from "../utils/character-utils";
 
 interface CharacterTabsProps {
@@ -110,11 +110,10 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`py-1.5 px-3 rounded-lg text-sm font-bold transition-all ${
-              activeTab === tab.id
+            className={`py-1.5 px-3 rounded-lg text-sm font-bold transition-all ${activeTab === tab.id
                 ? "bg-blue-500 text-white shadow-md scale-105"
                 : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-            }`}
+              }`}
           >
             {tab.label}
           </button>
