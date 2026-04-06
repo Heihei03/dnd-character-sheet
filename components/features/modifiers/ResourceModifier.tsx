@@ -3,6 +3,7 @@
 import React from "react";
 import { FeatureModifier } from "../../../types/modifiers";
 import { REGAIN_TYPES } from "../../../utils/constants";
+import Select from "../../ui/Select";
 
 interface ResourceModifierProps {
     modifier: FeatureModifier;
@@ -39,14 +40,13 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
             </div>
             <div className="space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Max Scaling</label>
-                <select
+                <Select
                     value={
                         data.useProficiencyBonus ? "pb" :
                         data.useAbilityMod ? data.useAbilityMod :
                         data.useCharacterLevel ? "level" : "fixed"
                     }
-                    onChange={(e) => {
-                        const val = e.target.value;
+                    onValueChange={(val) => {
                         const updates = {
                             useProficiencyBonus: val === "pb",
                             useAbilityMod: ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"].includes(val) ? val : undefined,
@@ -54,15 +54,16 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
                         };
                         updateData(updates);
                     }}
-                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
-                >
-                    <option value="fixed">Fixed</option>
-                    <option value="pb">Prof. Bonus</option>
-                    <option value="level">Level</option>
-                    {["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"].map(a => (
-                        <option key={a} value={a}>{a.charAt(0).toUpperCase() + a.slice(1, 3)} Mod</option>
-                    ))}
-                </select>
+                    options={[
+                        { label: "Fixed", value: "fixed" },
+                        { label: "Prof. Bonus", value: "pb" },
+                        { label: "Level", value: "level" },
+                        ...["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"].map(a => ({
+                            label: `${a.charAt(0).toUpperCase() + a.slice(1, 3)} Mod`,
+                            value: a
+                        }))
+                    ]}
+                />
             </div>
             <div className="space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">
@@ -97,19 +98,16 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
             </div>
             <div className="space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Regain On</label>
-                <select
+                <Select
                     value={data.regain || "Long Rest"}
-                    onChange={(e) => {
-                        const regain = e.target.value;
+                    onValueChange={(regain) => {
                         onUpdate({
                             subType: regain,
                             value: JSON.stringify({ ...data, regain })
                         });
                     }}
-                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
-                >
-                    {REGAIN_TYPES.map((r: string) => <option key={r} value={r}>{r}</option>)}
-                </select>
+                    options={REGAIN_TYPES.map((r: string) => ({ label: r, value: r }))}
+                />
             </div>
             <div className="space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Regain Amount</label>

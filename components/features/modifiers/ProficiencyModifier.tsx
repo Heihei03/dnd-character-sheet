@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FeatureModifier } from "../../../types/modifiers";
+import Select from "../../ui/Select";
 
 interface ProficiencyModifierProps {
     modifier: FeatureModifier;
@@ -10,15 +11,15 @@ interface ProficiencyModifierProps {
 
 const ProficiencyModifier: React.FC<ProficiencyModifierProps> = ({ modifier, onUpdate }) => {
     return (
-        <select
-            value={modifier.value || "Proficient"}
-            onChange={(e) => onUpdate({ value: e.target.value })}
-            className="w-full text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent font-medium"
-        >
-            <option value="Proficient">Proficient</option>
-            <option value="Expertise">Expertise</option>
-            <option value="Half Proficient">Half Proficient</option>
-        </select>
+        <Select
+            value={modifier.value as string || "Proficient"}
+            onValueChange={(val) => onUpdate({ value: val })}
+            options={[
+                { label: "Proficient", value: "Proficient" },
+                { label: "Expertise", value: "Expertise" },
+                { label: "Half Proficient", value: "Half Proficient" },
+            ]}
+        />
     );
 };
 

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Button from "../ui/button";
 import { CardContent } from "../ui/card";
 import EntityForm from "../ui/EntityForm";
+import Select from "../ui/Select";
 
 // Components
 import ItemFeaturesEditor from "./ItemFeaturesEditor";
@@ -13,6 +14,13 @@ import { ARMOR_DATA } from "../../data/armor";
 import { CONTAINER_DATA } from "../../data/containers";
 import { TOOL_DATA } from "../../data/tools";
 import { WEAPON_DATA } from "../../data/weapons";
+import { 
+    DAMAGE_TYPES, 
+    WEAPON_PROPERTIES, 
+    WEAPON_MASTERY_TYPES 
+} from "../../utils/constants";
+import { ABILITY_NAMES } from "../../utils/character-utils";
+import ThemedAutocomplete from "../ui/ThemedAutocomplete";
 
 // Types
 import { 
@@ -245,21 +253,26 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                     <div className="flex-1 min-w-[20px]"></div>
                     <div className="flex items-center gap-2">
                         <label className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Type:</label>
-                        <select value={newItemType} onChange={(e) => {
-                            const type = e.target.value as any;
-                            setNewItemType(type);
-                            if (type === "weapon") handleBaseWeaponSelect("Custom");
-                            else if (type === "armor" || type === "shield") handleBaseArmorSelect("Custom", type);
-                            else if (type === "container") handleBaseContainerSelect("Custom");
-                            else if (type === "tool") handleBaseToolSelect("Custom");
-                        }} className="text-xs border border-border rounded-md px-2 py-1.5 min-w-[120px] bg-background font-bold focus:ring-1 focus:ring-primary outline-none">
-                            <option value="other">Other</option>
-                            <option value="weapon">Weapon</option>
-                            <option value="armor">Armor</option>
-                            <option value="shield">Shield</option>
-                            <option value="container">Container</option>
-                            <option value="tool">Tool</option>
-                        </select>
+                        <Select 
+                            value={newItemType} 
+                            onValueChange={(val) => {
+                                const type = val as any;
+                                setNewItemType(type);
+                                if (type === "weapon") handleBaseWeaponSelect("Custom");
+                                else if (type === "armor" || type === "shield") handleBaseArmorSelect("Custom", type);
+                                else if (type === "container") handleBaseContainerSelect("Custom");
+                                else if (type === "tool") handleBaseToolSelect("Custom");
+                            }}
+                            options={[
+                                { label: "Other", value: "other" },
+                                { label: "Weapon", value: "weapon" },
+                                { label: "Armor", value: "armor" },
+                                { label: "Shield", value: "shield" },
+                                { label: "Container", value: "container" },
+                                { label: "Tool", value: "tool" },
+                            ]}
+                            className="min-w-[120px]"
+                        />
                     </div>
                 </div>
 
@@ -268,19 +281,17 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                         {newItemType === "armor" && (
                             <div className="flex flex-col gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20">
                                 <label className="text-[10px] font-black text-primary uppercase tracking-widest">Armor Selection</label>
-                                <select
+                                <Select
                                     value={newItemArmorDetails?.baseArmor || "Custom"}
-                                    onChange={(e) => handleBaseArmorSelect(e.target.value)}
-                                    className="text-xs border border-border rounded-md p-2 w-full bg-background font-bold focus:ring-1 focus:ring-primary outline-none"
-                                >
-                                    <option value="Custom">Custom Armor</option>
-                                    {Object.keys(ARMOR_DATA)
-                                        .filter(name => ARMOR_DATA[name].category !== "Shield")
-                                        .sort()
-                                        .map(name => (
-                                            <option key={name} value={name}>{name}</option>
-                                        ))}
-                                </select>
+                                    onValueChange={(val) => handleBaseArmorSelect(val)}
+                                    options={[
+                                        { label: "Custom Armor", value: "Custom" },
+                                        ...Object.keys(ARMOR_DATA)
+                                            .filter(name => ARMOR_DATA[name].category !== "Shield")
+                                            .sort()
+                                            .map(name => ({ label: name, value: name }))
+                                    ]}
+                                />
 
                                 {newItemArmorDetails && (
                                     <div className="grid grid-cols-2 gap-3 mt-1">
@@ -295,15 +306,15 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                         </div>
                                         <div>
                                             <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Category</label>
-                                            <select
+                                            <Select
                                                 value={newItemArmorDetails.category}
-                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, category: e.target.value as any })}
-                                                className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
-                                            >
-                                                <option value="Light">Light</option>
-                                                <option value="Medium">Medium</option>
-                                                <option value="Heavy">Heavy</option>
-                                            </select>
+                                                onValueChange={(val) => setNewItemArmorDetails({ ...newItemArmorDetails, category: val as any })}
+                                                options={[
+                                                    { label: "Light", value: "Light" },
+                                                    { label: "Medium", value: "Medium" },
+                                                    { label: "Heavy", value: "Heavy" },
+                                                ]}
+                                            />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">STR Req</label>
@@ -355,18 +366,14 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                         {newItemType === "shield" && (
                             <div className="flex flex-col gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20">
                                 <label className="text-[10px] font-black text-primary uppercase tracking-widest">Shield Selection</label>
-                                <select
+                                <Select
                                     value={newItemArmorDetails?.baseArmor || "Shield"}
-                                    onChange={(e) => handleBaseArmorSelect(e.target.value)}
-                                    className="text-xs border border-border rounded-md p-2 w-full bg-background font-bold focus:ring-1 focus:ring-primary outline-none"
-                                >
-                                    {Object.keys(ARMOR_DATA)
+                                    onValueChange={(val) => handleBaseArmorSelect(val)}
+                                    options={Object.keys(ARMOR_DATA)
                                         .filter(name => ARMOR_DATA[name].category === "Shield")
                                         .sort()
-                                        .map(name => (
-                                            <option key={name} value={name}>{name}</option>
-                                        ))}
-                                </select>
+                                        .map(name => ({ label: name, value: name }))}
+                                />
                                 {newItemArmorDetails && (
                                     <div>
                                         <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Shield AC Bonus</label>
@@ -384,16 +391,14 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                         {newItemType === "container" && (
                             <div className="flex flex-col gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20">
                                 <label className="text-[10px] font-black text-primary uppercase tracking-widest">Container Selection</label>
-                                <select
+                                <Select
                                     value={newItemContainerDetails?.capacityWeight ? newItemName : "Custom"}
-                                    onChange={(e) => handleBaseContainerSelect(e.target.value)}
-                                    className="text-xs border border-border rounded-md p-2 w-full bg-background font-bold focus:ring-1 focus:ring-primary outline-none"
-                                >
-                                    <option value="Custom">Custom</option>
-                                    {Object.keys(CONTAINER_DATA).sort().map(name => (
-                                        <option key={name} value={name}>{name}</option>
-                                    ))}
-                                </select>
+                                    onValueChange={(val) => handleBaseContainerSelect(val)}
+                                    options={[
+                                        { label: "Custom", value: "Custom" },
+                                        ...Object.keys(CONTAINER_DATA).sort().map(name => ({ label: name, value: name }))
+                                    ]}
+                                />
 
                                 {newItemContainerDetails && (
                                     <div className="grid grid-cols-2 gap-3 mt-1">
@@ -425,39 +430,37 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                         {newItemType === "weapon" && newItemWeaponDetails && (
                             <div className="flex flex-col gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20">
                                 <label className="text-[10px] font-black text-primary uppercase tracking-widest">Weapon Selection</label>
-                                <select
+                                <Select
                                     value={newItemWeaponDetails.baseWeapon || "Custom"}
-                                    onChange={(e) => handleBaseWeaponSelect(e.target.value)}
-                                    className="text-xs border border-border rounded-md p-2 w-full bg-background font-bold focus:ring-1 focus:ring-primary outline-none"
-                                >
-                                    <option value="Custom">Custom Weapon</option>
-                                    {Object.keys(WEAPON_DATA).sort().map(name => (
-                                        <option key={name} value={name}>{name}</option>
-                                    ))}
-                                </select>
+                                    onValueChange={(val) => handleBaseWeaponSelect(val)}
+                                    options={[
+                                        { label: "Custom Weapon", value: "Custom" },
+                                        ...Object.keys(WEAPON_DATA).sort().map(name => ({ label: name, value: name }))
+                                    ]}
+                                />
                                 <div className="grid grid-cols-2 gap-3 mt-1">
                                     <div className="col-span-2 grid grid-cols-2 gap-3">
                                         <div>
                                             <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Category</label>
-                                            <select
+                                            <Select
                                                 value={newItemWeaponDetails.category}
-                                                onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, category: e.target.value as any })}
-                                                className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
-                                            >
-                                                <option value="Simple">Simple</option>
-                                                <option value="Martial">Martial</option>
-                                            </select>
+                                                onValueChange={(val) => setNewItemWeaponDetails({ ...newItemWeaponDetails, category: val as any })}
+                                                options={[
+                                                    { label: "Simple", value: "Simple" },
+                                                    { label: "Martial", value: "Martial" },
+                                                ]}
+                                            />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Range</label>
-                                            <select
+                                            <Select
                                                 value={newItemWeaponDetails.rangeType}
-                                                onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, rangeType: e.target.value as any })}
-                                                className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
-                                            >
-                                                <option value="Melee">Melee</option>
-                                                <option value="Ranged">Ranged</option>
-                                            </select>
+                                                onValueChange={(val) => setNewItemWeaponDetails({ ...newItemWeaponDetails, rangeType: val as any })}
+                                                options={[
+                                                    { label: "Melee", value: "Melee" },
+                                                    { label: "Ranged", value: "Ranged" },
+                                                ]}
+                                            />
                                         </div>
                                     </div>
                                     <div>
@@ -472,35 +475,32 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                     </div>
                                     <div>
                                         <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Type</label>
-                                        <input
-                                            type="text"
-                                            value={newItemWeaponDetails.damageType}
-                                            onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, damageType: e.target.value })}
+                                        <ThemedAutocomplete
+                                            value={newItemWeaponDetails.damageType || ""}
+                                            onChange={(val: string) => setNewItemWeaponDetails({ ...newItemWeaponDetails, damageType: val })}
+                                            options={Array.from(DAMAGE_TYPES)}
                                             placeholder="slashing"
-                                            className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
                                         />
                                     </div>
                                     <div className="col-span-2">
                                         <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Properties</label>
-                                        <input
-                                            type="text"
+                                        <ThemedAutocomplete
                                             value={newItemWeaponDetails.properties.join(", ")}
-                                            onChange={(e) => setNewItemWeaponDetails({
+                                            onChange={(val: string) => setNewItemWeaponDetails({
                                                 ...newItemWeaponDetails,
-                                                properties: e.target.value.split(",").map(p => p.trim()).filter(p => p !== "")
+                                                properties: val.split(",").map(p => p.trim()).filter(p => p !== "")
                                             })}
+                                            options={WEAPON_PROPERTIES}
                                             placeholder="Finesse, Light, etc."
-                                            className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
                                         />
                                     </div>
                                     <div className="col-span-2">
                                         <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Mastery</label>
-                                        <input
-                                            type="text"
+                                        <ThemedAutocomplete
                                             value={newItemWeaponDetails.mastery || ""}
-                                            onChange={(e) => setNewItemWeaponDetails({ ...newItemWeaponDetails, mastery: e.target.value })}
+                                            onChange={(val: string) => setNewItemWeaponDetails({ ...newItemWeaponDetails, mastery: val })}
+                                            options={WEAPON_MASTERY_TYPES}
                                             placeholder="Vex, Nick, etc."
-                                            className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
                                         />
                                     </div>
                                 </div>
@@ -510,39 +510,36 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                         {newItemType === "tool" && newItemToolDetails && (
                             <div className="flex flex-col gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20">
                                 <label className="text-[10px] font-black text-primary uppercase tracking-widest">Tool Selection</label>
-                                <select
+                                <Select
                                     value={newItemToolDetails.baseTool || "Custom"}
-                                    onChange={(e) => handleBaseToolSelect(e.target.value)}
-                                    className="text-xs border border-border rounded-md p-2 w-full bg-background font-bold focus:ring-1 focus:ring-primary outline-none"
-                                >
-                                    <option value="Custom">Custom Tool</option>
-                                    {Object.keys(TOOL_DATA).sort().map(name => (
-                                        <option key={name} value={name}>{name}</option>
-                                    ))}
-                                </select>
+                                    onValueChange={(val) => handleBaseToolSelect(val)}
+                                    options={[
+                                        { label: "Custom Tool", value: "Custom" },
+                                        ...Object.keys(TOOL_DATA).sort().map(name => ({ label: name, value: name }))
+                                    ]}
+                                />
                                 <div className="grid grid-cols-1 gap-3 mt-1">
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
                                             <label className="text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Category</label>
-                                            <select
+                                            <Select
                                                 value={newItemToolDetails.category}
-                                                onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, category: e.target.value as any })}
-                                                className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
-                                            >
-                                                <option value="Artisan Tool">Artisan Tool</option>
-                                                <option value="Other Tool">Other Tool</option>
-                                                <option value="Gaming Set">Gaming Set</option>
-                                                <option value="Musical Instrument">Musical Instrument</option>
-                                            </select>
+                                                onValueChange={(val) => setNewItemToolDetails({ ...newItemToolDetails, category: val as any })}
+                                                options={[
+                                                    { label: "Artisan Tool", value: "Artisan Tool" },
+                                                    { label: "Other Tool", value: "Other Tool" },
+                                                    { label: "Gaming Set", value: "Gaming Set" },
+                                                    { label: "Musical Instrument", value: "Musical Instrument" },
+                                                ]}
+                                            />
                                         </div>
                                         <div>
                                             <label className="text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Ability</label>
-                                            <input
-                                                type="text"
+                                            <ThemedAutocomplete
                                                 value={newItemToolDetails.ability}
-                                                onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, ability: e.target.value })}
+                                                onChange={(val: string) => setNewItemToolDetails({ ...newItemToolDetails, ability: val })}
+                                                options={ABILITY_NAMES}
                                                 placeholder="Dexterity"
-                                                className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
                                             />
                                         </div>
                                     </div>

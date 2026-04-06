@@ -3,6 +3,31 @@ import Button from "../ui/button";
 import { Spell, AbilityScores, CharacterClass } from "../../types/character";
 import { DAMAGE_TYPES, SPELL_SCHOOLS, SPELL_AOE_SHAPES } from "../../utils/constants";
 import EntityForm from "../ui/EntityForm";
+import Select from "../ui/Select";
+import ThemedAutocomplete from "../ui/ThemedAutocomplete";
+import { ABILITY_NAMES } from "../../utils/character-utils";
+
+const LEVEL_OPTIONS = [
+    { label: "Cantrip", value: "0" },
+    ...[1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => ({ label: `Level ${l}`, value: l.toString() }))
+];
+
+const SCHOOL_OPTIONS = SPELL_SCHOOLS.map(s => ({ label: s, value: s }));
+
+const AOE_SHAPE_OPTIONS = [
+    { label: "Select Shape...", value: "" },
+    ...SPELL_AOE_SHAPES.map(s => ({ label: s, value: s }))
+];
+
+const ABILITY_OPTIONS = [
+    { label: "None", value: "" },
+    ...ABILITY_NAMES.map(a => ({ label: a.charAt(0).toUpperCase() + a.slice(1), value: a }))
+];
+
+const SAVE_TYPE_OPTIONS = [
+    { label: "None", value: "" },
+    ...ABILITY_NAMES.map(a => ({ label: a.charAt(0).toUpperCase() + a.slice(1), value: a }))
+];
 
 interface SpellFormProps {
     spell: Spell;
@@ -66,28 +91,21 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     </div>
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Level</label>
-                        <select
-                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
-                            value={localSpell.level}
-                            onChange={(e) => handleLocalUpdate("level", parseInt(e.target.value) || 0)}
-                        >
-                            <option value={0}>Cantrip</option>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => <option key={l} value={l}>Level {l}</option>)}
-                        </select>
+                        <Select
+                            value={localSpell.level.toString()}
+                            onValueChange={(val) => handleLocalUpdate("level", parseInt(val) || 0)}
+                            options={LEVEL_OPTIONS}
+                        />
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">School</label>
-                        <select
-                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
+                        <Select
                             value={localSpell.school || "Evocation"}
-                            onChange={(e) => handleLocalUpdate("school", e.target.value)}
-                        >
-                            {SPELL_SCHOOLS.map((school: string) => (
-                                <option key={school} value={school}>{school}</option>
-                            ))}
-                        </select>
+                            onValueChange={(val) => handleLocalUpdate("school", val)}
+                            options={SCHOOL_OPTIONS}
+                        />
                     </div>
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Casting Time</label>
@@ -183,16 +201,11 @@ const SpellForm: React.FC<SpellFormProps> = ({
                     <div className="grid grid-cols-2 gap-4 p-3 bg-primary/10 rounded-lg border border-primary/20 animate-in fade-in slide-in-from-top-2 duration-200">
                         <div>
                             <label className="block text-xs font-bold uppercase text-blue-700 dark:text-blue-300 mb-1">AoE Shape</label>
-                            <select
-                                className="border border-border rounded px-2 py-1 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none"
+                            <Select
                                 value={localSpell.aoeShape || ""}
-                                onChange={(e) => handleLocalUpdate("aoeShape", e.target.value)}
-                            >
-                                <option value="">Select Shape...</option>
-                                {SPELL_AOE_SHAPES.map(shape => (
-                                    <option key={shape} value={shape}>{shape}</option>
-                                ))}
-                            </select>
+                                onValueChange={(val) => handleLocalUpdate("aoeShape", val)}
+                                options={AOE_SHAPE_OPTIONS}
+                            />
                         </div>
                         <div>
                             <label className="block text-xs font-bold uppercase text-blue-700 dark:text-blue-300 mb-1">AoE Size</label>
@@ -209,32 +222,22 @@ const SpellForm: React.FC<SpellFormProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Spellcasting Ability</label>
-                        <select
-                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
-                            value={localSpell.spellcastingAbility || ""}
-                            onChange={(e) => handleLocalUpdate("spellcastingAbility", e.target.value || undefined)}
-                        >
-                            <option value="">None</option>
-                            <option value="strength">Strength</option>
-                            <option value="dexterity">Dexterity</option>
-                            <option value="constitution">Constitution</option>
-                            <option value="intelligence">Intelligence</option>
-                            <option value="wisdom">Wisdom</option>
-                            <option value="charisma">Charisma</option>
-                        </select>
+                        <Select
+                            value={(localSpell.spellcastingAbility as string) || ""}
+                            onValueChange={(val) => handleLocalUpdate("spellcastingAbility", val || undefined)}
+                            options={ABILITY_OPTIONS}
+                        />
                     </div>
                     <div>
                         <label className="block text-sm mb-1 font-semibold text-gray-500 uppercase text-xs">Source Class</label>
-                        <select
-                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
+                        <Select
                             value={localSpell.classSource || ""}
-                            onChange={(e) => handleLocalUpdate("classSource", e.target.value || undefined)}
-                        >
-                            <option value="">None (General)</option>
-                            {classes.map(cls => (
-                                <option key={cls.name} value={cls.name}>{cls.name}</option>
-                            ))}
-                        </select>
+                            onValueChange={(val) => handleLocalUpdate("classSource", val || undefined)}
+                            options={[
+                                { label: "None (General)", value: "" },
+                                ...classes.map(cls => ({ label: cls.name, value: cls.name }))
+                            ]}
+                        />
                     </div>
                 </div>
 
@@ -280,33 +283,21 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                     </div>
                                     <div>
                                         <label className="block text-sm mb-1 font-medium text-gray-500 uppercase text-[10px]">Damage Type</label>
-                                        <select
-                                            className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none"
+                                        <ThemedAutocomplete
                                             value={localSpell.damageType || ""}
-                                            onChange={(e) => handleLocalUpdate("damageType", e.target.value || undefined)}
-                                        >
-                                            <option value="">None</option>
-                                            {DAMAGE_TYPES.map((type: string) => (
-                                                <option key={type} value={type}>{type}</option>
-                                            ))}
-                                        </select>
+                                            onChange={(val: string) => handleLocalUpdate("damageType", val || undefined)}
+                                            options={Array.from(DAMAGE_TYPES)}
+                                            placeholder="None"
+                                        />
                                     </div>
                                     {localSpell.hasSave && (
                                         <div>
                                             <label className="block text-sm mb-1 font-medium text-gray-500 uppercase text-[10px]">Save Type</label>
-                                            <select
-                                                className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none font-medium"
-                                                value={localSpell.saveType || ""}
-                                                onChange={(e) => handleLocalUpdate("saveType", e.target.value || undefined)}
-                                            >
-                                                <option value="">None</option>
-                                                <option value="strength">Strength</option>
-                                                <option value="dexterity">Dexterity</option>
-                                                <option value="constitution">Constitution</option>
-                                                <option value="intelligence">Intelligence</option>
-                                                <option value="wisdom">Wisdom</option>
-                                                <option value="charisma">Charisma</option>
-                                            </select>
+                                            <Select
+                                                value={(localSpell.saveType as string) || ""}
+                                                onValueChange={(val) => handleLocalUpdate("saveType", val || undefined)}
+                                                options={SAVE_TYPE_OPTIONS}
+                                            />
                                         </div>
                                     )}
                                 </>

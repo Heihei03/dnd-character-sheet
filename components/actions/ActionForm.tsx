@@ -1,8 +1,29 @@
 import React, { useState, useEffect } from "react";
 import EntityForm from "../ui/EntityForm";
 import { Action, ActionType, AbilityScores, Resource, CritRule } from "../../types/character";
-import { DAMAGE_TYPES } from "../../utils/constants";
-import { getAbilityModifier } from "../../utils/character-utils";
+import { DAMAGE_TYPES, ACTION_TARGETS } from "../../utils/constants";
+import { getAbilityModifier, ABILITY_NAMES } from "../../utils/character-utils";
+import ThemedAutocomplete from "../ui/ThemedAutocomplete";
+import Select from "../ui/Select";
+
+const ACTION_TYPE_OPTIONS = [
+    { label: "Action", value: "Action" },
+    { label: "Bonus Action", value: "Bonus Action" },
+    { label: "Reaction", value: "Reaction" },
+    { label: "Free Action", value: "Free Action" },
+];
+
+const ABILITY_OPTIONS = [
+    { label: "None", value: "" },
+    ...ABILITY_NAMES.map(a => ({ label: a.charAt(0).toUpperCase() + a.slice(1), value: a }))
+];
+
+const CRIT_RULE_OPTIONS = [
+    { label: "Global Default", value: "" },
+    { label: "Double Dice", value: "double-dice" },
+    { label: "Max Roll", value: "max-plus-roll" },
+    { label: "Double Total", value: "double-total" },
+];
 
 interface ActionFormProps {
     initialData?: Partial<Action>;
@@ -143,22 +164,16 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label htmlFor="isAttack" className="cursor-pointer">is attack?</label>
                         </div>
                     </label>
-                    <select
+                    <Select
                         value={formData.type || "Action"}
-                        onChange={(e) =>
+                        onValueChange={(val) =>
                             setFormData({
                                 ...formData,
-                                type: e.target.value as ActionType,
+                                type: val as ActionType,
                             })
                         }
-                        className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none font-medium text-foreground"
-                    >
-                        {ACTION_TYPES.map((opt) => (
-                            <option key={opt} value={opt}>
-                                {opt}
-                            </option>
-                        ))}
-                    </select>
+                        options={ACTION_TYPE_OPTIONS}
+                    />
                 </div>
             </div>
 
@@ -189,26 +204,18 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Attack Ability
                             </label>
-                            <select
-                                value={formData.attackAbility || ""}
-                                onChange={(e) =>
+                            <Select
+                                value={(formData.attackAbility as string) || ""}
+                                onValueChange={(val) =>
                                     setFormData({
                                         ...formData,
                                         attackAbility:
-                                            (e.target.value as keyof AbilityScores) ||
+                                            (val as keyof AbilityScores) ||
                                             undefined,
                                     })
                                 }
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
-                            >
-                                <option value="">None</option>
-                                <option value="strength">Strength</option>
-                                <option value="dexterity">Dexterity</option>
-                                <option value="constitution">Constitution</option>
-                                <option value="intelligence">Intelligence</option>
-                                <option value="wisdom">Wisdom</option>
-                                <option value="charisma">Charisma</option>
-                            </select>
+                                options={ABILITY_OPTIONS}
+                            />
                         </div>
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase text-gray-500">
@@ -232,22 +239,17 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Damage Type
                             </label>
-                            <select
+                            <ThemedAutocomplete
                                 value={formData.damageType || "Slashing"}
-                                onChange={(e) =>
+                                onChange={(val: string) =>
                                     setFormData({
                                         ...formData,
-                                        damageType: e.target.value,
+                                        damageType: val,
                                     })
                                 }
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
-                            >
-                                {DAMAGE_TYPES.map((dt) => (
-                                    <option key={dt} value={dt}>
-                                        {dt}
-                                    </option>
-                                ))}
-                            </select>
+                                options={Array.from(DAMAGE_TYPES)}
+                                placeholder="Damage type..."
+                            />
                         </div>
                     </div>
 
@@ -290,26 +292,18 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Damage Ability
                             </label>
-                            <select
-                                value={formData.damageAbility || ""}
-                                onChange={(e) =>
+                            <Select
+                                value={(formData.damageAbility as string) || ""}
+                                onValueChange={(val) =>
                                     setFormData({
                                         ...formData,
                                         damageAbility:
-                                            (e.target.value as keyof AbilityScores) ||
+                                            (val as keyof AbilityScores) ||
                                             undefined,
                                     })
                                 }
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
-                            >
-                                <option value="">None</option>
-                                <option value="strength">Strength</option>
-                                <option value="dexterity">Dexterity</option>
-                                <option value="constitution">Constitution</option>
-                                <option value="intelligence">Intelligence</option>
-                                <option value="wisdom">Wisdom</option>
-                                <option value="charisma">Charisma</option>
-                            </select>
+                                options={ABILITY_OPTIONS}
+                            />
                         </div>
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase text-gray-500">
@@ -408,21 +402,16 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Crit Rule Override
                             </label>
-                            <select
+                            <Select
                                 value={formData.critRule || ""}
-                                onChange={(e) =>
+                                onValueChange={(val) =>
                                     setFormData({
                                         ...formData,
-                                        critRule: (e.target.value as CritRule) || undefined,
+                                        critRule: (val as CritRule) || undefined,
                                     })
                                 }
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
-                            >
-                                <option value="">Global Default</option>
-                                <option value="double-dice">Double Dice</option>
-                                <option value="max-plus-roll">Max Roll</option>
-                                <option value="double-total">Double Total</option>
-                            </select>
+                                options={CRIT_RULE_OPTIONS}
+                            />
                         </div>
                     </div>
 
@@ -448,16 +437,15 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Target
                             </label>
-                            <input
-                                type="text"
+                            <ThemedAutocomplete
                                 value={formData.target || ""}
-                                onChange={(e) =>
+                                onChange={(val: string) =>
                                     setFormData({
                                         ...formData,
-                                        target: e.target.value,
+                                        target: val,
                                     })
                                 }
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
+                                options={ACTION_TARGETS}
                                 placeholder="One creature..."
                             />
                         </div>
@@ -468,24 +456,17 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Resource Name
                             </label>
-                            <input
-                                type="text"
-                                list="resource-suggestions"
+                            <ThemedAutocomplete
                                 value={formData.resourceName || ""}
-                                onChange={(e) =>
+                                onChange={(val: string) =>
                                     setFormData({
                                         ...formData,
-                                        resourceName: e.target.value,
+                                        resourceName: val,
                                     })
                                 }
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none font-medium text-foreground"
+                                options={resources?.map((r) => r.name) || []}
                                 placeholder="e.g. Ki Points"
                             />
-                            <datalist id="resource-suggestions">
-                                {resources?.map((r) => (
-                                    <option key={r.id} value={r.name} />
-                                ))}
-                            </datalist>
                         </div>
                     </div>
                 </>

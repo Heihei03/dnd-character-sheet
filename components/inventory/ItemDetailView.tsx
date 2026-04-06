@@ -1,6 +1,14 @@
 import { InventoryItem, Resource } from "../../types/character";
 import ItemFeaturesEditor from "./ItemFeaturesEditor";
 import ResourcePipTracker from "../ResourcePipTracker";
+import Select from "../ui/Select";
+import { 
+    DAMAGE_TYPES, 
+    WEAPON_PROPERTIES, 
+    WEAPON_MASTERY_TYPES 
+} from "../../utils/constants";
+import { ABILITY_NAMES } from "../../utils/character-utils";
+import ThemedAutocomplete from "../ui/ThemedAutocomplete";
 
 interface ItemDetailViewProps {
     item: InventoryItem;
@@ -45,18 +53,19 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
             <div className="md:col-span-2 flex items-center gap-4 bg-secondary/30 p-2 rounded border border-border">
                 <div className="flex items-center gap-2">
                     <label className="text-[10px] font-bold text-muted-foreground uppercase whitespace-nowrap">Item Type:</label>
-                    <select
+                    <Select
                         value={item.itemType || "other"}
-                        onChange={(e) => updateItem(item.id, "itemType", e.target.value)}
-                        className="text-xs border border-border rounded p-1 bg-background min-w-[120px] focus:ring-1 focus:ring-primary outline-none"
-                    >
-                        <option value="other">Other</option>
-                        <option value="weapon">Weapon</option>
-                        <option value="armor">Armor</option>
-                        <option value="shield">Shield</option>
-                        <option value="container">Container</option>
-                        <option value="tool">Tool</option>
-                    </select>
+                        onValueChange={(val) => updateItem(item.id, "itemType", val)}
+                        options={[
+                            { label: "Other", value: "other" },
+                            { label: "Weapon", value: "weapon" },
+                            { label: "Armor", value: "armor" },
+                            { label: "Shield", value: "shield" },
+                            { label: "Container", value: "container" },
+                            { label: "Tool", value: "tool" },
+                        ]}
+                        className="min-w-[120px]"
+                    />
                 </div>
             </div>
 
@@ -101,19 +110,16 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
             </div>
             <div className="md:col-span-2 space-y-2">
                 <label className="block text-[10px] font-bold text-muted-foreground uppercase">Location / Container</label>
-                <select
+                <Select
                     value={item.parentId || ""}
-                    onChange={(e) => updateItem(item.id, "parentId", e.target.value || undefined)}
-                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
-                >
-                    <option value="">Carried (Root)</option>
-                    {containers
-                        .filter(c => c.id !== item.id) // Can't put inside self
-                        .map(c => (
-                            <option key={c.id} value={c.id}>Inside: {c.name}</option>
-                        ))
-                    }
-                </select>
+                    onValueChange={(val) => updateItem(item.id, "parentId", val || undefined)}
+                    options={[
+                        { label: "Carried (Root)", value: "" },
+                        ...containers
+                            .filter(c => c.id !== item.id)
+                            .map(c => ({ label: `Inside: ${c.name}`, value: c.id }))
+                    ]}
+                />
 
                 {item.isContainer && item.containerDetails && (
                     <div className="p-3 bg-primary/5 rounded border border-primary/20 space-y-3 mt-2">
@@ -150,25 +156,25 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-2">
                         <div>
                             <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Category</label>
-                            <select
+                            <Select
                                 value={item.weaponDetails.category}
-                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, category: e.target.value as any })}
-                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
-                            >
-                                <option value="Simple">Simple</option>
-                                <option value="Martial">Martial</option>
-                            </select>
+                                onValueChange={val => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, category: val as any })}
+                                options={[
+                                    { label: "Simple", value: "Simple" },
+                                    { label: "Martial", value: "Martial" },
+                                ]}
+                            />
                         </div>
                         <div>
                             <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Range</label>
-                            <select
+                            <Select
                                 value={item.weaponDetails.rangeType}
-                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, rangeType: e.target.value as any })}
-                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
-                            >
-                                <option value="Melee">Melee</option>
-                                <option value="Ranged">Ranged</option>
-                            </select>
+                                onValueChange={val => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, rangeType: val as any })}
+                                options={[
+                                    { label: "Melee", value: "Melee" },
+                                    { label: "Ranged", value: "Ranged" },
+                                ]}
+                            />
                         </div>
                         <div>
                             <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Damage</label>
@@ -182,11 +188,10 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                         </div>
                         <div>
                             <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Type</label>
-                            <input
-                                type="text"
-                                value={item.weaponDetails.damageType}
-                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageType: e.target.value })}
-                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
+                            <ThemedAutocomplete
+                                value={item.weaponDetails.damageType || ""}
+                                onChange={val => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageType: val })}
+                                options={Array.from(DAMAGE_TYPES)}
                                 placeholder="slashing"
                             />
                         </div>
@@ -194,25 +199,23 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Properties</label>
-                            <input
-                                type="text"
+                            <ThemedAutocomplete
                                 value={item.weaponDetails.properties.join(", ")}
-                                onChange={e => updateItem(item.id, "weaponDetails", {
+                                onChange={val => updateItem(item.id, "weaponDetails", {
                                     ...item.weaponDetails,
-                                    properties: e.target.value.split(",").map(p => p.trim()).filter(p => p !== "")
+                                    properties: val.split(",").map(p => p.trim()).filter(p => p !== "")
                                 })}
-                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
+                                options={WEAPON_PROPERTIES}
                                 placeholder="Finesse, Light, etc."
                             />
                         </div>
                         <div>
                             <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Mastery</label>
-                            <input
-                                type="text"
+                            <ThemedAutocomplete
                                 value={item.weaponDetails.mastery || ""}
-                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, mastery: e.target.value })}
+                                onChange={val => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, mastery: val })}
+                                options={WEAPON_MASTERY_TYPES}
                                 placeholder="Vex, Nick, etc."
-                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
                             />
                         </div>
                     </div>
@@ -234,16 +237,16 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                         </div>
                         <div>
                             <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Category</label>
-                            <select
+                            <Select
                                 value={item.armorDetails.category}
-                                onChange={e => updateItem(item.id, "armorDetails", { ...item.armorDetails, category: e.target.value as any })}
-                                className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
-                            >
-                                <option value="Light">Light</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Heavy">Heavy</option>
-                                <option value="Shield">Shield</option>
-                            </select>
+                                onValueChange={val => updateItem(item.id, "armorDetails", { ...item.armorDetails, category: val as any })}
+                                options={[
+                                    { label: "Light", value: "Light" },
+                                    { label: "Medium", value: "Medium" },
+                                    { label: "Heavy", value: "Heavy" },
+                                    { label: "Shield", value: "Shield" },
+                                ]}
+                            />
                         </div>
                         <div>
                             <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">STR Req</label>
@@ -296,24 +299,23 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Category</label>
-                                <select
+                                <Select
                                     value={item.toolDetails.category}
-                                    onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, category: e.target.value as any })}
-                                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
-                                >
-                                    <option value="Artisan Tool">Artisan Tool</option>
-                                    <option value="Other Tool">Other Tool</option>
-                                    <option value="Gaming Set">Gaming Set</option>
-                                    <option value="Musical Instrument">Musical Instrument</option>
-                                </select>
+                                    onValueChange={val => updateItem(item.id, "toolDetails", { ...item.toolDetails, category: val as any })}
+                                    options={[
+                                        { label: "Artisan Tool", value: "Artisan Tool" },
+                                        { label: "Other Tool", value: "Other Tool" },
+                                        { label: "Gaming Set", value: "Gaming Set" },
+                                        { label: "Musical Instrument", value: "Musical Instrument" },
+                                    ]}
+                                />
                             </div>
                             <div>
                                 <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Ability</label>
-                                <input
-                                    type="text"
+                                <ThemedAutocomplete
                                     value={item.toolDetails.ability}
-                                    onChange={e => updateItem(item.id, "toolDetails", { ...item.toolDetails, ability: e.target.value })}
-                                    className="w-full p-2 border border-border rounded text-xs bg-background focus:ring-1 focus:ring-primary outline-none"
+                                    onChange={val => updateItem(item.id, "toolDetails", { ...item.toolDetails, ability: val })}
+                                    options={ABILITY_NAMES}
                                     placeholder="Dexterity"
                                 />
                             </div>

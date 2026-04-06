@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 import ConfirmationModal from "../../ui/ConfirmationModal";
+import Select from "../../ui/Select";
 import { FeatureModifier, ModifierType, MODIFIER_TYPES } from "../../../types/modifiers";
 
 interface ModifierBaseProps {
@@ -19,13 +20,11 @@ const ModifierBase: React.FC<ModifierBaseProps> = ({ modifier, onUpdate, onRemov
         <div className="grid grid-cols-12 gap-2 items-start bg-card text-card-foreground p-2 rounded border border-border transition-all hover:border-primary/30">
             {/* Type Selector */}
             <div className="col-span-3">
-                <select
+                <Select
                     value={modifier.type}
-                    onChange={(e) => onUpdate({ type: e.target.value as ModifierType })}
-                    className="w-full text-xs p-1.5 border-none focus:ring-0 bg-transparent font-bold uppercase"
-                >
-                    {MODIFIER_TYPES.map((t: ModifierType) => <option key={t} value={t}>{t}</option>)}
-                </select>
+                    onValueChange={(val) => onUpdate({ type: val as ModifierType })}
+                    options={MODIFIER_TYPES.map((t: ModifierType) => ({ label: t, value: t }))}
+                />
             </div>
 
             {/* Main Content Area */}

@@ -3,6 +3,7 @@
 import React from "react";
 import { FeatureModifier } from "../../../types/modifiers";
 import { ACTION_TYPES } from "../../../types/character";
+import Select from "../../ui/Select";
 
 interface ActionModifierProps {
     modifier: FeatureModifier;
@@ -38,18 +39,16 @@ const ActionModifier: React.FC<ActionModifierProps> = ({ modifier, onUpdate, par
             </div>
             <div className="space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Type</label>
-                <select
+                <Select
                     value={data.type || modifier.subType || "Action"}
-                    onChange={(e) => {
+                    onValueChange={(val) => {
                         onUpdate({
-                            subType: e.target.value,
-                            value: JSON.stringify({ ...data, type: e.target.value })
+                            subType: val,
+                            value: JSON.stringify({ ...data, type: val })
                         });
                     }}
-                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
-                >
-                    {ACTION_TYPES.map((t: string) => <option key={t} value={t}>{t}</option>)}
-                </select>
+                    options={ACTION_TYPES.map((t: string) => ({ label: t, value: t }))}
+                />
             </div>
             <div className="space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Damage Dice</label>
@@ -63,26 +62,25 @@ const ActionModifier: React.FC<ActionModifierProps> = ({ modifier, onUpdate, par
             </div>
             <div className="space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Ability</label>
-                <select
+                <Select
                     value={data.damageAbility || ""}
-                    onChange={(e) => updateData({ damageAbility: e.target.value })}
-                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
-                >
-                    <option value="">None</option>
-                    <option value="strength">STR</option>
-                    <option value="dexterity">DEX</option>
-                    <option value="constitution">CON</option>
-                    <option value="intelligence">INT</option>
-                    <option value="wisdom">WIS</option>
-                    <option value="charisma">CHA</option>
-                </select>
+                    onValueChange={(val) => updateData({ damageAbility: val })}
+                    options={[
+                        { label: "None", value: "" },
+                        { label: "STR", value: "strength" },
+                        { label: "DEX", value: "dexterity" },
+                        { label: "CON", value: "constitution" },
+                        { label: "INT", value: "intelligence" },
+                        { label: "WIS", value: "wisdom" },
+                        { label: "CHA", value: "charisma" },
+                    ]}
+                />
             </div>
             <div className="md:col-span-2 space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Resource Link</label>
-                <select
+                <Select
                     value={data.resourceId || ""}
-                    onChange={(e) => {
-                        const resId = e.target.value;
+                    onValueChange={(resId) => {
                         const linkedRes = availableResources.find(m => m.id === resId);
                         let resName = "";
                         if (linkedRes) {
@@ -97,22 +95,21 @@ const ActionModifier: React.FC<ActionModifierProps> = ({ modifier, onUpdate, par
                             resourceName: resName || undefined 
                         });
                     }}
-                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
-                >
-                    <option value="">No Link</option>
-                    {availableResources
-                        .filter(m => m.type === "Resource")
-                        .map(m => {
-                            let name = "";
-                            try {
-                                name = JSON.parse(m.value as string).name || "Unnamed Resource";
-                            } catch {
-                                name = m.value as string || "Unnamed Resource";
-                            }
-                            return <option key={m.id} value={m.id}>{name}</option>;
-                        })
-                    }
-                </select>
+                    options={[
+                        { label: "No Link", value: "" },
+                        ...availableResources
+                            .filter(m => m.type === "Resource")
+                            .map(m => {
+                                let name = "";
+                                try {
+                                    name = JSON.parse(m.value as string).name || "Unnamed Resource";
+                                } catch {
+                                    name = m.value as string || "Unnamed Resource";
+                                }
+                                return { label: name, value: m.id };
+                            })
+                    ]}
+                />
             </div>
         </div>
     );

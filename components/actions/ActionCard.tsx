@@ -2,6 +2,7 @@ import React from "react";
 import { ChevronDown, Dices, Pencil, Trash2, Zap } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import ResourcePipTracker from "../ResourcePipTracker";
+import Select from "../ui/Select";
 import { Action, AbilityScores, Resource, CritRule, Character, RollDiceFunc, RollDamageFunc } from "../../types/character";
 import {
     getAbilityModifier,
@@ -215,33 +216,28 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                                 onClick={(e) => e.stopPropagation()}
                                             >
                                                 <Zap className="w-2.5 h-2.5 text-primary" />
-                                                <select
-                                                    value={currentCastLevel}
-                                                    onChange={(e) =>
+                                                <Select
+                                                    value={currentCastLevel.toString()}
+                                                    onValueChange={(val: string) =>
                                                         onCastLevelChange(
-                                                            parseInt(e.target.value)
+                                                            parseInt(val)
                                                         )
                                                     }
-                                                    className="bg-transparent text-xs font-bold text-primary focus:outline-none"
-                                                >
-                                                    {Array.from(
+                                                    variant="inline"
+                                                    options={Array.from(
                                                         {
                                                             length:
                                                                 10 -
                                                                 action.baseLevel,
                                                         },
                                                         (_, i) =>
-                                                            action.baseLevel! + i
-                                                    ).map((l) => (
-                                                        <option
-                                                            key={l}
-                                                            value={l}
-                                                            className="dark:bg-gray-900"
-                                                        >
-                                                            Lvl {l}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                            (action.baseLevel! + i).toString()
+                                                    ).map((l) => ({
+                                                        label: `Lvl ${l}`,
+                                                        value: l
+                                                    }))}
+                                                    className="text-primary font-bold"
+                                                />
                                             </div>
                                         )}
                                 </div>

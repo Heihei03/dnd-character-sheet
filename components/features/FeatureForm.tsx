@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import EntityForm from "../ui/EntityForm";
 import FeatureModifierEditor from "./FeatureModifierEditor";
+import Select from "../ui/Select";
 import { FeatureModifier } from "../../types/modifiers";
 import { Feature, CharacterClass } from "../../types/character";
 
@@ -57,38 +58,37 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                 <div className="space-y-1">
                     <label className="text-xs font-bold uppercase text-gray-500">Origin</label>
                     <div className="flex gap-2">
-                        <select
+                        <Select
                             value={formData.origin || "Class"}
-                            onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                            className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
-                        >
-                            {ORIGIN_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                        </select>
+                            onValueChange={(val) => setFormData({ ...formData, origin: val })}
+                            options={ORIGIN_OPTIONS.map(opt => ({ label: opt, value: opt }))}
+                        />
 
                         {formData.origin === "Class" && classes.length > 0 && (
                             <div className="flex flex-col gap-2 w-full">
-                                <select
+                                <Select
                                     value={formData.subOrigin || (classes.length > 0 ? classes[0].name : "")}
-                                    onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value, subclass: "" })}
-                                    className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none animate-in fade-in slide-in-from-left-2 duration-200"
-                                >
-                                    {classes.map(cls => <option key={cls.name} value={cls.name}>{cls.name}</option>)}
-                                </select>
+                                    onValueChange={(val) => setFormData({ ...formData, subOrigin: val, subclass: "" })}
+                                    options={classes.map(cls => ({ label: cls.name, value: cls.name }))}
+                                    className="animate-in fade-in slide-in-from-left-2 duration-200"
+                                />
 
                                 {/* Subclass Selection */}
                                 {classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass && (
                                     <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
                                         <label className="text-xs font-bold uppercase text-gray-400 whitespace-nowrap">Subclass Feature?</label>
-                                        <select
+                                        <Select
                                             value={formData.subclass || ""}
-                                            onChange={(e) => setFormData({ ...formData, subclass: e.target.value })}
-                                            className="flex-1 p-1 text-xs border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
-                                        >
-                                            <option value="">None (Base Class)</option>
-                                            <option value={classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass}>
-                                                {classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass}
-                                            </option>
-                                        </select>
+                                            onValueChange={(val) => setFormData({ ...formData, subclass: val })}
+                                            options={[
+                                                { label: "None (Base Class)", value: "" },
+                                                { 
+                                                    label: classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass || "", 
+                                                    value: classes.find(c => c.name === (formData.subOrigin || classes[0].name))?.subclass || "" 
+                                                }
+                                            ]}
+                                            className="flex-1"
+                                        />
                                     </div>
                                 )}
 
@@ -108,15 +108,16 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                             </div>
                         )}
                         {formData.origin === "Species" && (
-                            <select
+                            <Select
                                 value={formData.subOrigin || (subSpecies || species || "")}
-                                onChange={(e) => setFormData({ ...formData, subOrigin: e.target.value })}
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none animate-in fade-in slide-in-from-left-2 duration-200"
-                            >
-                                <option value={species}>{species}</option>
-                                {subSpecies && <option value={subSpecies}>{subSpecies}</option>}
-                                <option value="">Other...</option>
-                            </select>
+                                onValueChange={(val) => setFormData({ ...formData, subOrigin: val })}
+                                options={[
+                                    { label: species, value: species },
+                                    ...(subSpecies ? [{ label: subSpecies, value: subSpecies }] : []),
+                                    { label: "Other...", value: "" }
+                                ]}
+                                className="animate-in fade-in slide-in-from-left-2 duration-200"
+                            />
                         )}
                         {formData.origin === "Background" && (
                             <input

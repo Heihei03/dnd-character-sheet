@@ -5,6 +5,7 @@ import { FeatureModifier, ModifierType } from "../../../types/modifiers";
 import { SENSES_LIST, DAMAGE_TYPES, CONDITION_TYPES, speedTypes, SKILL_LIST, LANGUAGES } from "../../../utils/constants";
 import { TOOL_DATA } from "../../../data/tools";
 import { ABILITY_NAMES } from "../../../utils/character-utils";
+import ThemedAutocomplete from "../../ui/ThemedAutocomplete";
 
 interface ValueModifierProps {
     modifier: FeatureModifier;
@@ -39,21 +40,12 @@ const ValueModifier: React.FC<ValueModifierProps> = ({ modifier, onUpdate }) => 
     const listId = `suggestions-${modifier.id}`;
 
     return (
-        <div className="relative">
-            <input
-                type="text"
-                list={listId}
-                value={modifier.subType || ""}
-                onChange={(e) => onUpdate({ subType: e.target.value })}
-                className="w-full text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent"
-                placeholder="Type (e.g. Fire, Stealth)..."
-            />
-            {suggestions.length > 0 && (
-                <datalist id={listId}>
-                    {suggestions.map((s: string) => <option key={s} value={s} />)}
-                </datalist>
-            )}
-        </div>
+        <ThemedAutocomplete
+            value={modifier.subType || ""}
+            onChange={(val: string) => onUpdate({ subType: val })}
+            options={suggestions}
+            placeholder="Type (e.g. Fire, Stealth)..."
+        />
     );
 };
 

@@ -4,6 +4,7 @@ import { Spell, AbilityScores, CharacterClass } from "../../types/character";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../../utils/dice-utils";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import FeatureNavigationBadge from "../features/FeatureNavigationBadge";
+import Select from "../ui/Select";
 
 interface SpellCardProps {
     spell: Spell;
@@ -103,15 +104,16 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 >
                                     <Zap className="w-3.5 h-3.5 text-primary" />
                                     <label className="text-xs font-bold uppercase text-primary opacity-80">Cast At:</label>
-                                    <select
-                                        value={castLevel}
-                                        onChange={(e) => setCastLevel(parseInt(e.target.value))}
-                                        className="bg-transparent text-xs font-bold text-primary focus:outline-none cursor-pointer"
-                                    >
-                                        {Array.from({ length: 10 - spell.level }, (_, i) => spell.level + i).map(l => (
-                                            <option key={l} value={l} className="bg-background">Level {l}</option>
-                                        ))}
-                                    </select>
+                                    <Select
+                                        value={castLevel.toString()}
+                                        onValueChange={(val: string) => setCastLevel(parseInt(val))}
+                                        variant="inline"
+                                        options={Array.from({ length: 10 - spell.level }, (_, i) => spell.level + i).map(l => ({
+                                            label: `Level ${l}`,
+                                            value: l.toString()
+                                        }))}
+                                        className="text-primary font-bold"
+                                    />
                                 </div>
                             )}
                         </div>

@@ -175,3 +175,42 @@ export const ROLL_TYPES = [
   "Wisdom Checks",
   "Wisdom Saves",
 ].sort();
+
+export const WEAPON_PROPERTIES = [
+    "Ammunition",
+    "Finesse",
+    "Heavy",
+    "Light",
+    "Loading",
+    "Range",
+    "Reach",
+    "Special",
+    "Thrown",
+    "Two-Handed",
+    "Versatile"
+].sort();
+
+export const WEAPON_MASTERY_TYPES = [
+    "Cleave",
+    "Graze",
+    "Nick",
+    "Push",
+    "Sap",
+    "Slow",
+    "Topple",
+    "Vex"
+].sort();
+
+export const ACTION_TARGETS = [
+    "Self",
+    "One creature",
+    "One willing creature",
+    "One object",
+    "Point in range",
+    "Each creature in range",
+    "Touch",
+    "10-foot cube",
+    "15-foot cone",
+    "20-foot sphere",
+    "30-foot line"
+].sort();

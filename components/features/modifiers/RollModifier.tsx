@@ -3,6 +3,7 @@
 import React from "react";
 import { FeatureModifier } from "../../../types/modifiers";
 import { DAMAGE_TYPES } from "../../../utils/constants";
+import ThemedAutocomplete from "../../ui/ThemedAutocomplete";
 
 interface RollModifierProps {
     modifier: FeatureModifier;
@@ -19,19 +20,13 @@ const RollModifier: React.FC<RollModifierProps> = ({ modifier, onUpdate }) => {
                 className="w-24 text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent font-mono"
                 placeholder="Dice..."
             />
-            <input
-                type="text"
-                list={`roll-type-${modifier.id}`}
+            <ThemedAutocomplete
                 value={modifier.subType || ""}
-                onChange={(e) => onUpdate({ subType: e.target.value })}
-                className="flex-1 text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent"
+                onChange={(val: string) => onUpdate({ subType: val })}
+                options={[...DAMAGE_TYPES, "Healing", "Temp HP"].sort()}
                 placeholder="Type (Fire, Healing...)"
+                className="flex-1"
             />
-            <datalist id={`roll-type-${modifier.id}`}>
-                {[...DAMAGE_TYPES, "Healing", "Temp HP"].sort().map(t => (
-                    <option key={t} value={t} />
-                ))}
-            </datalist>
         </div>
     );
 };

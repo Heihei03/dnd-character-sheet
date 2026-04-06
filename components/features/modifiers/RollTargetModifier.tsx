@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import { FeatureModifier } from "../../../types/modifiers";
 import { ROLL_TYPES } from "../../../utils/constants";
+import ThemedAutocomplete from "../../ui/ThemedAutocomplete";
 
 interface RollTargetModifierProps {
     modifier: FeatureModifier;
@@ -54,12 +55,9 @@ const RollTargetModifier: React.FC<RollTargetModifierProps> = ({ modifier, onUpd
                     />
                 )}
                 <div className="relative flex-1">
-                    <input
-                        type="text"
-                        list={`roll-type-list-${modifier.id}`}
+                    <ThemedAutocomplete
                         value={inputValue}
-                        onChange={(e) => {
-                            const val = e.target.value;
+                        onChange={(val: string) => {
                             setInputValue(val);
                             if (ROLL_TYPES.includes(val)) {
                                 addTag(val);
@@ -71,12 +69,9 @@ const RollTargetModifier: React.FC<RollTargetModifierProps> = ({ modifier, onUpd
                                 addTag(inputValue);
                             }
                         }}
-                        className="w-full text-xs p-1 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent"
+                        options={ROLL_TYPES}
                         placeholder="Add target (e.g. Dexterity Attacks)..."
                     />
-                    <datalist id={`roll-type-list-${modifier.id}`}>
-                        {ROLL_TYPES.map((t: string) => <option key={t} value={t} />)}
-                    </datalist>
                 </div>
             </div>
         </div>
