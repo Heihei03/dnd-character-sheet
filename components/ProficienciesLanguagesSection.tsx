@@ -8,13 +8,13 @@ import { TOOL_DATA } from "../data/tools";
 import { Plus, X } from "lucide-react";
 import Button from "./ui/button";
 import FeatureItemPill from "./features/FeatureItemPill";
-import { ToolProficiency } from "../types/character";
+import { ToolProficiency, Character } from "../types/character";
 
 interface ProficiencyListProps {
     title: string;
     items: (string | ToolProficiency | { name: string, fromFeature: boolean })[];
-    field: string;
-    onUpdate: (field: string, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => void;
+    field: keyof Character;
+    onUpdate: (field: keyof Character, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => void;
     options?: string[];
     onNavigateToFeature?: (featureId: string) => void;
 }
@@ -140,7 +140,7 @@ interface ProficienciesLanguagesSectionProps {
     armorProficiencies?: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[];
     toolProficiencies?: ToolProficiency[];
     languages?: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[];
-    onUpdate: (field: string, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => void;
+    onUpdate: (field: keyof Character, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => void;
     onNavigateToFeature?: (featureId: string) => void;
 }
 
@@ -157,7 +157,7 @@ const ProficienciesLanguagesSection: React.FC<ProficienciesLanguagesSectionProps
     onUpdate,
     onNavigateToFeature,
 }) => {
-    const handleUpdate = (field: string, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => {
+    const handleUpdate = (field: keyof Character, value: (string | ToolProficiency | { name: string, fromFeature: boolean })[]) => {
         // Filter out feature-granted items so they aren't persisted in the character's base data
         const baseValues = value
             .filter(item => {

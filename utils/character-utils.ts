@@ -1,4 +1,4 @@
-import { Character, Sense, Speed, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency, AbilityScores, NormalizedCharacter } from "../types/character";
+import { Character, Sense, Speed, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency, AbilityScores, NormalizedCharacter, ProficiencyArray } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 import { STANDARD_ACTIONS } from "../data/standard-actions";
 import { SKILL_LIST, LANGUAGES } from "./constants";
@@ -849,12 +849,12 @@ export const getEffectiveSkills = (character: Character): { skills: Skills, skil
     return { skills: baseSkills as Skills, skillSources };
 };
 
-export const getEffectiveWeaponProficiencies = (character: Character): (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] => {
+export const getEffectiveWeaponProficiencies = (character: Character): ProficiencyArray => {
     const baseProf = [...(character.weaponProficiencies || [])];
     const activeFeatures = getAllActiveFeatures(character);
     const profMods = getFeatureModifiersWithSource(activeFeatures, "Proficiency");
 
-    const result: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] = [...baseProf];
+    const result: ProficiencyArray = [...baseProf];
 
     const weaponCategories = ["Simple Weapons", "Martial Weapons"];
 
@@ -881,12 +881,12 @@ export const getEffectiveWeaponProficiencies = (character: Character): (string |
     return result;
 };
 
-export const getEffectiveArmorProficiencies = (character: Character): (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] => {
+export const getEffectiveArmorProficiencies = (character: Character): ProficiencyArray => {
     const baseProf = [...(character.armorProficiencies || [])];
     const activeFeatures = getAllActiveFeatures(character);
     const profMods = getFeatureModifiersWithSource(activeFeatures, "Proficiency");
 
-    const result: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] = [...baseProf];
+    const result: ProficiencyArray = [...baseProf];
 
     const armorCategories = ["Light Armor", "Medium Armor", "Heavy Armor", "Shields"];
 
@@ -913,12 +913,12 @@ export const getEffectiveArmorProficiencies = (character: Character): (string | 
     return result;
 };
 
-export const getEffectiveLanguages = (character: Character): (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] => {
+export const getEffectiveLanguages = (character: Character): ProficiencyArray => {
     const baseLang = [...(character.languages || [])];
     const activeFeatures = getAllActiveFeatures(character);
     const profMods = getFeatureModifiersWithSource(activeFeatures, "Proficiency");
 
-    const result: (string | { name: string, fromFeature: boolean, fromFeatureId?: string })[] = [...baseLang];
+    const result: ProficiencyArray = [...baseLang];
 
     profMods.forEach(mod => {
         const name = String(mod.subType || "");

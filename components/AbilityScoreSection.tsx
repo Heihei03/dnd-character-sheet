@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { Minus, Plus } from "lucide-react";
 
-import { Character, RollDiceFunc } from "../types/character";
+import { AbilityScores, Character, RollDiceFunc } from "../types/character";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
 
 // Define types for props
 interface AbilityScoreSectionProps {
-  abilityScores: { [key: string]: number };
-  effectiveAbilityScores: { [key: string]: number };
+  abilityScores: AbilityScores;
+  effectiveAbilityScores: AbilityScores;
   setAbilityScore: (key: string, value: number) => void;
   rollDice?: RollDiceFunc;
   character: Character;

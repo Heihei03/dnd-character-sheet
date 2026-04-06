@@ -426,3 +426,11 @@ export type RollDamageFunc = (
   critExtraDamage?: string,
   ruleOverride?: CritRule
 ) => void;
+
+export interface ProficiencyEntry {
+  name: string;
+  fromFeature: boolean;
+  fromFeatureId?: string;
+}
+
+export type ProficiencyArray = (string | ProficiencyEntry)[];
