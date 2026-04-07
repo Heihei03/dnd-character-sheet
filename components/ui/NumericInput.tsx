@@ -11,7 +11,7 @@ interface NumericInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
     variant?: "vertical" | "horizontal";
     className?: string;
     inputClassName?: string;
-    showArrows?: "always" | "hover";
+    showArrows?: "always" | "hover" | "none";
 }
 
 const NumericInput: React.FC<NumericInputProps> = ({
@@ -92,7 +92,7 @@ const NumericInput: React.FC<NumericInputProps> = ({
         return () => stopTimer();
     }, []);
 
-    const showControls = showArrows === "always" || isHovered;
+    const showControls = showArrows !== "none" && (showArrows === "always" || isHovered);
 
     if (variant === "horizontal") {
         return (
@@ -105,22 +105,24 @@ const NumericInput: React.FC<NumericInputProps> = ({
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                <button
-                    type="button"
-                    onPointerDown={(e) => {
-                        if (e.button !== 0) return; // Only left click
-                        startTimer(false);
-                    }}
-                    onPointerUp={stopTimer}
-                    onPointerLeave={stopTimer}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") handleDecrement();
-                    }}
-                    disabled={disabled || (min !== undefined && Number(value) <= Number(min))}
-                    className="flex items-center justify-center w-7 h-7 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary"
-                >
-                    <Minus className="w-4 h-4" />
-                </button>
+                {showArrows !== "none" && (
+                    <button
+                        type="button"
+                        onPointerDown={(e) => {
+                            if (e.button !== 0) return; // Only left click
+                            startTimer(false);
+                        }}
+                        onPointerUp={stopTimer}
+                        onPointerLeave={stopTimer}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") handleDecrement();
+                        }}
+                        disabled={disabled || (min !== undefined && Number(value) <= Number(min))}
+                        className="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                    >
+                        <Minus className="w-4 h-4" />
+                    </button>
+                )}
                 
                 <input
                     {...props}
@@ -130,27 +132,29 @@ const NumericInput: React.FC<NumericInputProps> = ({
                     onChange={onInputChange || ((e) => onChange(parseFloat(e.target.value) || 0))}
                     disabled={disabled}
                     className={cn(
-                        "w-full bg-transparent text-center font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                        "flex-1 min-w-0 bg-transparent text-center font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
                         inputClassName
                     )}
                 />
 
-                <button
-                    type="button"
-                    onPointerDown={(e) => {
-                        if (e.button !== 0) return;
-                        startTimer(true);
-                    }}
-                    onPointerUp={stopTimer}
-                    onPointerLeave={stopTimer}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") handleIncrement();
-                    }}
-                    disabled={disabled || (max !== undefined && Number(value) >= Number(max))}
-                    className="flex items-center justify-center w-7 h-7 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary"
-                >
-                    <Plus className="w-4 h-4" />
-                </button>
+                {showArrows !== "none" && (
+                    <button
+                        type="button"
+                        onPointerDown={(e) => {
+                            if (e.button !== 0) return;
+                            startTimer(true);
+                        }}
+                        onPointerUp={stopTimer}
+                        onPointerLeave={stopTimer}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") handleIncrement();
+                        }}
+                        disabled={disabled || (max !== undefined && Number(value) >= Number(max))}
+                        className="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                    >
+                        <Plus className="w-4 h-4" />
+                    </button>
+                )}
             </div>
         );
     }
@@ -158,7 +162,7 @@ const NumericInput: React.FC<NumericInputProps> = ({
     return (
         <div 
             className={cn(
-                "relative flex items-center bg-background border border-border rounded-lg transition-all focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50 group",
+                "relative flex items-stretch bg-background border border-border rounded-lg transition-all focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50 group overflow-hidden",
                 disabled && "opacity-50 cursor-not-allowed",
                 className
             )}
@@ -173,49 +177,52 @@ const NumericInput: React.FC<NumericInputProps> = ({
                 onChange={onInputChange || ((e) => onChange(parseFloat(e.target.value) || 0))}
                 disabled={disabled}
                 className={cn(
-                    "w-full h-full bg-transparent pl-3 pr-8 py-2 font-medium focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                    "flex-1 min-w-0 bg-transparent py-2 font-medium focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                    showArrows !== "none" ? "pl-3 pr-1" : "px-3",
                     inputClassName
                 )}
             />
             
-            <div className={cn(
-                "absolute right-1 flex flex-col h-[calc(100%-8px)] transition-opacity duration-200",
-                showControls ? "opacity-100" : "opacity-0"
-            )}>
-                <button
-                    type="button"
-                    onPointerDown={(e) => {
-                        if (e.button !== 0) return;
-                        startTimer(true);
-                    }}
-                    onPointerUp={stopTimer}
-                    onPointerLeave={stopTimer}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") handleIncrement();
-                    }}
-                    disabled={disabled || (max !== undefined && Number(value) >= Number(max))}
-                    className="flex-1 flex items-center justify-center px-1 rounded-t-md hover:bg-secondary text-muted-foreground/60 hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary/20"
-                >
-                    <ChevronUp className="w-3 h-3" />
-                </button>
-                <div className="h-px bg-border/40 mx-0.5" />
-                <button
-                    type="button"
-                    onPointerDown={(e) => {
-                        if (e.button !== 0) return;
-                        startTimer(false);
-                    }}
-                    onPointerUp={stopTimer}
-                    onPointerLeave={stopTimer}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") handleDecrement();
-                    }}
-                    disabled={disabled || (min !== undefined && Number(value) <= Number(min))}
-                    className="flex-1 flex items-center justify-center px-1 rounded-b-md hover:bg-secondary text-muted-foreground/60 hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary/20"
-                >
-                    <ChevronDown className="w-3 h-3" />
-                </button>
-            </div>
+            {showArrows !== "none" && (
+                <div className={cn(
+                    "flex flex-col w-6 border-l border-border/10 transition-opacity duration-200",
+                    showControls ? "opacity-100" : "opacity-0"
+                )}>
+                    <button
+                        type="button"
+                        onPointerDown={(e) => {
+                            if (e.button !== 0) return;
+                            startTimer(true);
+                        }}
+                        onPointerUp={stopTimer}
+                        onPointerLeave={stopTimer}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") handleIncrement();
+                        }}
+                        disabled={disabled || (max !== undefined && Number(value) >= Number(max))}
+                        className="flex-1 flex items-center justify-center hover:bg-secondary text-muted-foreground/60 hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary/20"
+                    >
+                        <ChevronUp className="w-3 h-3" />
+                    </button>
+                    <div className="h-px bg-border/40" />
+                    <button
+                        type="button"
+                        onPointerDown={(e) => {
+                            if (e.button !== 0) return;
+                            startTimer(false);
+                        }}
+                        onPointerUp={stopTimer}
+                        onPointerLeave={stopTimer}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") handleDecrement();
+                        }}
+                        disabled={disabled || (min !== undefined && Number(value) <= Number(min))}
+                        className="flex-1 flex items-center justify-center hover:bg-secondary text-muted-foreground/60 hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary/20"
+                    >
+                        <ChevronDown className="w-3 h-3" />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

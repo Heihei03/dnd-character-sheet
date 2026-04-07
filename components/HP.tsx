@@ -128,9 +128,9 @@ const HPSection = ({
             value={hpInput}
             onChange={handleHpChange}
             onInputChange={(e) => setHpInput(e.target.value)}
-            className="border-none bg-transparent shadow-none focus-within:ring-0"
-            inputClassName="text-2xl font-black text-center text-primary p-0 h-auto"
-            showArrows="hover"
+            className="border-none bg-transparent shadow-none focus-within:ring-0 w-full"
+            inputClassName="text-xl font-black text-center text-primary p-0 h-auto"
+            showArrows="none"
           />
         </div>
 
@@ -141,9 +141,9 @@ const HPSection = ({
             value={maxHpInput}
             onChange={handleMaxHpChange}
             onInputChange={(e) => setMaxHpInput(e.target.value)}
-            className="border-none bg-transparent shadow-none focus-within:ring-0"
-            inputClassName="text-2xl font-black text-center text-gray-700 dark:text-gray-200 p-0 h-auto"
-            showArrows="hover"
+            className="border-none bg-transparent shadow-none focus-within:ring-0 w-full"
+            inputClassName="text-xl font-black text-center text-gray-700 dark:text-gray-200 p-0 h-auto"
+            showArrows="none"
           />
         </div>
 
@@ -154,9 +154,9 @@ const HPSection = ({
             value={tempHpInput}
             onChange={handleTempHpChange}
             onInputChange={(e) => setTempHpInput(e.target.value)}
-            className="border-none bg-transparent shadow-none focus-within:ring-0"
-            inputClassName="text-2xl font-black text-center text-primary/80 p-0 h-auto"
-            showArrows="hover"
+            className="border-none bg-transparent shadow-none focus-within:ring-0 w-full"
+            inputClassName="text-xl font-black text-center text-primary/80 p-0 h-auto"
+            showArrows="none"
           />
         </div>
       </div>
@@ -179,23 +179,23 @@ const HPSection = ({
       </div>
 
       {/* Damage / Heal Controls */}
-      <div className="flex items-center gap-3 p-1.5 bg-secondary rounded-xl border border-border shadow-inner">
+      <div className="flex items-center gap-4 px-3 p-1.5 bg-secondary rounded-xl border border-border shadow-inner">
         <Button
           onClick={() => handleAction("damage")}
           variant="danger"
-          className="w-12 h-12 p-0 flex-shrink-0 rounded-lg"
+          className="w-12 h-12 p-0 flex-shrink-0 rounded-lg shadow-sm"
           title="Apply Damage"
         >
           <Minus className="w-6 h-6" />
         </Button>
         
-        <div className="flex-1 flex flex-col items-center">
-          <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Adjustment</span>
+        <div className="flex-1 flex flex-col items-center min-w-0">
+          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Adjustment</span>
            <NumericInput
-            value={hpDiff || ""}
+            value={hpDiff}
             onChange={(val) => setHpDiff(Math.max(0, val))}
-            variant="horizontal"
-            className="border-none bg-transparent shadow-none focus-within:ring-0 px-4"
+            variant="vertical"
+            className="border-none bg-transparent shadow-none focus-within:ring-0 w-full"
             inputClassName="text-xl font-black text-center text-gray-900 dark:text-gray-100 placeholder:text-gray-300 dark:placeholder:text-gray-700"
             placeholder="0"
           />
@@ -204,7 +204,7 @@ const HPSection = ({
         <Button
           onClick={() => handleAction("heal")}
           variant="success"
-          className="w-12 h-12 p-0 flex-shrink-0 rounded-lg"
+          className="w-12 h-12 p-0 flex-shrink-0 rounded-lg shadow-sm"
           title="Apply Healing"
         >
           <Plus className="w-6 h-6" />
