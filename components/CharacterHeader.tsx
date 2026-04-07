@@ -152,7 +152,35 @@ const CharacterHeader = ({
                     </div>
 
                     {/* Meta Info (Species, Background, EXP) */}
-                    <div className="md:col-span-4 p-4 bg-secondary/30 border-l border-border flex flex-col gap-3">
+                    <div className="md:col-span-4 p-4 bg-secondary/30 border-l border-border flex flex-col gap-3 relative">
+                        {/* Global Actions */}
+                        <div className="absolute top-3 right-3 z-10">
+                            <div className="flex items-center gap-1 p-1 bg-background/80 backdrop-blur-sm rounded-full border border-border shadow-sm">
+                                {onReturn && (
+                                    <button
+                                        onClick={onReturn}
+                                        title="Return to Selection"
+                                        className="p-1.5 rounded-full transition-colors text-muted-foreground hover:text-primary hover:bg-secondary"
+                                    >
+                                        <Home size={16} />
+                                    </button>
+                                )}
+                                <SettingsButton
+                                    onClick={() => setIsEditingSettings(true)}
+                                    title="Display Settings"
+                                    className="p-1.5 scale-90"
+                                />
+                                {onDelete && (
+                                    <button
+                                        onClick={() => setIsDeletingCharacter(true)}
+                                        title="Delete Character"
+                                        className="p-1.5 rounded-full transition-colors text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                         {/* Top row: Species */}
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1">
@@ -226,34 +254,6 @@ const CharacterHeader = ({
                                 <span className="text-5xl font-black leading-none animate-in zoom-in duration-500">+{proficiencyBonus}</span>
                             </div>
 
-                            {/* Global Actions */}
-                            <div className="flex flex-col gap-2">
-                                <div className="flex items-center gap-1.5 p-1 bg-background/50 rounded-full border border-border shadow-inner">
-                                    {onReturn && (
-                                        <button
-                                            onClick={onReturn}
-                                            title="Return to Selection"
-                                            className="p-1.5 rounded-full transition-colors text-muted-foreground hover:text-primary hover:bg-secondary"
-                                        >
-                                            <Home size={18} />
-                                        </button>
-                                    )}
-                                    <SettingsButton
-                                        onClick={() => setIsEditingSettings(true)}
-                                        title="Display Settings"
-                                        className="p-1.5"
-                                    />
-                                    {onDelete && (
-                                        <button
-                                            onClick={() => setIsDeletingCharacter(true)}
-                                            title="Delete Character"
-                                            className="p-1.5 rounded-full transition-colors text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
