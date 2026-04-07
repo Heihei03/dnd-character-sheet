@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import EntityForm from "../ui/EntityForm";
 import FeatureModifierEditor from "./FeatureModifierEditor";
 import Select from "../ui/Select";
+import NumericInput from "../ui/NumericInput";
 import { FeatureModifier } from "../../types/modifiers";
 import { Feature, CharacterClass } from "../../types/character";
 
@@ -95,13 +96,14 @@ const FeatureForm: React.FC<FeatureFormProps> = ({
                                 {/* Level Selection */}
                                 <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200 mt-1">
                                     <label className="text-xs font-bold uppercase text-gray-400 whitespace-nowrap">Level Gained</label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        max="20"
+                                    <NumericInput
+                                        min={1}
+                                        max={20}
                                         value={formData.level || ""}
-                                        onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) || undefined })}
-                                        className="w-16 p-1 text-xs border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
+                                        onChange={(val) => setFormData({ ...formData, level: val || undefined })}
+                                        variant="horizontal"
+                                        className="w-24 h-9"
+                                        inputClassName="text-xs p-1 h-8"
                                         placeholder="Lvl..."
                                     />
                                 </div>

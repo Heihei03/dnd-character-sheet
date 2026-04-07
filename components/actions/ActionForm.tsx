@@ -5,6 +5,7 @@ import { DAMAGE_TYPES, ACTION_TARGETS } from "../../utils/constants";
 import { getAbilityModifier, ABILITY_NAMES } from "../../utils/character-utils";
 import ThemedAutocomplete from "../ui/ThemedAutocomplete";
 import Select from "../ui/Select";
+import NumericInput from "../ui/NumericInput";
 
 const ACTION_TYPE_OPTIONS = [
     { label: "Action", value: "Action" },
@@ -221,17 +222,17 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Attack Bonus
                             </label>
-                            <input
-                                type="number"
+                             <NumericInput
                                 value={formData.attackBonus ?? 0}
-                                onChange={(e) =>
+                                onChange={(val) =>
                                     setFormData({
                                         ...formData,
-                                        attackBonus:
-                                            parseInt(e.target.value) || 0,
+                                        attackBonus: val,
                                     })
                                 }
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
+                                variant="horizontal"
+                                className="w-full"
+                                inputClassName="text-foreground p-2"
                                 placeholder="0"
                             />
                         </div>
@@ -309,17 +310,17 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Damage Bonus
                             </label>
-                            <input
-                                type="number"
+                             <NumericInput
                                 value={formData.damageBonus ?? 0}
-                                onChange={(e) =>
+                                onChange={(val) =>
                                     setFormData({
                                         ...formData,
-                                        damageBonus:
-                                            parseInt(e.target.value) || 0,
+                                        damageBonus: val,
                                     })
                                 }
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
+                                variant="horizontal"
+                                className="w-full"
+                                inputClassName="text-foreground p-2"
                                 placeholder="0"
                             />
                         </div>
@@ -366,18 +367,19 @@ const ActionForm: React.FC<ActionFormProps> = ({
                             <label className="text-xs font-bold uppercase text-gray-500">
                                 Crit Range Override
                             </label>
-                            <input
-                                type="number"
+                             <NumericInput
                                 value={formData.critRange || ""}
-                                onChange={(e) =>
+                                onChange={(val) =>
                                     setFormData({
                                         ...formData,
-                                        critRange: e.target.value === "" ? undefined : parseInt(e.target.value),
+                                        critRange: val === 0 ? undefined : val,
                                     })
                                 }
+                                variant="horizontal"
                                 min={1}
                                 max={20}
-                                className="w-full p-2 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
+                                className="w-full"
+                                inputClassName="text-foreground p-2"
                                 placeholder="Global Default"
                             />
                         </div>

@@ -7,6 +7,7 @@ import { Card, CardContent } from "./ui/card";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import SectionHeader from "./ui/SectionHeader";
 import SearchFilterBar from "./ui/SearchFilterBar";
+import NumericInput from "./ui/NumericInput";
 
 // Action Components
 import ActionCard from "./actions/ActionCard";
@@ -181,13 +182,14 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 <div className="flex flex-col sm:flex-row gap-6 items-stretch sm:items-center">
                     <div className="flex flex-col">
                         <label className="text-[11px] font-black uppercase text-muted-foreground mb-1.5 tracking-tighter ml-1">Crit Range</label>
-                        <input
-                            type="number"
+                         <NumericInput
                             value={critRange || 20}
-                            onChange={(e) => onCritRangeChange?.(parseInt(e.target.value) || 20)}
-                            className="w-20 h-9 bg-background border border-border rounded-lg text-center text-sm font-black focus:ring-1 focus:ring-primary outline-none transition-all shadow-inner"
-                            min="1"
-                            max="20"
+                            onChange={(val) => onCritRangeChange?.(val || 20)}
+                            variant="horizontal"
+                            min={1}
+                            max={20}
+                            className="w-24 border-none bg-transparent shadow-none"
+                            inputClassName="h-9 bg-background border border-border rounded-lg text-center text-sm font-black"
                         />
                     </div>
                     <div className="flex flex-col">

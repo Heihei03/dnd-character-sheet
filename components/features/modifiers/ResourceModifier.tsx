@@ -4,6 +4,8 @@ import React from "react";
 import { FeatureModifier } from "../../../types/modifiers";
 import { REGAIN_TYPES } from "../../../utils/constants";
 import Select from "../../ui/Select";
+import NumericInput from "../../ui/NumericInput";
+import { cn } from "../../../lib/utils";
 
 interface ResourceModifierProps {
     modifier: FeatureModifier;
@@ -69,15 +71,19 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
                 <label className="text-xs uppercase font-bold text-gray-400">
                     {isScaling ? "Multiplier" : "N/A"}
                 </label>
-                <input
-                    type="number"
+                <NumericInput
                     value={data.multiplier || 1}
                     disabled={!isScaling}
-                    onChange={(e) => updateData({ multiplier: parseFloat(e.target.value) || 1 })}
-                    className={`w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none ${!isScaling ? "opacity-50 grayscale" : ""}`}
+                    onChange={(val) => updateData({ multiplier: val })}
+                    variant="horizontal"
+                    step={0.1}
+                    min={0}
+                    className={cn(
+                        "w-full",
+                        !isScaling && "opacity-50 grayscale pointer-events-none"
+                    )}
+                    inputClassName="text-xs p-1.5 h-8 text-center"
                     placeholder="1"
-                    step="0.1"
-                    min="0"
                 />
                 {isScaling && (
                     <div className="text-[11px] text-gray-500 italic">Use 0.5 for half, etc.</div>
@@ -87,13 +93,14 @@ const ResourceModifier: React.FC<ResourceModifierProps> = ({ modifier, onUpdate,
                 <label className="text-xs uppercase font-bold text-gray-400">
                     {isScaling ? "Bonus" : "Max"}
                 </label>
-                <input
-                    type="number"
+                <NumericInput
                     value={data.max || 0}
-                    onChange={(e) => updateData({ max: parseInt(e.target.value) || 0 })}
-                    className="w-full text-xs p-1.5 border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none"
+                    onChange={(val) => updateData({ max: val })}
+                    variant="horizontal"
+                    min={0}
+                    className="w-full"
+                    inputClassName="text-xs p-1.5 h-8 text-center"
                     placeholder="0"
-                    min="0"
                 />
             </div>
             <div className="space-y-1">

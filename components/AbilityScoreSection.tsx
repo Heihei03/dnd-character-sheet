@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Minus, Plus } from "lucide-react";
+import NumericInput from "./ui/NumericInput";
 
 import { AbilityScores, Character, RollDiceFunc } from "../types/character";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
@@ -107,24 +107,15 @@ const AbilityScoreSection = ({
                   </div>
                 ) : (
                   <div className="flex items-center justify-center">
-                    <button
-                      onClick={() => setAbilityScore(key, Math.max(0, score - 1))}
-                      className="text-gray-400 hover:text-primary w-5 flex items-center justify-center transition-colors px-1"
-                    >
-                      <Minus className="w-4 h-4 stroke-[3]" />
-                    </button>
-                    <input
-                      type="number"
-                      value={abilityScoresInput[key] ?? ""}
-                      onChange={(e) => handleAbilityScoreChange(key, e)}
-                      className="w-7 text-sm font-bold text-center border-none bg-transparent focus:outline-none p-0 h-5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <button
-                      onClick={() => setAbilityScore(key, score + 1)}
-                      className="text-gray-400 hover:text-primary w-5 flex items-center justify-center transition-colors px-1"
-                    >
-                      <Plus className="w-4 h-4 stroke-[3]" />
-                    </button>
+                   <NumericInput
+                    value={abilityScoresInput[key] ?? ""}
+                    onChange={(val) => setAbilityScore(key, val)}
+                    onInputChange={(e) => handleAbilityScoreChange(key, e)}
+                    variant="horizontal"
+                    min={0}
+                    className="border-none bg-transparent shadow-none"
+                    inputClassName="w-7 text-sm font-bold text-center p-0 h-5"
+                  />
                   </div>
                 )}
               </div>

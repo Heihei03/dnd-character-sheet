@@ -2,6 +2,7 @@ import React from "react";
 import { InventoryItem, Resource } from "../../types/character";
 import ItemDetailView from "./ItemDetailView";
 import { ChevronDown, ChevronRight, Trash2, CornerDownRight, GripVertical } from "lucide-react";
+import NumericInput from "../ui/NumericInput";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -66,12 +67,14 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                     </td>
                 )}
                 <td className="p-2">
-                    <input
-                        type="number"
+                     <NumericInput
                         value={item.quantity}
-                        onChange={(e) => updateItem(item.id, "quantity", Number(e.target.value))}
-                        className="w-10 p-1 border border-border bg-background rounded text-xs text-center focus:ring-1 focus:ring-primary outline-none"
-                        min="0"
+                        onChange={(val) => updateItem(item.id, "quantity", val)}
+                        variant="horizontal"
+                        className="w-20 h-8"
+                        inputClassName="text-xs text-center p-0"
+                        showArrows="hover"
+                        min={0}
                     />
                 </td>
                 <td className="p-2">
@@ -128,21 +131,25 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                     </div>
                 </td>
                 <td className="p-2">
-                    <input
-                        type="number"
+                     <NumericInput
                         value={item.costGP ?? 0}
-                        onChange={(e) => updateItem(item.id, "costGP", Number(e.target.value))}
-                        className="w-14 p-1 border border-border bg-background rounded text-xs text-center focus:ring-1 focus:ring-primary outline-none"
-                        min="0"
+                        onChange={(val) => updateItem(item.id, "costGP", val)}
+                        variant="horizontal"
+                        className="w-24 h-8"
+                        inputClassName="text-xs text-center p-0"
+                        showArrows="hover"
+                        min={0}
                     />
                 </td>
                 <td className="p-2">
-                    <input
-                        type="number"
+                     <NumericInput
                         value={item.weight}
-                        onChange={(e) => updateItem(item.id, "weight", Number(e.target.value))}
-                        className="w-14 p-1 border border-border bg-background rounded text-xs text-center focus:ring-1 focus:ring-primary outline-none"
-                        min="0"
+                        onChange={(val) => updateItem(item.id, "weight", val)}
+                        variant="horizontal"
+                        className="w-24 h-8"
+                        inputClassName="text-xs text-center p-0"
+                        showArrows="hover"
+                        min={0}
                     />
                 </td>
                 {section === "equipment" && (

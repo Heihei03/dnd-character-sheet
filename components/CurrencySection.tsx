@@ -5,6 +5,7 @@ import { X, ArrowLeftRight } from "lucide-react";
 import SettingsButton from "./ui/SettingsButton";
 import Select from "./ui/Select";
 import ModalScrollLock from "./ui/ModalScrollLock";
+import NumericInput from "./ui/NumericInput";
 
 const CURRENCY_OPTIONS = ["cp", "sp", "ep", "gp", "pp"].map(k => ({
     label: k.toUpperCase(),
@@ -92,12 +93,13 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                     {["cp", "sp", "ep", "gp", "pp"].map((key) => (
                         <div key={key} className="flex flex-col items-center">
                             <label className="text-[10px] font-black uppercase text-muted-foreground mb-1.5 tracking-tighter">{key}</label>
-                            <input
-                                type="number"
+                             <NumericInput
                                 value={currency[key as keyof Currency]}
-                                onChange={(e) => handleCurrencyChange(key as keyof Currency, Number(e.target.value))}
-                                className="w-full p-2 border border-border bg-background rounded-md text-center text-sm font-bold focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
-                                min="0"
+                                onChange={(val) => handleCurrencyChange(key as keyof Currency, val)}
+                                min={0}
+                                className="w-full"
+                                inputClassName="text-center text-sm font-bold px-2 py-2 pr-6"
+                                showArrows="hover"
                             />
                         </div>
                     ))}
@@ -154,11 +156,13 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                                         <div className="flex items-center gap-3">
                                             <div className="flex-1">
                                                 <label className="block text-[10px] text-muted-foreground uppercase font-black tracking-tighter mb-1.5 ml-1">Exchange</label>
-                                                <input
-                                                    type="number"
+                                                 <NumericInput
                                                     value={convertAmount || ""}
-                                                    onChange={(e) => setConvertAmount(Number(e.target.value))}
-                                                    className="w-full p-2.5 border border-border bg-background rounded-lg text-center text-sm font-bold focus:ring-1 focus:ring-primary outline-none transition-all"
+                                                    onChange={(val) => setConvertAmount(val)}
+                                                    variant="horizontal"
+                                                    min={0}
+                                                    className="w-full"
+                                                    inputClassName="text-center text-sm font-bold p-2.5"
                                                     placeholder="0"
                                                 />
                                             </div>

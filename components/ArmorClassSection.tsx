@@ -5,6 +5,7 @@ import { ArmorClass, AbilityScores } from "../types/character";
 import { calculateAC } from "../utils/acUtils";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import Select from "./ui/Select";
+import NumericInput from "./ui/NumericInput";
 
 interface ArmorClassSectionProps {
     armorClass: ArmorClass;
@@ -56,24 +57,23 @@ const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1">
                             <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground ml-1">Base AC</label>
-                            <input
-                                type="number"
+                             <NumericInput
                                 value={armorClass.baseAC}
-                                onChange={(e) => handleChange("baseAC", parseInt(e.target.value) || 0)}
-                                className="p-2 border border-border rounded text-center font-bold text-sm focus:ring-1 focus:ring-primary focus:outline-none bg-background transition-all"
+                                onChange={(val) => handleChange("baseAC", val)}
+                                variant="horizontal"
+                                className="w-full"
+                                inputClassName="text-center font-bold text-sm h-9"
                             />
                         </div>
                         <div className="flex flex-col gap-1">
                             <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground ml-1">Manual Override</label>
-                            <input
-                                type="number"
+                             <NumericInput
                                 placeholder="Auto"
                                 value={armorClass.manualOverride ?? ""}
-                                onChange={(e) => {
-                                    const val = e.target.value === "" ? undefined : parseInt(e.target.value);
-                                    handleChange("manualOverride", val);
-                                }}
-                                className="p-2 border border-border rounded text-center font-bold text-sm focus:ring-1 focus:ring-primary focus:outline-none bg-secondary/30 transition-all"
+                                onChange={(val) => handleChange("manualOverride", val === 0 ? undefined : val)}
+                                variant="horizontal"
+                                className="w-full bg-secondary/30"
+                                inputClassName="text-center font-bold text-sm h-9"
                             />
                         </div>
                     </div>
@@ -92,15 +92,13 @@ const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
                         {armorClass.hasDexBonus && (
                             <div className="flex items-center justify-between pl-4 border-l-2 border-primary/30">
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-tight">DEX Cap</label>
-                                <input
-                                    type="number"
+                                 <NumericInput
                                     placeholder="None"
                                     value={armorClass.dexCap ?? ""}
-                                    onChange={(e) => {
-                                        const val = e.target.value === "" ? undefined : parseInt(e.target.value);
-                                        handleChange("dexCap", val);
-                                    }}
-                                    className="w-16 p-1.5 border border-border rounded-lg text-center text-xs font-bold bg-background"
+                                    onChange={(val) => handleChange("dexCap", val === 0 ? undefined : val)}
+                                    variant="horizontal"
+                                    className="w-20"
+                                    inputClassName="text-center text-xs font-bold h-7"
                                 />
                             </div>
                         )}
@@ -124,20 +122,22 @@ const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1">
                             <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground ml-1">Shield</label>
-                            <input
-                                type="number"
+                             <NumericInput
                                 value={armorClass.shieldBonus}
-                                onChange={(e) => handleChange("shieldBonus", parseInt(e.target.value) || 0)}
-                                className="p-2 border border-border rounded text-center font-bold text-sm focus:ring-1 focus:ring-primary focus:outline-none bg-background transition-all"
+                                onChange={(val) => handleChange("shieldBonus", val)}
+                                variant="horizontal"
+                                className="w-full"
+                                inputClassName="text-center font-bold text-sm h-9"
                             />
                         </div>
                         <div className="flex flex-col gap-1">
                             <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground ml-1">Misc Bonus</label>
-                            <input
-                                type="number"
+                             <NumericInput
                                 value={armorClass.miscBonus}
-                                onChange={(e) => handleChange("miscBonus", parseInt(e.target.value) || 0)}
-                                className="p-2 border border-border rounded text-center font-bold text-sm focus:ring-1 focus:ring-primary focus:outline-none bg-background transition-all"
+                                onChange={(val) => handleChange("miscBonus", val)}
+                                variant="horizontal"
+                                className="w-full"
+                                inputClassName="text-center font-bold text-sm h-9"
                             />
                         </div>
                     </div>

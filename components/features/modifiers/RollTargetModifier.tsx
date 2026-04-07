@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { FeatureModifier } from "../../../types/modifiers";
 import { ROLL_TYPES } from "../../../utils/constants";
 import ThemedAutocomplete from "../../ui/ThemedAutocomplete";
+import NumericInput from "../../ui/NumericInput";
 
 interface RollTargetModifierProps {
     modifier: FeatureModifier;
@@ -45,13 +46,14 @@ const RollTargetModifier: React.FC<RollTargetModifierProps> = ({ modifier, onUpd
             </div>
             <div className="flex gap-2">
                 {modifier.type === "Extra Advantage" && (
-                    <input
-                        type="number"
+                    <NumericInput
                         value={modifier.value || 0}
-                        onChange={(e) => onUpdate({ value: parseInt(e.target.value) || 0 })}
-                        className="w-12 text-xs p-1 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent font-mono"
+                        onChange={(val) => onUpdate({ value: val })}
+                        variant="horizontal"
+                        min={1}
+                        className="w-20 border-none bg-transparent shadow-none"
+                        inputClassName="text-xs p-1 border-b border-dashed border-border focus:border-primary font-mono text-center"
                         placeholder="1"
-                        min="1"
                     />
                 )}
                 <div className="relative flex-1">

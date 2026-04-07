@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Calculator, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 
 // UI Components
 import Button from "../ui/button";
@@ -7,6 +9,7 @@ import { Card, CardContent } from "../ui/card";
 import EntityForm from "../ui/EntityForm";
 import SectionHeader from "../ui/SectionHeader";
 import SearchFilterBar from "../ui/SearchFilterBar";
+import NumericInput from "../ui/NumericInput";
 
 // Components
 import ResourcePipTracker from "../ResourcePipTracker";
@@ -223,17 +226,21 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                     />
                                     <div className="flex items-center justify-end gap-2 px-2">
                                         <label className="text-xs font-bold uppercase text-gray-400">Total Max:</label>
-                                        <input
-                                            type="number"
-                                            min="0"
+                                         <NumericInput
+                                            min={0}
                                             value={autoCalculateSlots ? (calculatedSlots[slot.level - 1]?.max || 0) : (slot.max || "")}
-                                            onChange={(e) => {
+                                            onChange={(val) => {
                                                 if (!autoCalculateSlots) {
-                                                    handleUpdateSlot(slot.level, "max", parseInt(e.target.value) || 0);
+                                                    handleUpdateSlot(slot.level, "max", val);
                                                 }
                                             }}
                                             disabled={autoCalculateSlots}
-                                            className={`w-12 h-6 text-center text-xs border border-border rounded bg-background focus:ring-1 focus:ring-primary outline-none ${autoCalculateSlots ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            variant="horizontal"
+                                            className={cn(
+                                                "w-16 h-6",
+                                                autoCalculateSlots && "opacity-50 cursor-not-allowed pointer-events-none"
+                                            )}
+                                            inputClassName="text-center text-xs p-0 h-5"
                                         />
                                     </div>
                                 </div>

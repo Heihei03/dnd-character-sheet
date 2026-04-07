@@ -7,6 +7,7 @@ import Select from "./ui/Select";
 import { Card, CardContent } from "./ui/card";
 import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Shield, Camera, Image as ImageIcon, Home } from "lucide-react";
 import SettingsButton from "./ui/SettingsButton";
+import NumericInput from "./ui/NumericInput";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import ThemeSettings from "./ThemeSettings";
 import ModalScrollLock from "./ui/ModalScrollLock";
@@ -201,11 +202,12 @@ const CharacterHeader = ({
                                         <Star size={12} /> Experience
                                     </label>
                                     <div className="flex items-center gap-1 border-b border-border hover:border-primary/50 focus-within:border-primary transition-all">
-                                        <input
-                                            type="number"
+                                        <NumericInput
                                             value={exp ?? ""}
-                                            onChange={(e) => onExpChange(e.target.value === "" ? undefined : parseInt(e.target.value, 10))}
-                                            className="flex-1 text-sm font-medium bg-transparent focus:outline-none py-0.5"
+                                            onChange={(val) => onExpChange(val === 0 ? undefined : val)}
+                                            variant="horizontal"
+                                            className="flex-1 border-none bg-transparent shadow-none"
+                                            inputClassName="text-sm font-medium p-0 pr-5"
                                             placeholder="Current..."
                                         />
                                         {nextLevelExp !== null && (
@@ -313,15 +315,16 @@ const CharacterHeader = ({
                                         options={classOptions.map(opt => ({ label: opt, value: opt }))}
                                         className="flex-1"
                                     />
-                                    <div className="flex items-center gap-1 bg-background rounded-lg px-3 py-2 border border-border">
-                                        <span className="text-[10px] font-black text-muted-foreground uppercase">Lv</span>
-                                        <input
-                                            type="number"
+                                    <div className="flex items-center gap-1 bg-background rounded-lg p-1 border border-border">
+                                        <span className="text-[10px] font-black text-muted-foreground uppercase ml-1">Lv</span>
+                                        <NumericInput
                                             value={cls.level}
                                             min={1}
                                             max={20}
-                                            onChange={(e) => onClassChange(index, "level", parseInt(e.target.value, 10) || 1)}
-                                            className="w-8 text-sm font-black bg-transparent focus:outline-none text-center"
+                                            onChange={(val) => onClassChange(index, "level", val || 1)}
+                                            variant="horizontal"
+                                            className="border-none shadow-none w-20"
+                                            inputClassName="text-sm font-black p-0 h-6"
                                         />
                                     </div>
                                     {classes.length > 1 && (

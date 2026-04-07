@@ -7,6 +7,7 @@ import SettingsButton from "./ui/SettingsButton";
 import { Initiative, Character, RollDiceFunc } from "../types/character";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
 import ModalScrollLock from "./ui/ModalScrollLock";
+import NumericInput from "./ui/NumericInput";
 
 interface InitiativeSectionProps {
     character: Character;
@@ -116,11 +117,12 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                         <div className="p-6 space-y-5">
                             <div className="flex items-center justify-between p-3 bg-secondary/20 rounded-xl border border-border">
                                 <span className="text-xs font-bold uppercase tracking-tight text-foreground">Misc Bonus</span>
-                                <input
-                                    type="number"
+                                <NumericInput
                                     value={initiative.miscBonus}
-                                    onChange={(e) => handleMiscChange(e.target.value)}
-                                    className="w-16 p-2 border border-border rounded-lg text-center font-black text-sm focus:ring-1 focus:ring-primary outline-none bg-background shadow-sm"
+                                    onChange={(val) => onUpdate({ ...initiative, miscBonus: val })}
+                                    variant="horizontal"
+                                    className="w-24"
+                                    inputClassName="text-center font-black text-sm p-2"
                                 />
                             </div>
 

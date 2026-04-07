@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Button from "./ui/button";
+import NumericInput from "./ui/NumericInput";
 import { CharacterClass, AbilityScores, RollDiceFunc } from "../types/character";
 import { classHitDice } from "../utils/constants";
 import { Plus, Minus, Heart, Shield, Activity, Dna } from "lucide-react";
@@ -87,31 +88,19 @@ const HPSection = ({
     rollDice?.(sides, conMod, `Hit Die (${cls.name})`);
   };
 
-  const handleMaxHpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setMaxHpInput(value);
-    const parsedValue = parseInt(value);
-    if (!isNaN(parsedValue)) {
-      setMaxHp(parsedValue);
-    }
+  const handleMaxHpChange = (value: number) => {
+    setMaxHpInput(String(value));
+    setMaxHp(value);
   };
 
-  const handleHpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setHpInput(value);
-    const parsedValue = parseInt(value);
-    if (!isNaN(parsedValue)) {
-      setHp(parsedValue);
-    }
+  const handleHpChange = (value: number) => {
+    setHpInput(String(value));
+    setHp(value);
   };
 
-  const handleTempHpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setTempHpInput(value);
-    const parsedValue = parseInt(value);
-    if (!isNaN(parsedValue)) {
-      setTempHp(parsedValue);
-    }
+  const handleTempHpChange = (value: number) => {
+    setTempHpInput(String(value));
+    setTempHp(value);
   };
 
   const handleHitDiceChange = (index: number, newValue: number) => {
@@ -135,33 +124,39 @@ const HPSection = ({
         <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
            <Heart className="absolute -right-2 -top-2 w-10 h-10 text-red-500 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
            <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Current</span>
-           <input
-            type="number"
+           <NumericInput
             value={hpInput}
             onChange={handleHpChange}
-            className="w-full bg-transparent text-2xl font-black text-center text-primary focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
+            onInputChange={(e) => setHpInput(e.target.value)}
+            className="border-none bg-transparent shadow-none focus-within:ring-0"
+            inputClassName="text-2xl font-black text-center text-primary p-0 h-auto"
+            showArrows="hover"
           />
         </div>
 
         <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
            <Activity className="absolute -right-2 -top-2 w-10 h-10 text-gray-400 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
            <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Max HP</span>
-           <input
-            type="number"
+           <NumericInput
             value={maxHpInput}
             onChange={handleMaxHpChange}
-            className="w-full bg-transparent text-2xl font-black text-center text-gray-700 dark:text-gray-200 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
+            onInputChange={(e) => setMaxHpInput(e.target.value)}
+            className="border-none bg-transparent shadow-none focus-within:ring-0"
+            inputClassName="text-2xl font-black text-center text-gray-700 dark:text-gray-200 p-0 h-auto"
+            showArrows="hover"
           />
         </div>
 
         <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
             <Shield className="absolute -right-2 -top-2 w-10 h-10 text-primary opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
            <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Temp HP</span>
-           <input
-            type="number"
+           <NumericInput
             value={tempHpInput}
             onChange={handleTempHpChange}
-            className="w-full bg-transparent text-2xl font-black text-center text-primary/80 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none relative z-10"
+            onInputChange={(e) => setTempHpInput(e.target.value)}
+            className="border-none bg-transparent shadow-none focus-within:ring-0"
+            inputClassName="text-2xl font-black text-center text-primary/80 p-0 h-auto"
+            showArrows="hover"
           />
         </div>
       </div>
@@ -196,12 +191,13 @@ const HPSection = ({
         
         <div className="flex-1 flex flex-col items-center">
           <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Adjustment</span>
-          <input
-            type="number"
+           <NumericInput
             value={hpDiff || ""}
-            onChange={(e) => setHpDiff(Math.max(0, parseInt(e.target.value) || 0))}
+            onChange={(val) => setHpDiff(Math.max(0, val))}
+            variant="horizontal"
+            className="border-none bg-transparent shadow-none focus-within:ring-0 px-4"
+            inputClassName="text-xl font-black text-center text-gray-900 dark:text-gray-100 placeholder:text-gray-300 dark:placeholder:text-gray-700"
             placeholder="0"
-            className="w-full bg-transparent text-xl font-black text-center text-gray-900 dark:text-gray-100 focus:outline-none placeholder:text-gray-300 dark:placeholder:text-gray-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
 
@@ -238,16 +234,17 @@ const HPSection = ({
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1 px-2 py-1 bg-background rounded-lg border border-border">
-                    <input
-                      type="number"
+                   <div className="flex items-center bg-background rounded-lg border border-border overflow-hidden">
+                    <NumericInput
                       value={available}
-                      onChange={(e) => handleHitDiceChange(index, parseInt(e.target.value) || 0)}
+                      onChange={(val) => handleHitDiceChange(index, val)}
+                      variant="horizontal"
                       min={0}
                       max={cls.level}
-                      className="w-5 text-sm font-black text-primary bg-transparent text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="border-none shadow-none w-20"
+                      inputClassName="text-sm font-black text-primary p-0"
                     />
-                    <span className="text-xs font-black text-gray-300">/ {cls.level}</span>
+                    <span className="text-xs font-black text-gray-300 pr-2">/ {cls.level}</span>
                   </div>
 
                   <Button

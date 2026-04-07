@@ -5,6 +5,7 @@ import Button from "../ui/button";
 import { CardContent } from "../ui/card";
 import EntityForm from "../ui/EntityForm";
 import Select from "../ui/Select";
+import NumericInput from "../ui/NumericInput";
 
 // Components
 import ItemFeaturesEditor from "./ItemFeaturesEditor";
@@ -216,15 +217,15 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                     </div>
                     <div className="w-24">
                         <label className="block text-[10px] text-muted-foreground font-black mb-1 uppercase tracking-widest">Cost (GP)</label>
-                        <input type="number" value={newItemCost} onChange={(e) => setNewItemCost(Number(e.target.value))} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none transition-all text-center" min="0" />
+                        <NumericInput value={newItemCost} onChange={(val) => setNewItemCost(val)} variant="horizontal" className="w-full" inputClassName="p-2 h-9 text-center" min={0} />
+                    </div>
+                    <div className="w-24">
+                        <label className="block text-[10px] text-muted-foreground font-black mb-1 uppercase tracking-widest">Wt (lbs)</label>
+                        <NumericInput value={newItemWeight} onChange={(val) => setNewItemWeight(val)} variant="horizontal" className="w-full" inputClassName="p-2 h-9 text-center" min={0} />
                     </div>
                     <div className="w-20">
-                        <label className="block text-[10px] text-muted-foreground font-black mb-1 uppercase tracking-widest">Wt (lbs)</label>
-                        <input type="number" value={newItemWeight} onChange={(e) => setNewItemWeight(Number(e.target.value))} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none transition-all text-center" min="0" />
-                    </div>
-                    <div className="w-16">
                         <label className="block text-[10px] text-muted-foreground font-black mb-1 uppercase tracking-widest">Qty</label>
-                        <input type="number" value={newItemQuantity} onChange={(e) => setNewItemQuantity(Number(e.target.value))} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none transition-all text-center" min="1" />
+                        <NumericInput value={newItemQuantity} onChange={(val) => setNewItemQuantity(val)} variant="horizontal" className="w-full" inputClassName="p-2 h-9 text-center" min={1} />
                     </div>
                 </div>
 
@@ -297,11 +298,13 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                     <div className="grid grid-cols-2 gap-3 mt-1">
                                         <div>
                                             <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">AC</label>
-                                            <input
-                                                type="number"
+                                            <NumericInput
                                                 value={newItemArmorDetails.ac}
-                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, ac: parseInt(e.target.value) || 0 })}
-                                                className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
+                                                onChange={(val) => setNewItemArmorDetails({ ...newItemArmorDetails, ac: val })}
+                                                variant="horizontal"
+                                                className="w-full"
+                                                inputClassName="text-xs p-2 h-8 text-center"
+                                                min={0}
                                             />
                                         </div>
                                         <div>
@@ -318,12 +321,14 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                         </div>
                                         <div>
                                             <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">STR Req</label>
-                                            <input
-                                                type="number"
+                                            <NumericInput
                                                 value={newItemArmorDetails.strengthRequirement || ""}
-                                                onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, strengthRequirement: parseInt(e.target.value) || undefined })}
+                                                onChange={(val) => setNewItemArmorDetails({ ...newItemArmorDetails, strengthRequirement: val || undefined })}
                                                 placeholder="None"
-                                                className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
+                                                variant="horizontal"
+                                                className="w-full"
+                                                inputClassName="text-xs p-2 h-8 text-center"
+                                                min={0}
                                             />
                                         </div>
                                         <div className="flex flex-col justify-end">
@@ -349,12 +354,14 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                         {newItemArmorDetails.dexBonus && (
                                             <div className="col-span-2">
                                                 <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">DEX Cap</label>
-                                                <input
-                                                    type="number"
+                                                <NumericInput
                                                     value={newItemArmorDetails.dexCap || ""}
-                                                    onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, dexCap: parseInt(e.target.value) || undefined })}
+                                                    onChange={(val) => setNewItemArmorDetails({ ...newItemArmorDetails, dexCap: val || undefined })}
                                                     placeholder="None"
-                                                    className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
+                                                    variant="horizontal"
+                                                    className="w-full"
+                                                    inputClassName="text-xs p-2 h-8 text-center"
+                                                    min={0}
                                                 />
                                             </div>
                                         )}
@@ -377,11 +384,13 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                 {newItemArmorDetails && (
                                     <div>
                                         <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Shield AC Bonus</label>
-                                        <input
-                                            type="number"
+                                        <NumericInput
                                             value={newItemArmorDetails.ac}
-                                            onChange={(e) => setNewItemArmorDetails({ ...newItemArmorDetails, ac: parseInt(e.target.value) || 0 })}
-                                            className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
+                                            onChange={(val) => setNewItemArmorDetails({ ...newItemArmorDetails, ac: val })}
+                                            variant="horizontal"
+                                            className="w-full"
+                                            inputClassName="text-xs p-2 h-8 text-center"
+                                            min={0}
                                         />
                                     </div>
                                 )}
@@ -404,22 +413,26 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                     <div className="grid grid-cols-2 gap-3 mt-1">
                                         <div>
                                             <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Capacity (lbs)</label>
-                                            <input
-                                                type="number"
+                                            <NumericInput
                                                 value={newItemContainerDetails.capacityWeight ?? ""}
-                                                onChange={(e) => setNewItemContainerDetails({ ...newItemContainerDetails, capacityWeight: parseInt(e.target.value) || undefined })}
+                                                onChange={(val) => setNewItemContainerDetails({ ...newItemContainerDetails, capacityWeight: val || undefined })}
                                                 placeholder="Unlimited"
-                                                className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
+                                                variant="horizontal"
+                                                className="w-full"
+                                                inputClassName="text-xs p-2 h-8 text-center"
+                                                min={0}
                                             />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Wt Multiplier</label>
-                                            <input
-                                                type="number"
-                                                step="0.1"
+                                            <NumericInput
+                                                step={0.1}
                                                 value={newItemContainerDetails.contentsWeightMultiplier}
-                                                onChange={(e) => setNewItemContainerDetails({ ...newItemContainerDetails, contentsWeightMultiplier: parseFloat(e.target.value) || 0 })}
-                                                className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none"
+                                                onChange={(val) => setNewItemContainerDetails({ ...newItemContainerDetails, contentsWeightMultiplier: val })}
+                                                variant="horizontal"
+                                                className="w-full"
+                                                inputClassName="text-xs p-2 h-8 text-center"
+                                                min={0}
                                             />
                                         </div>
                                     </div>

@@ -4,6 +4,7 @@ import React from "react";
 import { FeatureModifier } from "../../../types/modifiers";
 import { ROLL_TYPES } from "../../../utils/constants";
 import ThemedAutocomplete from "../../ui/ThemedAutocomplete";
+import NumericInput from "../../ui/NumericInput";
 
 interface BonusModifierProps {
     modifier: FeatureModifier;
@@ -13,11 +14,12 @@ interface BonusModifierProps {
 const BonusModifier: React.FC<BonusModifierProps> = ({ modifier, onUpdate }) => {
     return (
         <div className="flex gap-2">
-            <input
-                type="number"
+             <NumericInput
                 value={modifier.value || 0}
-                onChange={(e) => onUpdate({ value: parseInt(e.target.value) || 0 })}
-                className="w-16 text-xs p-1.5 border-b border-dashed border-border focus:border-primary focus:ring-0 bg-transparent font-mono"
+                onChange={(val) => onUpdate({ value: val })}
+                variant="horizontal"
+                className="w-20 border-none bg-transparent shadow-none"
+                inputClassName="text-xs p-1.5 border-b border-dashed border-border focus:border-primary font-mono text-center"
             />
             <ThemedAutocomplete
                 value={modifier.subType || ""}

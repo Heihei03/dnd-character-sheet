@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { Speed } from "../types/character";
 import { speedTypes } from "../utils/constants";
 import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
+import NumericInput from "./ui/NumericInput";
 
 interface SpeedSectionProps {
   baseSpeed: Speed;
@@ -66,13 +67,12 @@ const SpeedSection: React.FC<SpeedSectionProps> = ({ baseSpeed, effectiveSpeed, 
                   <div className="flex-1 space-y-1">
                     <label className="text-[11px] uppercase font-bold text-gray-400 ml-1">Base</label>
                     <div className="flex gap-2 items-center">
-                      <input
-                        type="number"
+                      <NumericInput
                         value={baseData.value}
-                        onChange={(e) =>
-                          handleChange(key, parseInt(e.target.value) || 0, baseData.from)
-                        }
-                        className="w-16 text-sm p-1 border border-border rounded bg-background text-center focus:outline-none focus:ring-1 focus:ring-primary"
+                        onChange={(val) => handleChange(key, val, baseData.from)}
+                        variant="horizontal"
+                        className="w-24 h-8"
+                        inputClassName="text-sm p-1 text-center font-bold"
                       />
                       <input
                         type="text"
