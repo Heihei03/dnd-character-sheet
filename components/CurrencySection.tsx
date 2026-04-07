@@ -92,13 +92,13 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                 <div className="grid grid-cols-5 gap-3">
                     {["cp", "sp", "ep", "gp", "pp"].map((key) => (
                         <div key={key} className="flex flex-col items-center">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground mb-1.5 tracking-tighter">{key}</label>
+                            <label className="text-sm font-black uppercase text-muted-foreground mb-1.5 tracking-tight">{key}</label>
                              <NumericInput
                                 value={currency[key as keyof Currency]}
                                 onChange={(val) => handleCurrencyChange(key as keyof Currency, val)}
                                 min={0}
                                 className="w-full"
-                                inputClassName="text-center text-sm font-bold px-2 py-2 pr-6"
+                                inputClassName="text-center text-base font-bold px-1 py-1.5 pr-6"
                                 showArrows="hover"
                             />
                         </div>
