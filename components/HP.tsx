@@ -5,7 +5,7 @@ import Button from "./ui/button";
 import NumericInput from "./ui/NumericInput";
 import { CharacterClass, AbilityScores, RollDiceFunc } from "../types/character";
 import { classHitDice } from "../utils/constants";
-import { Plus, Minus, Heart, Shield, Activity, Dna } from "lucide-react";
+import { Plus, Minus, Heart, Shield, Activity } from "lucide-react";
 import { cn } from "../lib/utils";
 
 interface HPSectionProps {
@@ -214,7 +214,7 @@ const HPSection = ({
       {/* Hit Dice */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-[0.2em] px-1">
-          <Dna className="w-3.5 h-3.5" />
+          <Heart className="w-3.5 h-3.5" />
           <span>Hit Dice Management</span>
           <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800"></div>
         </div>
