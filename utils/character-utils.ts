@@ -1014,6 +1014,7 @@ export const normalizeCharacter = (character: any): NormalizedCharacter => {
         },
         weaponProficiencies: character.weaponProficiencies ?? [],
         armorProficiencies: character.armorProficiencies ?? [],
+        weaponMasteries: character.weaponMasteries ?? [],
         toolProficiencies: (character.toolProficiencies ?? []).map((tool: any) => {
             if (typeof tool === "string") {
                 const toolData = TOOL_DATA[tool];
@@ -1105,5 +1106,31 @@ export const getEffectiveToolProficiencies = (character: Character): ToolProfici
     });
 
     return baseTools;
+};
+
+export const getEffectiveWeaponMasteries = (character: Character): ProficiencyArray => {
+    const baseMasteries = [...(character.weaponMasteries || [])];
+    const activeFeatures = getAllActiveFeatures(character);
+    const profMods = getFeatureModifiersWithSource(activeFeatures, "Weapon Mastery");
+
+    const result: ProficiencyArray = [...baseMasteries];
+
+    profMods.forEach(mod => {
+        const name = String(mod.subType || mod.value || "");
+        if (!name) return;
+
+        const alreadyHas = baseMasteries.some((p: any) => {
+            const pName = typeof p === 'string' ? p : (p && (p as any).name);
+            return pName && pName.toLowerCase() === name.toLowerCase();
+        });
+
+        if (!alreadyHas) {
+            if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
+                result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
+            }
+        }
+    });
+
+    return result;
 };
 

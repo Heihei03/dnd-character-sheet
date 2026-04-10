@@ -337,6 +337,7 @@ export interface Character {
   initiative?: Initiative;
   weaponProficiencies?: string[];
   armorProficiencies?: string[];
+  weaponMasteries?: string[];
   toolProficiencies?: ToolProficiency[];
   languages?: string[];
   features?: Feature[];
@@ -371,6 +372,7 @@ export interface NormalizedCharacter extends Character {
   initiative: Initiative;
   weaponProficiencies: string[];
   armorProficiencies: string[];
+  weaponMasteries: string[];
   toolProficiencies: ToolProficiency[];
   languages: string[];
   features: Feature[];

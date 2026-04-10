@@ -3,6 +3,7 @@ import AbilityAndSavingThrows from "../AbilityAndSavingThrows";
 import SkillsSection from "../SkillsSection";
 import ToolChecksSection from "../ToolChecksSection";
 import ProficienciesLanguagesSection from "../ProficienciesLanguagesSection";
+import WeaponMasteriesSection from "../WeaponMasteriesSection";
 import { AbilityScores, Character, NormalizedCharacter, ToolProficiency, ProficiencyArray } from "../../types/character";
 
 interface StatsSidebarProps {
@@ -19,6 +20,7 @@ interface StatsSidebarProps {
   handleToolProficiencyChange: (value: ToolProficiency[]) => void;
   effectiveWeaponProficiencies: ProficiencyArray;
   effectiveArmorProficiencies: ProficiencyArray;
+  effectiveWeaponMasteries: ProficiencyArray;
   effectiveLanguages: ProficiencyArray;
   handleProficiencyChange: (field: keyof Character, value: any) => void;
   handleNavigateToFeature: (featureId: string) => void;
@@ -38,6 +40,7 @@ const StatsSidebar: React.FC<StatsSidebarProps> = ({
   handleToolProficiencyChange,
   effectiveWeaponProficiencies,
   effectiveArmorProficiencies,
+  effectiveWeaponMasteries,
   effectiveLanguages,
   handleProficiencyChange,
   handleNavigateToFeature,
@@ -72,6 +75,11 @@ const StatsSidebar: React.FC<StatsSidebarProps> = ({
         rollDice={rollDice}
         onNavigateToFeature={handleNavigateToFeature}
         character={characterWithDefaults}
+      />
+      <WeaponMasteriesSection
+        weaponMasteries={effectiveWeaponMasteries}
+        onUpdate={handleProficiencyChange}
+        onNavigateToFeature={handleNavigateToFeature}
       />
       <ProficienciesLanguagesSection
         weaponProficiencies={effectiveWeaponProficiencies}

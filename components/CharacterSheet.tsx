@@ -49,6 +49,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     effectiveSpeed,
     effectiveSenses,
     effectiveDefenses,
+    effectiveWeaponMasteries,
     effectiveConditions,
     handleNavigateToFeature,
     handleSavingThrowChange,
@@ -135,6 +136,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             handleToolProficiencyChange={(value) => handleChange("toolProficiencies", value)}
             effectiveWeaponProficiencies={effectiveWeaponProficiencies}
             effectiveArmorProficiencies={effectiveArmorProficiencies}
+            effectiveWeaponMasteries={effectiveWeaponMasteries}
             effectiveLanguages={effectiveLanguages}
             handleProficiencyChange={handleChange}
             handleNavigateToFeature={handleNavigateToFeature}
