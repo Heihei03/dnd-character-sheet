@@ -120,7 +120,7 @@ const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
                                         disabled={autoCalculateSlots}
                                         variant="horizontal"
                                         className={cn(
-                                            "w-14 h-6",
+                                            "w-20 h-7",
                                             autoCalculateSlots && "opacity-50 cursor-not-allowed pointer-events-none"
                                         )}
                                         inputClassName="text-center text-[11px] p-0 h-5 font-bold"

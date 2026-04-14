@@ -118,7 +118,7 @@ const NumericInput: React.FC<NumericInputProps> = ({
                             if (e.key === "Enter" || e.key === " ") handleDecrement();
                         }}
                         disabled={disabled || (min !== undefined && Number(value) <= Number(min))}
-                        className="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                        className="flex-shrink-0 flex items-center justify-center h-full aspect-square rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary"
                     >
                         <Minus className="w-4 h-4" />
                     </button>
@@ -150,7 +150,7 @@ const NumericInput: React.FC<NumericInputProps> = ({
                             if (e.key === "Enter" || e.key === " ") handleIncrement();
                         }}
                         disabled={disabled || (max !== undefined && Number(value) >= Number(max))}
-                        className="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                        className="flex-shrink-0 flex items-center justify-center h-full aspect-square rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 outline-none focus-visible:ring-1 focus-visible:ring-primary"
                     >
                         <Plus className="w-4 h-4" />
                     </button>
