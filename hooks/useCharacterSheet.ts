@@ -19,7 +19,9 @@ import {
   ToolProficiency,
   Bio,
   RollEntry,
-  CritRule
+  CritRule,
+  ActiveBonus,
+  BonusTarget
 } from "../types/character";
 import {
   getEffectiveAbilityScores,
@@ -368,7 +370,8 @@ export const useCharacterSheet = (
     critRule?: CritRule,
     specificAdvantage?: boolean,
     specificDisadvantage?: boolean,
-    extraAdvantage: number = 0
+    extraAdvantage: number = 0,
+    rollType?: BonusTarget
   ) => {
     const effectiveCritRange = critRange || characterWithDefaults.critRange || 20;
     let finalAdvantage = specificAdvantage || globalRollMode === 'advantage';
@@ -397,7 +400,35 @@ export const useCharacterSheet = (
         resultRoll = Math.min(baseRoll, secondaryRoll);
       }
     }
-    const total = resultRoll + modifier;
+    
+    // Apply Active Bonuses
+    let bonusModifier = 0;
+    let bonusBreakdown = "";
+    if (rollType && characterWithDefaults.activeBonuses) {
+      const activeBonuses = characterWithDefaults.activeBonuses.filter(b => b.active && b.targets.includes(rollType));
+      activeBonuses.forEach(b => {
+        const parsed = parseDice(b.bonus);
+        if (parsed) {
+          const bonusRolls: number[] = [];
+          let bonusTotal = 0;
+          for (let i = 0; i < parsed.count; i++) {
+            const r = Math.floor(Math.random() * parsed.sides) + 1;
+            bonusRolls.push(r);
+            bonusTotal += r;
+          }
+          const totalWithMod = parsed.sign === "+" ? bonusTotal + parsed.mod : bonusTotal - parsed.mod;
+          bonusModifier += totalWithMod;
+          bonusBreakdown += ` + ${b.name}(${totalWithMod})`;
+        } else {
+          // Flat bonus
+          const val = parseInt(b.bonus) || 0;
+          bonusModifier += val;
+          bonusBreakdown += ` + ${b.name}(${val >= 0 ? "+" : ""}${val})`;
+        }
+      });
+    }
+
+    const total = resultRoll + modifier + bonusModifier;
     let formula = `d${sides}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}`;
     if (sides === 20 && (finalAdvantage || finalDisadvantage)) {
       const advPrefix = finalAdvantage ? (extraAdvantage > 0 ? `ADV+${extraAdvantage}` : 'ADV') : 'DIS';
@@ -405,7 +436,8 @@ export const useCharacterSheet = (
     }
     let breakdown = `(${rolls.join(", ")})`;
     if (modifier !== 0) breakdown += ` ${modifier >= 0 ? "+" : "-"} ${Math.abs(modifier)}`;
-    const formatted = `${label ? label + ": " : ""}${formula} ${breakdown} = ${total}`;
+    if (bonusBreakdown) breakdown += bonusBreakdown;
+    const formatted = `${label ? label + ": " : ""}${formula}${bonusModifier !== 0 ? ` (+bonuses)` : ""} ${breakdown} = ${total}`;
     setRollResult(formatted);
     const newEntry: RollEntry = {
       id: Math.random().toString(36).substring(2, 9),
@@ -474,12 +506,44 @@ export const useCharacterSheet = (
     total += modifierTotal;
     const displayFormula = getDisplayFormula(damageString, isCritical, critRule, critExtraDamage);
     const critLabel = isCritical ? " (CRIT)" : "";
+    
+    // Apply Active Bonuses for Damage
+    let bonusModifier = 0;
+    let bonusBreakdown = "";
+    if (characterWithDefaults.activeBonuses) {
+      const activeBonuses = characterWithDefaults.activeBonuses.filter(b => b.active && b.targets.includes('damage'));
+      activeBonuses.forEach(b => {
+        const parsed = parseDice(b.bonus);
+        if (parsed) {
+          const bonusRolls: number[] = [];
+          let bonusTotal = 0;
+          for (let i = 0; i < parsed.count; i++) {
+            const r = Math.floor(Math.random() * parsed.sides) + 1;
+            bonusRolls.push(r);
+            bonusTotal += r;
+          }
+          const totalWithMod = parsed.sign === "+" ? bonusTotal + parsed.mod : bonusTotal - parsed.mod;
+          bonusModifier += totalWithMod;
+          bonusBreakdown += ` + ${b.name}(${totalWithMod})`;
+        } else {
+          // Flat bonus
+          const val = parseInt(b.bonus) || 0;
+          bonusModifier += val;
+          bonusBreakdown += ` + ${b.name}(${val >= 0 ? "+" : ""}${val})`;
+        }
+      });
+    }
+
+    let totalWithBonuses = total + bonusModifier;
+
     let breakdown = `(${rolls.join(" + ")})${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"} ${mod}` : ""}`;
     if (isCritical && critRule === 'double-total') {
       const diceSum = rolls.length > 1 ? `(${rolls.join(" + ")})` : rolls[0];
       breakdown = `(${diceSum} × 2)${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"} ${mod}` : ""}`;
     }
-    const formatted = `${label ? label + critLabel + ": " : ""}${displayFormula} ${breakdown} = ${total} ${damageType ? damageType : ""}`.trim();
+    if (bonusBreakdown) breakdown += bonusBreakdown;
+
+    const formatted = `${label ? label + critLabel + ": " : ""}${displayFormula}${bonusModifier !== 0 ? ` (+bonuses)` : ""} ${breakdown} = ${totalWithBonuses} ${damageType ? damageType : ""}`.trim();
     setRollResult(formatted);
     const newEntry: RollEntry = {
       id: Math.random().toString(36).substring(2, 9),
@@ -487,8 +551,8 @@ export const useCharacterSheet = (
       label: (label || "Damage Roll") + critLabel,
       formula: isCritical ? `${displayFormula} (Crit)` : damageString,
       rolls,
-      modifier: modifierTotal,
-      total,
+      modifier: modifierTotal + bonusModifier,
+      total: totalWithBonuses,
       type: 'damage',
       damageType,
       isCritical,
@@ -517,6 +581,10 @@ export const useCharacterSheet = (
       }));
       return { ...prev, resources: resourcesToSave };
     });
+  };
+
+  const handleUpdateActiveBonuses = (activeBonuses: ActiveBonus[]) => {
+    setCharacter(prev => (prev ? { ...prev, activeBonuses } : null));
   };
 
   return {
@@ -573,5 +641,6 @@ export const useCharacterSheet = (
     rollDamage,
     clearHistory,
     handleUpdateResources,
+    handleUpdateActiveBonuses,
   };
 };

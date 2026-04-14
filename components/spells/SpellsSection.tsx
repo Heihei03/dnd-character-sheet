@@ -16,9 +16,10 @@ import ResourcePipTracker from "../ResourcePipTracker";
 import SpellSlotsTracker from "../SpellSlotsTracker";
 import SpellCard from "./SpellCard";
 import SpellForm from "./SpellForm";
+import ActiveBonusesList from "../ActiveBonusesList";
 
 // Types
-import { AbilityScores, CharacterClass, Resource, Spell, SpellSlot } from "../../types/character";
+import { AbilityScores, CharacterClass, Resource, Spell, SpellSlot, ActiveBonus, RollDiceFunc, RollDamageFunc } from "../../types/character";
 
 // Utils
 import { calculateSpellSlots } from "../../utils/spell-utils";
@@ -32,6 +33,10 @@ interface SpellsSectionProps {
     abilityScores: AbilityScores;
     proficiencyBonus: number;
     onNavigateToFeature?: (featureId: string) => void;
+    onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
+    character: any;
+    rollDice?: RollDiceFunc;
+    rollDamage?: RollDamageFunc;
 }
 
 const SpellsSection: React.FC<SpellsSectionProps> = ({
@@ -42,7 +47,11 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     onUpdateSpellSlots,
     abilityScores,
     proficiencyBonus,
-    onNavigateToFeature
+    onNavigateToFeature,
+    onUpdateActiveBonuses,
+    character,
+    rollDice,
+    rollDamage
 }) => {
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
     const [newSpellDraft, setNewSpellDraft] = useState<Spell | null>(null);
@@ -335,8 +344,11 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                             totalLevel={totalLevel}
                                             onEdit={() => setEditingSpellId(spell.id)}
                                             onDelete={() => handleDeleteSpell(spell.id)}
+                                            onUpdateActiveBonuses={onUpdateActiveBonuses}
+                                            rollDice={rollDice}
+                                            rollDamage={rollDamage}
                                             handleUpdateSpell={handleUpdateSpell}
-                                            onNavigateToFeature={onNavigateToFeature}
+                                            character={character}
                                         />
                                     );
                                 })}
@@ -345,6 +357,27 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                     </Card>
                 );
             })}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 border-t pt-6">
+                <ActiveBonusesList 
+                    bonuses={character.activeBonuses || []}
+                    onUpdateBonuses={onUpdateActiveBonuses}
+                    target="attack"
+                    title="Spell Attack Bonuses"
+                />
+                <ActiveBonusesList 
+                    bonuses={character.activeBonuses || []}
+                    onUpdateBonuses={onUpdateActiveBonuses}
+                    target="damage"
+                    title="Spell Damage Bonuses"
+                />
+                <ActiveBonusesList 
+                    bonuses={character.activeBonuses || []}
+                    onUpdateBonuses={onUpdateActiveBonuses}
+                    target="save"
+                    title="Spell DC Bonuses"
+                />
+            </div>
         </div>
     );
 };

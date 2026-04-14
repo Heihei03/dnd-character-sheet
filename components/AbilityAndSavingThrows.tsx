@@ -2,7 +2,8 @@ import React from "react";
 import { Card, CardContent } from "./ui/card";
 import AbilityScoreSection from "./AbilityScoreSection";
 import SavingThrowsSection from "./SavingThrowsSection";
-import { AbilityScores, NormalizedCharacter, SavingThrows } from "../types/character";
+import { AbilityScores, NormalizedCharacter, SavingThrows, ActiveBonus } from "../types/character";
+import ActiveBonusesList from "./ActiveBonusesList";
 
 interface AbilityAndSavingThrowsProps {
   character: NormalizedCharacter;
@@ -12,6 +13,7 @@ interface AbilityAndSavingThrowsProps {
   rollDice: any;
   proficiencyBonus: number;
   setSavingThrows: (key: string, value: boolean) => void;
+  onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
@@ -22,6 +24,7 @@ const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
   rollDice,
   proficiencyBonus,
   setSavingThrows,
+  onUpdateActiveBonuses,
 }) => {
   return (
     <Card className="w-full">
@@ -37,6 +40,14 @@ const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
               setAbilityScore={setAbilityScore}
               rollDice={rollDice}
               character={character}
+              onUpdateActiveBonuses={onUpdateActiveBonuses}
+            />
+            <ActiveBonusesList 
+              bonuses={character.activeBonuses || []}
+              onUpdateBonuses={onUpdateActiveBonuses}
+              target="ability"
+              title="Ability Bonuses"
+              compact={true}
             />
           </div>
           <div className="flex-1 pl-2 flex flex-col items-center">
@@ -49,6 +60,14 @@ const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
               setSavingThrows={setSavingThrows}
               abilityScores={effectiveAbilityScores}
               rollDice={rollDice}
+              onUpdateActiveBonuses={onUpdateActiveBonuses}
+            />
+            <ActiveBonusesList 
+              bonuses={character.activeBonuses || []}
+              onUpdateBonuses={onUpdateActiveBonuses}
+              target="save"
+              title="Save Bonuses"
+              compact={true}
             />
           </div>
         </div>

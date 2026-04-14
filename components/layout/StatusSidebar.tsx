@@ -16,7 +16,8 @@ import {
   DeathSaves as DeathSavesType, 
   Defenses, 
   NormalizedCharacter, 
-  Sense 
+  Sense,
+  ActiveBonus
 } from "../../types/character";
 
 interface StatusSidebarProps {
@@ -37,6 +38,7 @@ interface StatusSidebarProps {
   effectiveSenses: Sense[];
   effectiveDefenses: Defenses;
   effectiveConditions: Condition[];
+  onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const StatusSidebar: React.FC<StatusSidebarProps> = ({
@@ -57,6 +59,7 @@ const StatusSidebar: React.FC<StatusSidebarProps> = ({
   effectiveSenses,
   effectiveDefenses,
   effectiveConditions,
+  onUpdateActiveBonuses,
 }) => {
   return (
     <div className="md:col-span-3">
@@ -69,11 +72,14 @@ const StatusSidebar: React.FC<StatusSidebarProps> = ({
             onUpdate={handleInitiativeChange}
             rollDice={rollDice}
             dexScore={effectiveAbilityScores.dexterity ?? 10}
+            onUpdateActiveBonuses={onUpdateActiveBonuses}
           />
           <ArmorClassSection
             armorClass={characterWithDefaults.armorClass}
             setArmorClass={handleArmorClassChange}
             abilityScores={effectiveAbilityScores}
+            character={characterWithDefaults}
+            onUpdateActiveBonuses={onUpdateActiveBonuses}
           />
           <HPSection
             maxHp={characterWithDefaults.maxHp} 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SavingThrows, Character, CritRule, AbilityScores, RollDiceFunc } from "../types/character";
+import { SavingThrows, Character, CritRule, AbilityScores, RollDiceFunc, ActiveBonus } from "../types/character";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
 import { Target } from "lucide-react";
@@ -10,6 +10,7 @@ interface SavingThrowsSectionProps {
     setSavingThrows: (key: string, value: boolean) => void;
     abilityScores: AbilityScores;
     rollDice?: RollDiceFunc;
+    onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const calculateModifier = (score: number): number => {
@@ -25,6 +26,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
     setSavingThrows,
     abilityScores,
     rollDice,
+    onUpdateActiveBonuses,
 }) => {
     const [isConcMode, setIsConcMode] = useState(false);
     const savingThrows = character.savingThrows || {
@@ -57,7 +59,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         <div className="h-8 flex items-center justify-center w-full relative px-2">
                             <div
                                 className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
-                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
+                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save')}
                             >
                                 {showConc ? "Concentration" : `${key.slice(0, 3)} Save`}
                             </div>
@@ -66,7 +68,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         {/* Modifier Slot - Taking remaining space */}
                         <div className="flex-1 flex items-center justify-center w-full">
                             <button 
-                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
+                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save')}
                                 className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-primary hover:opacity-80' : 'text-primary hover:opacity-90'}`}
                             >
                                 {displayModifier}

@@ -300,6 +300,16 @@ export interface Spell {
   classSource?: string;
 }
 
+export type BonusTarget = 'attack' | 'damage' | 'save' | 'skill' | 'ability' | 'initiative' | 'ac';
+
+export interface ActiveBonus {
+  id: string;
+  name: string;
+  bonus: string; // e.g. "1d4", "+2"
+  targets: BonusTarget[];
+  active: boolean;
+}
+
 export interface Bio {
   alignment?: string;
   age?: string;
@@ -355,6 +365,7 @@ export interface Character {
   bio?: Bio;
   critRule?: CritRule;
   critRange?: number;
+  activeBonuses?: ActiveBonus[];
 }
 
 export type CritRule = 'double-dice' | 'max-plus-roll' | 'double-total';
@@ -387,6 +398,7 @@ export interface NormalizedCharacter extends Character {
   imageUrl?: string;
   critRule: CritRule;
   critRange: number;
+  activeBonuses: ActiveBonus[];
 }
 export interface RollEntry {
   id: string;
@@ -417,7 +429,8 @@ export type RollDiceFunc = (
   critRule?: CritRule,
   advantage?: boolean,
   disadvantage?: boolean,
-  extraAdvantage?: number
+  extraAdvantage?: number,
+  rollType?: BonusTarget
 ) => void;
 
 export type RollDamageFunc = (

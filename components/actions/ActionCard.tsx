@@ -3,7 +3,7 @@ import { ChevronDown, Dices, Pencil, Trash2, Zap } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import ResourcePipTracker from "../ResourcePipTracker";
 import Select from "../ui/Select";
-import { Action, AbilityScores, Resource, CritRule, Character, RollDiceFunc, RollDamageFunc } from "../../types/character";
+import { Action, AbilityScores, Resource, CritRule, Character, RollDiceFunc, RollDamageFunc, ActiveBonus } from "../../types/character";
 import {
     getAbilityModifier,
     resolveRollExpression,
@@ -30,6 +30,7 @@ interface ActionCardProps {
     currentCastLevel: number;
     onCastLevelChange: (level: number) => void;
     character: Character;
+    onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const ActionCard: React.FC<ActionCardProps> = ({
@@ -48,6 +49,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
     currentCastLevel,
     onCastLevelChange,
     character,
+    onUpdateActiveBonuses,
 }) => {
     const damageToUse = action.damage || "";
     const upcastedDamage =
@@ -93,7 +95,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
             const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${action.name} Attack`, action.attackAbility as string);
 
-            rollDice(20, total, `${action.name} Attack`, resolvedDamage, action.damageType, action.critRange, action.critExtraDamage, action.critRule, advantage, disadvantage, extraAdvantage);
+            rollDice(20, total, `${action.name} Attack`, resolvedDamage, action.damageType, action.critRange, action.critExtraDamage, action.critRule, advantage, disadvantage, extraAdvantage, 'attack');
         }
     };
 

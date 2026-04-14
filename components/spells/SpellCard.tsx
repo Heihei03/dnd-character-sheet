@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Zap, ChevronDown } from "lucide-react";
-import { Spell, AbilityScores, CharacterClass } from "../../types/character";
+import { Spell, AbilityScores, CharacterClass, RollDiceFunc, RollDamageFunc, ActiveBonus } from "../../types/character";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../../utils/dice-utils";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import FeatureNavigationBadge from "../features/FeatureNavigationBadge";
@@ -16,6 +16,10 @@ interface SpellCardProps {
     onDelete?: () => void;
     handleUpdateSpell: (id: string, field: keyof Spell, value: any) => void;
     onNavigateToFeature?: (featureId: string) => void;
+    onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
+    rollDice?: RollDiceFunc;
+    rollDamage?: RollDamageFunc;
+    character?: any;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -27,7 +31,11 @@ const SpellCard: React.FC<SpellCardProps> = ({
     onEdit,
     onDelete,
     handleUpdateSpell,
-    onNavigateToFeature
+    onNavigateToFeature,
+    onUpdateActiveBonuses,
+    rollDice,
+    rollDamage,
+    character
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -49,6 +57,31 @@ const SpellCard: React.FC<SpellCardProps> = ({
             ? calculateScaledCantripValue(spell.healing, totalLevel)
             : calculateUpcastedValue(spell.healing, spell.higherLevelHealing || "", castLevel, spell.level))
         : "";
+
+    const handleAttackRoll = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (rollDice && spell.spellcastingAbility) {
+            const abilityScore = abilityScores[spell.spellcastingAbility] || 10;
+            const abilityModifier = Math.floor((abilityScore - 10) / 2);
+            const total = abilityModifier + proficiencyBonus + (spell.attackBonus || 0);
+            
+            rollDice(20, total, `${spell.name} Attack`, upcastedDamage, spell.damageType, undefined, undefined, undefined, false, false, 0, 'attack');
+        }
+    };
+
+    const handleDamageRoll = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (rollDamage && upcastedDamage) {
+            rollDamage(upcastedDamage, spell.name, spell.damageType);
+        }
+    };
+
+    const handleHealRoll = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (rollDamage && upcastedHealing) {
+            rollDamage(upcastedHealing, `${spell.name} (Healing)`, "Healing");
+        }
+    };
 
     return (
         <div className="p-4 hover:bg-secondary/20 transition-colors">
@@ -138,42 +171,77 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             {spell.hasAoe && (
                                 <div className="flex flex-col"><span className="text-xs uppercase font-bold text-primary opacity-60 leading-tight">AoE</span>{spell.aoeSize} {spell.aoeShape}</div>
                             )}
-                            {spell.spellcastingAbility && (
-                                <>
                                     {(() => {
                                         const abilityScore = abilityScores[spell.spellcastingAbility!] || 10;
                                         const abilityModifier = Math.floor((abilityScore - 10) / 2);
-                                        const attackBonus = abilityModifier + proficiencyBonus;
-                                        const saveDC = 8 + abilityModifier + proficiencyBonus;
+                                        
+                                        // Calculate bonuses
+                                        let attackBonusFromActive = 0;
+                                        let saveDcBonusFromActive = 0;
+                                        if (character?.activeBonuses) {
+                                            character.activeBonuses.forEach((b: ActiveBonus) => {
+                                                if (!b.active) return;
+                                                const val = parseInt(b.bonus) || 0;
+                                                if (b.targets.includes('attack')) attackBonusFromActive += val;
+                                                if (b.targets.includes('save')) saveDcBonusFromActive += val;
+                                            });
+                                        }
+
+                                        const attackBonus = abilityModifier + proficiencyBonus + (spell.attackBonus || 0);
+                                        const saveDC = 8 + abilityModifier + proficiencyBonus + (spell.saveDc || 0) + saveDcBonusFromActive;
+                                        
                                         return (
                                             <>
-                                                {spell.hasAttack && <div className="flex flex-col"><span className="text-xs uppercase font-bold text-red-400 leading-tight">Attack</span>+{attackBonus}</div>}
-                                                {spell.hasSave && <div className="flex flex-col"><span className="text-xs uppercase font-bold text-orange-400 leading-tight">Save DC</span>{saveDC} {spell.saveType ? `(${spell.saveType.slice(0, 3).toUpperCase()})` : ''}</div>}
+                                                {spell.hasAttack && (
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs uppercase font-bold text-red-400 leading-tight">Attack</span>
+                                                        <button 
+                                                            onClick={handleAttackRoll}
+                                                            className="text-left font-bold hover:text-primary transition-colors flex items-center gap-1"
+                                                        >
+                                                            +{attackBonus}
+                                                            {attackBonusFromActive !== 0 && (
+                                                                <span className="text-[10px] text-primary">(+{attackBonusFromActive})</span>
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {spell.hasSave && (
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs uppercase font-bold text-orange-400 leading-tight">Save DC</span>
+                                                        <div className="font-bold flex items-center gap-1">
+                                                            {saveDC} {spell.saveType ? `(${spell.saveType.slice(0, 3).toUpperCase()})` : ''}
+                                                            {saveDcBonusFromActive !== 0 && (
+                                                                <span className="text-[10px] text-primary">(+{saveDcBonusFromActive})</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </>
                                         )
                                     })()}
-                                </>
-                            )}
-                            {(spell.hasAttack || spell.hasSave || spell.damageOnly) && spell.damage && (
                                 <div className="flex flex-col col-span-2">
                                     <span className="text-xs uppercase font-bold text-red-500 leading-tight">
                                         Damage {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
                                     </span>
-                                    <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-primary" : ""}`}>
+                                    <button 
+                                        onClick={handleDamageRoll}
+                                        className={`text-left font-mono font-bold hover:text-primary transition-colors ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-primary" : ""}`}
+                                    >
                                         {upcastedDamage} {spell.damageType}
-                                    </span>
+                                    </button>
                                 </div>
-                            )}
-                            {spell.hasHeal && spell.healing && (
                                 <div className="flex flex-col col-span-2">
                                     <span className="text-xs uppercase font-bold text-green-500 leading-tight">
                                         Healing {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
                                     </span>
-                                    <span className={`font-mono font-bold ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-primary" : ""}`}>
+                                    <button 
+                                        onClick={handleHealRoll}
+                                        className={`text-left font-mono font-bold hover:text-primary transition-colors ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-primary" : ""}`}
+                                    >
                                         {upcastedHealing}
-                                    </span>
+                                    </button>
                                 </div>
-                            )}
                         </div>
 
                         {isExpanded && (

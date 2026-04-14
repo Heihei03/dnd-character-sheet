@@ -1,10 +1,10 @@
-import React from "react";
-import { Skills, AbilityScores, ProficiencyLevel, Character, RollDiceFunc } from "../types/character";
+import { Skills, AbilityScores, ProficiencyLevel, Character, RollDiceFunc, ActiveBonus } from "../types/character";
 import { SKILL_LIST } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
 import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, getAdvantageDisadvantage } from "../utils/character-utils";
 import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
+import ActiveBonusesList from "./ActiveBonusesList";
 
 interface SkillsSectionProps {
     character: Character;
@@ -15,6 +15,7 @@ interface SkillsSectionProps {
     proficiencyBonus: number;
     rollDice?: RollDiceFunc;
     onNavigateToFeature?: (featureId: string) => void;
+    onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const SkillsSection: React.FC<SkillsSectionProps> = ({
@@ -26,6 +27,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     proficiencyBonus,
     rollDice,
     onNavigateToFeature,
+    onUpdateActiveBonuses,
 }) => {
     return (
         <Card className="w-full">
@@ -62,7 +64,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     </button>
                                     <div className="flex flex-col">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}>
+                                            <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'skill')}>
                                                 {skill.name} <span className="text-muted-foreground text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
                                             </span>
                                             {skillSources[skill.key] && (skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
@@ -82,7 +84,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
+                                    onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'skill')}
                                     className="font-bold text-lg min-w-[3ch] text-right text-primary hover:opacity-80 transition-colors"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >
@@ -92,6 +94,12 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                         );
                     })}
                 </div>
+
+                <ActiveBonusesList
+                    bonuses={character.activeBonuses || []}
+                    onUpdateBonuses={onUpdateActiveBonuses}
+                    target="skill"
+                />
             </CardContent>
         </Card>
     );

@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SettingsButton from "./ui/SettingsButton";
-import { Initiative, Character, RollDiceFunc } from "../types/character";
+import NumericInput from "./ui/NumericInput";
+import ActiveBonusesList from "./ActiveBonusesList";
+import { Initiative, Character, RollDiceFunc, ActiveBonus } from "../types/character";
 import { getAdvantageDisadvantage } from "../utils/character-utils";
 import ModalScrollLock from "./ui/ModalScrollLock";
-import NumericInput from "./ui/NumericInput";
 
 interface InitiativeSectionProps {
     character: Character;
@@ -16,6 +17,7 @@ interface InitiativeSectionProps {
     onUpdate: (initiative: Initiative) => void;
     rollDice?: RollDiceFunc;
     dexScore: number;
+    onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const InitiativeSection: React.FC<InitiativeSectionProps> = ({
@@ -25,6 +27,7 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
     onUpdate,
     rollDice,
     dexScore,
+    onUpdateActiveBonuses,
 }) => {
     const [showSettings, setShowSettings] = useState(false);
     const initiative = character.initiative || {
@@ -42,7 +45,7 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
     const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, "Initiative", "dexterity");
 
     const handleRoll = () => {
-        rollDice?.(20, totalModifier, "Initiative", undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage);
+        rollDice?.(20, totalModifier, "Initiative", undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'initiative');
     };
 
     const handleMiscChange = (val: string) => {
@@ -161,6 +164,14 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                     </div>
                 </div>
             )}
+
+            <ActiveBonusesList 
+                bonuses={character.activeBonuses || []}
+                onUpdateBonuses={onUpdateActiveBonuses}
+                target="initiative"
+                title="Initiative Bonuses"
+                compact={true}
+            />
         </div>
     );
 };

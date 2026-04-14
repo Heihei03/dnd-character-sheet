@@ -4,7 +4,7 @@ import SkillsSection from "../SkillsSection";
 import ToolChecksSection from "../ToolChecksSection";
 import ProficienciesLanguagesSection from "../ProficienciesLanguagesSection";
 import WeaponMasteriesSection from "../WeaponMasteriesSection";
-import { AbilityScores, Character, NormalizedCharacter, ToolProficiency, ProficiencyArray } from "../../types/character";
+import { AbilityScores, Character, NormalizedCharacter, ToolProficiency, ProficiencyArray, ActiveBonus } from "../../types/character";
 
 interface StatsSidebarProps {
   characterWithDefaults: NormalizedCharacter;
@@ -24,6 +24,7 @@ interface StatsSidebarProps {
   effectiveLanguages: ProficiencyArray;
   handleProficiencyChange: (field: keyof Character, value: any) => void;
   handleNavigateToFeature: (featureId: string) => void;
+  onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const StatsSidebar: React.FC<StatsSidebarProps> = ({
@@ -44,6 +45,7 @@ const StatsSidebar: React.FC<StatsSidebarProps> = ({
   effectiveLanguages,
   handleProficiencyChange,
   handleNavigateToFeature,
+  onUpdateActiveBonuses,
 }) => {
   return (
     <div className="space-y-6 md:col-span-3">
@@ -55,6 +57,7 @@ const StatsSidebar: React.FC<StatsSidebarProps> = ({
         rollDice={rollDice}
         proficiencyBonus={proficiencyBonus}
         setSavingThrows={handleSavingThrowChange}
+        onUpdateActiveBonuses={onUpdateActiveBonuses}
       />
 
       <SkillsSection
@@ -66,6 +69,7 @@ const StatsSidebar: React.FC<StatsSidebarProps> = ({
         proficiencyBonus={proficiencyBonus}
         rollDice={rollDice}
         onNavigateToFeature={handleNavigateToFeature}
+        onUpdateActiveBonuses={onUpdateActiveBonuses}
       />
       <ToolChecksSection
         toolProficiencies={effectiveToolProficiencies}

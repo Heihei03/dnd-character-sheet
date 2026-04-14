@@ -1,25 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import { ArmorClass, AbilityScores } from "../types/character";
+import React, { useState } from "react";
+import { ArmorClass, AbilityScores, Character, ActiveBonus } from "../types/character";
 import { calculateAC } from "../utils/acUtils";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import Select from "./ui/Select";
 import NumericInput from "./ui/NumericInput";
+import ActiveBonusesList from "./ActiveBonusesList";
 
 interface ArmorClassSectionProps {
     armorClass: ArmorClass;
     setArmorClass: (ac: ArmorClass) => void;
     abilityScores: AbilityScores;
+    character: Character;
+    onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
     armorClass,
     setArmorClass,
     abilityScores,
+    character,
+    onUpdateActiveBonuses,
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const currentAC = calculateAC(armorClass, abilityScores);
+    const currentAC = calculateAC(armorClass, abilityScores, character);
 
     const handleChange = (field: keyof ArmorClass, value: any) => {
         setArmorClass({
@@ -141,6 +146,14 @@ const ArmorClassSection: React.FC<ArmorClassSectionProps> = ({
                             />
                         </div>
                     </div>
+
+                    <ActiveBonusesList 
+                        bonuses={character.activeBonuses || []}
+                        onUpdateBonuses={onUpdateActiveBonuses}
+                        target="ac"
+                        title="AC Bonuses"
+                        compact={true}
+                    />
                 </div>
             )}
         </div>

@@ -13,9 +13,10 @@ import NumericInput from "./ui/NumericInput";
 import ActionCard from "./actions/ActionCard";
 import ActionForm from "./actions/ActionForm";
 import CommonActionsGrid from "./actions/CommonActionsGrid";
+import ActiveBonusesList from "./ActiveBonusesList";
 
 // Types
-import { Action, Resource, AbilityScores, Character, RollDiceFunc, RollDamageFunc, CritRule, ActionType } from "../types/character";
+import { Action, Resource, AbilityScores, Character, RollDiceFunc, RollDamageFunc, CritRule, ActionType, ActiveBonus } from "../types/character";
 
 interface ActionsSectionProps {
     actions: Action[];
@@ -32,6 +33,7 @@ interface ActionsSectionProps {
     critRange?: number;
     onCritRangeChange?: (range: number) => void;
     character: Character;
+    onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const ACTION_TYPES: ActionType[] = ["Action", "Bonus Action", "Reaction", "Free Action"];
@@ -50,7 +52,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     onCritRuleChange,
     critRange = 20,
     onCritRangeChange,
-    character
+    character,
+    onUpdateActiveBonuses,
 }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingAction, setEditingAction] = useState<Partial<Action> | null>(null);
@@ -282,10 +285,11 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                             rollDice={rollDice}
                                             rollDamage={rollDamage}
                                             resource={resource}
-                                            onUpdateResourceValue={onUpdateResources ? handleUpdateResourceValue : undefined}
+                                            onUpdateResourceValue={handleUpdateResourceValue}
                                             currentCastLevel={castLevels[action.id] || action.baseLevel || 0}
                                             onCastLevelChange={(level) => setCastLevels(prev => ({ ...prev, [action.id]: level }))}
                                             character={character}
+                                            onUpdateActiveBonuses={onUpdateActiveBonuses}
                                         />
                                     );
                                 })}
@@ -332,12 +336,29 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                         currentCastLevel={0}
                                         onCastLevelChange={() => { }}
                                         character={character}
+                                        onUpdateActiveBonuses={onUpdateActiveBonuses}
+                                        onUpdateResourceValue={handleUpdateResourceValue}
                                     />
                                 );
                             })}
                         </div>
                     </div>
                 )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 border-t pt-6">
+                <ActiveBonusesList 
+                    bonuses={character.activeBonuses || []}
+                    onUpdateBonuses={onUpdateActiveBonuses}
+                    target="attack"
+                    title="Attack Bonuses"
+                />
+                <ActiveBonusesList 
+                    bonuses={character.activeBonuses || []}
+                    onUpdateBonuses={onUpdateActiveBonuses}
+                    target="damage"
+                    title="Damage Bonuses"
+                />
             </div>
 
             {actions.length === 0 && !isAdding && (

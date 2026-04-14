@@ -29,7 +29,8 @@ import {
   CharacterClass,
   CritRule,
   RollDiceFunc,
-  RollDamageFunc
+  RollDamageFunc,
+  ActiveBonus
 } from "../types/character";
 
 // Utils
@@ -66,6 +67,7 @@ interface CharacterTabsProps {
   onCritRuleChange?: (rule: CritRule) => void;
   critRange?: number;
   onCritRangeChange?: (range: number) => void;
+  onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
 const CharacterTabs: React.FC<CharacterTabsProps> = ({
@@ -95,6 +97,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
   onCritRuleChange,
   critRange,
   onCritRangeChange,
+  onUpdateActiveBonuses,
 }) => {
   const handleNavigateToFeature = (featureId: string) => {
     setActiveTab("features");
@@ -163,6 +166,10 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           abilityScores={effectiveAbilityScores}
           proficiencyBonus={proficiencyBonus}
           onNavigateToFeature={handleNavigateToFeature}
+          onUpdateActiveBonuses={onUpdateActiveBonuses}
+          character={character}
+          rollDice={rollDice}
+          rollDamage={rollDamage}
         />
       )}
 
@@ -205,6 +212,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           critRange={critRange}
           onCritRangeChange={onCritRangeChange}
           character={character as any}
+          onUpdateActiveBonuses={onUpdateActiveBonuses}
         />
       )}
 

@@ -11,7 +11,8 @@ interface ButtonProps {
   onClick: () => void;
   children: ReactNode;
   className?: string;
-  variant?: "primary" | "ghost" | "danger" | "ghost-danger" | "success" | "secondary";
+  variant?: "primary" | "ghost" | "danger" | "ghost-danger" | "success" | "secondary" | "outline";
+  size?: "default" | "sm" | "lg" | "icon";
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   title?: string;
@@ -22,6 +23,7 @@ const Button: React.FC<ButtonProps> = ({
   children, 
   className, 
   variant = "primary",
+  size = "default",
   type = "button",
   disabled = false,
   title
@@ -32,7 +34,15 @@ const Button: React.FC<ButtonProps> = ({
     ghost: "bg-transparent text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/50",
     danger: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
     "ghost-danger": "bg-transparent text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10",
-    success: "bg-green-600 text-white hover:bg-green-700 shadow-sm"
+    success: "bg-green-600 text-white hover:bg-green-700 shadow-sm",
+    outline: "bg-transparent border border-border hover:bg-secondary/50 text-foreground"
+  };
+
+  const sizes = {
+    default: "px-4 py-2",
+    sm: "px-3 py-1.5 text-xs",
+    lg: "px-6 py-3 text-base",
+    icon: "p-2 aspect-square"
   };
 
   return (
@@ -42,7 +52,8 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
       title={title}
       className={cn(
-        "px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center justify-center gap-2",
+        "rounded-lg transition-colors font-medium text-sm flex items-center justify-center gap-2",
+        sizes[size],
         disabled ? "opacity-50 cursor-not-allowed shadow-none" : variants[variant],
         className
       )}

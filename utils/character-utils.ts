@@ -1048,6 +1048,7 @@ export const normalizeCharacter = (character: any): NormalizedCharacter => {
         conditions: character.conditions ?? [],
         species: character.species ?? "",
         subSpecies: character.subSpecies ?? "",
+        activeBonuses: character.activeBonuses ?? [],
         background: character.background ?? "",
         exp: character.exp ?? 0,
         imageUrl: character.imageUrl,

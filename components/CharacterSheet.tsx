@@ -78,6 +78,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     rollDamage,
     clearHistory,
     handleUpdateResources,
+    handleUpdateActiveBonuses,
   } = useCharacterSheet(character, setCharacter);
 
   if (!character || !characterWithDefaults) {
@@ -141,6 +142,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             effectiveLanguages={effectiveLanguages}
             handleProficiencyChange={handleChange}
             handleNavigateToFeature={handleNavigateToFeature}
+            onUpdateActiveBonuses={handleUpdateActiveBonuses}
           />
 
           {/* Center Column - Functional Tabs */}
@@ -172,6 +174,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               onCritRuleChange={(rule) => handleChange("critRule", rule)}
               critRange={characterWithDefaults.critRange}
               onCritRangeChange={(range) => handleChange("critRange", range)}
+              onUpdateActiveBonuses={handleUpdateActiveBonuses}
             />
           </div>
 
@@ -194,6 +197,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             effectiveSenses={effectiveSenses}
             effectiveDefenses={effectiveDefenses}
             effectiveConditions={effectiveConditions}
+            onUpdateActiveBonuses={handleUpdateActiveBonuses}
           />
         </div>
       </div>
