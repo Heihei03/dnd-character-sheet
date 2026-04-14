@@ -14,7 +14,7 @@ import StatusSidebar from "./layout/StatusSidebar";
 import { useCharacterSheet } from "../hooks/useCharacterSheet";
 
 // Types
-import { Character, Feature } from "../types/character";
+import { Character, Feature, CharacterClass } from "../types/character";
 
 interface CharacterSheetProps {
   character: Character | null;
@@ -90,6 +90,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   const handleBackgroundChange = (value: string) => handleChange("background", value);
   const handleExpChange = (value: number | undefined) => handleChange("exp", value);
   const handleImageUrlChange = (value: string) => handleChange("imageUrl", value);
+  const handleUpdateClasses = (value: CharacterClass[]) => handleChange("classes", value);
 
   return (
     <div className="flex flex-col items-center pt-1 px-8 pb-8">
@@ -164,6 +165,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               handleUpdateActions={handleUpdateActions}
               handleUpdateBio={handleUpdateBio}
               handleUpdateFeatures={(value: Feature[]) => handleChange("features", value)}
+              handleUpdateClasses={(value: CharacterClass[]) => handleChange("classes", value)}
               rollDice={rollDice}
               rollDamage={rollDamage}
               critRule={characterWithDefaults.critRule}

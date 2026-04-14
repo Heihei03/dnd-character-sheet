@@ -13,6 +13,7 @@ import NumericInput from "../ui/NumericInput";
 
 // Components
 import ResourcePipTracker from "../ResourcePipTracker";
+import SpellSlotsTracker from "../SpellSlotsTracker";
 import SpellCard from "./SpellCard";
 import SpellForm from "./SpellForm";
 
@@ -172,83 +173,11 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
 
     return (
         <div className="space-y-6">
-            <Card>
-                <div className="p-4 border-b border-border flex justify-between items-center">
-                    <h3 className="text-xl font-semibold">Spell Slots</h3>
-                    <div className="flex items-center space-x-2">
-                        <input
-                            type="checkbox"
-                            checked={autoCalculateSlots}
-                            onChange={(e) => {
-                                setAutoCalculateSlots(e.target.checked);
-                                if (e.target.checked) {
-                                    // Update max slots based on calculation
-                                    const updatedSlots = slots.map(slot => {
-                                        const calc = calculatedSlots[slot.level - 1];
-                                        return { ...slot, max: calc ? calc.max : 0 };
-                                    });
-                                    onUpdateSpellSlots(updatedSlots.filter(s => s.max > 0 || s.expended > 0));
-                                }
-                            }}
-                            className="w-4 h-4 cursor-pointer accent-primary"
-                            id="auto-calc-slots"
-                        />
-                        <label htmlFor="auto-calc-slots" className="text-sm font-medium cursor-pointer flex items-center">
-                            <Calculator className="w-4 h-4 mr-1" />
-                            Auto-calculate Max Slots
-                        </label>
-                    </div>
-                </div>
-                <CardContent className="p-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {slots.map((slot) => {
-                            // Map SpellSlot to Resource for the tracker
-                            // Tracking "Available" slots (Max - Expended)
-                            const availableValue = Math.max(0, slot.max - slot.expended);
-                            const resourceProxy: Resource = {
-                                id: `spell-slot-lvl-${slot.level}`,
-                                name: `Level ${slot.level}`,
-                                max: slot.max,
-                                value: availableValue,
-                                regain: "Long Rest"
-                            };
-
-                            return (
-                                <div key={slot.level} className="space-y-2">
-                                    <ResourcePipTracker
-                                        resource={resourceProxy}
-                                        compact={true}
-                                        onUpdate={(newAvailable) => {
-                                            // newAvailable is current count (Available)
-                                            // expended = max - available
-                                            handleUpdateSlot(slot.level, "expended", slot.max - newAvailable);
-                                        }}
-                                    />
-                                    <div className="flex items-center justify-end gap-2 px-2">
-                                        <label className="text-xs font-bold uppercase text-gray-400">Total Max:</label>
-                                         <NumericInput
-                                            min={0}
-                                            value={autoCalculateSlots ? (calculatedSlots[slot.level - 1]?.max || 0) : (slot.max || "")}
-                                            onChange={(val) => {
-                                                if (!autoCalculateSlots) {
-                                                    handleUpdateSlot(slot.level, "max", val);
-                                                }
-                                            }}
-                                            disabled={autoCalculateSlots}
-                                            variant="horizontal"
-                                            className={cn(
-                                                "w-16 h-6",
-                                                autoCalculateSlots && "opacity-50 cursor-not-allowed pointer-events-none"
-                                            )}
-                                            inputClassName="text-center text-xs p-0 h-5"
-                                        />
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </CardContent>
-            </Card>
+            <SpellSlotsTracker 
+                classes={classes}
+                spellSlots={spellSlots}
+                onUpdateSpellSlots={onUpdateSpellSlots}
+            />
 
             <SectionHeader
                 title="Spells List"

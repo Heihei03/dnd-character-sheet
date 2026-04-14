@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Button from "./ui/button";
 import NumericInput from "./ui/NumericInput";
+import HitDiceTracker from "./HitDiceTracker";
 import { CharacterClass, AbilityScores, RollDiceFunc } from "../types/character";
 import { classHitDice } from "../utils/constants";
 import { Plus, Minus, Heart, Shield, Activity } from "lucide-react";
@@ -212,56 +213,12 @@ const HPSection = ({
       </div>
 
       {/* Hit Dice */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-[0.2em] px-1">
-          <Heart className="w-3.5 h-3.5" />
-          <span>Hit Dice Management</span>
-          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800"></div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-2">
-          {classes.map((cls, index) => {
-            const available = cls.level - (cls.usedHitDice || 0);
-            const sides = classHitDice[cls.name.toLowerCase()] || 8;
-            return (
-              <div key={index} className="flex items-center justify-between bg-card px-3 py-2.5 rounded-xl border border-border shadow-sm transition-all hover:border-primary/30 group">
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-black text-gray-400 uppercase tracking-tight leading-none">{cls.name}</span>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-sm font-black text-gray-700 dark:text-gray-300">d{sides}</span>
-                    <span className="text-[11px] font-bold text-gray-400">Dice</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                   <div className="flex items-center bg-background rounded-lg border border-border overflow-hidden">
-                    <NumericInput
-                      value={available}
-                      onChange={(val) => handleHitDiceChange(index, val)}
-                      variant="horizontal"
-                      min={0}
-                      max={cls.level}
-                      className="border-none shadow-none w-20"
-                      inputClassName="text-sm font-black text-primary p-0"
-                    />
-                    <span className="text-xs font-black text-gray-300 pr-2">/ {cls.level}</span>
-                  </div>
-
-                  <Button
-                    onClick={() => handleRollHitDice(index)}
-                    disabled={available <= 0}
-                    variant="primary"
-                    className="text-xs font-black uppercase px-3 py-1.5 h-auto rounded-lg shadow-sm tracking-widest"
-                    title="Roll Hit Die to Heal"
-                  >
-                    Roll
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <HitDiceTracker 
+        classes={classes}
+        abilityScores={abilityScores}
+        onUpdateClasses={onUpdateClasses}
+        rollDice={rollDice}
+      />
     </div>
   );
 };

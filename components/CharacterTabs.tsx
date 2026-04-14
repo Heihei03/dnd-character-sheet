@@ -12,6 +12,7 @@ import FeaturesSection from "./features/FeaturesSection";
 import InventorySection from "./InventorySection";
 import SpellsSection from "./spells/SpellsSection";
 import BioSection from "./BioSection";
+import ResourceTrackersTab from "./ResourceTrackersTab";
 
 // Types
 import {
@@ -25,6 +26,7 @@ import {
   Spell,
   SpellSlot,
   Bio,
+  CharacterClass,
   CritRule,
   RollDiceFunc,
   RollDamageFunc
@@ -57,6 +59,7 @@ interface CharacterTabsProps {
   handleUpdateActions: (actions: Action[]) => void;
   handleUpdateBio: (field: keyof Bio, value: string) => void;
   handleUpdateFeatures: (features: Feature[]) => void;
+  handleUpdateClasses: (classes: CharacterClass[]) => void;
   rollDice: RollDiceFunc;
   rollDamage: RollDamageFunc;
   critRule?: CritRule;
@@ -85,6 +88,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
   handleUpdateActions,
   handleUpdateBio,
   handleUpdateFeatures,
+  handleUpdateClasses,
   rollDice,
   rollDamage,
   critRule,
@@ -101,6 +105,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-center bg-gray-50 dark:bg-gray-900/50 p-2 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
         {[
+          { id: "resources", label: "Resources" },
           { id: "inventory", label: "Inventory" },
           { id: "spells", label: "Spells" },
           { id: "features", label: "Features" },
@@ -119,6 +124,19 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           </button>
         ))}
       </div>
+      
+      {activeTab === "resources" && (
+        <ResourceTrackersTab 
+          resources={effectiveResources}
+          onUpdateResources={handleUpdateResources}
+          spellSlots={character.spellSlots || []}
+          onUpdateSpellSlots={handleUpdateSpellSlots}
+          classes={character.classes || []}
+          abilityScores={effectiveAbilityScores}
+          onUpdateClasses={handleUpdateClasses}
+          rollDice={rollDice}
+        />
+      )}
 
       {activeTab === "inventory" && (
         <div className="space-y-6">
