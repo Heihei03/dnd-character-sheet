@@ -102,10 +102,10 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
     <div className="mt-4 border-t border-border pt-4">
       <div className="flex items-center justify-between mb-3 px-1">
         <h3 className={cn(
-          "font-black uppercase tracking-[0.1em] text-muted-foreground flex items-center gap-1.5 min-w-0 flex-1",
-          compact ? "text-[8px]" : "text-[10px]"
+          "font-black uppercase tracking-[0.1em] text-muted-foreground flex items-center gap-2 min-w-0 flex-1",
+          compact ? "text-xs" : "text-sm"
         )}>
-          <TargetIcon className={cn("flex-shrink-0", compact ? "w-2.5 h-2.5" : "w-3.5 h-3.5")} />
+          <TargetIcon className={cn("flex-shrink-0", compact ? "w-3.5 h-3.5" : "w-4.5 h-4.5")} />
           <span className="truncate">
             {title || `${TARGET_LABELS[target]}${compact ? "" : " Bonuses"}`}
           </span>
