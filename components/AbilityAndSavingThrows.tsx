@@ -28,10 +28,11 @@ const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
 }) => {
   return (
     <Card className="w-full">
-      <CardContent className="p-4 space-y-4">
+      <CardContent className="p-4 space-y-6">
+        {/* Side-by-side Stats Section */}
         <div className="flex items-start w-full overflow-hidden">
           <div className="flex-1 pr-2 border-r border-gray-100 dark:border-gray-800 flex flex-col items-center">
-            <div className="flex items-center justify-center border-b pb-2 mb-2 w-full">
+            <div className="flex items-center justify-center border-b pb-2 mb-4 w-full">
               <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest text-center">Ability Scores</h2>
             </div>
             <AbilityScoreSection
@@ -42,16 +43,9 @@ const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
               character={character}
               onUpdateActiveBonuses={onUpdateActiveBonuses}
             />
-            <ActiveBonusesList 
-              bonuses={character.activeBonuses || []}
-              onUpdateBonuses={onUpdateActiveBonuses}
-              target="ability"
-              title="Ability Bonuses"
-              compact={true}
-            />
           </div>
           <div className="flex-1 pl-2 flex flex-col items-center">
-            <div className="flex items-center justify-center border-b pb-2 mb-2 w-full">
+            <div className="flex items-center justify-center border-b pb-2 mb-4 w-full">
               <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest text-center">Saving Throws</h2>
             </div>
             <SavingThrowsSection
@@ -62,14 +56,23 @@ const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
               rollDice={rollDice}
               onUpdateActiveBonuses={onUpdateActiveBonuses}
             />
-            <ActiveBonusesList 
-              bonuses={character.activeBonuses || []}
-              onUpdateBonuses={onUpdateActiveBonuses}
-              target="save"
-              title="Save Bonuses"
-              compact={true}
-            />
           </div>
+        </div>
+
+        {/* Full-width Bonuses Section Below */}
+        <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
+          <ActiveBonusesList 
+            bonuses={character.activeBonuses || []}
+            onUpdateBonuses={onUpdateActiveBonuses}
+            target="ability"
+            title="Ability Bonuses"
+          />
+          <ActiveBonusesList 
+            bonuses={character.activeBonuses || []}
+            onUpdateBonuses={onUpdateActiveBonuses}
+            target="save"
+            title="Save Bonuses"
+          />
         </div>
       </CardContent>
     </Card>

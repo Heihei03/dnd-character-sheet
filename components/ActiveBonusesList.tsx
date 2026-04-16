@@ -50,6 +50,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
   const [newBonus, setNewBonus] = useState("");
 
   const filteredBonuses = bonuses.filter((b) => b.targets.includes(target));
+  const activeBonusesCount = filteredBonuses.filter(b => b.active).length;
   const TargetIcon = TARGET_ICONS[target] || Dices;
 
   const handleToggle = (id: string, active: boolean) => {
@@ -101,14 +102,16 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
     <div className="mt-4 border-t border-border pt-4">
       <div className="flex items-center justify-between mb-3 px-1">
         <h3 className={cn(
-          "font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2",
-          compact ? "text-[9px]" : "text-[10px]"
+          "font-black uppercase tracking-[0.1em] text-muted-foreground flex items-center gap-1.5 min-w-0 flex-1",
+          compact ? "text-[8px]" : "text-[10px]"
         )}>
-          <TargetIcon className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} />
-          {title || `${TARGET_LABELS[target]} Bonuses`}
-          {filteredBonuses.length > 0 && (
-            <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded-full text-[9px] font-black">
-              {filteredBonuses.length}
+          <TargetIcon className={cn("flex-shrink-0", compact ? "w-2.5 h-2.5" : "w-3.5 h-3.5")} />
+          <span className="truncate">
+            {title || `${TARGET_LABELS[target]}${compact ? "" : " Bonuses"}`}
+          </span>
+          {activeBonusesCount > 0 && (
+            <span className="bg-primary/20 text-primary px-1.5 py-0.5 rounded-full text-[8px] font-black flex-shrink-0">
+              {activeBonusesCount}
             </span>
           )}
         </h3>
@@ -139,7 +142,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                 compact ? "p-2" : "p-3"
               )}>
                 <div className={cn("flex flex-col", compact ? "gap-2" : "gap-3")}>
-                  <div className="flex gap-2">
+                  <div className={cn("flex", compact ? "flex-col gap-2" : "gap-2")}>
                     <div className="flex-1 space-y-1">
                       <label className="text-[9px] font-black uppercase text-primary/70 ml-1">Label</label>
                       <input
@@ -150,7 +153,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                         autoFocus
                       />
                     </div>
-                    <div className={cn("space-y-1", compact ? "w-16" : "w-24")}>
+                    <div className={cn("space-y-1", compact ? "w-full" : "w-24")}>
                       <label className="text-[9px] font-black uppercase text-primary/70 ml-1">Value</label>
                       <input
                         className="w-full bg-background border rounded-lg px-2 py-1 text-sm font-black font-mono focus:ring-2 focus:ring-primary/20 outline-none transition-all"
@@ -186,14 +189,14 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
             <div
               key={bonus.id}
               className={cn(
-                "flex items-center justify-between rounded-xl border transition-all duration-200",
-                compact ? "p-1.5" : "p-2",
+                "rounded-xl border transition-all duration-200",
+                compact ? "p-1.5 flex flex-col gap-1" : "flex items-center justify-between p-2",
                 bonus.active 
                   ? "bg-primary/5 border-primary/20 shadow-sm ring-1 ring-primary/5" 
                   : "bg-muted/10 border-transparent opacity-50 hover:opacity-100 grayscale-[0.5]"
               )}
             >
-              <div className={cn("flex items-center overflow-hidden", compact ? "gap-2" : "gap-3")}>
+              <div className={cn("flex items-center overflow-hidden", compact ? "gap-2 w-full" : "gap-3")}>
                 <button
                   onClick={() => handleToggle(bonus.id, bonus.active)}
                   className={cn(
@@ -209,7 +212,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                   )}
                 </button>
                 <div 
-                  className="flex flex-col min-w-0 cursor-pointer group"
+                  className="flex flex-col min-w-0 flex-1 cursor-pointer group"
                   onClick={() => handleToggle(bonus.id, bonus.active)}
                 >
                   <div className="flex items-center gap-1.5 min-w-0">
@@ -220,50 +223,68 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                     )}>
                       {bonus.name}
                     </span>
-                    {compact && (
-                       <span className="text-[10px] font-mono font-black text-primary px-1 rounded bg-primary/5 border border-primary/10 flex-shrink-0">
+                    {!compact && (
+                       <span className="text-[10px] font-mono font-black text-primary px-1.5 py-0.5 rounded bg-primary/5 border border-primary/10">
                         {bonus.bonus >= 0 && !bonus.bonus.includes('d') ? `+${bonus.bonus}` : bonus.bonus}
                       </span>
                     )}
                   </div>
+                  {!compact && !bonus.active && (
+                    <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest px-1.5 py-0.5 rounded bg-secondary/50 w-fit">Inactive</span>
+                  )}
+                </div>
+
+                {!compact && (
                   <div className="flex items-center gap-1">
-                    {!compact && (
-                      <span className="text-[10px] font-mono font-black text-primary px-1.5 py-0.5 rounded bg-primary/5 border border-primary/10">
-                        {bonus.bonus >= 0 && !bonus.bonus.includes('d') ? `+${bonus.bonus}` : bonus.bonus}
-                      </span>
-                    )}
-                    {!bonus.active && !compact && (
-                      <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest px-1.5 py-0.5 rounded bg-secondary/50">Inactive</span>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => startEditing(bonus)}
+                      className="w-8 h-8 hover:bg-primary/10 hover:text-primary transition-all rounded-lg"
+                      title="Edit Bonus"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost-danger"
+                      size="icon"
+                      onClick={() => handleDelete(bonus.id)}
+                      className="w-8 h-8 transition-all rounded-lg"
+                      title="Delete Bonus"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {compact && (
+                <div className="flex items-center justify-between pl-7 w-full leading-none">
+                  <span className="text-[10px] font-mono font-black text-primary px-1 rounded bg-primary/5 border border-primary/10 flex-shrink-0">
+                    {bonus.bonus >= 0 && !bonus.bonus.includes('d') ? `+${bonus.bonus}` : bonus.bonus}
+                  </span>
+                  <div className="flex items-center gap-0.5">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => startEditing(bonus)}
+                      className="w-6 h-6 hover:bg-primary/10 hover:text-primary transition-all rounded-lg"
+                      title="Edit Bonus"
+                    >
+                      <Edit2 className="w-2.5 h-2.5" />
+                    </Button>
+                    <Button
+                      variant="ghost-danger"
+                      size="icon"
+                      onClick={() => handleDelete(bonus.id)}
+                      className="w-6 h-6 transition-all rounded-lg"
+                      title="Delete Bonus"
+                    >
+                      <Trash2 className="w-2.5 h-2.5" />
+                    </Button>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => startEditing(bonus)}
-                  className={cn(
-                    "hover:bg-primary/10 hover:text-primary transition-all rounded-lg",
-                    compact ? "w-7 h-7" : "w-8 h-8"
-                  )}
-                  title="Edit Bonus"
-                >
-                  <Edit2 className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} />
-                </Button>
-                <Button
-                  variant="ghost-danger"
-                  size="icon"
-                  onClick={() => handleDelete(bonus.id)}
-                  className={cn(
-                    "transition-all rounded-lg",
-                    compact ? "w-7 h-7" : "w-8 h-8"
-                  )}
-                  title="Delete Bonus"
-                >
-                  <Trash2 className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} />
-                </Button>
-              </div>
+              )}
             </div>
           );
         })}
@@ -284,7 +305,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className={cn("flex", compact ? "flex-col gap-2" : "gap-3")}>
                 <div className="flex-1 space-y-1.5">
                   <label className="text-[10px] font-black uppercase text-muted-foreground/80 ml-1">Effect Name</label>
                   <input
@@ -298,7 +319,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                     autoFocus
                   />
                 </div>
-                <div className={cn("space-y-1.5", compact ? "w-20" : "w-28")}>
+                <div className={cn("space-y-1.5", compact ? "w-full" : "w-28")}>
                   <label className="text-[10px] font-black uppercase text-muted-foreground/80 ml-1">Value</label>
                   <input
                     className={cn(
@@ -334,19 +355,33 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
         )}
 
         {filteredBonuses.length === 0 && !isAdding && (
-          <div className="text-center py-8 px-4 border border-dashed border-border rounded-xl bg-muted/5 group hover:bg-muted/10 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-muted/20 flex items-center justify-center mx-auto mb-3 text-muted-foreground/50 group-hover:bg-primary/5 group-hover:text-primary/50 transition-all">
-              <TargetIcon className="w-5 h-5" />
+          <div className={cn(
+            "text-center border border-dashed border-border rounded-xl bg-muted/5 group hover:bg-muted/10 transition-colors",
+            compact ? "py-4 px-2" : "py-8 px-4"
+          )}>
+            <div className={cn(
+              "rounded-full bg-muted/20 flex items-center justify-center mx-auto text-muted-foreground/50 group-hover:bg-primary/5 group-hover:text-primary/50 transition-all",
+              compact ? "w-7 h-7 mb-2" : "w-10 h-10 mb-3"
+            )}>
+              <TargetIcon className={compact ? "w-3.5 h-3.5" : "w-5 h-5"} />
             </div>
-            <p className="text-[11px] text-muted-foreground font-medium italic mb-4">No active bonuses for {TARGET_LABELS[target]}</p>
+            <p className={cn(
+              "text-muted-foreground font-medium italic mb-4 mx-auto max-w-[90%]",
+              compact ? "text-[9px] leading-tight" : "text-[11px]"
+            )}>
+              {compact ? `No ${TARGET_LABELS[target]} bonuses` : `No active bonuses for ${TARGET_LABELS[target]}`}
+            </p>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsAdding(true)}
-              className="h-8 text-[10px] uppercase font-black tracking-[0.2em] px-4 border-dashed"
+              className={cn(
+                "uppercase font-black tracking-wider border-dashed mx-auto",
+                compact ? "h-7 text-[8px] px-2" : "h-8 text-[10px] px-4"
+              )}
             >
-              <Plus className="w-3 h-3 mr-1" />
-              Add Bonus
+              <Plus className={compact ? "w-2 h-2 mr-1" : "w-3 h-3 mr-1"} />
+              Add
             </Button>
           </div>
         )}
