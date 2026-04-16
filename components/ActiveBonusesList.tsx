@@ -356,31 +356,35 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
 
         {filteredBonuses.length === 0 && !isAdding && (
           <div className={cn(
-            "text-center border border-dashed border-border rounded-xl bg-muted/5 group hover:bg-muted/10 transition-colors",
-            compact ? "py-4 px-2" : "py-8 px-4"
+            "border border-dashed border-border rounded-xl bg-muted/5 group hover:bg-muted/10 transition-all duration-300",
+            compact 
+              ? "py-3 px-2 flex flex-col items-center gap-2" 
+              : "py-2 px-3 flex items-center justify-between gap-4"
           )}>
-            <div className={cn(
-              "rounded-full bg-muted/20 flex items-center justify-center mx-auto text-muted-foreground/50 group-hover:bg-primary/5 group-hover:text-primary/50 transition-all",
-              compact ? "w-7 h-7 mb-2" : "w-10 h-10 mb-3"
-            )}>
-              <TargetIcon className={compact ? "w-3.5 h-3.5" : "w-5 h-5"} />
+            <div className={cn("flex items-center", compact ? "flex-col gap-1.5" : "gap-3 flex-1 min-w-0")}>
+              <div className={cn(
+                "rounded-full bg-muted/20 flex items-center justify-center flex-shrink-0 text-muted-foreground/50 group-hover:bg-primary/5 group-hover:text-primary/50 transition-all",
+                compact ? "w-6 h-6" : "w-8 h-8"
+              )}>
+                <TargetIcon className={compact ? "w-3 h-3" : "w-4 h-4"} />
+              </div>
+              <p className={cn(
+                "text-muted-foreground font-medium italic truncate",
+                compact ? "text-[9px] text-center w-full" : "text-[11px] flex-1"
+              )}>
+                {compact ? `No bonuses` : `No active ${TARGET_LABELS[target]} bonuses`}
+              </p>
             </div>
-            <p className={cn(
-              "text-muted-foreground font-medium italic mb-4 mx-auto max-w-[90%]",
-              compact ? "text-[9px] leading-tight" : "text-[11px]"
-            )}>
-              {compact ? `No ${TARGET_LABELS[target]} bonuses` : `No active bonuses for ${TARGET_LABELS[target]}`}
-            </p>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsAdding(true)}
               className={cn(
-                "uppercase font-black tracking-wider border-dashed mx-auto",
-                compact ? "h-7 text-[8px] px-2" : "h-8 text-[10px] px-4"
+                "uppercase font-black tracking-wider border-dashed flex-shrink-0",
+                compact ? "h-6 text-[8px] px-2 w-full" : "h-7 text-[9px] px-3"
               )}
             >
-              <Plus className={compact ? "w-2 h-2 mr-1" : "w-3 h-3 mr-1"} />
+              <Plus className={compact ? "w-2 h-2 mr-1" : "w-2.5 h-2.5 mr-1"} />
               Add
             </Button>
           </div>
