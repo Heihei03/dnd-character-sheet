@@ -14,6 +14,7 @@ interface ActiveBonusesListProps {
   target: BonusTarget;
   title?: string;
   compact?: boolean;
+  showBorder?: boolean;
 }
 
 const TARGET_LABELS: Record<BonusTarget, string> = {
@@ -42,6 +43,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
   target,
   title,
   compact = false,
+  showBorder = true,
 }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -99,7 +101,10 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
   };
 
   return (
-    <div className="mt-4 border-t border-border pt-4">
+    <div className={cn(
+      "mt-4",
+      showBorder && "border-t border-border pt-4"
+    )}>
       <div className="flex items-center justify-between mb-3 px-1">
         <h3 className={cn(
           "font-black uppercase tracking-[0.1em] text-muted-foreground flex items-center gap-2 min-w-0 flex-1",

@@ -60,18 +60,20 @@ const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
         </div>
 
         {/* Full-width Bonuses Section Below */}
-        <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
+        <div className="flex flex-col">
           <ActiveBonusesList 
             bonuses={character.activeBonuses || []}
             onUpdateBonuses={onUpdateActiveBonuses}
             target="ability"
             title="Ability Bonuses"
+            showBorder={false}
           />
           <ActiveBonusesList 
             bonuses={character.activeBonuses || []}
             onUpdateBonuses={onUpdateActiveBonuses}
             target="save"
             title="Save Bonuses"
+            showBorder={false}
           />
         </div>
       </CardContent>
