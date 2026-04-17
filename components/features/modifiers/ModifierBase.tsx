@@ -28,7 +28,7 @@ const ModifierBase: React.FC<ModifierBaseProps> = ({ modifier, onUpdate, onRemov
             </div>
 
             {/* Main Content Area */}
-            <div className="col-span-full sm:col-span-8 min-w-0 overflow-hidden">
+            <div className="col-span-full sm:col-span-8 min-w-0">
                 {children}
             </div>
 

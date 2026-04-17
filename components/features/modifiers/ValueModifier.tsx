@@ -7,6 +7,7 @@ import { TOOL_DATA } from "../../../data/tools";
 import { ABILITY_NAMES } from "../../../utils/character-utils";
 import MultiSelect from "../../ui/MultiSelect";
 import ThemedAutocomplete from "../../ui/ThemedAutocomplete";
+import CategoryToggle from "../../ui/CategoryToggle";
 
 interface ValueModifierProps {
     modifier: FeatureModifier;
@@ -14,6 +15,8 @@ interface ValueModifierProps {
 }
 
 const ValueModifier: React.FC<ValueModifierProps> = ({ modifier, onUpdate }) => {
+    const [category, setCategory] = React.useState("Damage Types");
+
     const getSuggestionsForType = (type: ModifierType): string[] => {
         switch (type) {
             case "Sense":
@@ -21,7 +24,9 @@ const ValueModifier: React.FC<ValueModifierProps> = ({ modifier, onUpdate }) => 
             case "Resistance":
             case "Immunity":
             case "Vulnerability":
-                return [...DAMAGE_TYPES, ...CONDITION_TYPES];
+                return category === "Damage Types" ? [...DAMAGE_TYPES] : [...CONDITION_TYPES];
+            case "Condition":
+                return [...CONDITION_TYPES];
             case "Speed":
                 return speedTypes;
             case "Proficiency":
@@ -39,17 +44,26 @@ const ValueModifier: React.FC<ValueModifierProps> = ({ modifier, onUpdate }) => 
 
     const suggestions = getSuggestionsForType(modifier.type);
 
-    // Some types might not make sense for MultiSelect (like Override)
     const isMultiType = ["Sense", "Resistance", "Immunity", "Vulnerability", "Speed", "Proficiency", "Condition"].includes(modifier.type);
+    const hasCategories = ["Resistance", "Immunity", "Vulnerability"].includes(modifier.type);
 
     if (isMultiType) {
         return (
-            <MultiSelect
-                value={modifier.subType || ""}
-                onChange={(val: string) => onUpdate({ subType: val })}
-                options={suggestions}
-                placeholder="Type (e.g. Fire, Stealth)..."
-            />
+            <div className="flex flex-col gap-2">
+                {hasCategories && (
+                    <CategoryToggle
+                        categories={["Damage Types", "Conditions"]}
+                        activeCategory={category}
+                        onSelect={setCategory}
+                    />
+                )}
+                <MultiSelect
+                    value={modifier.subType || ""}
+                    onChange={(val: string) => onUpdate({ subType: val })}
+                    options={suggestions}
+                    placeholder={`Select ${hasCategories ? (category === "Damage Types" ? "Damage Type" : "Condition") : modifier.type}...`}
+                />
+            </div>
         );
     }
 
