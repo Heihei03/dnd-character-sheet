@@ -129,12 +129,12 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                 </span>
                             )}
                             {action.isAttack && (
-                                <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded font-mono font-bold border border-primary/20">
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-mono font-bold border border-primary/20 hover:bg-primary/20 transition-all shadow-sm">
                                     <button
                                         type="button"
                                         onClick={handleAttackRoll}
                                         title="Roll Attack"
-                                        className="hover:underline flex items-center gap-1.5"
+                                        className="hover:opacity-80 flex items-center gap-1.5 transition-opacity"
                                     >
                                         <Dices className="w-3.5 h-3.5 opacity-70" />
                                         {(() => {
@@ -190,7 +190,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                             type="button"
                                             onClick={handleDamageRoll}
                                             title="Roll Damage/Effect"
-                                            className="font-mono font-bold hover:underline cursor-pointer flex items-center gap-1.5 text-primary"
+                                            className="font-mono font-bold hover:bg-primary/20 cursor-pointer flex items-center gap-2 text-primary bg-primary/5 px-2.5 py-1 rounded-full border border-primary/20 transition-all shadow-sm"
                                         >
                                             <Dices className="w-3.5 h-3.5" />
                                             {upcastedDamage || upcastedHealing}
@@ -302,10 +302,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                                 type="button"
                                                 onClick={handleDamageRoll}
                                                 title="Roll"
-                                                className={`hover:underline cursor-pointer font-bold flex items-center gap-1.5 ${
+                                                className={`hover:bg-primary/20 cursor-pointer font-bold flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 transition-all shadow-sm ${
                                                     currentCastLevel > (action.baseLevel || 0)
-                                                        ? "text-primary"
-                                                        : "text-primary"
+                                                        ? "text-primary bg-primary/10"
+                                                        : "text-primary bg-primary/5"
                                                 }`}
                                             >
                                                 <Dices className="w-3.5 h-3.5" />
