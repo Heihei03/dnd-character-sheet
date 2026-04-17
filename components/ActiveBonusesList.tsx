@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import { ActiveBonus, BonusTarget } from "../types/character";
 import Button from "./ui/button";
 import { Card } from "./ui/card";
+import { DAMAGE_TYPES } from "@/utils/constants";
+import Select from "./ui/Select";
 
 interface ActiveBonusesListProps {
   bonuses: ActiveBonus[];
@@ -50,6 +52,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
   
   const [newName, setNewName] = useState("");
   const [newBonus, setNewBonus] = useState("");
+  const [newDamageType, setNewDamageType] = useState("");
 
   const filteredBonuses = bonuses.filter((b) => b.targets.includes(target));
   const activeBonusesCount = filteredBonuses.filter(b => b.active).length;
@@ -71,11 +74,13 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
       bonus: newBonus,
       targets: [target],
       active: true,
+      damageType: target === "damage" ? newDamageType : undefined,
     };
 
     onUpdateBonuses([...bonuses, newEntry]);
     setNewName("");
     setNewBonus("");
+    setNewDamageType("");
     setIsAdding(false);
   };
 
@@ -87,17 +92,19 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
     setEditingId(bonus.id);
     setNewName(bonus.name);
     setNewBonus(bonus.bonus);
+    setNewDamageType(bonus.damageType || "");
   };
 
   const handleSave = () => {
     if (!editingId) return;
     const nextBonuses = bonuses.map((b) =>
-      b.id === editingId ? { ...b, name: newName, bonus: newBonus } : b
+      b.id === editingId ? { ...b, name: newName, bonus: newBonus, damageType: target === "damage" ? newDamageType : b.damageType } : b
     );
     onUpdateBonuses(nextBonuses);
     setEditingId(null);
     setNewName("");
     setNewBonus("");
+    setNewDamageType("");
   };
 
   return (
@@ -167,6 +174,20 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                         onChange={(e) => setNewBonus(e.target.value)}
                       />
                     </div>
+                    {target === "damage" && (
+                      <div className={cn("space-y-1", compact ? "w-full" : "w-28")}>
+                        <label className="text-[9px] font-black uppercase text-primary/70 ml-1">Type</label>
+                        <Select
+                          value={newDamageType}
+                          onValueChange={setNewDamageType}
+                          options={[
+                            { label: "None", value: "" },
+                            ...DAMAGE_TYPES.map(t => ({ label: t, value: t }))
+                          ]}
+                          className="w-full"
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className={cn("flex justify-end gap-2 border-t border-primary/10", compact ? "pt-1.5" : "pt-2")}>
                     <Button
@@ -231,6 +252,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                     {!compact && (
                        <span className="text-[10px] font-mono font-black text-primary px-1.5 py-0.5 rounded bg-primary/5 border border-primary/10">
                         {bonus.bonus >= 0 && !bonus.bonus.includes('d') ? `+${bonus.bonus}` : bonus.bonus}
+                        {bonus.damageType && <span className="ml-1 text-[8px] opacity-70">({bonus.damageType})</span>}
                       </span>
                     )}
                   </div>
@@ -267,6 +289,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                 <div className="flex items-center justify-between pl-7 w-full leading-none">
                   <span className="text-[10px] font-mono font-black text-primary px-1 rounded bg-primary/5 border border-primary/10 flex-shrink-0">
                     {bonus.bonus >= 0 && !bonus.bonus.includes('d') ? `+${bonus.bonus}` : bonus.bonus}
+                    {bonus.damageType && <span className="ml-1 text-[7px] opacity-70">({bonus.damageType})</span>}
                   </span>
                   <div className="flex items-center gap-0.5">
                     <Button
@@ -336,6 +359,20 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                     onChange={(e) => setNewBonus(e.target.value)}
                   />
                 </div>
+                {target === "damage" && (
+                   <div className={cn("space-y-1.5", compact ? "w-full" : "w-32")}>
+                    <label className="text-[10px] font-black uppercase text-muted-foreground/80 ml-1">Type</label>
+                    <Select
+                      value={newDamageType}
+                      onValueChange={setNewDamageType}
+                      options={[
+                        { label: "None", value: "" },
+                        ...DAMAGE_TYPES.map(t => ({ label: t, value: t }))
+                      ]}
+                      className="w-full"
+                    />
+                  </div>
+                )}
               </div>
               <div className={cn("flex justify-end gap-2 border-t border-primary/10", compact ? "pt-2" : "pt-3")}>
                 <Button

@@ -6,6 +6,7 @@ export interface FeatureModifier {
     subType: string;
     value?: string | number;
     requiresAttunement?: boolean;
+    damageType?: string;
 }
 
 export const MODIFIER_TYPES: ModifierType[] = ["Sense", "Speed", "Proficiency", "Bonus", "New Action", "Spell", "Resource", "Resistance", "Immunity", "Vulnerability", "Override", "Advantage", "Disadvantage", "Roll", "Extra Advantage", "Other"];

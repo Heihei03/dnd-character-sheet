@@ -511,9 +511,12 @@ export const useCharacterSheet = (
     // Apply Effective Bonuses for Damage
     let bonusModifier = 0;
     let bonusBreakdown = "";
+    const bonusDamageTypes: Record<string, number> = {};
+
     const activeBonuses = getEffectiveBonuses(characterWithDefaults, 'damage');
     activeBonuses.forEach(b => {
       const parsed = parseDice(b.bonus);
+      let totalWithMod = 0;
       if (parsed) {
           const bonusRolls: number[] = [];
           let bonusTotal = 0;
@@ -522,14 +525,19 @@ export const useCharacterSheet = (
             bonusRolls.push(r);
             bonusTotal += r;
           }
-          const totalWithMod = parsed.sign === "+" ? bonusTotal + parsed.mod : bonusTotal - parsed.mod;
-          bonusModifier += totalWithMod;
-          bonusBreakdown += ` + ${b.name}(${totalWithMod})`;
+          totalWithMod = parsed.sign === "+" ? bonusTotal + parsed.mod : bonusTotal - parsed.mod;
         } else {
           // Flat bonus
-          const val = parseInt(b.bonus) || 0;
-          bonusModifier += val;
-          bonusBreakdown += ` + ${b.name}(${val >= 0 ? "+" : ""}${val})`;
+          totalWithMod = parseInt(b.bonus) || 0;
+        }
+
+        if (totalWithMod !== 0) {
+            bonusModifier += totalWithMod;
+            bonusBreakdown += ` + ${b.name}(${totalWithMod >= 0 ? "+" : ""}${totalWithMod}${b.damageType ? ` ${b.damageType}` : ""})`;
+            
+            if (b.damageType) {
+                bonusDamageTypes[b.damageType] = (bonusDamageTypes[b.damageType] || 0) + totalWithMod;
+            }
         }
       });
 
@@ -542,7 +550,11 @@ export const useCharacterSheet = (
     }
     if (bonusBreakdown) breakdown += bonusBreakdown;
 
-    const formatted = `${label ? label + critLabel + ": " : ""}${displayFormula}${bonusModifier !== 0 ? ` (+bonuses)` : ""} ${breakdown} = ${totalWithBonuses} ${damageType ? damageType : ""}`.trim();
+    const bonusTypesStr = Object.entries(bonusDamageTypes)
+        .map(([type, val]) => `${val >= 0 ? "+" : ""}${val} ${type}`)
+        .join(", ");
+
+    const formatted = `${label ? label + critLabel + ": " : ""}${displayFormula}${bonusModifier !== 0 ? ` (+bonuses)` : ""} ${breakdown} = ${totalWithBonuses} ${damageType ? damageType : ""}${bonusTypesStr ? ` [${bonusTypesStr}]` : ""}`.trim();
     setRollResult(formatted);
     const newEntry: RollEntry = {
       id: Math.random().toString(36).substring(2, 9),

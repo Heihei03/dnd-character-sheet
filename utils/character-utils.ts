@@ -1156,14 +1156,18 @@ export const normalizeProficiencyLevel = (value: string): ProficiencyLevel => {
     return "none";
 };
 
-export const getEffectiveBonuses = (character: Character, target: string): { name: string, bonus: string }[] => {
-    const results: { name: string, bonus: string }[] = [];
+export const getEffectiveBonuses = (character: Character, target: string): { name: string, bonus: string, damageType?: string }[] => {
+    const results: { name: string, bonus: string, damageType?: string }[] = [];
     
     // 1. Manual Active Bonuses
     if (character.activeBonuses) {
         character.activeBonuses.forEach(b => {
             if (b.active && b.targets.includes(target as any)) {
-                results.push({ name: b.name, bonus: b.bonus });
+                results.push({ 
+                    name: b.name, 
+                    bonus: b.bonus,
+                    damageType: b.damageType
+                });
             }
         });
     }
@@ -1178,7 +1182,8 @@ export const getEffectiveBonuses = (character: Character, target: string): { nam
             const feature = activeFeatures.find(f => f.id === mod.fromFeatureId);
             results.push({ 
                 name: feature?.name || "Feature Bonus", 
-                bonus: String(mod.value || "0") 
+                bonus: String(mod.value || "0"),
+                damageType: mod.damageType
             });
         }
     });

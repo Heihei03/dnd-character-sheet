@@ -308,6 +308,7 @@ export interface ActiveBonus {
   bonus: string; // e.g. "1d4", "+2"
   targets: BonusTarget[];
   active: boolean;
+  damageType?: string;
 }
 
 export interface Bio {
