@@ -109,7 +109,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
                 totalLevel,
                 proficiencyBonus
             );
-            rollDamage(resolved, action.name, action.damageType);
+            const isHealing = !!upcastedHealing && !upcastedDamage;
+            rollDamage(resolved, action.name, action.damageType, isHealing ? 'healing' : 'damage');
         }
     };
 

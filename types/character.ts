@@ -300,7 +300,7 @@ export interface Spell {
   classSource?: string;
 }
 
-export type BonusTarget = 'attack' | 'damage' | 'save' | 'skill' | 'ability' | 'initiative' | 'ac';
+export type BonusTarget = 'attack' | 'damage' | 'save' | 'skill' | 'ability' | 'initiative' | 'ac' | 'healing';
 
 export interface ActiveBonus {
   id: string;
@@ -409,13 +409,15 @@ export interface RollEntry {
   rolls: number[];
   modifier: number;
   total: number;
-  type: 'check' | 'damage' | 'save' | 'generic';
+  type: 'check' | 'damage' | 'save' | 'generic' | 'healing';
   damageType?: string;
   damageFormula?: string;
   critExtraDamage?: string;
   critRule?: CritRule;
   isCritical?: boolean;
   isFumble?: boolean;
+  bonusModifier?: number;
+  bonusBreakdown?: string;
   formatted: string;
 }
 

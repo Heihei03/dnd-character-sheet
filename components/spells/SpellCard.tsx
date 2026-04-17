@@ -72,14 +72,14 @@ const SpellCard: React.FC<SpellCardProps> = ({
     const handleDamageRoll = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (rollDamage && upcastedDamage) {
-            rollDamage(upcastedDamage, spell.name, spell.damageType);
+            rollDamage(upcastedDamage, spell.name, spell.damageType, 'damage');
         }
     };
 
     const handleHealRoll = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (rollDamage && upcastedHealing) {
-            rollDamage(upcastedHealing, `${spell.name} (Healing)`, "Healing");
+            rollDamage(upcastedHealing, `${spell.name} (Healing)`, "Healing", 'healing');
         }
     };
 

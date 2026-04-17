@@ -39,8 +39,12 @@ import {
   getEffectiveBonuses,
   normalizeCharacter,
   parseDice,
-  getDisplayFormula
+  getDisplayFormula,
+  resolveRollExpression,
+  evaluateRoll
 } from "../utils/character-utils";
+
+export type RollDamageFunc = (damage: string, label?: string, damageType?: string, rollType?: BonusTarget, isCritical?: boolean, critExtraDamage?: string, critRuleOverride?: CritRule) => void;
 
 export const useCharacterSheet = (
   character: Character | null,
@@ -453,6 +457,8 @@ export const useCharacterSheet = (
       damageType,
       critExtraDamage,
       critRule,
+      bonusModifier,
+      bonusBreakdown,
       formatted,
       isCritical: sides === 20 && resultRoll >= effectiveCritRange,
       isFumble: sides === 20 && resultRoll === 1
@@ -460,60 +466,26 @@ export const useCharacterSheet = (
     setRollHistory(prev => [...prev.slice(-49), newEntry]);
   };
 
-  const rollDamage = (
-    damageString: string,
-    label: string = "",
-    damageType?: string,
-    isCritical: boolean = false,
-    critExtraDamage?: string,
-    ruleOverride?: CritRule
-  ) => {
+  const rollDamage: RollDamageFunc = (damageString, label, damageType, rollType = 'damage', isCritical = false, critExtraDamage = "", critRuleOverride) => {
     if (!damageString) return;
-    const critRule = ruleOverride || characterWithDefaults.critRule || 'double-dice';
-    const mainDice = parseDice(damageString);
-    if (!mainDice) {
-      const formatted = `${label ? label + (isCritical ? " (CRIT)" : "") + ": " : ""}${damageString} ${damageType ? damageType : ""}`.trim();
-      setRollResult(formatted);
-      return;
-    }
-    let total = 0;
-    const rolls: number[] = [];
-    const { count, sides, sign, mod } = mainDice;
-    const rollDicePool = (c: number, s: number) => {
-      for (let i = 0; i < c; i++) {
-        const r = Math.floor(Math.random() * s) + 1;
-        rolls.push(r);
-        total += r;
-      }
-    };
-    if (isCritical) {
-      if (critRule === 'double-dice') rollDicePool(count * 2, sides);
-      else if (critRule === 'max-plus-roll') {
-        const maxVal = count * sides;
-        total += maxVal;
-        rolls.push(maxVal); 
-        rollDicePool(count, sides);
-      } else if (critRule === 'double-total') {
-        rollDicePool(count, sides);
-        total *= 2;
-      }
-      if (critExtraDamage) {
-        const extra = parseDice(critExtraDamage);
-        if (extra) rollDicePool(extra.count, extra.sides);
-      }
-    } else rollDicePool(count, sides);
-
-    const modifierTotal = sign === "-" ? -mod : mod;
-    total += modifierTotal;
-    const displayFormula = getDisplayFormula(damageString, isCritical, critRule, critExtraDamage);
+    const critRule: CritRule = critRuleOverride || characterWithDefaults.critRule || 'double-dice';
     const critLabel = isCritical ? " (CRIT)" : "";
+
+    const resolvedFormula = resolveRollExpression(
+      damageString,
+      effectiveAbilityScores,
+      totalLevel,
+      proficiencyBonus
+    );
+
+    const { total, rolls, modifierTotal, sign, mod, formula: displayFormula } = evaluateRoll(resolvedFormula);
     
-    // Apply Effective Bonuses for Damage
+    // Apply Effective Bonuses for the specific roll type
     let bonusModifier = 0;
     let bonusBreakdown = "";
     const bonusDamageTypes: Record<string, number> = {};
 
-    const activeBonuses = getEffectiveBonuses(characterWithDefaults, 'damage');
+    const activeBonuses = getEffectiveBonuses(characterWithDefaults, rollType);
     activeBonuses.forEach(b => {
       const parsed = parseDice(b.bonus);
       let totalWithMod = 0;
@@ -559,13 +531,15 @@ export const useCharacterSheet = (
     const newEntry: RollEntry = {
       id: Math.random().toString(36).substring(2, 9),
       timestamp: Date.now(),
-      label: (label || "Damage Roll") + critLabel,
+      label: (label || (rollType === 'healing' ? "Healing Roll" : "Damage Roll")) + critLabel,
       formula: isCritical ? `${displayFormula} (Crit)` : damageString,
       rolls,
-      modifier: modifierTotal + bonusModifier,
+      modifier: modifierTotal,
+      bonusModifier,
+      bonusBreakdown,
       total: totalWithBonuses,
-      type: 'damage',
-      damageType,
+      type: rollType === 'healing' ? 'healing' : 'damage',
+      damageType: rollType === 'healing' ? 'Healing' : damageType,
       isCritical,
       critRule,
       critExtraDamage,

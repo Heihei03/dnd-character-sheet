@@ -143,6 +143,8 @@ export const SPELL_AOE_SHAPES = [
 
 export const ROLL_TYPES = [
   "Attack Rolls",
+  "Damage Rolls",
+  "Healing Rolls",
   "Charisma",
   "Charisma Attacks",
   "Charisma Checks",

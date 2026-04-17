@@ -76,7 +76,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col">
                     <span className="text-sm font-mono text-foreground/80">
-                      {roll.formula}
+                      {roll.formula}{roll.bonusModifier !== 0 && <span className="text-[10px] text-primary ml-1 font-bold opacity-80">(+bonuses)</span>}
                     </span>
                     {(() => {
                       const diceSum = roll.rolls.length > 1 ? `(${roll.rolls.join(' + ')})` : roll.rolls[0];
@@ -84,7 +84,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                       const isDoubleTotal = roll.isCritical && roll.critRule === 'double-total';
                       return (
                         <span className="text-xs text-gray-500">
-                          ({isDoubleTotal ? `${diceSum} × 2` : roll.rolls.join(' + ')}{modStr})
+                          ({isDoubleTotal ? `${diceSum} × 2` : roll.rolls.join(' + ')}{modStr}{roll.bonusBreakdown})
                         </span>
                       );
                     })()}

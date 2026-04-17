@@ -132,6 +132,32 @@ export const resolveRollExpression = (
     return resolved;
 };
 
+export const evaluateRoll = (expr: string) => {
+    const dice = parseDice(expr);
+    if (!dice) {
+        const val = parseInt(expr) || 0;
+        return { 
+            total: val, 
+            rolls: [], 
+            modifierTotal: val, 
+            sign: val >= 0 ? "+" : "-", 
+            mod: Math.abs(val), 
+            formula: expr 
+        };
+    }
+    const { count, sides, sign, mod } = dice;
+    const rolls = [];
+    let total = 0;
+    for (let i = 0; i < count; i++) {
+        const r = Math.floor(Math.random() * sides) + 1;
+        rolls.push(r);
+        total += r;
+    }
+    const modifierTotal = sign === "-" ? -mod : mod;
+    total += modifierTotal;
+    return { total, rolls, modifierTotal, sign, mod, formula: expr };
+};
+
 export const getFeatureModifiersWithSource = (features: Feature[] = [], type: string): (FeatureModifier & { fromFeatureId?: string })[] => {
     return features.flatMap(f => (f.modifiers || []).filter(m => m.type === type).map(m => ({ ...m, fromFeatureId: f.id })));
 };
