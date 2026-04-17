@@ -47,12 +47,12 @@ const ProficiencyModifier: React.FC<ProficiencyModifierProps> = ({ modifier, onU
                 <span className="text-[10px] font-black uppercase text-muted-foreground whitespace-nowrap">Proficiency Level:</span>
                 <div className="flex-1 min-w-[120px]">
                     <Select
-                        value={modifier.value as string || "Proficient"}
+                        value={modifier.value as string || "proficient"}
                         onValueChange={(val) => onUpdate({ value: val })}
                         options={[
-                            { label: "Proficient", value: "Proficient" },
-                            { label: "Expertise", value: "Expertise" },
-                            { label: "Half Proficient", value: "Half Proficient" },
+                            { label: "Proficient", value: "proficient" },
+                            { label: "Expertise", value: "expertise" },
+                            { label: "Half Proficient", value: "half" },
                         ]}
                     />
                 </div>

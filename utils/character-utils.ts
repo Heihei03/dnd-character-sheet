@@ -842,7 +842,7 @@ export const getEffectiveSkills = (character: Character): { skills: Skills, skil
             if (skill) {
                 const skillKey = skill.key;
                 const currentLevel = baseSkills[skillKey] || "none";
-                const modValue = String(mod.value || "proficient").toLowerCase() as ProficiencyLevel;
+                const modValue = normalizeProficiencyLevel(String(mod.value || "proficient"));
 
                 const progression: ProficiencyLevel[] = ["none", "half", "proficient", "expertise"];
                 const currentIdx = progression.indexOf(currentLevel as ProficiencyLevel);
@@ -1098,6 +1098,7 @@ export const getEffectiveToolProficiencies = (character: Character): ToolProfici
                 const currentLevel = baseTools[existingIdx].level || "proficient";
                 const progression: ProficiencyLevel[] = ["none", "half", "proficient", "expertise"];
                 const currentIdx = progression.indexOf(currentLevel);
+                const modValue = normalizeProficiencyLevel(String(mod.value || "proficient"));
                 const modIdx = progression.indexOf(modValue);
 
                 if (modIdx > currentIdx) {
@@ -1105,6 +1106,7 @@ export const getEffectiveToolProficiencies = (character: Character): ToolProfici
                 }
             } else {
                 const toolData = TOOL_DATA[name];
+                const modValue = normalizeProficiencyLevel(String(mod.value || "proficient"));
                 baseTools.push({
                     name: name,
                     ability: toolData?.ability || "Intelligence",
@@ -1143,6 +1145,15 @@ export const getEffectiveWeaponMasteries = (character: Character): ProficiencyAr
     });
 
     return result;
+};
+
+export const normalizeProficiencyLevel = (value: string): ProficiencyLevel => {
+    if (!value) return "none";
+    const lower = value.toLowerCase();
+    if (lower === "half" || lower === "half proficient" || lower === "half-proficiency") return "half";
+    if (lower === "proficient" || lower === "proficiency" || lower === "full") return "proficient";
+    if (lower === "expertise" || lower === "double") return "expertise";
+    return "none";
 };
 
 export const getEffectiveBonuses = (character: Character, target: string): { name: string, bonus: string }[] => {
