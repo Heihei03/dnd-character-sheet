@@ -1,4 +1,5 @@
-import { ArmorClass, AbilityScores, Character, ActiveBonus } from "../types/character";
+import { ArmorClass, AbilityScores, Character } from "../types/character";
+import { getEffectiveBonuses } from "./character-utils";
 
 export const getModifier = (score: number) => Math.floor((score - 10) / 2);
 
@@ -29,13 +30,12 @@ export const calculateAC = (ac: ArmorClass, scores: AbilityScores, character?: C
     total += (ac.shieldBonus || 0);
     total += (ac.miscBonus || 0);
 
-    // Add Active Bonuses
-    if (character?.activeBonuses) {
-        character.activeBonuses.forEach(b => {
-            if (b.active && b.targets.includes('ac')) {
-                const val = parseInt(b.bonus) || 0;
-                total += val;
-            }
+    // Add Effective Bonuses
+    if (character) {
+        const activeBonuses = getEffectiveBonuses(character, 'ac');
+        activeBonuses.forEach(b => {
+            const val = parseInt(b.bonus) || 0;
+            total += val;
         });
     }
 

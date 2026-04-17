@@ -4,7 +4,7 @@ import React from "react";
 import { AbilityScores, Character, RollDiceFunc, ToolProficiency } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
-import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, ABILITY_NAMES, getAdvantageDisadvantage } from "../utils/character-utils";
+import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, ABILITY_NAMES, getAdvantageDisadvantage, getEffectiveBonuses } from "../utils/character-utils";
 import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
 import Select from "./ui/Select";
 
@@ -54,10 +54,22 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                         const modifier = getAbilityModifier(abilityScore);
                         const profMultiplier = getProficiencyMultiplier(tool.level);
                         const bonus = Math.floor(proficiencyBonus * profMultiplier);
-                        const totalBonus = modifier + bonus;
+                        
+                        // Calculate bonuses
+                        const toolTarget = `${tool.name} Check`;
+                        const activeBonuses = getEffectiveBonuses(character, toolTarget);
+                        let bonusModifier = 0;
+                        activeBonuses.forEach(b => {
+                            const val = parseInt(b.bonus);
+                            if (!isNaN(val) && !b.bonus.includes('d')) {
+                                bonusModifier += val;
+                            }
+                        });
+
+                        const totalBonus = modifier + bonus + bonusModifier;
                         const sign = totalBonus >= 0 ? "+" : "";
 
-                        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${tool.name} Check`, abilityKey);
+                        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, toolTarget, abilityKey);
 
                         return (
                             <div

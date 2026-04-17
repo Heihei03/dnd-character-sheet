@@ -2,7 +2,7 @@ import { Skills, AbilityScores, ProficiencyLevel, Character, RollDiceFunc, Activ
 import { SKILL_LIST } from "../utils/constants";
 import { Card, CardContent } from "./ui/card";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
-import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, getAdvantageDisadvantage } from "../utils/character-utils";
+import { getAbilityModifier, getProficiencyMultiplier, cycleProficiency, getAdvantageDisadvantage, getEffectiveBonuses } from "../utils/character-utils";
 import FeatureNavigationBadge from "./features/FeatureNavigationBadge";
 import ActiveBonusesList from "./ActiveBonusesList";
 
@@ -41,11 +41,22 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
 
                         const profMultiplier = getProficiencyMultiplier(proficiencyLevel);
                         const bonus = Math.floor(proficiencyBonus * profMultiplier);
-                        const totalBonus = modifier + bonus;
+                        
+                        // Calculate bonuses
+                        const skillTarget = `${skill.name} Checks`;
+                        const activeBonuses = getEffectiveBonuses(character, skillTarget);
+                        let bonusModifier = 0;
+                        activeBonuses.forEach(b => {
+                            const val = parseInt(b.bonus);
+                            if (!isNaN(val) && !b.bonus.includes('d')) {
+                                bonusModifier += val;
+                            }
+                        });
 
+                        const totalBonus = modifier + bonus + bonusModifier;
                         const sign = totalBonus >= 0 ? "+" : "";
 
-                        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${skill.name} Checks`, skill.ability);
+                        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, skillTarget, skill.ability);
 
                         return (
                             <div

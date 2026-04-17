@@ -36,6 +36,7 @@ import {
   getEffectiveToolProficiencies,
   getEffectiveWeaponProficiencies,
   getEffectiveWeaponMasteries,
+  getEffectiveBonuses,
   normalizeCharacter,
   parseDice,
   getDisplayFormula
@@ -401,11 +402,11 @@ export const useCharacterSheet = (
       }
     }
     
-    // Apply Active Bonuses
+    // Apply Effective Bonuses
     let bonusModifier = 0;
     let bonusBreakdown = "";
-    if (rollType && characterWithDefaults.activeBonuses) {
-      const activeBonuses = characterWithDefaults.activeBonuses.filter(b => b.active && b.targets.includes(rollType));
+    if (rollType) {
+      const activeBonuses = getEffectiveBonuses(characterWithDefaults, rollType);
       activeBonuses.forEach(b => {
         const parsed = parseDice(b.bonus);
         if (parsed) {
@@ -507,14 +508,13 @@ export const useCharacterSheet = (
     const displayFormula = getDisplayFormula(damageString, isCritical, critRule, critExtraDamage);
     const critLabel = isCritical ? " (CRIT)" : "";
     
-    // Apply Active Bonuses for Damage
+    // Apply Effective Bonuses for Damage
     let bonusModifier = 0;
     let bonusBreakdown = "";
-    if (characterWithDefaults.activeBonuses) {
-      const activeBonuses = characterWithDefaults.activeBonuses.filter(b => b.active && b.targets.includes('damage'));
-      activeBonuses.forEach(b => {
-        const parsed = parseDice(b.bonus);
-        if (parsed) {
+    const activeBonuses = getEffectiveBonuses(characterWithDefaults, 'damage');
+    activeBonuses.forEach(b => {
+      const parsed = parseDice(b.bonus);
+      if (parsed) {
           const bonusRolls: number[] = [];
           let bonusTotal = 0;
           for (let i = 0; i < parsed.count; i++) {
@@ -532,7 +532,6 @@ export const useCharacterSheet = (
           bonusBreakdown += ` + ${b.name}(${val >= 0 ? "+" : ""}${val})`;
         }
       });
-    }
 
     let totalWithBonuses = total + bonusModifier;
 

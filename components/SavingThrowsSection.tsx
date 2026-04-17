@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { SavingThrows, Character, CritRule, AbilityScores, RollDiceFunc, ActiveBonus } from "../types/character";
+import { SavingThrows, Character, AbilityScores, RollDiceFunc, ActiveBonus } from "../types/character";
 import ProficiencyIcon from "./ui/ProficiencyIcon";
-import { getAdvantageDisadvantage } from "../utils/character-utils";
-import { Target } from "lucide-react";
+import { getAdvantageDisadvantage, getEffectiveBonuses } from "../utils/character-utils";
+import { Target, PlusCircle } from "lucide-react";
 
 interface SavingThrowsSectionProps {
     character: Character;
@@ -45,8 +45,22 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
 
                 const isConstitution = key === 'constitution';
                 const showConc = isConstitution && isConcMode;
+                const rollType = showConc ? "Concentration" : `${formatKey(key)} Save`;
 
-                const modifier = saveModifier;
+                // Calculate bonuses
+                const activeBonuses = getEffectiveBonuses(character, rollType);
+                let bonusModifier = 0;
+                activeBonuses.forEach(b => {
+                    const val = parseInt(b.bonus);
+                    if (!isNaN(val) && !b.bonus.includes('d')) {
+                        bonusModifier += val;
+                    }
+                    if (!allNotes.includes(`${b.name}: ${b.bonus}`)) {
+                        allNotes.push(`${b.name}: ${b.bonus}`);
+                    }
+                });
+
+                const modifier = saveModifier + bonusModifier;
                 const displayModifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
                 const label = showConc ? "Concentration" : `${formatKey(key)} Save`;
 

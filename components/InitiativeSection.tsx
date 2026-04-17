@@ -7,7 +7,7 @@ import SettingsButton from "./ui/SettingsButton";
 import NumericInput from "./ui/NumericInput";
 import ActiveBonusesList from "./ActiveBonusesList";
 import { Initiative, Character, RollDiceFunc, ActiveBonus } from "../types/character";
-import { getAdvantageDisadvantage } from "../utils/character-utils";
+import { getAdvantageDisadvantage, getEffectiveBonuses } from "../utils/character-utils";
 import ModalScrollLock from "./ui/ModalScrollLock";
 
 interface InitiativeSectionProps {
@@ -37,7 +37,18 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
     };
 
     const jackOfAllTradesBonus = initiative.useJackOfAllTrades ? Math.floor(proficiencyBonus / 2) : 0;
-    const totalModifier = dexModifier + jackOfAllTradesBonus + initiative.miscBonus;
+    
+    // Calculate effective bonuses
+    const activeBonuses = getEffectiveBonuses(character, 'Initiative');
+    let bonusModifier = 0;
+    activeBonuses.forEach(b => {
+        const val = parseInt(b.bonus);
+        if (!isNaN(val) && !b.bonus.includes('d')) {
+            bonusModifier += val;
+        }
+    });
+
+    const totalModifier = dexModifier + jackOfAllTradesBonus + initiative.miscBonus + bonusModifier;
 
     const tiebreakerValue = initiative.showDexTiebreaker ? dexScore / 100 : 0;
     const displayModifier = totalModifier + tiebreakerValue;

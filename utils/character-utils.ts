@@ -187,12 +187,15 @@ export const getAllActiveFeatures = (character: Character): Feature[] => {
 export const getEffectiveSenses = (character: Character): Sense[] => {
     const manualSenses = character.senses || [];
     const activeFeatures = getAllActiveFeatures(character);
-    const featureSenses = getFeatureModifiersWithSource(activeFeatures, "Sense").map(m => ({
-        name: m.subType,
-        value: typeof m.value === 'string' ? m.value : `${m.value}ft`,
-        fromFeature: true,
-        fromFeatureId: m.fromFeatureId
-    }));
+    const featureSenses = getFeatureModifiersWithSource(activeFeatures, "Sense").flatMap(m => {
+        const subTypes = (m.subType || "").split(",").map(s => s.trim()).filter(Boolean);
+        return subTypes.map(sub => ({
+            name: sub,
+            value: typeof m.value === 'string' ? m.value : `${m.value}ft`,
+            fromFeature: true,
+            fromFeatureId: m.fromFeatureId
+        }));
+    });
 
     // Merge by name, feature values override manual ones if they share a name
     const combined = [...manualSenses];
@@ -216,9 +219,15 @@ export const getEffectiveDefenses = (character: Character): Defenses => {
     const toEntry = (d: string | DefenseEntry): DefenseEntry =>
         typeof d === 'string' ? { name: d } : d;
 
-    const featureResistances = getFeatureModifiersWithSource(activeFeatures, "Resistance").map(m => ({ name: m.subType, fromFeature: true, fromFeatureId: m.fromFeatureId }));
-    const featureImmunities = getFeatureModifiersWithSource(activeFeatures, "Immunity").map(m => ({ name: m.subType, fromFeature: true, fromFeatureId: m.fromFeatureId }));
-    const featureVulnerabilities = getFeatureModifiersWithSource(activeFeatures, "Vulnerability").map(m => ({ name: m.subType, fromFeature: true, fromFeatureId: m.fromFeatureId }));
+    const featureResistances = getFeatureModifiersWithSource(activeFeatures, "Resistance").flatMap(m => 
+        (m.subType || "").split(",").map(s => s.trim()).filter(Boolean).map(sub => ({ name: sub, fromFeature: true, fromFeatureId: m.fromFeatureId }))
+    );
+    const featureImmunities = getFeatureModifiersWithSource(activeFeatures, "Immunity").flatMap(m => 
+        (m.subType || "").split(",").map(s => s.trim()).filter(Boolean).map(sub => ({ name: sub, fromFeature: true, fromFeatureId: m.fromFeatureId }))
+    );
+    const featureVulnerabilities = getFeatureModifiersWithSource(activeFeatures, "Vulnerability").flatMap(m => 
+        (m.subType || "").split(",").map(s => s.trim()).filter(Boolean).map(sub => ({ name: sub, fromFeature: true, fromFeatureId: m.fromFeatureId }))
+    );
 
     const merge = (manualList: (string | DefenseEntry)[], featureList: DefenseEntry[]): DefenseEntry[] => {
         const combined = manualList.map(toEntry);
@@ -794,10 +803,13 @@ export const getAdvantageDisadvantage = (character: Character, key: string, abil
 export const getEffectiveConditions = (character: Character): Condition[] => {
     const manualConditions = character.conditions || [];
     const activeFeatures = getAllActiveFeatures(character);
-    const featureConditions = getFeatureModifiersByType(activeFeatures, "Condition").map(m => ({
-        name: m.subType,
-        fromFeature: true
-    }));
+    const featureConditions = getFeatureModifiersByType(activeFeatures, "Condition").flatMap(m => {
+        const subTypes = (m.subType || "").split(",").map(s => s.trim()).filter(Boolean);
+        return subTypes.map(sub => ({
+            name: sub,
+            fromFeature: true
+        }));
+    });
 
     // Merge by name
     const combined = [...manualConditions];
@@ -818,32 +830,32 @@ export const getEffectiveSkills = (character: Character): { skills: Skills, skil
     const profMods = getFeatureModifiersWithSource(activeFeatures, "Proficiency");
 
     profMods.forEach(mod => {
-        const subTypeStr = String(mod.subType || "").trim();
-        if (!subTypeStr) return;
+        const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
+        
+        subTypes.forEach(sub => {
+            // Safer matching: find in SKILL_LIST by name or key
+            const skill = SKILL_LIST.find(s =>
+                s.name.toLowerCase() === sub.toLowerCase() ||
+                s.key.toLowerCase() === sub.toLowerCase()
+            );
 
-        // Safer matching: find in SKILL_LIST by name or key
-        const skill = SKILL_LIST.find(s =>
-            s.name.toLowerCase() === subTypeStr.toLowerCase() ||
-            s.key.toLowerCase() === subTypeStr.toLowerCase()
-        );
+            if (skill) {
+                const skillKey = skill.key;
+                const currentLevel = baseSkills[skillKey] || "none";
+                const modValue = String(mod.value || "proficient").toLowerCase() as ProficiencyLevel;
 
-        if (skill) {
-            const skillKey = skill.key;
-            const currentLevel = baseSkills[skillKey] || "none";
-            const modValue = String(mod.value || "proficient").toLowerCase() as ProficiencyLevel;
+                const progression: ProficiencyLevel[] = ["none", "half", "proficient", "expertise"];
+                const currentIdx = progression.indexOf(currentLevel as ProficiencyLevel);
+                const modIdx = progression.indexOf(modValue);
 
-            // Upgrade if the mod value is "higher" than current
-            const progression: ProficiencyLevel[] = ["none", "half", "proficient", "expertise"];
-            const currentIdx = progression.indexOf(currentLevel as ProficiencyLevel);
-            const modIdx = progression.indexOf(modValue);
-
-            if (modIdx > currentIdx) {
-                baseSkills[skillKey] = modValue;
-                if (mod.fromFeatureId) {
-                    skillSources[skillKey] = mod.fromFeatureId;
+                if (modIdx > currentIdx) {
+                    baseSkills[skillKey] = modValue;
+                    if (mod.fromFeatureId) {
+                        skillSources[skillKey] = mod.fromFeatureId;
+                    }
                 }
             }
-        }
+        });
     });
 
     return { skills: baseSkills as Skills, skillSources };
@@ -859,23 +871,23 @@ export const getEffectiveWeaponProficiencies = (character: Character): Proficien
     const weaponCategories = ["Simple Weapons", "Martial Weapons"];
 
     profMods.forEach(mod => {
-        const name = String(mod.subType || "");
-        if (!name) return;
+        const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
+        
+        subTypes.forEach(name => {
+            const isWeapon = WEAPON_DATA[name] !== undefined || weaponCategories.some(c => c.toLowerCase() === name.toLowerCase());
+            if (!isWeapon) return;
 
-        // Filtering: Is it a weapon or category?
-        const isWeapon = WEAPON_DATA[name] !== undefined || weaponCategories.some(c => c.toLowerCase() === name.toLowerCase());
-        if (!isWeapon) return;
+            const alreadyHas = baseProf.some((p: any) => {
+                const pName = typeof p === 'string' ? p : (p && (p as any).name);
+                return pName && pName.toLowerCase() === name.toLowerCase();
+            });
 
-        const alreadyHas = baseProf.some((p: any) => {
-            const pName = typeof p === 'string' ? p : (p && (p as any).name);
-            return pName && pName.toLowerCase() === name.toLowerCase();
-        });
-
-        if (!alreadyHas) {
-            if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
-                result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
+            if (!alreadyHas) {
+                if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
+                    result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
+                }
             }
-        }
+        });
     });
 
     return result;
@@ -891,23 +903,23 @@ export const getEffectiveArmorProficiencies = (character: Character): Proficienc
     const armorCategories = ["Light Armor", "Medium Armor", "Heavy Armor", "Shields"];
 
     profMods.forEach(mod => {
-        const name = String(mod.subType || "");
-        if (!name) return;
+        const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
+        
+        subTypes.forEach(name => {
+            const isArmor = ARMOR_DATA[name] !== undefined || armorCategories.some(c => c.toLowerCase() === name.toLowerCase());
+            if (!isArmor) return;
 
-        // Filtering: Is it armor or category?
-        const isArmor = ARMOR_DATA[name] !== undefined || armorCategories.some(c => c.toLowerCase() === name.toLowerCase());
-        if (!isArmor) return;
+            const alreadyHas = baseProf.some((p: any) => {
+                const pName = typeof p === 'string' ? p : (p && (p as any).name);
+                return pName && pName.toLowerCase() === name.toLowerCase();
+            });
 
-        const alreadyHas = baseProf.some((p: any) => {
-            const pName = typeof p === 'string' ? p : (p && (p as any).name);
-            return pName && pName.toLowerCase() === name.toLowerCase();
-        });
-
-        if (!alreadyHas) {
-            if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
-                result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
+            if (!alreadyHas) {
+                if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
+                    result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
+                }
             }
-        }
+        });
     });
 
     return result;
@@ -921,23 +933,23 @@ export const getEffectiveLanguages = (character: Character): ProficiencyArray =>
     const result: ProficiencyArray = [...baseLang];
 
     profMods.forEach(mod => {
-        const name = String(mod.subType || "");
-        if (!name) return;
+        const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
+        
+        subTypes.forEach(name => {
+            const isLanguage = LANGUAGES.some(l => l.toLowerCase() === name.toLowerCase());
+            if (!isLanguage) return;
 
-        // Filtering: Is it a language?
-        const isLanguage = LANGUAGES.some(l => l.toLowerCase() === name.toLowerCase());
-        if (!isLanguage) return;
+            const alreadyHas = baseLang.some((p: any) => {
+                const pName = typeof p === 'string' ? p : (p && (p as any).name);
+                return pName && pName.toLowerCase() === name.toLowerCase();
+            });
 
-        const alreadyHas = baseLang.some((p: any) => {
-            const pName = typeof p === 'string' ? p : (p && (p as any).name);
-            return pName && pName.toLowerCase() === name.toLowerCase();
-        });
-
-        if (!alreadyHas) {
-            if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
-                result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
+            if (!alreadyHas) {
+                if (!result.some(r => (typeof r === 'string' ? r : (r as any).name).toLowerCase() === name.toLowerCase())) {
+                    result.push({ name, fromFeature: true, fromFeatureId: mod.fromFeatureId });
+                }
             }
-        }
+        });
     });
 
     return result;
@@ -1068,42 +1080,40 @@ export const getEffectiveToolProficiencies = (character: Character): ToolProfici
     const weaponCategories = ["Simple Weapons", "Martial Weapons"];
 
     profMods.forEach(mod => {
-        const name = String(mod.subType || "");
-        if (!name) return;
+        const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
+        
+        subTypes.forEach(name => {
+            const isSkill = skillNames.some(n => n.toLowerCase() === name.toLowerCase()) ||
+                skillKeys.some(k => k.toLowerCase() === name.toLowerCase());
+            const isLanguage = LANGUAGES.some(l => l.toLowerCase() === name.toLowerCase());
+            const isWeapon = WEAPON_DATA[name] !== undefined || weaponCategories.some(c => c.toLowerCase() === name.toLowerCase());
+            const isArmor = ARMOR_DATA[name] !== undefined || armorCategories.some(c => c.toLowerCase() === name.toLowerCase());
 
-        // Filtering: Exclude things that definitively belong elsewhere
-        const isSkill = skillNames.some(n => n.toLowerCase() === name.toLowerCase()) ||
-            skillKeys.some(k => k.toLowerCase() === name.toLowerCase());
-        const isLanguage = LANGUAGES.some(l => l.toLowerCase() === name.toLowerCase());
-        const isWeapon = WEAPON_DATA[name] !== undefined || weaponCategories.some(c => c.toLowerCase() === name.toLowerCase());
-        const isArmor = ARMOR_DATA[name] !== undefined || armorCategories.some(c => c.toLowerCase() === name.toLowerCase());
+            if (isSkill || isLanguage || isWeapon || isArmor) return;
 
-        if (isSkill || isLanguage || isWeapon || isArmor) return;
+            const existingIdx = baseTools.findIndex(t => (t.name || "").toLowerCase() === name.toLowerCase());
+            const modValue = String(mod.value || "proficient").toLowerCase() as ProficiencyLevel;
 
-        // If it's not any of those, it's either a Tool (from data) or a custom Proficiency
-        const existingIdx = baseTools.findIndex(t => (t.name || "").toLowerCase() === name.toLowerCase());
-        const modValue = String(mod.value || "proficient").toLowerCase() as ProficiencyLevel;
+            if (existingIdx >= 0) {
+                const currentLevel = baseTools[existingIdx].level || "proficient";
+                const progression: ProficiencyLevel[] = ["none", "half", "proficient", "expertise"];
+                const currentIdx = progression.indexOf(currentLevel);
+                const modIdx = progression.indexOf(modValue);
 
-        if (existingIdx >= 0) {
-            const currentLevel = baseTools[existingIdx].level || "proficient";
-            const progression: ProficiencyLevel[] = ["none", "half", "proficient", "expertise"];
-            const currentIdx = progression.indexOf(currentLevel);
-            const modIdx = progression.indexOf(modValue);
-
-            if (modIdx > currentIdx) {
-                baseTools[existingIdx] = { ...baseTools[existingIdx], level: modValue, fromFeature: true, fromFeatureId: mod.fromFeatureId };
+                if (modIdx > currentIdx) {
+                    baseTools[existingIdx] = { ...baseTools[existingIdx], level: modValue, fromFeature: true, fromFeatureId: mod.fromFeatureId };
+                }
+            } else {
+                const toolData = TOOL_DATA[name];
+                baseTools.push({
+                    name: name,
+                    ability: toolData?.ability || "Intelligence",
+                    level: modValue,
+                    fromFeature: true,
+                    fromFeatureId: mod.fromFeatureId
+                });
             }
-        } else {
-            // New proficiency (Tool or Other)
-            const toolData = TOOL_DATA[name];
-            baseTools.push({
-                name: name,
-                ability: toolData?.ability || "Intelligence",
-                level: modValue,
-                fromFeature: true,
-                fromFeatureId: mod.fromFeatureId
-            });
-        }
+        });
     });
 
     return baseTools;
@@ -1133,5 +1143,35 @@ export const getEffectiveWeaponMasteries = (character: Character): ProficiencyAr
     });
 
     return result;
+};
+
+export const getEffectiveBonuses = (character: Character, target: string): { name: string, bonus: string }[] => {
+    const results: { name: string, bonus: string }[] = [];
+    
+    // 1. Manual Active Bonuses
+    if (character.activeBonuses) {
+        character.activeBonuses.forEach(b => {
+            if (b.active && b.targets.includes(target as any)) {
+                results.push({ name: b.name, bonus: b.bonus });
+            }
+        });
+    }
+
+    // 2. Feature-based Bonus Modifiers
+    const activeFeatures = getAllActiveFeatures(character);
+    const bonusMods = getFeatureModifiersWithSource(activeFeatures, "Bonus");
+
+    bonusMods.forEach(mod => {
+        const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
+        if (subTypes.some(sub => sub.toLowerCase() === target.toLowerCase())) {
+            const feature = activeFeatures.find(f => f.id === mod.fromFeatureId);
+            results.push({ 
+                name: feature?.name || "Feature Bonus", 
+                bonus: String(mod.value || "0") 
+            });
+        }
+    });
+
+    return results;
 };
 

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import NumericInput from "./ui/NumericInput";
-
 import { AbilityScores, Character, RollDiceFunc, ActiveBonus } from "../types/character";
-import { getAdvantageDisadvantage } from "../utils/character-utils";
+import { getAdvantageDisadvantage, getEffectiveBonuses } from "../utils/character-utils";
+import ProficiencyIcon from "./ui/ProficiencyIcon";
+import { Target, PlusCircle } from "lucide-react";
 
 // Define types for props
 interface AbilityScoreSectionProps {
@@ -62,9 +63,22 @@ const AbilityScoreSection = ({
         const score = abilityScores[key];
         const effectiveScore = effectiveAbilityScores[key];
         const isOverridden = effectiveScore > score;
-        const modifier = calculateModifier(effectiveScore);
+        const baseModifier = calculateModifier(effectiveScore);
+        
+        // Calculate bonuses
+        const checkTarget = `${formatKey(key)} Checks`;
+        const activeBonuses = getEffectiveBonuses(character, checkTarget);
+        let bonusModifier = 0;
+        activeBonuses.forEach(b => {
+          const val = parseInt(b.bonus);
+          if (!isNaN(val) && !b.bonus.includes('d')) {
+            bonusModifier += val;
+          }
+        });
+
+        const modifier = baseModifier + bonusModifier;
         const formattedModifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${key} Checks`, key);
+        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, checkTarget, key);
         return (
           <div
             key={key}
