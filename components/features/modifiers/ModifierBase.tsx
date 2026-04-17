@@ -17,9 +17,9 @@ const ModifierBase: React.FC<ModifierBaseProps> = ({ modifier, onUpdate, onRemov
     const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
     return (
-        <div className="grid grid-cols-12 gap-2 items-start bg-card text-card-foreground p-2 rounded border border-border transition-all hover:border-primary/30">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-start bg-card text-card-foreground p-2 rounded border border-border transition-all hover:border-primary/30">
             {/* Type Selector */}
-            <div className="col-span-3">
+            <div className="col-span-full sm:col-span-3">
                 <Select
                     value={modifier.type}
                     onValueChange={(val) => onUpdate({ type: val as ModifierType })}
@@ -28,12 +28,12 @@ const ModifierBase: React.FC<ModifierBaseProps> = ({ modifier, onUpdate, onRemov
             </div>
 
             {/* Main Content Area */}
-            <div className="col-span-8">
+            <div className="col-span-full sm:col-span-8 min-w-0 overflow-hidden">
                 {children}
             </div>
 
             {/* Actions (Delete button) */}
-            <div className="col-span-1 flex justify-end items-center">
+            <div className="col-span-full sm:col-span-1 flex justify-end items-center">
                 <button
                     onClick={() => setIsConfirmingDelete(true)}
                     className="p-1 text-gray-300 hover:text-red-500 transition-colors"

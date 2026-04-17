@@ -31,9 +31,9 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ value, onChange, options, pla
     };
 
     return (
-        <div className={cn("space-y-2 w-full", className)}>
+        <div className={cn("space-y-2 w-full min-w-0 max-w-full", className)}>
             {tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 min-h-[24px]">
+                <div className="flex flex-wrap gap-1.5 min-h-[24px] max-w-full overflow-hidden">
                     {tags.map((tag, idx) => (
                         <div 
                             key={`${tag}-${idx}`} 
