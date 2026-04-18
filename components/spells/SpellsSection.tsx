@@ -314,7 +314,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                         </div>
                         <CardContent className="p-0">
                             <div className="divide-y divide-border">
-                                {levelSpells.map((spell) => {
+                                {levelSpells.map((spell, index) => {
                                     const totalLevel = classes.reduce((sum, cls) => sum + cls.level, 0);
                                     
                                     if (editingSpellId === spell.id) {
@@ -349,6 +349,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                             rollDamage={rollDamage}
                                             handleUpdateSpell={handleUpdateSpell}
                                             character={character}
+                                            className={index === levelSpells.length - 1 ? "rounded-b-lg" : ""}
                                         />
                                     );
                                 })}

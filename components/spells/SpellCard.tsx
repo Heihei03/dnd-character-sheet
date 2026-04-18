@@ -20,6 +20,7 @@ interface SpellCardProps {
     rollDice?: RollDiceFunc;
     rollDamage?: RollDamageFunc;
     character?: any;
+    className?: string;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -35,7 +36,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
     onUpdateActiveBonuses,
     rollDice,
     rollDamage,
-    character
+    character,
+    className = ""
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -84,7 +86,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
     };
 
     return (
-        <div className="p-4 hover:bg-secondary/20 transition-colors">
+        <div className={`p-4 hover:bg-secondary/20 transition-colors ${className}`}>
             <div
                 className="flex justify-between items-start cursor-pointer"
                 onClick={() => setIsExpanded(!isExpanded)}

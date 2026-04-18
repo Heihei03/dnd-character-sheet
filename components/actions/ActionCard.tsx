@@ -115,10 +115,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
     };
 
     return (
-        <Card className="overflow-hidden group hover:border-primary/50 transition-colors">
+        <Card className="group hover:border-primary/50 transition-colors">
             <CardContent className="p-0">
                 <div
-                    className="p-3 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                    className={`p-3 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-t-lg ${!isExpanded ? "rounded-b-lg" : ""}`}
                     onClick={onToggleExpand}
                 >
                     <div className="flex items-center gap-4 flex-1">
@@ -279,7 +279,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                     </div>
                 </div>
                 {isExpanded && (
-                    <div className="p-4 pt-0 border-t border-border space-y-4 bg-secondary/10 dark:bg-secondary/5 text-sm animate-in slide-in-from-top-2 duration-200">
+                    <div className="p-4 pt-0 border-t border-border space-y-4 bg-secondary/10 dark:bg-secondary/5 text-sm animate-in slide-in-from-bottom-2 duration-200 rounded-b-lg">
                         {(action.isAttack ||
                             action.baseLevel !== undefined) && (
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3">

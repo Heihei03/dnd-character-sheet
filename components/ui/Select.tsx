@@ -31,8 +31,9 @@ const Select: React.FC<SelectProps> = ({
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const selectedOption = options.find(opt => opt.value === value);
+    const [openUpwards, setOpenUpwards] = useState(false);
 
-    // Close when clicking outside
+    // Close when clicking outside and check for space
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -40,9 +41,21 @@ const Select: React.FC<SelectProps> = ({
             }
         };
 
+        if (isOpen && containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const dropdownHeight = Math.min(options.length * 40 + 10, 240); // Estimate max height
+            
+            if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
+                setOpenUpwards(true);
+            } else {
+                setOpenUpwards(false);
+            }
+        }
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    }, [isOpen, options.length]);
 
     const handleSelect = (optionValue: string) => {
         onValueChange(optionValue);
@@ -74,8 +87,9 @@ const Select: React.FC<SelectProps> = ({
 
             {isOpen && (
                 <div className={cn(
-                    "absolute z-50 mt-1.5 py-1 bg-background border border-border rounded-xl shadow-xl animate-in fade-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto custom-scrollbar",
-                    variant === "inline" ? "min-w-[100px] left-0" : "w-full mt-1.5"
+                    "absolute z-50 py-1 bg-background border border-border rounded-xl shadow-xl animate-in fade-in duration-200 max-h-60 overflow-y-auto custom-scrollbar",
+                    openUpwards ? "bottom-full mb-1.5 slide-in-from-bottom-2" : "top-full mt-1.5 slide-in-from-top-2",
+                    variant === "inline" ? "min-w-[100px] left-0" : "w-full"
                 )}>
                     {options.length === 0 ? (
                         <div className="px-3 py-2 text-sm text-muted-foreground italic">No options found.</div>
