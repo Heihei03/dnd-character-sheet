@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { 
   Plus, Trash2, CheckCircle2, Circle, Edit2, X,
-  Swords, Flame, ShieldCheck, GraduationCap, Dices, Zap, Ban, ShieldAlert, Activity
+  Swords, Flame, ShieldCheck, GraduationCap, Dices, Zap, Ban, ShieldAlert, Activity, Heart
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ActiveBonus, BonusTarget } from "../types/character";
@@ -27,6 +27,7 @@ const TARGET_LABELS: Record<BonusTarget, string> = {
   ability: "Ability Checks",
   initiative: "Initiative",
   ac: "Armor Class",
+  healing: "Healing",
 };
 
 const TARGET_ICONS: Record<BonusTarget, React.ElementType> = {
@@ -37,6 +38,7 @@ const TARGET_ICONS: Record<BonusTarget, React.ElementType> = {
   ability: Activity,
   initiative: Zap,
   ac: ShieldAlert,
+  healing: Heart,
 };
 
 const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
@@ -251,7 +253,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                     </span>
                     {!compact && (
                        <span className="text-[10px] font-mono font-black text-primary px-1.5 py-0.5 rounded bg-primary/5 border border-primary/10">
-                        {bonus.bonus >= 0 && !bonus.bonus.includes('d') ? `+${bonus.bonus}` : bonus.bonus}
+                        {Number(bonus.bonus) >= 0 && !bonus.bonus.includes('d') && !bonus.bonus.startsWith('+') ? `+${bonus.bonus}` : bonus.bonus}
                         {bonus.damageType && <span className="ml-1 text-[8px] opacity-70">({bonus.damageType})</span>}
                       </span>
                     )}
@@ -288,7 +290,7 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
               {compact && (
                 <div className="flex items-center justify-between pl-7 w-full leading-none">
                   <span className="text-[10px] font-mono font-black text-primary px-1 rounded bg-primary/5 border border-primary/10 flex-shrink-0">
-                    {bonus.bonus >= 0 && !bonus.bonus.includes('d') ? `+${bonus.bonus}` : bonus.bonus}
+                    {Number(bonus.bonus) >= 0 && !bonus.bonus.includes('d') && !bonus.bonus.startsWith('+') ? `+${bonus.bonus}` : bonus.bonus}
                     {bonus.damageType && <span className="ml-1 text-[7px] opacity-70">({bonus.damageType})</span>}
                   </span>
                   <div className="flex items-center gap-0.5">

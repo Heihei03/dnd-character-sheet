@@ -440,6 +440,7 @@ export type RollDamageFunc = (
   damageString: string,
   label?: string,
   damageType?: string,
+  rollType?: BonusTarget,
   isCritical?: boolean,
   critExtraDamage?: string,
   ruleOverride?: CritRule

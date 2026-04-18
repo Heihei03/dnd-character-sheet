@@ -21,7 +21,8 @@ import {
   RollEntry,
   CritRule,
   ActiveBonus,
-  BonusTarget
+  BonusTarget,
+  RollDamageFunc
 } from "../types/character";
 import {
   getEffectiveAbilityScores,
@@ -44,7 +45,6 @@ import {
   evaluateRoll
 } from "../utils/character-utils";
 
-export type RollDamageFunc = (damage: string, label?: string, damageType?: string, rollType?: BonusTarget, isCritical?: boolean, critExtraDamage?: string, critRuleOverride?: CritRule) => void;
 
 export const useCharacterSheet = (
   character: Character | null,

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { RollEntry, CritRule } from '../types/character';
+import { RollEntry, CritRule, RollDamageFunc } from '../types/character';
 import { X, Trash2, History, Dices } from 'lucide-react';
 import { getDisplayFormula } from '../utils/character-utils';
 import Button from './ui/button';
@@ -9,7 +9,7 @@ interface RollHistoryProps {
   history: RollEntry[];
   onClear: () => void;
   onClose: () => void;
-  onRollDamage: (formula: string, label: string, type?: string, isCritical?: boolean, critExtraDamage?: string, ruleOverride?: CritRule) => void;
+  onRollDamage: RollDamageFunc;
 }
 
 const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, onRollDamage }) => {
@@ -107,7 +107,7 @@ const RollHistory: React.FC<RollHistoryProps> = ({ history, onClear, onClose, on
                 {roll.damageFormula && (
                   <div className="pt-2 border-t border-border flex justify-end">
                     <button
-                      onClick={() => onRollDamage(roll.damageFormula!, roll.label.replace(" Attack", ""), roll.damageType, roll.isCritical, roll.critExtraDamage, roll.critRule)}
+                      onClick={() => onRollDamage(roll.damageFormula!, roll.label.replace(" Attack", ""), roll.damageType, roll.type === 'healing' ? 'healing' : 'damage', roll.isCritical, roll.critExtraDamage, roll.critRule)}
                       className="text-xs font-bold uppercase flex items-center gap-1.5 px-2 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded transition-colors"
                     >
                       <Dices className="w-3.5 h-3.5" /> Roll Damage ({getDisplayFormula(roll.damageFormula!, roll.isCritical || false, roll.critRule || 'double-dice', roll.critExtraDamage)})
