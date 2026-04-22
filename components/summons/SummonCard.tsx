@@ -52,6 +52,43 @@ const SummonCard: React.FC<SummonCardProps> = ({
 
   const formatModifier = (mod: number) => (mod >= 0 ? `+${mod}` : mod);
 
+  const handleAbilityRoll = (abilityName: string, score: number) => {
+    const mod = getAbilityModifier(score);
+    rollDice(20, mod, `${summon.name}: ${abilityName} Check`);
+  };
+
+  const renderRollableList = (text: string | undefined, title: string, suffix: string = "Check") => {
+    if (!text) return null;
+    
+    const parts = text.split(',').map(p => p.trim());
+    
+    return (
+      <div className="flex flex-wrap gap-x-1 gap-y-0.5 items-center">
+        <strong className="text-primary uppercase text-[10px] tracking-widest mr-1">{title}</strong>
+        {parts.map((part, i) => {
+          const match = part.match(/(.+?)\s*([+-]\s*\d+)/);
+          if (match) {
+            const name = match[1].trim();
+            const mod = parseInt(match[2].replace(/\s+/g, ''));
+            return (
+              <button 
+                key={i} 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  rollDice(20, mod, `${summon.name}: ${name} ${suffix}`);
+                }}
+                className="text-foreground hover:text-primary transition-colors hover:underline decoration-primary/30"
+              >
+                {name} {formatModifier(mod)}{i < parts.length - 1 ? "," : ""}
+              </button>
+            );
+          }
+          return <span key={i} className="text-foreground/80">{part}{i < parts.length - 1 ? "," : ""}</span>;
+        })}
+      </div>
+    );
+  };
+
   return (
     <Card className="group border-l-4 border-l-primary/50 overflow-hidden">
       <CardContent className="p-0">
@@ -172,11 +209,19 @@ const SummonCard: React.FC<SummonCardProps> = ({
                    {(['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const).map(score => {
                      const val = summon.abilityScores![score];
                      const mod = getAbilityModifier(val);
+                     const label = score.substring(0, 3).toUpperCase();
                      return (
-                       <div key={score} className="space-y-0.5">
-                         <div className="text-[10px] font-black uppercase text-primary leading-tight">{score.substring(0, 3)}</div>
+                       <button 
+                        key={score} 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAbilityRoll(label, val);
+                        }}
+                        className="group/stat space-y-0.5 hover:bg-primary/5 rounded py-1 transition-colors"
+                       >
+                         <div className="text-[10px] font-black uppercase text-primary leading-tight group-hover/stat:scale-110 transition-transform">{label}</div>
                          <div className="font-bold text-sm leading-tight">{val} ({formatModifier(mod)})</div>
-                       </div>
+                       </button>
                      );
                    })}
                  </div>
@@ -185,12 +230,8 @@ const SummonCard: React.FC<SummonCardProps> = ({
 
              {/* MM Style Stats */}
              <div className="space-y-1 text-sm leading-snug">
-                {summon.savingThrows && (
-                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Saving Throws</strong> {summon.savingThrows}</div>
-                )}
-                {summon.skills && (
-                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Skills</strong> {summon.skills}</div>
-                )}
+                {renderRollableList(summon.savingThrows, "Saving Throws", "Saving Throw")}
+                {renderRollableList(summon.skills, "Skills")}
                 {summon.vulnerabilities && (
                   <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Damage Vulnerabilities</strong> {summon.vulnerabilities}</div>
                 )}
@@ -268,7 +309,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
 
              <div className="flex justify-end gap-2 pt-2 border-t border-border">
                 <button 
-                  onClick={onDelete}
+                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors"
                 >
                   <Trash2 className="w-3.5 h-3.5" /> Delete Summon
