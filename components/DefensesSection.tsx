@@ -176,8 +176,8 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                         setDefenseToDelete(null);
                     }
                 }}
-                title="Remove Defense"
-                message={`Are you sure you want to remove "${defenseToDelete?.entry.name}" from ${defenseToDelete?.category}?`}
+                title={`Remove ${defenseToDelete ? (defenseToDelete.category === "resistances" ? "Resistance" : defenseToDelete.category === "immunities" ? "Immunity" : "Vulnerability") : "Defense"}`}
+                message={`Are you sure you want to remove "${defenseToDelete?.entry.name}" from your ${defenseToDelete?.category}?`}
                 confirmText="Remove"
             />
         </div>
