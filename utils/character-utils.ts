@@ -162,13 +162,61 @@ export const getFeatureModifiersWithSource = (features: Feature[] = [], type: st
     return features.flatMap(f => (f.modifiers || []).filter(m => m.type === type).map(m => ({ ...m, fromFeatureId: f.id })));
 };
 
+export const isModifierMatch = (sub: string, target: string, type?: string, ability?: string): boolean => {
+    const s = (sub || "").trim().toLowerCase();
+    const t = (target || "").trim().toLowerCase();
+    const a = (ability || "").toLowerCase();
+
+    if (s === "") return false;
+
+    // Exact match
+    if (s === t) return true;
+
+    // Common plural/singular or alias matches
+    if (s === "attacks" && t === "attack") return true;
+    if (s === "saves" && t === "save") return true;
+    if (s === "skills" && t === "skill") return true;
+    if (s === "abilities" && t === "ability") return true;
+
+    // Category matches
+    if (s === "saving throws" && t.endsWith("saves")) return true;
+    if ((s === "checks" || s === "ability checks") && (t.endsWith("checks") || t.endsWith("skill"))) return true;
+
+    // Ability-based matches
+    if (a) {
+        // Ability name (e.g. "Strength") matches rolls only for non-Bonus types
+        // to avoid double-counting with getEffectiveAbilityScores
+        if (s === a) return type !== "Bonus";
+
+        // "Dexterity Attacks" matches attacks using Dexterity
+        if (s === `${a} attacks` && t.includes("attack")) return true;
+        // "Dexterity Checks" matches checks using Dexterity
+        if (s === `${a} checks` && (t.includes("check") || t.includes("skill"))) return true;
+        // "Dexterity Saves" matches saves using Dexterity
+        if (s === `${a} saves` && t.includes("save")) return true;
+    }
+
+    return false;
+};
+
 export const getEffectiveAbilityScores = (character: Character) => {
     const scores = { ...character.abilityScores };
     const activeFeatures = getAllActiveFeatures(character);
-    const overrides = getFeatureModifiersByType(activeFeatures, "Override");
 
+    // Apply Bonuses first (e.g. +2 Strength from a Tome)
+    const bonuses = getFeatureModifiersByType(activeFeatures, "Bonus");
+    bonuses.forEach(mod => {
+        const ability = (mod.subType || "").toLowerCase().trim();
+        const value = parseInt(String(mod.value || "0"));
+        if (!isNaN(value) && ability && scores[ability] !== undefined) {
+            scores[ability] += value;
+        }
+    });
+
+    // Apply Overrides last (e.g. Belt of Giant Strength)
+    const overrides = getFeatureModifiersByType(activeFeatures, "Override");
     overrides.forEach(mod => {
-        const ability = (mod.subType || "").toLowerCase();
+        const ability = (mod.subType || "").toLowerCase().trim();
         const value = Number(mod.value);
         if (!isNaN(value) && ability && scores[ability] !== undefined) {
             // Override only applies if it's higher than the current score
@@ -762,36 +810,8 @@ export const getAdvantageDisadvantage = (character: Character, key: string, abil
     const extraAdvMods = getFeatureModifiersByType(activeFeatures, "Extra Advantage");
 
     const matches = (mod: FeatureModifier, target: string, ability?: string) => {
-        const subTypes = (mod.subType || "").split(",").map(s => s.trim().toLowerCase());
-        const t = (target || "").toLowerCase();
-        const a = (ability || "").toLowerCase();
-
-        return subTypes.some(sub => {
-            if (sub === "") return false;
-
-            // Exact match
-            if (sub === t) return true;
-
-            // "Saving Throws" matches specific saves (e.g. "Wisdom Saves")
-            if (sub === "saving throws" && t.endsWith("saves")) return true;
-
-            // "Checks" or "Ability Checks" matches specific checks (e.g. "Perception Checks")
-            if ((sub === "checks" || sub === "ability checks") && t.endsWith("checks")) return true;
-
-            // Ability-based matches
-            if (a) {
-                // "Dexterity" matches any Dexterity-based roll
-                if (sub === a) return true;
-                // "Dexterity Attacks" matches attacks using Dexterity
-                if (sub === `${a} attacks` && t.includes("attack")) return true;
-                // "Dexterity Checks" matches checks using Dexterity
-                if (sub === `${a} checks` && (t.includes("check") || t.includes("skill"))) return true;
-                // "Dexterity Saves" matches saves using Dexterity
-                if (sub === `${a} saves` && t.includes("save")) return true;
-            }
-
-            return false;
-        });
+        const subTypes = (mod.subType || "").split(",").map(s => s.trim());
+        return subTypes.some(sub => isModifierMatch(sub, target, mod.type, ability));
     };
 
     const relevantAdv = advMods.filter(m => matches(m, key, ability));
@@ -1207,8 +1227,8 @@ export const getEffectiveBonuses = (character: Character, target: string): { nam
     const bonusMods = getFeatureModifiersWithSource(activeFeatures, "Bonus");
 
     bonusMods.forEach(mod => {
-        const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
-        if (subTypes.some(sub => sub.toLowerCase() === target.toLowerCase())) {
+        const subTypes = (mod.subType || "").split(",").map(s => s.trim());
+        if (subTypes.some(sub => isModifierMatch(sub, target, "Bonus"))) {
             const feature = activeFeatures.find(f => f.id === mod.fromFeatureId);
             results.push({ 
                 name: feature?.name || "Feature Bonus", 
