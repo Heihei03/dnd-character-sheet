@@ -6,6 +6,7 @@ import Button from "../ui/button";
 import { Summon, RollDiceFunc, RollDamageFunc } from "../../types/character";
 import SummonCard from "./SummonCard";
 import AddSummonForm from "./AddSummonForm";
+import ConfirmationModal from "../ui/ConfirmationModal";
 
 interface SummonsSectionProps {
   summons: Summon[];
@@ -24,6 +25,7 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingSummonId, setEditingSummonId] = useState<string | null>(null);
+  const [summonToDelete, setSummonToDelete] = useState<string | null>(null);
 
   const handleAddSummon = (newSummon: Summon) => {
     if (editingSummonId) {
@@ -40,7 +42,14 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
   };
 
   const handleDeleteSummon = (id: string) => {
-    onUpdateSummons(summons.filter(s => s.id !== id));
+    setSummonToDelete(id);
+  };
+
+  const confirmDelete = () => {
+    if (summonToDelete) {
+      onUpdateSummons(summons.filter(s => s.id !== summonToDelete));
+      setSummonToDelete(null);
+    }
   };
 
   const handleEditSummon = (id: string) => {
@@ -122,6 +131,16 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
           </div>
         )
       )}
+
+      <ConfirmationModal
+        isOpen={!!summonToDelete}
+        onClose={() => setSummonToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Delete Summon"
+        message={`Are you sure you want to delete ${summons.find(s => s.id === summonToDelete)?.name || "this summon"}? This action cannot be undone.`}
+        confirmText="Delete"
+        confirmVariant="danger"
+      />
     </div>
   );
 };
