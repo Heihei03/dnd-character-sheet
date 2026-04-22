@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import EntityForm from "../ui/EntityForm";
 import NumericInput from "../ui/NumericInput";
 import Select from "../ui/Select";
-import { Summon, AbilityScores, SummonTrait } from "../../types/character";
-import { Plus, Trash2 } from "lucide-react";
+import { Summon, AbilityScores, SummonTrait, Action } from "../../types/character";
+import { Plus, Trash2, Pencil } from "lucide-react";
+import ActionForm from "../actions/ActionForm";
 
 interface AddSummonFormProps {
   onAdd: (summon: Summon) => void;
@@ -39,6 +40,11 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
     strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10
   });
   const [traits, setTraits] = useState<SummonTrait[]>(initialSummon?.traits || []);
+  const [actions, setActions] = useState<Action[]>(initialSummon?.actions || []);
+
+  // Action Form state
+  const [showActionForm, setShowActionForm] = useState(false);
+  const [editingActionId, setEditingActionId] = useState<string | null>(null);
 
   const handleAddTrait = () => {
     setTraits([...traits, { id: Date.now().toString(), name: "New Trait", description: "" }]);
@@ -50,6 +56,29 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
 
   const handleRemoveTrait = (id: string) => {
     setTraits(traits.filter(t => t.id !== id));
+  };
+
+  const handleOpenActionForm = (actionId?: string) => {
+    setEditingActionId(actionId || null);
+    setShowActionForm(true);
+  };
+
+  const handleSaveAction = (actionData: Partial<Action>) => {
+    if (editingActionId) {
+      setActions(actions.map(a => a.id === editingActionId ? { ...a, ...actionData } as Action : a));
+    } else {
+      const newAction: Action = {
+        id: Date.now().toString(),
+        ...actionData
+      } as Action;
+      setActions([...actions, newAction]);
+    }
+    setShowActionForm(false);
+    setEditingActionId(null);
+  };
+
+  const handleRemoveAction = (id: string) => {
+    setActions(actions.filter(a => a.id !== id));
   };
 
   const handleSubmit = () => {
@@ -78,11 +107,25 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
       savingThrows,
       skills,
       traits,
-      actions: initialSummon?.actions || [],
+      actions,
     };
 
     onAdd(summon);
   };
+
+  if (showActionForm) {
+    return (
+      <ActionForm 
+        isEditing={!!editingActionId}
+        initialData={actions.find(a => a.id === editingActionId)}
+        onSave={handleSaveAction}
+        onCancel={() => setShowActionForm(false)}
+        abilityScores={abilityScores}
+        proficiencyBonus={0} // Summons usually have flat bonuses in actions
+        resources={[]}
+      />
+    );
+  }
 
   return (
     <EntityForm
@@ -180,7 +223,7 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
         {/* Stats & Defenses */}
         <section className="space-y-4">
           <h3 className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Stats & Defenses</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current HP</label>
               <NumericInput value={hp.current} onChange={(val) => setHp({ ...hp, current: val })} variant="horizontal" />
@@ -243,6 +286,35 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Languages</label>
               <input type="text" value={languages} onChange={(e) => setLanguages(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" placeholder="e.g. Common, Sylvan" />
             </div>
+          </div>
+        </section>
+
+        {/* Actions */}
+        <section className="space-y-4">
+          <div className="flex justify-between items-center border-b border-primary/20 pb-1">
+            <h3 className="text-xs font-black uppercase tracking-widest text-primary">Actions</h3>
+            <button type="button" onClick={() => handleOpenActionForm()} className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline flex items-center gap-1">
+              <Plus className="w-3 h-3" /> Add Action
+            </button>
+          </div>
+          <div className="space-y-2">
+            {actions.map(action => (
+              <div key={action.id} className="flex justify-between items-center p-2 border border-border rounded bg-secondary/5 group">
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-sm">{action.name}</span>
+                  <span className="text-[10px] uppercase text-muted-foreground">{action.type}</span>
+                </div>
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button type="button" onClick={() => handleOpenActionForm(action.id)} className="p-1 hover:text-primary"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button type="button" onClick={() => handleRemoveAction(action.id)} className="p-1 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
+                </div>
+              </div>
+            ))}
+            {actions.length === 0 && (
+              <div className="text-center py-4 text-xs text-muted-foreground italic border border-dashed border-border rounded">
+                No actions added yet.
+              </div>
+            )}
           </div>
         </section>
 
