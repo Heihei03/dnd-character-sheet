@@ -419,18 +419,6 @@ const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({
                 {compact ? `No bonuses` : `No active ${TARGET_LABELS[target]} bonuses`}
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsAdding(true)}
-              className={cn(
-                "uppercase font-black tracking-wider border-dashed flex-shrink-0",
-                compact ? "h-6 text-[8px] px-2 w-full" : "h-7 text-[9px] px-3"
-              )}
-            >
-              <Plus className={compact ? "w-2 h-2 mr-1" : "w-2.5 h-2.5 mr-1"} />
-              Add
-            </Button>
           </div>
         )}
       </div>

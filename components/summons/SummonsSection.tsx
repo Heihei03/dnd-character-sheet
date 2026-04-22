@@ -132,17 +132,6 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
             <p className="text-sm text-muted-foreground max-w-xs">
               Add mounts, familiars, summoned creatures, or any other companions here to track their stats.
             </p>
-            <Button 
-              onClick={() => {
-                setEditingSummonId(null);
-                setShowAddForm(true);
-              }}
-              variant="outline"
-              size="sm"
-              className="mt-6"
-            >
-              <Plus className="w-4 h-4 mr-2" /> Add Your First Summon
-            </Button>
           </div>
         )
       )}
