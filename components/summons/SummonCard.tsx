@@ -9,7 +9,8 @@ import {
   Shield, 
   Zap, 
   Wind,
-  Plus
+  Plus,
+  Pencil
 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import NumericInput from "../ui/NumericInput";
@@ -19,6 +20,7 @@ import ActionCard from "../actions/ActionCard";
 interface SummonCardProps {
   summon: Summon;
   onUpdate: (summon: Summon) => void;
+  onEdit: () => void;
   onDelete: () => void;
   rollDice: RollDiceFunc;
   rollDamage: RollDamageFunc;
@@ -28,6 +30,7 @@ interface SummonCardProps {
 const SummonCard: React.FC<SummonCardProps> = ({
   summon,
   onUpdate,
+  onEdit,
   onDelete,
   rollDice,
   rollDamage,
@@ -83,6 +86,16 @@ const SummonCard: React.FC<SummonCardProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="p-1.5 rounded-full hover:bg-secondary/20 text-muted-foreground hover:text-primary transition-all opacity-0 group-hover:opacity-100"
+              title="Edit Summon"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
             <button 
               onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
               className={`p-1.5 rounded-full hover:bg-secondary/20 transition-all ${isExpanded ? "rotate-180" : ""}`}
@@ -94,14 +107,13 @@ const SummonCard: React.FC<SummonCardProps> = ({
 
         {isExpanded && (
            <div className="p-4 space-y-6 bg-secondary/5 animate-in slide-in-from-top-2 duration-200">
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                <div>
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Current HP</label>
                   <NumericInput 
                     value={summon.hp.current} 
                     onChange={handleUpdateHP}
-                    variant="horizontal"
-                    className="h-8"
+                    className="h-8 min-w-0"
                   />
                </div>
                <div>
@@ -109,8 +121,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
                   <NumericInput 
                     value={summon.hp.max} 
                     onChange={handleUpdateMaxHP}
-                    variant="horizontal"
-                    className="h-8"
+                    className="h-8 min-w-0"
                   />
                </div>
                <div>
@@ -118,8 +129,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
                   <NumericInput 
                     value={summon.ac} 
                     onChange={handleUpdateAC}
-                    variant="horizontal"
-                    className="h-8"
+                    className="h-8 min-w-0"
                   />
                </div>
                <div>
@@ -128,15 +138,14 @@ const SummonCard: React.FC<SummonCardProps> = ({
                     <NumericInput 
                       value={summon.initiative || 0} 
                       onChange={(val) => onUpdate({ ...summon, initiative: val })}
-                      variant="horizontal"
-                      className="h-8 flex-1"
+                      className="h-8 flex-1 min-w-0"
                     />
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
                         rollDice(20, summon.initiative || 0, `${summon.name} Initiative`);
                       }}
-                      className="p-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                      className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                       title="Roll Initiative"
                     >
                       <Dices className="w-4 h-4" />

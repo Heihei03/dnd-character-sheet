@@ -73,7 +73,7 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
           </div>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="space-y-1">
             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current HP</label>
             <NumericInput

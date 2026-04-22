@@ -23,9 +23,15 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
   character
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingSummonId, setEditingSummonId] = useState<string | null>(null);
 
   const handleAddSummon = (newSummon: Summon) => {
-    onUpdateSummons([...summons, newSummon]);
+    if (editingSummonId) {
+      onUpdateSummons(summons.map(s => s.id === editingSummonId ? newSummon : s));
+      setEditingSummonId(null);
+    } else {
+      onUpdateSummons([...summons, newSummon]);
+    }
     setShowAddForm(false);
   };
 
@@ -37,6 +43,13 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
     onUpdateSummons(summons.filter(s => s.id !== id));
   };
 
+  const handleEditSummon = (id: string) => {
+    setEditingSummonId(id);
+    setShowAddForm(true);
+  };
+
+  const editingSummon = summons.find(s => s.id === editingSummonId);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -46,7 +59,10 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
         </div>
         {!showAddForm && (
           <Button 
-            onClick={() => setShowAddForm(true)}
+            onClick={() => {
+              setEditingSummonId(null);
+              setShowAddForm(true);
+            }}
             className="flex items-center gap-2"
             variant="primary"
             size="sm"
@@ -59,7 +75,11 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
       {showAddForm && (
         <AddSummonForm 
           onAdd={handleAddSummon}
-          onCancel={() => setShowAddForm(false)}
+          onCancel={() => {
+            setShowAddForm(false);
+            setEditingSummonId(null);
+          }}
+          initialSummon={editingSummon}
         />
       )}
 
@@ -70,6 +90,7 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
               key={summon.id}
               summon={summon}
               onUpdate={handleUpdateSummon}
+              onEdit={() => handleEditSummon(summon.id)}
               onDelete={() => handleDeleteSummon(summon.id)}
               rollDice={rollDice}
               rollDamage={rollDamage}
@@ -88,7 +109,10 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
               Add mounts, familiars, summoned creatures, or any other companions here to track their stats.
             </p>
             <Button 
-              onClick={() => setShowAddForm(true)}
+              onClick={() => {
+                setEditingSummonId(null);
+                setShowAddForm(true);
+              }}
               variant="outline"
               size="sm"
               className="mt-6"
