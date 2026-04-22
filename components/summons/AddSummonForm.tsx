@@ -4,9 +4,18 @@ import React, { useState } from "react";
 import EntityForm from "../ui/EntityForm";
 import NumericInput from "../ui/NumericInput";
 import Select from "../ui/Select";
+import MultiSelect from "../ui/MultiSelect";
+import ThemedAutocomplete from "../ui/ThemedAutocomplete";
 import { Summon, AbilityScores, SummonTrait, Action } from "../../types/character";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import ActionForm from "../actions/ActionForm";
+import { 
+  DAMAGE_TYPES, 
+  CONDITION_TYPES, 
+  SENSES_LIST, 
+  LANGUAGES,
+  SKILL_LIST 
+} from "../../utils/constants";
 
 interface AddSummonFormProps {
   onAdd: (summon: Summon) => void;
@@ -121,11 +130,13 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
         onSave={handleSaveAction}
         onCancel={() => setShowActionForm(false)}
         abilityScores={abilityScores}
-        proficiencyBonus={0} // Summons usually have flat bonuses in actions
+        proficiencyBonus={0}
         resources={[]}
       />
     );
   }
+
+  const DAMAGE_OPTIONS = Array.from(DAMAGE_TYPES);
 
   return (
     <EntityForm
@@ -246,22 +257,22 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Damage Vulnerabilities</label>
-              <input type="text" value={vulnerabilities} onChange={(e) => setVulnerabilities(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" />
+              <MultiSelect value={vulnerabilities} onChange={setVulnerabilities} options={DAMAGE_OPTIONS} placeholder="Add type..." />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Damage Resistances</label>
-              <input type="text" value={resistances} onChange={(e) => setResistances(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" />
+              <MultiSelect value={resistances} onChange={setResistances} options={DAMAGE_OPTIONS} placeholder="Add type..." />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Damage Immunities</label>
-              <input type="text" value={immunities} onChange={(e) => setImmunities(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" />
+              <MultiSelect value={immunities} onChange={setImmunities} options={DAMAGE_OPTIONS} placeholder="Add type..." />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Condition Immunities</label>
-              <input type="text" value={conditionImmunities} onChange={(e) => setConditionImmunities(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" />
+              <MultiSelect value={conditionImmunities} onChange={setConditionImmunities} options={CONDITION_TYPES} placeholder="Add condition..." />
             </div>
           </div>
         </section>
@@ -269,22 +280,22 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
         {/* Proficiencies & Senses */}
         <section className="space-y-4">
           <h3 className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Proficiencies & Senses</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Saving Throws</label>
               <input type="text" value={savingThrows} onChange={(e) => setSavingThrows(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" placeholder="e.g. Str +3, Con +4" />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Skills</label>
-              <input type="text" value={skills} onChange={(e) => setSkills(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" placeholder="e.g. Perception +4, Stealth +5" />
+              <MultiSelect value={skills} onChange={setSkills} options={SKILL_LIST.map(s => s.name)} placeholder="e.g. Perception +4" />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Senses</label>
-              <input type="text" value={senses} onChange={(e) => setSenses(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" placeholder="e.g. Darkvision 60ft" />
+              <MultiSelect value={senses} onChange={setSenses} options={SENSES_LIST} placeholder="Add sense..." />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Languages</label>
-              <input type="text" value={languages} onChange={(e) => setLanguages(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" placeholder="e.g. Common, Sylvan" />
+              <MultiSelect value={languages} onChange={setLanguages} options={LANGUAGES} placeholder="Add language..." />
             </div>
           </div>
         </section>
