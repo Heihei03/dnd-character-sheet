@@ -155,12 +155,12 @@ const CharacterHeader = ({
                         <div className="md:col-span-4 p-4 bg-secondary/30 border-l border-border flex flex-col gap-3 relative">
                             {/* Global Actions */}
                             <div className="absolute top-3 right-3 z-10">
-                                <div className="flex items-center gap-1.5 p-1.5 bg-background/80 backdrop-blur-sm rounded-full border border-border shadow-sm">
+                                <div className="flex items-center gap-1.5 p-1.5 bg-green-500/20 backdrop-blur-sm rounded-full border border-green-500/40 shadow-sm">
                                     {onReturn && (
                                         <button
                                             onClick={onReturn}
                                             title="Return to Selection"
-                                            className="p-2 rounded-full transition-colors text-muted-foreground hover:text-primary hover:bg-secondary"
+                                            className="p-2 rounded-full transition-colors text-green-800 dark:text-green-200 hover:text-primary hover:bg-green-500/20"
                                         >
                                             <Home size={20} />
                                         </button>
@@ -168,14 +168,14 @@ const CharacterHeader = ({
                                     <SettingsButton
                                         onClick={() => setIsEditingSettings(true)}
                                         title="Display Settings"
-                                        className="p-2"
+                                        className="p-2 text-green-800 dark:text-green-200 hover:bg-green-500/20"
                                         iconSize={20}
                                     />
                                     {onDelete && (
                                         <button
                                             onClick={() => setIsDeletingCharacter(true)}
                                             title="Delete Character"
-                                            className="p-2 rounded-full transition-colors text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
+                                            className="p-2 rounded-full transition-colors text-green-800 dark:text-green-200 hover:text-red-500 hover:bg-red-500/20"
                                         >
                                             <Trash2 size={20} />
                                         </button>
