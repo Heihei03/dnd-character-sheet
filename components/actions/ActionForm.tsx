@@ -250,7 +250,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                 </label>
                                 <ThemedAutocomplete
                                     value={formData.damageType || ""}
-                                    onValueChange={(val) =>
+                                    onChange={(val) =>
                                         setFormData({
                                             ...formData,
                                             damageType: val,
@@ -395,7 +395,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                 </label>
                                 <ThemedAutocomplete
                                     value={formData.target || ""}
-                                    onValueChange={(val: string) =>
+                                    onChange={(val: string) =>
                                         setFormData({
                                             ...formData,
                                             target: val,
@@ -414,7 +414,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                 </label>
                                 <ThemedAutocomplete
                                     value={formData.resourceName || ""}
-                                    onValueChange={(val: string) =>
+                                    onChange={(val: string) =>
                                         setFormData({
                                             ...formData,
                                             resourceName: val,
