@@ -83,31 +83,43 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
         )}
       </div>
 
-      {showAddForm && (
+      {showAddForm && !editingSummonId && (
         <AddSummonForm 
           onAdd={handleAddSummon}
           onCancel={() => {
             setShowAddForm(false);
             setEditingSummonId(null);
           }}
-          initialSummon={editingSummon}
         />
       )}
 
       {summons.length > 0 ? (
         <div className="grid grid-cols-1 gap-4">
           {summons.map(summon => (
-            <SummonCard 
-              key={summon.id}
-              summon={summon}
-              onUpdate={handleUpdateSummon}
-              onEdit={() => handleEditSummon(summon.id)}
-              onDelete={() => handleDeleteSummon(summon.id)}
-              rollDice={rollDice}
-              rollDamage={rollDamage}
-              character={character}
-              proficiencyBonus={proficiencyBonus}
-            />
+            editingSummonId === summon.id ? (
+              <div key={summon.id} className="animate-in fade-in zoom-in-95 duration-200">
+                <AddSummonForm 
+                  onAdd={handleAddSummon}
+                  onCancel={() => {
+                    setShowAddForm(false);
+                    setEditingSummonId(null);
+                  }}
+                  initialSummon={summon}
+                />
+              </div>
+            ) : (
+              <SummonCard 
+                key={summon.id}
+                summon={summon}
+                onUpdate={handleUpdateSummon}
+                onEdit={() => handleEditSummon(summon.id)}
+                onDelete={() => handleDeleteSummon(summon.id)}
+                rollDice={rollDice}
+                rollDamage={rollDamage}
+                character={character}
+                proficiencyBonus={proficiencyBonus}
+              />
+            )
           ))}
         </div>
       ) : (
