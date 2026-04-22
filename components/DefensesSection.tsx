@@ -28,10 +28,22 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
 
     const addDefense = (category: keyof Defenses, value: string, setter: (val: string) => void) => {
         if (value) {
-            const manualDefenses = defenses[category].filter(d => !d.fromFeature);
+            // Check if already exists in this category (case-insensitive)
+            if (defenses[category].some(d => d.name.toLowerCase() === value.toLowerCase())) {
+                setter("");
+                return;
+            }
+
+            // Extract ONLY manual defenses from all categories to avoid saving feature-based ones
+            const manualDefenses: Defenses = {
+                resistances: defenses.resistances.filter(d => !d.fromFeature),
+                vulnerabilities: defenses.vulnerabilities.filter(d => !d.fromFeature),
+                immunities: defenses.immunities.filter(d => !d.fromFeature)
+            };
+
             onUpdateDefenses({
-                ...defenses,
-                [category]: [...manualDefenses, { name: value }]
+                ...manualDefenses,
+                [category]: [...manualDefenses[category], { name: value }]
             });
             setter("");
         }
@@ -39,10 +51,17 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
 
     const removeDefense = (category: keyof Defenses, entry: DefenseEntry) => {
         if (entry.fromFeature) return;
-        const manualDefenses = defenses[category].filter(d => !d.fromFeature);
+
+        // Extract ONLY manual defenses from all categories to avoid saving feature-based ones
+        const manualDefenses: Defenses = {
+            resistances: defenses.resistances.filter(d => !d.fromFeature),
+            vulnerabilities: defenses.vulnerabilities.filter(d => !d.fromFeature),
+            immunities: defenses.immunities.filter(d => !d.fromFeature)
+        };
+
         onUpdateDefenses({
-            ...defenses,
-            [category]: manualDefenses.filter(d => d.name !== entry.name)
+            ...manualDefenses,
+            [category]: manualDefenses[category].filter(d => d.name !== entry.name)
         });
     };
 
