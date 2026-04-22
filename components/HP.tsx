@@ -97,8 +97,8 @@ const HPSection = ({
 
   return (
     <div className="flex flex-col gap-6 p-2">
-      <div className="grid grid-cols-2 gap-2">
-        <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors col-span-1">
+      <div className="grid grid-cols-3 gap-2">
+        <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
            <Heart className="absolute -right-2 -top-2 w-10 h-10 text-red-500 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
            <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Current</span>
            <NumericInput
@@ -112,26 +112,28 @@ const HPSection = ({
               if (!isNaN(val)) handleHpChange(val);
             }}
             className="border-none bg-transparent shadow-none focus-within:ring-0 w-full"
-            inputClassName={cn("text-4xl font-black text-center p-0 h-auto", hpColor)}
+            inputClassName={cn("text-xl font-black text-center p-0 h-auto", hpColor)}
             showArrows="none"
           />
-          <div className="flex items-center gap-1.5 mt-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-full">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Max</span>
-            <NumericInput
-              value={maxHpInput}
-              onChange={handleMaxHpChange}
-              onInputChange={(e) => setMaxHpInput(e.target.value)}
-              onFocus={() => setIsMaxHpFocused(true)}
-              onBlur={() => {
-                setIsMaxHpFocused(false);
-                const val = Number(maxHpInput);
-                if (!isNaN(val)) handleMaxHpChange(val);
-              }}
-              className="border-none bg-transparent shadow-none focus-within:ring-0 w-16"
-              inputClassName="text-xs font-black text-center p-0 h-auto"
-              showArrows="none"
-            />
-          </div>
+        </div>
+
+        <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
+           <Activity className="absolute -right-2 -top-2 w-10 h-10 text-gray-400 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
+           <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Max HP</span>
+           <NumericInput
+            value={maxHpInput}
+            onChange={handleMaxHpChange}
+            onInputChange={(e) => setMaxHpInput(e.target.value)}
+            onFocus={() => setIsMaxHpFocused(true)}
+            onBlur={() => {
+              setIsMaxHpFocused(false);
+              const val = Number(maxHpInput);
+              if (!isNaN(val)) handleMaxHpChange(val);
+            }}
+            className="border-none bg-transparent shadow-none focus-within:ring-0 w-full"
+            inputClassName="text-xl font-black text-center text-gray-700 dark:text-gray-200 p-0 h-auto"
+            showArrows="none"
+          />
         </div>
 
         <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
