@@ -7,7 +7,7 @@ import Select from "../ui/Select";
 import MultiSelect from "../ui/MultiSelect";
 import ThemedAutocomplete from "../ui/ThemedAutocomplete";
 import { Summon, AbilityScores, SummonTrait, Action } from "../../types/character";
-import { Plus, Trash2, Pencil } from "lucide-react";
+import { Plus, Trash2, Pencil, Link } from "lucide-react";
 import ActionForm from "../actions/ActionForm";
 import { 
   DAMAGE_TYPES, 
@@ -32,11 +32,13 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
   const [initiative, setInitiative] = useState(initialSummon?.initiative || 0);
   const [notes, setNotes] = useState(initialSummon?.notes || "");
   
-  // New MM fields
+  // MM fields
   const [size, setSize] = useState(initialSummon?.size || "Medium");
   const [alignment, setAlignment] = useState(initialSummon?.alignment || "unaligned");
   const [cr, setCr] = useState(initialSummon?.cr || "0");
   const [xp, setXp] = useState(initialSummon?.xp || 0);
+  const [pb, setPb] = useState(initialSummon?.pb || 2);
+  const [useCharacterPB, setUseCharacterPB] = useState(initialSummon?.useCharacterPB || false);
   const [senses, setSenses] = useState(initialSummon?.senses || "");
   const [languages, setLanguages] = useState(initialSummon?.languages || "");
   const [vulnerabilities, setVulnerabilities] = useState(initialSummon?.vulnerabilities || "");
@@ -107,6 +109,8 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
       alignment,
       cr,
       xp,
+      pb,
+      useCharacterPB,
       senses,
       languages,
       vulnerabilities,
@@ -130,7 +134,7 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
         onSave={handleSaveAction}
         onCancel={() => setShowActionForm(false)}
         abilityScores={abilityScores}
-        proficiencyBonus={0}
+        proficiencyBonus={useCharacterPB ? 0 : pb} // Pass PB to form for calculations
         resources={[]}
       />
     );
@@ -187,7 +191,7 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Alignment</label>
               <input
@@ -211,6 +215,28 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">XP</label>
               <NumericInput value={xp} onChange={setXp} variant="horizontal" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex justify-between items-center">
+                Prof Bonus
+                <label className="flex items-center gap-1 cursor-pointer lowercase font-normal normal-case text-primary hover:opacity-80 transition-opacity">
+                  <input 
+                    type="checkbox" 
+                    checked={useCharacterPB} 
+                    onChange={(e) => setUseCharacterPB(e.target.checked)}
+                    className="w-3 h-3 accent-primary"
+                  />
+                  <Link className={`w-2.5 h-2.5 ${useCharacterPB ? "text-primary" : "text-muted-foreground/30"}`} />
+                  <span>link to char?</span>
+                </label>
+              </label>
+              <NumericInput 
+                value={pb} 
+                onChange={setPb} 
+                variant="horizontal" 
+                disabled={useCharacterPB}
+                className={useCharacterPB ? "opacity-50" : ""}
+              />
             </div>
           </div>
         </section>

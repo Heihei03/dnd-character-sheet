@@ -24,6 +24,7 @@ interface SummonCardProps {
   rollDice: RollDiceFunc;
   rollDamage: RollDamageFunc;
   character: any; // characterWithDefaults
+  proficiencyBonus: number;
 }
 
 const SummonCard: React.FC<SummonCardProps> = ({
@@ -33,7 +34,8 @@ const SummonCard: React.FC<SummonCardProps> = ({
   onDelete,
   rollDice,
   rollDamage,
-  character
+  character,
+  proficiencyBonus
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null);
@@ -51,6 +53,8 @@ const SummonCard: React.FC<SummonCardProps> = ({
   };
 
   const formatModifier = (mod: number) => (mod >= 0 ? `+${mod}` : mod);
+
+  const effectivePB = summon.useCharacterPB ? (proficiencyBonus || 2) : (summon.pb || 2);
 
   const handleAbilityRoll = (abilityName: string, score: number) => {
     const mod = getAbilityModifier(score);
@@ -289,6 +293,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
                 {summon.cr && (
                   <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Challenge</strong> {summon.cr} ({summon.xp || 0} XP)</div>
                 )}
+                <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Proficiency Bonus</strong> {formatModifier(effectivePB)} {summon.useCharacterPB && <span className="text-[10px] text-muted-foreground ml-1 italic">(linked to character)</span>}</div>
              </div>
 
              {/* Traits */}
@@ -323,7 +328,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
                         key={action.id}
                         action={action}
                         abilityScores={summon.abilityScores || character.abilityScores}
-                        proficiencyBonus={character.proficiencyBonus || 0}
+                        proficiencyBonus={effectivePB}
                         totalLevel={character.totalLevel || 0}
                         isExpanded={expandedActionId === action.id}
                         onToggleExpand={() => setExpandedActionId(expandedActionId === action.id ? null : action.id)}

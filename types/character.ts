@@ -365,6 +365,8 @@ export interface Summon {
   traits?: SummonTrait[];
   savingThrows?: string;
   skills?: string;
+  pb?: number;
+  useCharacterPB?: boolean;
 }
 
 export interface Character {

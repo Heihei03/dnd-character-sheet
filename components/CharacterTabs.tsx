@@ -228,6 +228,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           rollDice={rollDice}
           rollDamage={rollDamage}
           character={character}
+          proficiencyBonus={proficiencyBonus}
         />
       )}
 
