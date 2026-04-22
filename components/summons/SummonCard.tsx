@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import NumericInput from "../ui/NumericInput";
-import { Summon, RollDiceFunc, RollDamageFunc } from "../../types/character";
+import { Summon, RollDiceFunc, RollDamageFunc, AbilityScores } from "../../types/character";
 import ActionCard from "../actions/ActionCard";
 import { getAbilityModifier } from "../../utils/character-utils";
 
@@ -84,6 +84,42 @@ const SummonCard: React.FC<SummonCardProps> = ({
             );
           }
           return <span key={i} className="text-foreground/80">{part}{i < parts.length - 1 ? "," : ""}</span>;
+        })}
+      </div>
+    );
+  };
+
+  const renderSavingThrows = () => {
+    const abbreviations = ['Str', 'Dex', 'Con', 'Int', 'Wis', 'Cha'] as const;
+    const abilityMap: Record<string, keyof AbilityScores> = {
+      'Str': 'strength', 'Dex': 'dexterity', 'Con': 'constitution',
+      'Int': 'intelligence', 'Wis': 'wisdom', 'Cha': 'charisma'
+    };
+
+    return (
+      <div className="flex flex-wrap gap-x-1 gap-y-0.5 items-center">
+        <strong className="text-primary uppercase text-[10px] tracking-widest mr-1">Saving Throws</strong>
+        {abbreviations.map((abbr, i) => {
+          const abilityKey = abilityMap[abbr];
+          const baseMod = getAbilityModifier(summon.abilityScores?.[abilityKey] || 10);
+          
+          // Check if overridden in savingThrows string
+          const match = summon.savingThrows?.match(new RegExp(`${abbr}\\s*([+-]\\s*\\d+)`, 'i'));
+          const displayMod = match ? parseInt(match[1].replace(/\s+/g, '')) : baseMod;
+          const isOverridden = !!match;
+          
+          return (
+            <button 
+              key={abbr} 
+              onClick={(e) => {
+                e.stopPropagation();
+                rollDice(20, displayMod, `${summon.name}: ${abbr} Saving Throw`);
+              }}
+              className={`hover:text-primary transition-colors hover:underline decoration-primary/30 ${isOverridden ? "font-bold text-foreground" : "text-foreground/60"}`}
+            >
+              {abbr} {formatModifier(displayMod)}{i < abbreviations.length - 1 ? "," : ""}
+            </button>
+          );
         })}
       </div>
     );
@@ -230,7 +266,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
 
              {/* MM Style Stats */}
              <div className="space-y-1 text-sm leading-snug">
-                {renderRollableList(summon.savingThrows, "Saving Throws", "Saving Throw")}
+                {renderSavingThrows()}
                 {renderRollableList(summon.skills, "Skills")}
                 {summon.vulnerabilities && (
                   <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Damage Vulnerabilities</strong> {summon.vulnerabilities}</div>
