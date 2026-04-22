@@ -25,6 +25,7 @@ const ThemedAutocomplete: React.FC<ThemedAutocompleteProps> = ({
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
+    const [openUpwards, setOpenUpwards] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -38,9 +39,20 @@ const ThemedAutocomplete: React.FC<ThemedAutocompleteProps> = ({
                 setIsOpen(false);
             }
         };
+
+        if (isOpen) {
+            // Check if we should open upwards
+            if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                const dropdownHeight = 250; // max-h-60 is ~240px + margin
+                setOpenUpwards(spaceBelow < dropdownHeight && rect.top > dropdownHeight);
+            }
+        }
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    }, [isOpen]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (!isOpen && filteredOptions.length > 0) {
@@ -110,7 +122,10 @@ const ThemedAutocomplete: React.FC<ThemedAutocompleteProps> = ({
             </div>
 
             {isOpen && filteredOptions.length > 0 && (
-                <div className="absolute z-[110] w-full mt-2 bg-background border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className={cn(
+                    "absolute z-[110] w-full bg-background border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200",
+                    openUpwards ? "bottom-full mb-2" : "top-full mt-2"
+                )}>
                     <div className="max-h-60 overflow-y-auto custom-scrollbar p-1">
                         {filteredOptions.map((opt, index) => (
                             <button
