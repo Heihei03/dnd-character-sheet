@@ -40,12 +40,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
     const modalContent = (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <Card className="w-full max-w-md shadow-2xl border-none overflow-hidden animate-in zoom-in-95 duration-200">
+            <Card className="w-full max-w-xl shadow-2xl border-none overflow-hidden animate-in zoom-in-95 duration-200">
                 <CardContent className="p-0">
                     <div className="flex justify-between items-center p-4 border-b border-border">
                         <div className="flex items-center gap-2">
                             {confirmVariant === "danger" && <AlertTriangle className="w-5 h-5 text-red-500" />}
-                            <h3 className="font-bold text-gray-900 dark:text-gray-100">{title}</h3>
+                            <h3 className="font-black text-xl text-gray-900 dark:text-gray-100">{title}</h3>
                         </div>
                         <button
                             onClick={onClose}
@@ -55,7 +55,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                         </button>
                     </div>
                     <div className="p-6">
-                        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                        <p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">
                             {message}
                         </p>
                     </div>
@@ -63,7 +63,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                         <Button
                             variant="ghost"
                             onClick={onClose}
-                            className="border border-gray-200 dark:border-gray-700 font-semibold"
+                            className="border border-gray-200 dark:border-gray-700 font-bold text-sm px-6 py-2.5"
                         >
                             Cancel
                         </Button>
@@ -73,7 +73,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                                 onConfirm();
                                 onClose();
                             }}
-                            className="font-semibold shadow-sm transition-all active:scale-95"
+                            className="font-bold text-sm shadow-sm transition-all active:scale-95 px-8 py-2.5"
                         >
                             {confirmText}
                         </Button>

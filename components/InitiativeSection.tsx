@@ -113,12 +113,12 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
             {showSettings && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
                     <ModalScrollLock isOpen={showSettings} />
-                    <div className="bg-background w-full max-w-xs rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="bg-background w-full max-w-lg rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
                         {/* Header */}
                         <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/30">
                             <div>
-                                <h2 className="text-lg font-black uppercase tracking-wider text-foreground">Initiative</h2>
-                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">Tactical Settings</p>
+                                <h2 className="text-xl font-black uppercase tracking-wider text-foreground">Initiative</h2>
+                                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Tactical Settings</p>
                             </div>
                             <button
                                 onClick={() => setShowSettings(false)}
@@ -129,20 +129,20 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                         </div>
 
                         <div className="p-6 space-y-5">
-                            <div className="flex items-center justify-between p-3 bg-secondary/20 rounded-xl border border-border">
-                                <span className="text-xs font-bold uppercase tracking-tight text-foreground">Misc Bonus</span>
+                            <div className="flex items-center justify-between p-4 bg-secondary/20 rounded-xl border border-border">
+                                <span className="text-sm font-bold uppercase tracking-tight text-foreground">Misc Bonus</span>
                                 <NumericInput
                                     value={initiative.miscBonus}
                                     onChange={(val) => onUpdate({ ...initiative, miscBonus: val })}
                                     variant="horizontal"
                                     className="w-24"
-                                    inputClassName="text-center font-black text-sm p-2"
+                                    inputClassName="text-center font-black text-base p-3"
                                 />
                             </div>
 
                             <div className="space-y-3">
-                                <label className="flex items-center justify-between p-3 bg-secondary/10 rounded-xl border border-border/50 cursor-pointer group transition-all hover:bg-secondary/20">
-                                    <span className="text-xs font-bold uppercase tracking-tight text-muted-foreground group-hover:text-foreground">Jack of All Trades</span>
+                                <label className="flex items-center justify-between p-4 bg-secondary/10 rounded-xl border border-border/50 cursor-pointer group transition-all hover:bg-secondary/20">
+                                    <span className="text-sm font-bold uppercase tracking-tight text-muted-foreground group-hover:text-foreground">Jack of All Trades</span>
                                     <input
                                         type="checkbox"
                                         checked={initiative.useJackOfAllTrades}
@@ -151,8 +151,8 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                                     />
                                 </label>
 
-                                <label className="flex items-center justify-between p-3 bg-secondary/10 rounded-xl border border-border/50 cursor-pointer group transition-all hover:bg-secondary/20">
-                                    <span className="text-xs font-bold uppercase tracking-tight text-muted-foreground group-hover:text-foreground">Dex Tiebreaker</span>
+                                <label className="flex items-center justify-between p-4 bg-secondary/10 rounded-xl border border-border/50 cursor-pointer group transition-all hover:bg-secondary/20">
+                                    <span className="text-sm font-bold uppercase tracking-tight text-muted-foreground group-hover:text-foreground">Dex Tiebreaker</span>
                                     <input
                                         type="checkbox"
                                         checked={initiative.showDexTiebreaker}
@@ -167,7 +167,7 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                         <div className="px-6 py-4 bg-secondary/30 border-t border-border flex justify-end">
                             <button
                                 onClick={() => setShowSettings(false)}
-                                className="px-8 py-2.5 bg-primary text-primary-foreground text-xs font-black uppercase tracking-[0.2em] rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                className="px-10 py-3 bg-primary text-primary-foreground text-sm font-black uppercase tracking-[0.2em] rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                             >
                                 Done
                             </button>

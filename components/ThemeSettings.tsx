@@ -42,12 +42,12 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <ModalScrollLock isOpen={true} />
-            <div className="bg-background w-full max-w-md rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-background w-full max-w-xl rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/30">
                     <div>
-                        <h2 className="text-lg font-black uppercase tracking-wider text-foreground">Display Settings</h2>
-                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">Customize your experience</p>
+                        <h2 className="text-xl font-black uppercase tracking-wider text-foreground">Display Settings</h2>
+                        <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Customize your experience</p>
                     </div>
                     <button
                         onClick={onClose}
@@ -60,7 +60,7 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
                 <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
                     {/* Theme Toggle */}
                     <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                             Appearance
                         </label>
                         <div className="grid grid-cols-3 gap-2">
@@ -79,8 +79,8 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
                                             : "border-border bg-secondary/20 text-muted-foreground hover:border-primary/30"
                                     )}
                                 >
-                                    <item.icon size={20} />
-                                    <span className="text-xs font-bold uppercase tracking-tighter">{item.label}</span>
+                                    <item.icon size={24} />
+                                    <span className="text-sm font-bold uppercase tracking-tighter">{item.label}</span>
                                 </button>
                             ))}
                         </div>
@@ -88,7 +88,7 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
 
                     {/* Class Presets */}
                     <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                             Class Presets
                         </label>
                         <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
@@ -106,7 +106,7 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
                                         className="w-6 h-6 rounded-full border border-white/20 shadow-sm"
                                         style={{ backgroundColor: preset.color }}
                                     />
-                                    <span className="text-[9px] font-black text-muted-foreground group-hover:text-primary transition-colors">
+                                    <span className="text-xs font-black text-muted-foreground group-hover:text-primary transition-colors">
                                         {preset.label}
                                     </span>
                                     {primaryColor === preset.color.toLowerCase() && (
@@ -122,10 +122,10 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
                     {/* Custom Color Picker */}
                     <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                            <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                                 Custom Color
                             </label>
-                            <span className="text-[10px] font-mono font-bold text-primary bg-primary/10 px-2 py-0.5 rounded uppercase border border-primary/20">
+                            <span className="text-sm font-mono font-bold text-primary bg-primary/10 px-3 py-1 rounded uppercase border border-primary/20">
                                 {primaryColor}
                             </span>
                         </div>
@@ -149,9 +149,9 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
                     <div className="pt-2">
                         <button
                             onClick={resetToDefaults}
-                            className="w-full py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-xl transition-all border border-dashed border-border hover:border-primary/30"
+                            className="w-full py-4 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-xl transition-all border border-dashed border-border hover:border-primary/30"
                         >
-                            <RotateCcw size={12} /> Reset to Defaults
+                            <RotateCcw size={14} /> Reset to Defaults
                         </button>
                     </div>
                 </div>
@@ -160,7 +160,7 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
                 <div className="px-6 py-4 bg-secondary/30 border-t border-border flex justify-end">
                     <button
                         onClick={onClose}
-                        className="px-8 py-2.5 bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        className="px-10 py-3 bg-primary text-primary-foreground text-sm font-black uppercase tracking-widest rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
                         Done
                     </button>
