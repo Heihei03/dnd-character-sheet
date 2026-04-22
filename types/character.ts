@@ -329,6 +329,24 @@ export interface Bio {
   treasure?: string;
 }
 
+export interface Summon {
+  id: string;
+  name: string;
+  type: string;
+  hp: {
+    current: number;
+    max: number;
+    temp: number;
+  };
+  ac: number;
+  speed?: string;
+  initiative?: number;
+  abilityScores?: AbilityScores;
+  actions: Action[];
+  notes?: string;
+  imageUrl?: string;
+}
+
 export interface Character {
   id: number;
   name: string;
@@ -367,6 +385,7 @@ export interface Character {
   critRule?: CritRule;
   critRange?: number;
   activeBonuses?: ActiveBonus[];
+  summons?: Summon[];
 }
 
 export type CritRule = 'double-dice' | 'max-plus-roll' | 'double-total';
@@ -400,6 +419,7 @@ export interface NormalizedCharacter extends Character {
   critRule: CritRule;
   critRange: number;
   activeBonuses: ActiveBonus[];
+  summons: Summon[];
 }
 export interface RollEntry {
   id: string;

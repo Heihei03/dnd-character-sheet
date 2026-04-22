@@ -1092,6 +1092,7 @@ export const normalizeCharacter = (character: any): NormalizedCharacter => {
         imageUrl: character.imageUrl,
         critRule: character.critRule ?? 'double-dice',
         critRange: character.critRange ?? 20,
+        summons: character.summons ?? [],
     };
 };
 

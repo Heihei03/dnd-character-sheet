@@ -79,6 +79,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     clearHistory,
     handleUpdateResources,
     handleUpdateActiveBonuses,
+    handleUpdateSummons,
   } = useCharacterSheet(character, setCharacter);
 
   if (!character || !characterWithDefaults) {
@@ -175,6 +176,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               critRange={characterWithDefaults.critRange}
               onCritRangeChange={(range) => handleChange("critRange", range)}
               onUpdateActiveBonuses={handleUpdateActiveBonuses}
+              handleUpdateSummons={handleUpdateSummons}
             />
           </div>
 

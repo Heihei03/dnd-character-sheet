@@ -13,6 +13,7 @@ import InventorySection from "./InventorySection";
 import SpellsSection from "./spells/SpellsSection";
 import BioSection from "./BioSection";
 import ResourceTrackersTab from "./ResourceTrackersTab";
+import SummonsSection from "./summons/SummonsSection";
 
 // Types
 import {
@@ -30,7 +31,8 @@ import {
   CritRule,
   RollDiceFunc,
   RollDamageFunc,
-  ActiveBonus
+  ActiveBonus,
+  Summon
 } from "../types/character";
 
 // Utils
@@ -68,6 +70,7 @@ interface CharacterTabsProps {
   critRange?: number;
   onCritRangeChange?: (range: number) => void;
   onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
+  handleUpdateSummons: (summons: Summon[]) => void;
 }
 
 const CharacterTabs: React.FC<CharacterTabsProps> = ({
@@ -98,6 +101,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
   critRange,
   onCritRangeChange,
   onUpdateActiveBonuses,
+  handleUpdateSummons,
 }) => {
   const handleNavigateToFeature = (featureId: string) => {
     setActiveTab("features");
@@ -113,6 +117,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           { id: "spells", label: "Spells" },
           { id: "features", label: "Features" },
           { id: "actions", label: "Actions" },
+          { id: "summons", label: "Summons" },
           { id: "bio", label: "Bio" },
         ].map((tab) => (
           <button
@@ -213,6 +218,16 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           onCritRangeChange={onCritRangeChange}
           character={character as any}
           onUpdateActiveBonuses={onUpdateActiveBonuses}
+        />
+      )}
+
+      {activeTab === "summons" && (
+        <SummonsSection 
+          summons={character.summons}
+          onUpdateSummons={handleUpdateSummons}
+          rollDice={rollDice}
+          rollDamage={rollDamage}
+          character={character}
         />
       )}
 

@@ -22,7 +22,8 @@ import {
   CritRule,
   ActiveBonus,
   BonusTarget,
-  RollDamageFunc
+  RollDamageFunc,
+  Summon
 } from "../types/character";
 import {
   getEffectiveAbilityScores,
@@ -572,6 +573,10 @@ export const useCharacterSheet = (
     setCharacter(prev => (prev ? { ...prev, activeBonuses } : null));
   };
 
+  const handleUpdateSummons = (summons: Summon[]) => {
+    setCharacter(prev => (prev ? { ...prev, summons } : null));
+  };
+
   return {
     characterWithDefaults,
     activeTab,
@@ -627,5 +632,6 @@ export const useCharacterSheet = (
     clearHistory,
     handleUpdateResources,
     handleUpdateActiveBonuses,
+    handleUpdateSummons,
   };
 };
