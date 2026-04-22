@@ -241,7 +241,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                 Damage Type
                             </label>
                             <ThemedAutocomplete
-                                value={formData.damageType || "Slashing"}
+                                value={formData.damageType || ""}
                                 onChange={(val: string) =>
                                     setFormData({
                                         ...formData,
