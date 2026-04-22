@@ -9,6 +9,7 @@ import ThemedAutocomplete from "../ui/ThemedAutocomplete";
 import { Summon, AbilityScores, SummonTrait, Action } from "../../types/character";
 import { Plus, Trash2, Pencil, Link } from "lucide-react";
 import ActionForm from "../actions/ActionForm";
+import ConfirmationModal from "../ui/ConfirmationModal";
 import { 
   DAMAGE_TYPES, 
   CONDITION_TYPES, 
@@ -56,6 +57,10 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
   // Action Form state
   const [showActionForm, setShowActionForm] = useState(false);
   const [editingActionId, setEditingActionId] = useState<string | null>(null);
+  
+  // Delete confirmation state
+  const [actionToDelete, setActionToDelete] = useState<string | null>(null);
+  const [traitToDelete, setTraitToDelete] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -71,10 +76,6 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
 
   const handleUpdateTrait = (id: string, field: keyof SummonTrait, value: string) => {
     setTraits(traits.map(t => t.id === id ? { ...t, [field]: value } : t));
-  };
-
-  const handleRemoveTrait = (id: string) => {
-    setTraits(traits.filter(t => t.id !== id));
   };
 
   const handleOpenActionForm = (actionId?: string) => {
@@ -96,8 +97,18 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
     setEditingActionId(null);
   };
 
-  const handleRemoveAction = (id: string) => {
-    setActions(actions.filter(a => a.id !== id));
+  const confirmRemoveAction = () => {
+    if (actionToDelete) {
+      setActions(actions.filter(a => a.id !== actionToDelete));
+      setActionToDelete(null);
+    }
+  };
+
+  const confirmRemoveTrait = () => {
+    if (traitToDelete) {
+      setTraits(traits.filter(t => t.id !== traitToDelete));
+      setTraitToDelete(null);
+    }
   };
 
   const handleSubmit = () => {
@@ -352,7 +363,7 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
                   </div>
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button type="button" onClick={() => handleOpenActionForm(action.id)} className="p-1 hover:text-primary"><Pencil className="w-3.5 h-3.5" /></button>
-                    <button type="button" onClick={() => handleRemoveAction(action.id)} className="p-1 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <button type="button" onClick={() => setActionToDelete(action.id)} className="p-1 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
               ))}
@@ -375,7 +386,7 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
             <div className="space-y-4">
               {traits.map(trait => (
                 <div key={trait.id} className="p-3 border border-border rounded-lg bg-secondary/5 space-y-2 relative group">
-                  <button type="button" onClick={() => handleRemoveTrait(trait.id)} className="absolute top-2 right-2 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button type="button" onClick={() => setTraitToDelete(trait.id)} className="absolute top-2 right-2 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Trash2 className="w-4 h-4" />
                   </button>
                   <div className="space-y-1 pr-8">
@@ -403,6 +414,26 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
           </section>
         </div>
       </EntityForm>
+
+      <ConfirmationModal
+        isOpen={!!actionToDelete}
+        onClose={() => setActionToDelete(null)}
+        onConfirm={confirmRemoveAction}
+        title="Delete Action"
+        message={`Are you sure you want to delete ${actions.find(a => a.id === actionToDelete)?.name || "this action"}? This cannot be undone.`}
+        confirmText="Delete"
+        confirmVariant="danger"
+      />
+
+      <ConfirmationModal
+        isOpen={!!traitToDelete}
+        onClose={() => setTraitToDelete(null)}
+        onConfirm={confirmRemoveTrait}
+        title="Delete Trait"
+        message={`Are you sure you want to delete ${traits.find(t => t.id === traitToDelete)?.name || "this trait"}? This cannot be undone.`}
+        confirmText="Delete"
+        confirmVariant="danger"
+      />
     </div>
   );
 };
