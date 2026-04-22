@@ -35,7 +35,7 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
     };
 
     const handleCurrencyChange = (field: keyof Currency, value: number) => {
-        setCurrency({ ...currency, [field]: value });
+        setCurrency({ ...currency, [field]: Math.round(value) });
     };
 
     const consolidateCurrencies = () => {
@@ -62,16 +62,17 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
         if (currency[convertFrom] < convertAmount) return;
 
         const totalCopper = convertAmount * conversionRates[convertFrom];
-        const resultAmount = totalCopper / conversionRates[convertTo];
+        const resultAmountWhole = Math.floor(totalCopper / conversionRates[convertTo]);
 
-        if (!Number.isInteger(resultAmount) && resultAmount < 1) {
-            // Can't convert less than 1 unit if it results in a fraction
-            return;
-        }
+        if (resultAmountWhole <= 0) return;
+
+        // Calculate how much of the source currency we actually used to get those whole units
+        const usedCopper = resultAmountWhole * conversionRates[convertTo];
+        const usedAmountFromSource = usedCopper / conversionRates[convertFrom];
 
         const newCurrency = { ...currency };
-        newCurrency[convertFrom] -= convertAmount;
-        newCurrency[convertTo] += resultAmount;
+        newCurrency[convertFrom] -= usedAmountFromSource;
+        newCurrency[convertTo] += resultAmountWhole;
 
         setCurrency(newCurrency);
         setConvertAmount(0);
@@ -131,7 +132,14 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                                         {["cp", "sp", "ep", "gp", "pp"].map(k => (
                                             <div key={k} className="text-center group/coin">
                                                 <div className="text-xs font-bold text-muted-foreground uppercase mb-1 group-hover/coin:text-primary transition-colors">{k}</div>
-                                                <div className="text-base font-black text-foreground">{currency[k as keyof Currency]}</div>
+                                                 <NumericInput
+                                                    value={currency[k as keyof Currency]}
+                                                    onChange={(val) => handleCurrencyChange(k as keyof Currency, val)}
+                                                    min={0}
+                                                    className="w-full border-none bg-transparent"
+                                                    inputClassName="text-center text-base font-black p-1"
+                                                    showArrows="none"
+                                                />
                                             </div>
                                         ))}
                                     </div>
