@@ -367,6 +367,7 @@ export interface Summon {
   skills?: string;
   pb?: number;
   useCharacterPB?: boolean;
+  active?: boolean;
 }
 
 export interface Character {
