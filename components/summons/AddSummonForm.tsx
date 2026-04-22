@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import EntityForm from "../ui/EntityForm";
 import NumericInput from "../ui/NumericInput";
 import Select from "../ui/Select";
-import { Summon } from "../../types/character";
+import { Summon, AbilityScores, SummonTrait } from "../../types/character";
+import { Plus, Trash2 } from "lucide-react";
 
 interface AddSummonFormProps {
   onAdd: (summon: Summon) => void;
@@ -20,6 +21,36 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
   const [speed, setSpeed] = useState(initialSummon?.speed || "30 ft");
   const [initiative, setInitiative] = useState(initialSummon?.initiative || 0);
   const [notes, setNotes] = useState(initialSummon?.notes || "");
+  
+  // New MM fields
+  const [size, setSize] = useState(initialSummon?.size || "Medium");
+  const [alignment, setAlignment] = useState(initialSummon?.alignment || "unaligned");
+  const [cr, setCr] = useState(initialSummon?.cr || "0");
+  const [xp, setXp] = useState(initialSummon?.xp || 0);
+  const [senses, setSenses] = useState(initialSummon?.senses || "");
+  const [languages, setLanguages] = useState(initialSummon?.languages || "");
+  const [vulnerabilities, setVulnerabilities] = useState(initialSummon?.vulnerabilities || "");
+  const [resistances, setResistances] = useState(initialSummon?.resistances || "");
+  const [immunities, setImmunities] = useState(initialSummon?.immunities || "");
+  const [conditionImmunities, setConditionImmunities] = useState(initialSummon?.conditionImmunities || "");
+  const [savingThrows, setSavingThrows] = useState(initialSummon?.savingThrows || "");
+  const [skills, setSkills] = useState(initialSummon?.skills || "");
+  const [abilityScores, setAbilityScores] = useState<AbilityScores>(initialSummon?.abilityScores || {
+    strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10
+  });
+  const [traits, setTraits] = useState<SummonTrait[]>(initialSummon?.traits || []);
+
+  const handleAddTrait = () => {
+    setTraits([...traits, { id: Date.now().toString(), name: "New Trait", description: "" }]);
+  };
+
+  const handleUpdateTrait = (id: string, field: keyof SummonTrait, value: string) => {
+    setTraits(traits.map(t => t.id === id ? { ...t, [field]: value } : t));
+  };
+
+  const handleRemoveTrait = (id: string) => {
+    setTraits(traits.filter(t => t.id !== id));
+  };
 
   const handleSubmit = () => {
     if (!name.trim()) return;
@@ -33,6 +64,20 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
       speed,
       initiative,
       notes,
+      abilityScores,
+      size,
+      alignment,
+      cr,
+      xp,
+      senses,
+      languages,
+      vulnerabilities,
+      resistances,
+      immunities,
+      conditionImmunities,
+      savingThrows,
+      skills,
+      traits,
       actions: initialSummon?.actions || [],
     };
 
@@ -46,87 +91,198 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
       onCancel={onCancel}
       saveLabel={initialSummon ? "Update" : "Add"}
     >
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none"
-              placeholder="e.g. Wolf, Phantom Steed..."
-            />
+      <div className="space-y-6">
+        {/* Basic Info */}
+        <section className="space-y-4">
+          <h3 className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Basic Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none"
+                placeholder="e.g. Wolf"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Type/Race</label>
+              <input
+                type="text"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none"
+                placeholder="e.g. Beast"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Size</label>
+              <Select
+                value={size}
+                onValueChange={setSize}
+                options={[
+                  { label: "Tiny", value: "Tiny" },
+                  { label: "Small", value: "Small" },
+                  { label: "Medium", value: "Medium" },
+                  { label: "Large", value: "Large" },
+                  { label: "Huge", value: "Huge" },
+                  { label: "Gargantuan", value: "Gargantuan" },
+                ]}
+              />
+            </div>
           </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Type</label>
-            <Select
-              value={type}
-              onValueChange={setType}
-              options={[
-                { label: "Summon", value: "Summon" },
-                { label: "Mount", value: "Mount" },
-                { label: "Companion", value: "Companion" },
-                { label: "Other", value: "Other" },
-              ]}
-            />
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current HP</label>
-            <NumericInput
-              value={hp.current}
-              onChange={(val) => setHp({ ...hp, current: val })}
-              variant="horizontal"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Alignment</label>
+              <input
+                type="text"
+                value={alignment}
+                onChange={(e) => setAlignment(e.target.value)}
+                className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none"
+                placeholder="e.g. unaligned"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CR</label>
+              <input
+                type="text"
+                value={cr}
+                onChange={(e) => setCr(e.target.value)}
+                className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none"
+                placeholder="e.g. 1/4"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">XP</label>
+              <NumericInput value={xp} onChange={setXp} variant="horizontal" />
+            </div>
           </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Max HP</label>
-            <NumericInput
-              value={hp.max}
-              onChange={(val) => setHp({ ...hp, max: val })}
-              variant="horizontal"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">AC</label>
-            <NumericInput
-              value={ac}
-              onChange={setAc}
-              variant="horizontal"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Speed</label>
-            <input
-              type="text"
-              value={speed}
-              onChange={(e) => setSpeed(e.target.value)}
-              className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none h-9 text-sm"
-              placeholder="30 ft"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Initiative</label>
-            <NumericInput
-              value={initiative}
-              onChange={setInitiative}
-              variant="horizontal"
-            />
-          </div>
-        </div>
+        </section>
 
-        <div className="space-y-1">
-          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Notes</label>
+        {/* Ability Scores */}
+        <section className="space-y-4">
+          <h3 className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Ability Scores</h3>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            {(['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const).map(score => (
+              <div key={score} className="space-y-1 text-center">
+                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{score.substring(0, 3)}</label>
+                <NumericInput 
+                  value={abilityScores[score]} 
+                  onChange={(val) => setAbilityScores({ ...abilityScores, [score]: val })}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Stats & Defenses */}
+        <section className="space-y-4">
+          <h3 className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Stats & Defenses</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current HP</label>
+              <NumericInput value={hp.current} onChange={(val) => setHp({ ...hp, current: val })} variant="horizontal" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Max HP</label>
+              <NumericInput value={hp.max} onChange={(val) => setHp({ ...hp, max: val })} variant="horizontal" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">AC</label>
+              <NumericInput value={ac} onChange={setAc} variant="horizontal" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Speed</label>
+              <input type="text" value={speed} onChange={(e) => setSpeed(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none h-9 text-sm" placeholder="30 ft" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Initiative</label>
+              <NumericInput value={initiative} onChange={setInitiative} variant="horizontal" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Damage Vulnerabilities</label>
+              <input type="text" value={vulnerabilities} onChange={(e) => setVulnerabilities(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Damage Resistances</label>
+              <input type="text" value={resistances} onChange={(e) => setResistances(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Damage Immunities</label>
+              <input type="text" value={immunities} onChange={(e) => setImmunities(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Condition Immunities</label>
+              <input type="text" value={conditionImmunities} onChange={(e) => setConditionImmunities(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" />
+            </div>
+          </div>
+        </section>
+
+        {/* Proficiencies & Senses */}
+        <section className="space-y-4">
+          <h3 className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Proficiencies & Senses</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Saving Throws</label>
+              <input type="text" value={savingThrows} onChange={(e) => setSavingThrows(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" placeholder="e.g. Str +3, Con +4" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Skills</label>
+              <input type="text" value={skills} onChange={(e) => setSkills(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" placeholder="e.g. Perception +4, Stealth +5" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Senses</label>
+              <input type="text" value={senses} onChange={(e) => setSenses(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" placeholder="e.g. Darkvision 60ft" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Languages</label>
+              <input type="text" value={languages} onChange={(e) => setLanguages(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none text-sm" placeholder="e.g. Common, Sylvan" />
+            </div>
+          </div>
+        </section>
+
+        {/* Traits */}
+        <section className="space-y-4">
+          <div className="flex justify-between items-center border-b border-primary/20 pb-1">
+            <h3 className="text-xs font-black uppercase tracking-widest text-primary">Special Traits</h3>
+            <button type="button" onClick={handleAddTrait} className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline flex items-center gap-1">
+              <Plus className="w-3 h-3" /> Add Trait
+            </button>
+          </div>
+          <div className="space-y-4">
+            {traits.map(trait => (
+              <div key={trait.id} className="p-3 border border-border rounded-lg bg-secondary/5 space-y-2 relative group">
+                <button type="button" onClick={() => handleRemoveTrait(trait.id)} className="absolute top-2 right-2 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <div className="space-y-1 pr-8">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Trait Name</label>
+                  <input type="text" value={trait.name} onChange={(e) => handleUpdateTrait(trait.id, 'name', e.target.value)} className="w-full p-1.5 border border-border bg-background rounded text-sm font-bold outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Description</label>
+                  <textarea value={trait.description} onChange={(e) => handleUpdateTrait(trait.id, 'description', e.target.value)} className="w-full p-2 border border-border bg-background rounded text-sm min-h-[60px] outline-none" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Notes */}
+        <section className="space-y-2">
+          <h3 className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Additional Notes</h3>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             className="w-full p-3 border border-border bg-background rounded text-sm min-h-[100px] focus:ring-1 focus:ring-primary outline-none transition-all"
-            placeholder="Special abilities, traits, etc..."
+            placeholder="Other details..."
           />
-        </div>
+        </section>
       </div>
     </EntityForm>
   );

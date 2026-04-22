@@ -329,6 +329,12 @@ export interface Bio {
   treasure?: string;
 }
 
+export interface SummonTrait {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export interface Summon {
   id: string;
   name: string;
@@ -345,6 +351,20 @@ export interface Summon {
   actions: Action[];
   notes?: string;
   imageUrl?: string;
+  // Monster Manual style fields
+  size?: string;
+  alignment?: string;
+  cr?: string;
+  xp?: number;
+  senses?: string;
+  languages?: string;
+  vulnerabilities?: string;
+  resistances?: string;
+  immunities?: string;
+  conditionImmunities?: string;
+  traits?: SummonTrait[];
+  savingThrows?: string;
+  skills?: string;
 }
 
 export interface Character {

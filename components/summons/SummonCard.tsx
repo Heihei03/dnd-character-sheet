@@ -7,15 +7,14 @@ import {
   Dices, 
   Heart, 
   Shield, 
-  Zap, 
   Wind,
-  Plus,
   Pencil
 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import NumericInput from "../ui/NumericInput";
 import { Summon, RollDiceFunc, RollDamageFunc } from "../../types/character";
 import ActionCard from "../actions/ActionCard";
+import { getAbilityModifier } from "../../utils/character-utils";
 
 interface SummonCardProps {
   summon: Summon;
@@ -51,6 +50,8 @@ const SummonCard: React.FC<SummonCardProps> = ({
     onUpdate({ ...summon, ac: val });
   };
 
+  const formatModifier = (mod: number) => (mod >= 0 ? `+${mod}` : mod);
+
   return (
     <Card className="group border-l-4 border-l-primary/50 overflow-hidden">
       <CardContent className="p-0">
@@ -65,6 +66,11 @@ const SummonCard: React.FC<SummonCardProps> = ({
                 <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-black uppercase tracking-widest border border-primary/20">
                   {summon.type}
                 </span>
+                {summon.cr && (
+                  <span className="text-[10px] bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded font-bold border border-border">
+                    CR {summon.cr}
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
@@ -107,6 +113,11 @@ const SummonCard: React.FC<SummonCardProps> = ({
 
         {isExpanded && (
            <div className="p-4 space-y-6 bg-secondary/5 animate-in slide-in-from-top-2 duration-200">
+             {/* NPC Style Header Info */}
+             <div className="border-b-2 border-primary/30 pb-1 mb-4 italic text-sm text-muted-foreground">
+                {summon.size} {summon.type}, {summon.alignment}
+             </div>
+
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                <div>
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Current HP</label>
@@ -154,17 +165,77 @@ const SummonCard: React.FC<SummonCardProps> = ({
                </div>
              </div>
 
+             {/* Ability Scores Table */}
+             {summon.abilityScores && (
+               <div className="py-3 border-y-2 border-primary/20">
+                 <div className="grid grid-cols-6 gap-1 text-center">
+                   {(['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const).map(score => {
+                     const val = summon.abilityScores![score];
+                     const mod = getAbilityModifier(val);
+                     return (
+                       <div key={score} className="space-y-0.5">
+                         <div className="text-[10px] font-black uppercase text-primary leading-tight">{score.substring(0, 3)}</div>
+                         <div className="font-bold text-sm leading-tight">{val} ({formatModifier(mod)})</div>
+                       </div>
+                     );
+                   })}
+                 </div>
+               </div>
+             )}
+
+             {/* MM Style Stats */}
+             <div className="space-y-1 text-sm leading-snug">
+                {summon.savingThrows && (
+                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Saving Throws</strong> {summon.savingThrows}</div>
+                )}
+                {summon.skills && (
+                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Skills</strong> {summon.skills}</div>
+                )}
+                {summon.vulnerabilities && (
+                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Damage Vulnerabilities</strong> {summon.vulnerabilities}</div>
+                )}
+                {summon.resistances && (
+                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Damage Resistances</strong> {summon.resistances}</div>
+                )}
+                {summon.immunities && (
+                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Damage Immunities</strong> {summon.immunities}</div>
+                )}
+                {summon.conditionImmunities && (
+                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Condition Immunities</strong> {summon.conditionImmunities}</div>
+                )}
+                {summon.senses && (
+                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Senses</strong> {summon.senses}</div>
+                )}
+                {summon.languages && (
+                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Languages</strong> {summon.languages}</div>
+                )}
+                {summon.cr && (
+                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Challenge</strong> {summon.cr} ({summon.xp || 0} XP)</div>
+                )}
+             </div>
+
+             {/* Traits */}
+             {summon.traits && summon.traits.length > 0 && (
+               <div className="space-y-3 pt-2 border-t border-primary/10">
+                 {summon.traits.map(trait => (
+                   <div key={trait.id} className="text-sm">
+                     <strong className="italic font-bold">{trait.name}.</strong> {trait.description}
+                   </div>
+                 ))}
+               </div>
+             )}
+
              {summon.notes && (
-               <div className="space-y-1">
+               <div className="space-y-1 pt-2 border-t border-border/50">
                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Notes</label>
-                 <p className="text-sm text-foreground/80 whitespace-pre-wrap bg-background/50 p-3 rounded border border-border">
+                 <p className="text-sm text-foreground/80 whitespace-pre-wrap">
                    {summon.notes}
                  </p>
                </div>
              )}
 
              <div className="space-y-3">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center border-b border-primary/20 pb-1">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Actions</label>
                 </div>
                 
@@ -190,7 +261,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
                   </div>
                 ) : (
                   <div className="text-center py-4 bg-background/30 rounded border border-dashed border-border text-xs text-muted-foreground italic">
-                    No actions defined. Add them via features or edit the character.
+                    No actions defined.
                   </div>
                 )}
              </div>
