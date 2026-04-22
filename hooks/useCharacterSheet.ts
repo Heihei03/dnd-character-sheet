@@ -249,7 +249,21 @@ export const useCharacterSheet = (
   };
 
   const handleChange = (field: keyof Character, value: any) => {
-    setCharacter((prev) => (prev ? { ...prev, [field]: value } : null));
+    setCharacter((prev) => {
+      if (!prev) return null;
+      let next = { ...prev, [field]: value };
+      
+      // Enforce HP cap
+      if (field === "hp" || field === "maxHp") {
+        const currentHp = field === "hp" ? value : (prev.hp ?? 0);
+        const maxHp = field === "maxHp" ? value : (prev.maxHp ?? 0);
+        if (currentHp > maxHp) {
+          next.hp = maxHp;
+        }
+      }
+      
+      return next;
+    });
   };
 
   const handleUpdateSenses = (senses: Sense[]) => {

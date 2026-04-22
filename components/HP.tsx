@@ -92,11 +92,16 @@ const HPSection = ({
   const handleMaxHpChange = (value: number) => {
     setMaxHpInput(String(value));
     setMaxHp(value);
+    // If current HP exceeds the new max HP, cap it
+    if (hp > value) {
+      setHp(value);
+    }
   };
 
   const handleHpChange = (value: number) => {
-    setHpInput(String(value));
-    setHp(value);
+    const cappedValue = Math.min(maxHp, value);
+    setHpInput(String(cappedValue));
+    setHp(cappedValue);
   };
 
   const handleTempHpChange = (value: number) => {
