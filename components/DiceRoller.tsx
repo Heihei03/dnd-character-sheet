@@ -18,14 +18,15 @@ const DiceRoller = ({ rollResult, rollDice, onToggleHistory, globalRollMode, set
       <h2 className="text-lg font-black uppercase tracking-widest flex items-center gap-2 text-primary">
         <Dices className="w-6 h-6" /> Dice
       </h2>
-      <button 
-        onClick={onToggleHistory}
-        className="p-1 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
-        title="Show History"
-      >
-        <History className="w-5 h-5" />
-      </button>
     </div>
+
+    <button 
+        onClick={onToggleHistory}
+        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/5 hover:bg-primary/20 text-gray-300 hover:text-primary rounded-xl border border-white/10 transition-all group active:scale-[0.98] shadow-sm"
+    >
+        <History className="w-4 h-4 group-hover:scale-110 transition-transform" />
+        <span className="text-[11px] font-black uppercase tracking-widest">Roll History</span>
+    </button>
 
     <div className="flex flex-col gap-1.5 p-1 bg-black/30 rounded-xl border border-white/5">
         <button 
