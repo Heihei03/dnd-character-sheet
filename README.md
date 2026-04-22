@@ -1,4 +1,4 @@
-# ⚔️ D&D 5e Character Sheet
+# D&D 5e Character Sheet
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-brightgreen?style=for-the-badge)](https://dnd-character-sheet-eight.vercel.app/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
@@ -9,31 +9,31 @@ A modern, highly interactive, and comprehensive Dungeons & Dragons 5th Edition c
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🛡️ Core Stat Tracking
+### Core Stat Tracking
 - **Dynamic Ability Scores**: Automatic modifier calculation with support for active bonuses.
 - **Saving Throws & Skills**: Full proficiency support with automated calculations.
 - **Defense & Vitality**: Track HP, Temporay HP, AC, Initiative, and Speed. Integrated Death Saves tracker.
 
-### 🎲 Combat & Action Management
+### Combat & Action Management
 - **Integrated Dice Roller**: Roll for attacks, damage, or custom checks with a single click.
 - **Roll History**: A detailed log of all your recent rolls, including natural 20s and 1s.
 - **Weapon & Spell Management**: Organize your arsenal and cast spells with resource tracking.
 
-### 🎒 Inventory & Resources
+### Inventory & Resources
 - **Smart Inventory**: Track items, weights, and currency (CP, SP, GP, EP, PP).
 - **Resource Trackers**: Manage Spell Slots, Hit Dice, and class-specific resources (like Ki or Sorcery Points) with visual pip trackers.
 - **Conditions & Defenses**: Track active status effects and resistances/immunities.
 
-### 🎨 Premium UI/UX
+### Premium UI/UX
 - **Responsive Design**: Works perfectly on tablets and desktops.
 - **Theme Customization**: Tailor the look and feel to your preference.
 - **Drag & Drop Layout**: Flexible organization of character components using `@dnd-kit`.
 
 ---
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
@@ -44,7 +44,7 @@ A modern, highly interactive, and comprehensive Dungeons & Dragons 5th Edition c
 
 ---
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -77,7 +77,7 @@ A modern, highly interactive, and comprehensive Dungeons & Dragons 5th Edition c
 
 ---
 
-## ⚖️ License & Legal
+## License & Legal
 
 ### Software License
 This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
@@ -87,7 +87,3 @@ This project uses content from the **Systems Reference Document 5.1** ("SRD 5.1"
 
 ### Fan Content Policy
 This is unofficial Fan Content permitted under the [Fan Content Policy](https://company.wizards.com/en/legal/fancontentpolicy). Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.
-
----
-
-Built with ❤️ for the D&D Community.
