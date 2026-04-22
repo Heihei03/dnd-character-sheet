@@ -95,7 +95,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
             const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${action.name} Attack`, action.attackAbility as string);
 
-            rollDice(20, total, `${action.name} Attack`, resolvedDamage, action.damageType, action.critRange, action.critExtraDamage, action.critRule, advantage, disadvantage, extraAdvantage, 'attack');
+            rollDice(20, 1, total, `${action.name} Attack`, resolvedDamage, action.damageType, action.critRange, action.critExtraDamage, action.critRule, advantage, disadvantage, extraAdvantage, 'attack');
         }
     };
 

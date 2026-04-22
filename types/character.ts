@@ -466,6 +466,7 @@ export interface RollEntry {
 
 export type RollDiceFunc = (
   sides: number,
+  count?: number,
   modifier?: number,
   label?: string,
   damageFormula?: string,

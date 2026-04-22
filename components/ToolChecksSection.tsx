@@ -87,7 +87,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                         </div>
                                     </button>
                                     <div className="flex items-baseline gap-2">
-                                        <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}>
+                                        <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, 1, totalBonus, `${tool.name} Check`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}>
                                             {tool.name}
                                         </span>
                                         {tool.fromFeature && (
@@ -120,7 +120,7 @@ const ToolChecksSection: React.FC<ToolChecksSectionProps> = ({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => rollDice?.(20, totalBonus, `${tool.name} Check (${tool.ability})`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
+                                    onClick={() => rollDice?.(20, 1, totalBonus, `${tool.name} Check (${tool.ability})`, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage)}
                                     className="font-bold text-lg min-w-[3ch] text-right text-primary hover:opacity-80 transition-colors"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >

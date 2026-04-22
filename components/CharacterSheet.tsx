@@ -233,7 +233,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       </div>
 
       <DiceRoller
-        rollDice={(sides: number) => rollDice(sides)}
+        rollDice={(sides: number, count: number) => rollDice(sides, count)}
         rollResult={rollResult}
         onToggleHistory={() => setShowHistory(!showHistory)}
         globalRollMode={globalRollMode}

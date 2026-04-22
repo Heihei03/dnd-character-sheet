@@ -67,7 +67,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
 
   const handleAbilityRoll = (abilityName: string, score: number) => {
     const mod = getAbilityModifier(score);
-    rollDice(20, mod, `${summon.name}: ${abilityName} Check`);
+    rollDice(20, 1, mod, `${summon.name}: ${abilityName} Check`);
   };
 
   const renderRollableList = (text: string | undefined, title: string, suffix: string = "Check") => {
@@ -88,7 +88,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
                 key={i} 
                 onClick={(e) => {
                   e.stopPropagation();
-                  rollDice(20, mod, `${summon.name}: ${name} ${suffix}`);
+                  rollDice(20, 1, mod, `${summon.name}: ${name} ${suffix}`);
                 }}
                 className="text-foreground hover:text-primary transition-colors hover:underline decoration-primary/30"
               >
@@ -126,7 +126,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
               key={abbr} 
               onClick={(e) => {
                 e.stopPropagation();
-                rollDice(20, displayMod, `${summon.name}: ${abbr} Saving Throw`);
+                rollDice(20, 1, displayMod, `${summon.name}: ${abbr} Saving Throw`);
               }}
               className={`hover:text-primary transition-colors hover:underline decoration-primary/30 ${isOverridden ? "font-bold text-foreground" : "text-foreground/60"}`}
             >
@@ -272,7 +272,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        rollDice(20, summon.initiative || 0, `${summon.name} Initiative`);
+                        rollDice(20, 1, summon.initiative || 0, `${summon.name} Initiative`);
                       }}
                       className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                       title="Roll Initiative"

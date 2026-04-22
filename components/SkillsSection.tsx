@@ -75,7 +75,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     </button>
                                     <div className="flex flex-col">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'skill')}>
+                                            <span className="font-medium cursor-pointer" onClick={() => rollDice?.(20, 1, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'skill')}>
                                                 {skill.name} <span className="text-muted-foreground text-sm">({skill.ability.substring(0, 3).toUpperCase()})</span>
                                             </span>
                                             {skillSources[skill.key] && (skills[skill.key] || "none") !== (character.skills?.[skill.key] || "none") && (
@@ -95,7 +95,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => rollDice?.(20, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'skill')}
+                                    onClick={() => rollDice?.(20, 1, totalBonus, skill.name, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'skill')}
                                     className="font-bold text-lg min-w-[3ch] text-right text-primary hover:opacity-80 transition-colors"
                                     title={`Modifier: ${modifier}, Proficiency: ${bonus}`}
                                 >

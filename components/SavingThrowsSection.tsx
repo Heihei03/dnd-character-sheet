@@ -73,7 +73,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         <div className="h-8 flex items-center justify-center w-full relative px-2">
                             <div
                                 className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
-                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save')}
+                                onClick={() => rollDice?.(20, 1, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save')}
                             >
                                 {showConc ? "Concentration" : `${key.slice(0, 3)} Save`}
                             </div>
@@ -82,7 +82,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         {/* Modifier Slot - Taking remaining space */}
                         <div className="flex-1 flex items-center justify-center w-full">
                             <button 
-                                onClick={() => rollDice?.(20, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save')}
+                                onClick={() => rollDice?.(20, 1, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save')}
                                 className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-primary hover:opacity-80' : 'text-primary hover:opacity-90'}`}
                             >
                                 {displayModifier}

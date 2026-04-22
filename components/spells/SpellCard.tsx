@@ -67,7 +67,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
             const abilityModifier = Math.floor((abilityScore - 10) / 2);
             const total = abilityModifier + proficiencyBonus + (spell.attackBonus || 0);
             
-            rollDice(20, total, `${spell.name} Attack`, upcastedDamage, spell.damageType, undefined, undefined, undefined, false, false, 0, 'attack');
+            rollDice(20, 1, total, `${spell.name} Attack`, upcastedDamage, spell.damageType, undefined, undefined, undefined, false, false, 0, 'attack');
         }
     };
 

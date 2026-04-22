@@ -47,7 +47,7 @@ const HitDiceTracker: React.FC<HitDiceTrackerProps> = ({
         };
         onUpdateClasses(updatedClasses);
 
-        rollDice?.(sides, conMod, `Hit Die (${cls.name})`);
+        rollDice?.(sides, 1, conMod, `Hit Die (${cls.name})`);
     };
 
     const handleHitDiceChange = (index: number, newValue: number) => {

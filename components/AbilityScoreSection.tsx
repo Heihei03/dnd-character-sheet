@@ -92,7 +92,7 @@ const AbilityScoreSection = ({
               <div
                 className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${isOverridden ? "text-primary dark:text-primary" : "text-muted-foreground hover:text-primary"
                   }`}
-                onClick={() => rollDice?.(20, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'ability')}
+                onClick={() => rollDice?.(20, 1, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'ability')}
                 title={isOverridden ? "Overridden by item/feature" : ""}
               >
                 {key}
@@ -102,7 +102,7 @@ const AbilityScoreSection = ({
             {/* Modifier Slot - Taking remaining space */}
             <div className="flex-1 flex items-center justify-center w-full">
               <button
-                onClick={() => rollDice?.(20, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'ability')}
+                onClick={() => rollDice?.(20, 1, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'ability')}
                 className="text-4xl font-black text-primary hover:opacity-80 transition-all hover:scale-110"
               >
                 {formattedModifier}

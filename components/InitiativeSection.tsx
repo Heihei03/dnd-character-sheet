@@ -56,7 +56,7 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
     const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, "Initiative", "dexterity");
 
     const handleRoll = () => {
-        rollDice?.(20, totalModifier, "Initiative", undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'initiative');
+        rollDice?.(20, 1, totalModifier, "Initiative", undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'initiative');
     };
 
     const handleMiscChange = (val: string) => {

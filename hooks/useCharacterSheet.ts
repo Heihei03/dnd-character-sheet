@@ -450,6 +450,7 @@ export const useCharacterSheet = (
 
   const rollDice = (
     sides: number,
+    count: number = 1,
     modifier: number = 0,
     label: string = "",
     damageFormula?: string,
@@ -469,13 +470,17 @@ export const useCharacterSheet = (
       finalAdvantage = false;
       finalDisadvantage = false;
     }
+
     const rolls: number[] = [];
-    const baseRoll = Math.floor(Math.random() * sides) + 1;
-    rolls.push(baseRoll);
-    let resultRoll = baseRoll;
-    if (sides === 20 && (finalAdvantage || finalDisadvantage)) {
+    let resultRoll = 0;
+
+    // Handle advantage/disadvantage only for single d20 rolls
+    if (sides === 20 && count === 1 && (finalAdvantage || finalDisadvantage)) {
+      const baseRoll = Math.floor(Math.random() * sides) + 1;
+      rolls.push(baseRoll);
       const secondaryRoll = Math.floor(Math.random() * sides) + 1;
       rolls.push(secondaryRoll);
+      
       if (finalAdvantage) {
         resultRoll = Math.max(baseRoll, secondaryRoll);
         if (extraAdvantage > 0) {
@@ -487,6 +492,13 @@ export const useCharacterSheet = (
         }
       } else {
         resultRoll = Math.min(baseRoll, secondaryRoll);
+      }
+    } else {
+      // Normal roll(s)
+      for (let i = 0; i < count; i++) {
+        const r = Math.floor(Math.random() * sides) + 1;
+        rolls.push(r);
+        resultRoll += r;
       }
     }
     
@@ -518,12 +530,13 @@ export const useCharacterSheet = (
     }
 
     const total = resultRoll + modifier + bonusModifier;
-    let formula = `d${sides}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}`;
-    if (sides === 20 && (finalAdvantage || finalDisadvantage)) {
+    const formulaSides = count > 1 ? `${count}d${sides}` : `d${sides}`;
+    let formula = `${formulaSides}${modifier !== 0 ? ` ${modifier >= 0 ? "+" : ""}${modifier}` : ""}`;
+    if (sides === 20 && count === 1 && (finalAdvantage || finalDisadvantage)) {
       const advPrefix = finalAdvantage ? (extraAdvantage > 0 ? `ADV+${extraAdvantage}` : 'ADV') : 'DIS';
       formula = `${advPrefix} ${formula}`;
     }
-    let breakdown = `(${rolls.join(", ")})`;
+    let breakdown = `(${rolls.join(" + ")})`;
     if (modifier !== 0) breakdown += ` ${modifier >= 0 ? "+" : "-"} ${Math.abs(modifier)}`;
     if (bonusBreakdown) breakdown += bonusBreakdown;
     const formatted = `${label ? label + ": " : ""}${formula}${bonusModifier !== 0 ? ` (+bonuses)` : ""} ${breakdown} = ${total}`;
@@ -531,7 +544,7 @@ export const useCharacterSheet = (
     const newEntry: RollEntry = {
       id: Math.random().toString(36).substring(2, 9),
       timestamp: Date.now(),
-      label: label || `d${sides} Roll`,
+      label: label || `${formulaSides} Roll`,
       formula,
       rolls,
       modifier,
@@ -544,8 +557,8 @@ export const useCharacterSheet = (
       bonusModifier,
       bonusBreakdown,
       formatted,
-      isCritical: sides === 20 && resultRoll >= effectiveCritRange,
-      isFumble: sides === 20 && resultRoll === 1
+      isCritical: sides === 20 && count === 1 && resultRoll >= effectiveCritRange,
+      isFumble: sides === 20 && count === 1 && resultRoll === 1
     };
     setRollHistory(prev => [...prev.slice(-49), newEntry]);
   };
