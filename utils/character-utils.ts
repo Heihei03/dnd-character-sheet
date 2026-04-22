@@ -1093,6 +1093,9 @@ export const normalizeCharacter = (character: any): NormalizedCharacter => {
         critRule: character.critRule ?? 'double-dice',
         critRange: character.critRange ?? 20,
         summons: character.summons ?? [],
+        tempHp: character.tempHp ?? 0,
+        hp: character.hp ?? 10,
+        maxHp: character.maxHp ?? 10,
     };
 };
 

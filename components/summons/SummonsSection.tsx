@@ -15,6 +15,7 @@ interface SummonsSectionProps {
   rollDamage: RollDamageFunc;
   character: any;
   proficiencyBonus: number;
+  handleAdjustSummonHP: (summonId: string, amount: number, isDamage: boolean) => void;
 }
 
 const SummonsSection: React.FC<SummonsSectionProps> = ({
@@ -23,7 +24,8 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
   rollDice,
   rollDamage,
   character,
-  proficiencyBonus
+  proficiencyBonus,
+  handleAdjustSummonHP
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingSummonId, setEditingSummonId] = useState<string | null>(null);
@@ -118,6 +120,7 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
                 rollDamage={rollDamage}
                 character={character}
                 proficiencyBonus={proficiencyBonus}
+                onAdjustHP={(amount, isDamage) => handleAdjustSummonHP(summon.id, amount, isDamage)}
               />
             )
           ))}

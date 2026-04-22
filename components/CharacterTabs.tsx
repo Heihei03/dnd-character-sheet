@@ -71,6 +71,7 @@ interface CharacterTabsProps {
   onCritRangeChange?: (range: number) => void;
   onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
   handleUpdateSummons: (summons: Summon[]) => void;
+  handleAdjustSummonHP: (summonId: string, amount: number, isDamage: boolean) => void;
 }
 
 const CharacterTabs: React.FC<CharacterTabsProps> = ({
@@ -102,6 +103,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
   onCritRangeChange,
   onUpdateActiveBonuses,
   handleUpdateSummons,
+  handleAdjustSummonHP,
 }) => {
   const handleNavigateToFeature = (featureId: string) => {
     setActiveTab("features");
@@ -229,6 +231,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           rollDamage={rollDamage}
           character={character}
           proficiencyBonus={proficiencyBonus}
+          handleAdjustSummonHP={handleAdjustSummonHP}
         />
       )}
 

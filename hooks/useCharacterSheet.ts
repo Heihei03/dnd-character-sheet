@@ -251,18 +251,87 @@ export const useCharacterSheet = (
   const handleChange = (field: keyof Character, value: any) => {
     setCharacter((prev) => {
       if (!prev) return null;
-      let next = { ...prev, [field]: value };
+      let finalValue = value;
+      
+      // Ensure numeric fields are actually numbers
+      if (field === "hp" || field === "maxHp" || field === "tempHp" || field === "exp") {
+        finalValue = Number(value);
+      }
+      
+      let next = { ...prev, [field]: finalValue };
       
       // Enforce HP cap
       if (field === "hp" || field === "maxHp") {
-        const currentHp = field === "hp" ? value : (prev.hp ?? 0);
-        const maxHp = field === "maxHp" ? value : (prev.maxHp ?? 0);
+        const currentHp = field === "hp" ? Number(finalValue) : Number(prev.hp ?? 0);
+        const maxHp = field === "maxHp" ? Number(finalValue) : Number(prev.maxHp ?? 0);
         if (currentHp > maxHp) {
           next.hp = maxHp;
         }
       }
       
       return next;
+    });
+  };
+
+  const handleAdjustHP = (amount: number, isDamage: boolean) => {
+    setCharacter((prev) => {
+      if (!prev) return null;
+      const currentHp = Number(prev.hp ?? 0);
+      const currentTemp = Number(prev.tempHp ?? 0);
+      const maxHp = Number(prev.maxHp ?? 0);
+      const adjustment = Number(amount);
+      
+      let next = { ...prev };
+
+      if (isDamage) {
+        if (currentTemp > 0) {
+          const absorbed = Math.min(currentTemp, adjustment);
+          next.tempHp = currentTemp - absorbed;
+          const remainingDamage = adjustment - absorbed;
+          if (remainingDamage > 0) {
+            next.hp = Math.max(0, currentHp - remainingDamage);
+          }
+        } else {
+          next.hp = Math.max(0, currentHp - adjustment);
+        }
+      } else {
+        // Healing
+        next.hp = Math.min(maxHp, currentHp + adjustment);
+      }
+      
+      return next;
+    });
+  };
+
+  const handleAdjustSummonHP = (summonId: string, amount: number, isDamage: boolean) => {
+    setCharacter((prev) => {
+      if (!prev || !prev.summons) return prev;
+      const newSummons = prev.summons.map(s => {
+        if (s.id !== summonId) return s;
+        
+        const nextHp = { ...s.hp };
+        if (isDamage) {
+          const currentTemp = Number(s.hp.temp ?? 0);
+          const currentHp = Number(s.hp.current ?? 0);
+          const damageAmount = Number(amount);
+          
+          if (currentTemp > 0) {
+            const absorbed = Math.min(currentTemp, damageAmount);
+            nextHp.temp = currentTemp - absorbed;
+            const remainingDamage = damageAmount - absorbed;
+            nextHp.current = Math.max(0, currentHp - remainingDamage);
+          } else {
+            nextHp.current = Math.max(0, currentHp - damageAmount);
+          }
+        } else {
+          // Healing
+          const healAmount = Number(amount);
+          nextHp.current = Math.min(s.hp.max, s.hp.current + healAmount);
+        }
+        
+        return { ...s, hp: nextHp };
+      });
+      return { ...prev, summons: newSummons };
     });
   };
 
@@ -647,5 +716,7 @@ export const useCharacterSheet = (
     handleUpdateResources,
     handleUpdateActiveBonuses,
     handleUpdateSummons,
+    handleAdjustHP,
+    handleAdjustSummonHP,
   };
 };

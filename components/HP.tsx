@@ -20,6 +20,7 @@ interface HPSectionProps {
   abilityScores: AbilityScores;
   onUpdateClasses: (classes: CharacterClass[]) => void;
   rollDice?: RollDiceFunc;
+  onAdjustHP: (amount: number, isDamage: boolean) => void;
 }
 
 const HPSection = ({
@@ -32,76 +33,57 @@ const HPSection = ({
   classes,
   abilityScores,
   onUpdateClasses,
-  rollDice
+  rollDice,
+  onAdjustHP
 }: HPSectionProps) => {
-  const [hpDiff, setHpDiff] = useState(0);
-  const [maxHpInput, setMaxHpInput] = useState<string>(String(maxHp));
   const [hpInput, setHpInput] = useState<string>(String(hp));
+  const [maxHpInput, setMaxHpInput] = useState<string>(String(maxHp));
   const [tempHpInput, setTempHpInput] = useState<string>(String(tempHp));
+  const [hpDiff, setHpDiff] = useState<number>(0);
 
-  useEffect(() => setHpInput(String(hp)), [hp]);
-  useEffect(() => setTempHpInput(String(tempHp)), [tempHp]);
-  useEffect(() => setMaxHpInput(String(maxHp)), [maxHp]);
+  // Focus tracking to prevent input jump while typing
+  const [isHpFocused, setIsHpFocused] = useState(false);
+  const [isMaxHpFocused, setIsMaxHpFocused] = useState(false);
+  const [isTempHpFocused, setIsTempHpFocused] = useState(false);
+
+  useEffect(() => {
+    if (!isHpFocused) setHpInput(String(hp));
+  }, [hp, isHpFocused]);
+
+  useEffect(() => {
+    if (!isMaxHpFocused) setMaxHpInput(String(maxHp));
+  }, [maxHp, isMaxHpFocused]);
+
+  useEffect(() => {
+    if (!isTempHpFocused) setTempHpInput(String(tempHp));
+  }, [tempHp, isTempHpFocused]);
 
   const getModifier = (score: number) => Math.floor((score - 10) / 2);
 
   const handleAction = (type: "damage" | "heal") => {
     const amount = hpDiff || 0;
+    if (amount <= 0) return;
+    
     if (type === "damage") {
-      if (tempHp > 0) {
-        const remainingTemp = Math.max(0, tempHp - amount);
-        const overflow = Math.max(0, amount - tempHp);
-        setTempHp(remainingTemp);
-        if (overflow > 0) {
-          const newHp = Math.max(0, hp - overflow);
-          setHp(newHp);
-        }
-      } else {
-        const newHp = Math.max(0, hp - amount);
-        setHp(newHp);
-      }
+      onAdjustHP(amount, true);
     } else {
-      setHp(Math.min(maxHp, hp + amount));
+      // Healing
+      onAdjustHP(amount, false);
     }
     setHpDiff(0);
-  };
-
-  const handleRollHitDice = (index: number) => {
-    const cls = classes[index];
-    const available = cls.level - (cls.usedHitDice || 0);
-
-    if (available <= 0) return;
-
-    const sides = classHitDice[cls.name.toLowerCase()] || 8;
-    const conMod = getModifier(abilityScores.constitution);
-    const roll = Math.floor(Math.random() * sides) + 1;
-    const healAmount = Math.max(1, roll + conMod);
-
-    setHp(Math.min(maxHp, hp + healAmount));
-
-    const updatedClasses = [...classes];
-    updatedClasses[index] = {
-      ...cls,
-      usedHitDice: (cls.usedHitDice || 0) + 1
-    };
-    onUpdateClasses(updatedClasses);
-
-    rollDice?.(sides, conMod, `Hit Die (${cls.name})`);
   };
 
   const handleMaxHpChange = (value: number) => {
     setMaxHpInput(String(value));
     setMaxHp(value);
-    // If current HP exceeds the new max HP, cap it
     if (hp > value) {
       setHp(value);
     }
   };
 
   const handleHpChange = (value: number) => {
-    const cappedValue = Math.min(maxHp, value);
-    setHpInput(String(cappedValue));
-    setHp(cappedValue);
+    setHpInput(String(value));
+    setHp(value);
   };
 
   const handleTempHpChange = (value: number) => {
@@ -109,48 +91,47 @@ const HPSection = ({
     setTempHp(value);
   };
 
-  const handleHitDiceChange = (index: number, newValue: number) => {
-    const cls = classes[index];
-    const updatedClasses = [...classes];
-    const newUsed = Math.max(0, Math.min(cls.level, cls.level - newValue));
-    updatedClasses[index] = {
-      ...cls,
-      usedHitDice: newUsed
-    };
-    onUpdateClasses(updatedClasses);
-  };
-
   const hpPercentage = maxHp > 0 ? (hp / maxHp) * 100 : 0;
   const barColor = hpPercentage > 50 ? "bg-green-500" : hpPercentage > 25 ? "bg-amber-500" : "bg-red-500";
+  const hpColor = hp > 0 ? "text-primary" : "text-red-500";
 
   return (
     <div className="flex flex-col gap-6 p-2">
-      {/* HP Cards */}
-      <div className="grid grid-cols-3 gap-2">
-        <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors col-span-1">
            <Heart className="absolute -right-2 -top-2 w-10 h-10 text-red-500 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
            <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Current</span>
            <NumericInput
             value={hpInput}
             onChange={handleHpChange}
             onInputChange={(e) => setHpInput(e.target.value)}
+            onFocus={() => setIsHpFocused(true)}
+            onBlur={() => {
+              setIsHpFocused(false);
+              const val = Number(hpInput);
+              if (!isNaN(val)) handleHpChange(val);
+            }}
             className="border-none bg-transparent shadow-none focus-within:ring-0 w-full"
-            inputClassName="text-xl font-black text-center text-primary p-0 h-auto"
+            inputClassName={cn("text-4xl font-black text-center p-0 h-auto", hpColor)}
             showArrows="none"
           />
-        </div>
-
-        <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
-           <Activity className="absolute -right-2 -top-2 w-10 h-10 text-gray-400 opacity-5 rotate-12 group-hover:scale-110 transition-transform" />
-           <span className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Max HP</span>
-           <NumericInput
-            value={maxHpInput}
-            onChange={handleMaxHpChange}
-            onInputChange={(e) => setMaxHpInput(e.target.value)}
-            className="border-none bg-transparent shadow-none focus-within:ring-0 w-full"
-            inputClassName="text-xl font-black text-center text-gray-700 dark:text-gray-200 p-0 h-auto"
-            showArrows="none"
-          />
+          <div className="flex items-center gap-1.5 mt-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-full">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Max</span>
+            <NumericInput
+              value={maxHpInput}
+              onChange={handleMaxHpChange}
+              onInputChange={(e) => setMaxHpInput(e.target.value)}
+              onFocus={() => setIsMaxHpFocused(true)}
+              onBlur={() => {
+                setIsMaxHpFocused(false);
+                const val = Number(maxHpInput);
+                if (!isNaN(val)) handleMaxHpChange(val);
+              }}
+              className="border-none bg-transparent shadow-none focus-within:ring-0 w-16"
+              inputClassName="text-xs font-black text-center p-0 h-auto"
+              showArrows="none"
+            />
+          </div>
         </div>
 
         <div className="flex flex-col items-center p-3 bg-card rounded-xl border border-border shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
@@ -160,6 +141,12 @@ const HPSection = ({
             value={tempHpInput}
             onChange={handleTempHpChange}
             onInputChange={(e) => setTempHpInput(e.target.value)}
+            onFocus={() => setIsTempHpFocused(true)}
+            onBlur={() => {
+              setIsTempHpFocused(false);
+              const val = Number(tempHpInput);
+              if (!isNaN(val)) handleTempHpChange(val);
+            }}
             className="border-none bg-transparent shadow-none focus-within:ring-0 w-full"
             inputClassName="text-xl font-black text-center text-primary/80 p-0 h-auto"
             showArrows="none"

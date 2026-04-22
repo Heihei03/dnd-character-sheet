@@ -80,19 +80,45 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     handleUpdateResources,
     handleUpdateActiveBonuses,
     handleUpdateSummons,
+    handleAdjustHP,
+    handleAdjustSummonHP,
   } = useCharacterSheet(character, setCharacter);
+
+  const localHandleChange = (field: keyof Character, value: any) => {
+    setCharacter((prev) => {
+      if (!prev) return null;
+      let finalValue = value;
+      if (field === "hp" || field === "maxHp" || field === "tempHp" || field === "exp") {
+        const num = Number(value);
+        finalValue = isNaN(num) ? (prev[field] || 0) : num;
+      }
+
+      let next = { ...prev, [field]: finalValue };
+
+      // Enforce HP cap
+      if (field === "hp" || field === "maxHp") {
+        const currentHp = field === "hp" ? Number(finalValue) : Number(prev.hp ?? 0);
+        const maxHp = field === "maxHp" ? Number(finalValue) : Number(prev.maxHp ?? 0);
+        if (currentHp > maxHp) {
+          next.hp = maxHp;
+        }
+      }
+
+      return next;
+    });
+  };
 
   if (!character || !characterWithDefaults) {
     return <div>Loading...</div>;
   }
 
-  const handleNameChange = (value: string) => handleChange("name", value);
-  const handleSpeciesChange = (value: string) => handleChange("species", value);
-  const handleSubSpeciesChange = (value: string) => handleChange("subSpecies", value);
-  const handleBackgroundChange = (value: string) => handleChange("background", value);
-  const handleExpChange = (value: number | undefined) => handleChange("exp", value);
-  const handleImageUrlChange = (value: string) => handleChange("imageUrl", value);
-  const handleUpdateClasses = (value: CharacterClass[]) => handleChange("classes", value);
+  const handleNameChange = (value: string) => localHandleChange("name", value);
+  const handleSpeciesChange = (value: string) => localHandleChange("species", value);
+  const handleSubSpeciesChange = (value: string) => localHandleChange("subSpecies", value);
+  const handleBackgroundChange = (value: string) => localHandleChange("background", value);
+  const handleExpChange = (value: number | undefined) => localHandleChange("exp", value);
+  const handleImageUrlChange = (value: string) => localHandleChange("imageUrl", value);
+  const handleUpdateClasses = (value: CharacterClass[]) => localHandleChange("classes", value);
 
   return (
     <div className="flex flex-col items-center pt-1 px-8 pb-8">
@@ -177,6 +203,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               onCritRangeChange={(range) => handleChange("critRange", range)}
               onUpdateActiveBonuses={handleUpdateActiveBonuses}
               handleUpdateSummons={handleUpdateSummons}
+              handleAdjustSummonHP={handleAdjustSummonHP}
             />
           </div>
 
@@ -187,7 +214,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             proficiencyBonus={proficiencyBonus}
             handleInitiativeChange={handleInitiativeChange}
             handleArmorClassChange={handleArmorClassChange}
-            handleHPChange={handleChange}
+            handleHPChange={localHandleChange}
             handleDeathSavesChange={handleDeathSavesChange}
             handleSpeedChange={handleSpeedChange}
             handleUpdateSenses={handleUpdateSenses}
@@ -200,6 +227,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             effectiveDefenses={effectiveDefenses}
             effectiveConditions={effectiveConditions}
             onUpdateActiveBonuses={handleUpdateActiveBonuses}
+            handleAdjustHP={handleAdjustHP}
           />
         </div>
       </div>

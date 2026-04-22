@@ -27,6 +27,7 @@ interface StatusSidebarProps {
   handleInitiativeChange: (initiative: any) => void;
   handleArmorClassChange: (armorClass: ArmorClass) => void;
   handleHPChange: (field: keyof Character, value: any) => void;
+  handleAdjustHP: (amount: number, isDamage: boolean) => void;
   handleDeathSavesChange: (deathSaves: DeathSavesType) => void;
   handleSpeedChange: (key: string, value: number, from?: string) => void;
   handleUpdateSenses: (senses: Sense[]) => void;
@@ -48,6 +49,7 @@ const StatusSidebar: React.FC<StatusSidebarProps> = ({
   handleInitiativeChange,
   handleArmorClassChange,
   handleHPChange,
+  handleAdjustHP,
   handleDeathSavesChange,
   handleSpeedChange,
   handleUpdateSenses,
@@ -92,6 +94,7 @@ const StatusSidebar: React.FC<StatusSidebarProps> = ({
             abilityScores={effectiveAbilityScores}
             onUpdateClasses={(classes) => handleHPChange("classes", classes)}
             rollDice={rollDice}
+            onAdjustHP={handleAdjustHP}
           />
           <DeathSaves
             deathSaves={characterWithDefaults.deathSaves}

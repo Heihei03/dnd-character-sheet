@@ -26,6 +26,7 @@ interface SummonCardProps {
   rollDamage: RollDamageFunc;
   character: any; // characterWithDefaults
   proficiencyBonus: number;
+  onAdjustHP: (amount: number, isDamage: boolean) => void;
 }
 
 const SummonCard: React.FC<SummonCardProps> = ({
@@ -36,13 +37,20 @@ const SummonCard: React.FC<SummonCardProps> = ({
   rollDice,
   rollDamage,
   character,
-  proficiencyBonus
+  proficiencyBonus,
+  onAdjustHP
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null);
 
   const handleUpdateHP = (val: number) => {
-    onUpdate({ ...summon, hp: { ...summon.hp, current: val } });
+    const diff = val - summon.hp.current;
+    if (diff === 0) return;
+    onAdjustHP(Math.abs(diff), diff < 0);
+  };
+
+  const handleUpdateTempHP = (val: number) => {
+    onUpdate({ ...summon, hp: { ...summon.hp, temp: val } });
   };
 
   const handleUpdateMaxHP = (val: number) => {
@@ -174,7 +182,10 @@ const SummonCard: React.FC<SummonCardProps> = ({
               <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                    <Heart className={`w-3 h-3 ${isActive ? "text-red-500" : "text-muted-foreground"}`} />
-                   <span className={`font-bold ${isActive ? "text-foreground" : "text-muted-foreground"}`}>{summon.hp.current} / {summon.hp.max}</span> HP
+                   <span className={`font-bold ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+                     {summon.hp.current} / {summon.hp.max}
+                     {summon.hp.temp > 0 && <span className="text-primary ml-1"> (+{summon.hp.temp})</span>}
+                   </span> HP
                 </div>
                 <div className="flex items-center gap-1">
                    <Shield className={`w-3 h-3 ${isActive ? "text-blue-500" : "text-muted-foreground"}`} />
@@ -232,6 +243,14 @@ const SummonCard: React.FC<SummonCardProps> = ({
                     value={summon.hp.max} 
                     onChange={handleUpdateMaxHP}
                     className="h-8 min-w-0"
+                  />
+               </div>
+               <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Temp HP</label>
+                  <NumericInput 
+                    value={summon.hp.temp || 0} 
+                    onChange={handleUpdateTempHP}
+                    className="h-8 min-w-0 text-primary"
                   />
                </div>
                <div>

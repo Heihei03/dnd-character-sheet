@@ -290,6 +290,10 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
                 <NumericInput value={hp.max} onChange={(val) => setHp({ ...hp, max: val })} variant="horizontal" />
               </div>
               <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Temp HP</label>
+                <NumericInput value={hp.temp} onChange={(val) => setHp({ ...hp, temp: val })} variant="horizontal" />
+              </div>
+              <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">AC</label>
                 <NumericInput value={ac} onChange={setAc} variant="horizontal" />
               </div>
