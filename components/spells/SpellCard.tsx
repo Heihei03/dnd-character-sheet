@@ -69,7 +69,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
             const abilityModifier = getAbilityModifier(abilityScore);
             const total = abilityModifier + proficiencyBonus + (spell.attackBonus || 0);
             
-            const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${spell.name} Attack`, ability);
+            const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${spell.name} Attack`, ability as string);
             
             rollDice(20, 1, total, `${spell.name} Attack`, upcastedDamage, spell.damageType, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'attack');
         }
