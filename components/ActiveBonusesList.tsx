@@ -28,6 +28,7 @@ const TARGET_LABELS: Record<BonusTarget, string> = {
   initiative: "Initiative",
   ac: "Armor Class",
   healing: "Healing",
+  "spell-dc": "Spell DC",
 };
 
 const TARGET_ICONS: Record<BonusTarget, React.ElementType> = {
@@ -39,6 +40,7 @@ const TARGET_ICONS: Record<BonusTarget, React.ElementType> = {
   initiative: Zap,
   ac: ShieldAlert,
   healing: Heart,
+  "spell-dc": GraduationCap,
 };
 
 const ActiveBonusesList: React.FC<ActiveBonusesListProps> = ({

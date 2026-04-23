@@ -375,7 +375,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                 <ActiveBonusesList 
                     bonuses={character.activeBonuses || []}
                     onUpdateBonuses={onUpdateActiveBonuses}
-                    target="save"
+                    target="spell-dc"
                     title="Spell DC Bonuses"
                 />
             </div>

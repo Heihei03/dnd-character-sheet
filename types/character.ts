@@ -300,7 +300,7 @@ export interface Spell {
   classSource?: string;
 }
 
-export type BonusTarget = 'attack' | 'damage' | 'save' | 'skill' | 'ability' | 'initiative' | 'ac' | 'healing';
+export type BonusTarget = 'attack' | 'damage' | 'save' | 'skill' | 'ability' | 'initiative' | 'ac' | 'healing' | 'spell-dc';
 
 export interface ActiveBonus {
   id: string;

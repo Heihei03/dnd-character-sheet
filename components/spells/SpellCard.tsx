@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Zap, ChevronDown, Dices } from "lucide-react";
 import { Spell, AbilityScores, CharacterClass, RollDiceFunc, RollDamageFunc, ActiveBonus } from "../../types/character";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../../utils/dice-utils";
-import { getAbilityModifier, getAdvantageDisadvantage } from "../../utils/character-utils";
+import { getAbilityModifier, getAdvantageDisadvantage, getEffectiveBonuses } from "../../utils/character-utils";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import FeatureNavigationBadge from "../features/FeatureNavigationBadge";
 import Select from "../ui/Select";
@@ -67,7 +67,13 @@ const SpellCard: React.FC<SpellCardProps> = ({
             const ability = spell.spellcastingAbility || 'intelligence'; // Fallback
             const abilityScore = abilityScores[ability] || 10;
             const abilityModifier = getAbilityModifier(abilityScore);
-            const total = abilityModifier + proficiencyBonus + (spell.attackBonus || 0);
+            let attackBonusFromActive = 0;
+            getEffectiveBonuses(character, 'attack').forEach(b => {
+                const val = parseInt(b.bonus) || 0;
+                attackBonusFromActive += val;
+            });
+
+            const total = abilityModifier + proficiencyBonus + (spell.attackBonus || 0) + attackBonusFromActive;
             
             const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${spell.name} Attack`, ability as string);
             
@@ -183,15 +189,16 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                         
                                         // Calculate bonuses
                                         let attackBonusFromActive = 0;
+                                        getEffectiveBonuses(character, 'attack').forEach(b => {
+                                            const val = parseInt(b.bonus) || 0;
+                                            attackBonusFromActive += val;
+                                        });
+
                                         let saveDcBonusFromActive = 0;
-                                        if (character?.activeBonuses) {
-                                            character.activeBonuses.forEach((b: ActiveBonus) => {
-                                                if (!b.active) return;
-                                                const val = parseInt(b.bonus) || 0;
-                                                if (b.targets.includes('attack')) attackBonusFromActive += val;
-                                                if (b.targets.includes('save')) saveDcBonusFromActive += val;
-                                            });
-                                        }
+                                        getEffectiveBonuses(character, 'spell-dc').forEach(b => {
+                                            const val = parseInt(b.bonus) || 0;
+                                            saveDcBonusFromActive += val;
+                                        });
 
                                         const attackBonus = abilityModifier + proficiencyBonus + (spell.attackBonus || 0);
                                         const saveDC = 8 + abilityModifier + proficiencyBonus + (spell.saveDc || 0) + saveDcBonusFromActive;

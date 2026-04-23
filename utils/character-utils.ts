@@ -178,6 +178,10 @@ export const isModifierMatch = (sub: string, target: string, type?: string, abil
     if (s === "skills" && t === "skill") return true;
     if (s === "abilities" && t === "ability") return true;
 
+    if (s === "spell dc" || s === "spell save dc" || s === "spell-dc") {
+        if (t === "spell-dc") return true;
+    }
+
     // Category matches
     if (s === "saving throws" && t.endsWith("saves")) return true;
     if ((s === "checks" || s === "ability checks") && (t.endsWith("checks") || t.endsWith("skill"))) return true;
