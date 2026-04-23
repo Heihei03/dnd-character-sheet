@@ -90,6 +90,7 @@ export interface ToolDetails {
 }
 
 export interface ToolProficiency {
+  id?: string;
   name: string;
   ability: string;
   level: ProficiencyLevel;

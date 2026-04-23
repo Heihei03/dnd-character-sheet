@@ -34,6 +34,7 @@ const ProficiencyList: React.FC<ProficiencyListProps> = ({
                 if (field === "toolProficiencies") {
                     const toolData = TOOL_DATA[trimmed];
                     const newTool: ToolProficiency = {
+                        id: `tool-${Math.random().toString(36).substr(2, 9)}`,
                         name: trimmed,
                         ability: toolData?.ability || "Intelligence",
                         level: "proficient"

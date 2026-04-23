@@ -1081,10 +1081,14 @@ export const normalizeCharacter = (character: any): NormalizedCharacter => {
             if (typeof tool === "string") {
                 const toolData = TOOL_DATA[tool];
                 return {
+                    id: `tool-${Math.random().toString(36).substr(2, 9)}`,
                     name: tool,
                     ability: toolData?.ability || "Intelligence",
                     level: "proficient"
                 } as ToolProficiency;
+            }
+            if (!tool.id) {
+                return { ...tool, id: `tool-${Math.random().toString(36).substr(2, 9)}` };
             }
             return tool;
         }),
@@ -1162,6 +1166,7 @@ export const getEffectiveToolProficiencies = (character: Character): ToolProfici
                 const toolData = TOOL_DATA[name];
                 const modValue = normalizeProficiencyLevel(String(mod.value || "proficient"));
                 baseTools.push({
+                    id: `tool-feature-${mod.fromFeatureId}-${name.replace(/\s+/g, '-').toLowerCase()}`,
                     name: name,
                     ability: toolData?.ability || "Intelligence",
                     level: modValue,
