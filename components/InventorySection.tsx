@@ -43,7 +43,8 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     const [isAdding, setIsAdding] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
-    const [isReorderMode, setIsReorderMode] = useState(false);
+    const [isEquipmentReorderMode, setIsEquipmentReorderMode] = useState(false);
+    const [isInventoryReorderMode, setIsInventoryReorderMode] = useState(false);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -251,11 +252,11 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                         <div className="flex items-center gap-2">
                             <span>Equipment</span>
                             <button
-                                onClick={() => setIsReorderMode(!isReorderMode)}
-                                className={`p-1 rounded hover:bg-secondary/50 transition-all ${isReorderMode ? "text-primary bg-primary/10" : "text-muted-foreground/40"}`}
-                                title={isReorderMode ? "Lock Order" : "Unlock Order (Drag to Reorder)"}
+                                onClick={() => setIsEquipmentReorderMode(!isEquipmentReorderMode)}
+                                className={`p-1 rounded hover:bg-secondary/50 transition-all ${isEquipmentReorderMode ? "text-primary bg-primary/10" : "text-muted-foreground/40"}`}
+                                title={isEquipmentReorderMode ? "Lock Order" : "Unlock Order (Drag to Reorder)"}
                             >
-                                {isReorderMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                                {isEquipmentReorderMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                             </button>
                         </div>
                         <span className="text-xs font-normal text-muted-foreground/60">{equipment.length} items</span>
@@ -279,7 +280,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                 expandedItemIds={expandedItemIds}
                                 resources={resources}
                                 onUpdateResources={onUpdateResources}
-                                isReorderMode={isReorderMode}
+                                isReorderMode={isEquipmentReorderMode}
                             />
                         </SortableContext>
                     </DndContext>
@@ -292,11 +293,11 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                         <div className="flex items-center gap-2">
                             <span>Other Inventory</span>
                             <button
-                                onClick={() => setIsReorderMode(!isReorderMode)}
-                                className={`p-1 rounded hover:bg-secondary/50 transition-all ${isReorderMode ? "text-primary bg-primary/10" : "text-muted-foreground/40"}`}
-                                title={isReorderMode ? "Lock Order" : "Unlock Order (Drag to Reorder)"}
+                                onClick={() => setIsInventoryReorderMode(!isInventoryReorderMode)}
+                                className={`p-1 rounded hover:bg-secondary/50 transition-all ${isInventoryReorderMode ? "text-primary bg-primary/10" : "text-muted-foreground/40"}`}
+                                title={isInventoryReorderMode ? "Lock Order" : "Unlock Order (Drag to Reorder)"}
                             >
-                                {isReorderMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                                {isInventoryReorderMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                             </button>
                         </div>
                         <span className="text-xs font-normal text-muted-foreground/60">{otherItems.length} items</span>
@@ -320,7 +321,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                 expandedItemIds={expandedItemIds}
                                 resources={resources}
                                 onUpdateResources={onUpdateResources}
-                                isReorderMode={isReorderMode}
+                                isReorderMode={isInventoryReorderMode}
                             />
                         </SortableContext>
                     </DndContext>
