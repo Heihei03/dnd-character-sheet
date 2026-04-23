@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Edit2, Trash2, Zap, ChevronDown } from "lucide-react";
+import { Edit2, Trash2, Zap, ChevronDown, Dices } from "lucide-react";
 import { Spell, AbilityScores, CharacterClass, RollDiceFunc, RollDamageFunc, ActiveBonus } from "../../types/character";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../../utils/dice-utils";
+import { getAbilityModifier, getAdvantageDisadvantage } from "../../utils/character-utils";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import FeatureNavigationBadge from "../features/FeatureNavigationBadge";
 import Select from "../ui/Select";
@@ -62,12 +63,15 @@ const SpellCard: React.FC<SpellCardProps> = ({
 
     const handleAttackRoll = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (rollDice && spell.spellcastingAbility) {
-            const abilityScore = abilityScores[spell.spellcastingAbility] || 10;
-            const abilityModifier = Math.floor((abilityScore - 10) / 2);
+        if (rollDice) {
+            const ability = spell.spellcastingAbility || 'intelligence'; // Fallback
+            const abilityScore = abilityScores[ability] || 10;
+            const abilityModifier = getAbilityModifier(abilityScore);
             const total = abilityModifier + proficiencyBonus + (spell.attackBonus || 0);
             
-            rollDice(20, 1, total, `${spell.name} Attack`, upcastedDamage, spell.damageType, undefined, undefined, undefined, false, false, 0, 'attack');
+            const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${spell.name} Attack`, ability);
+            
+            rollDice(20, 1, total, `${spell.name} Attack`, upcastedDamage, spell.damageType, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'attack');
         }
     };
 
@@ -199,8 +203,10 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                         <span className="text-xs uppercase font-bold text-red-400 leading-tight">Attack</span>
                                                         <button 
                                                             onClick={handleAttackRoll}
-                                                            className="text-left font-bold hover:text-primary transition-colors flex items-center gap-1"
+                                                            className="text-left font-bold hover:text-primary transition-colors flex items-center gap-1.5 bg-red-500/5 hover:bg-red-500/10 px-2 py-1 rounded-md border border-red-500/10"
+                                                            title="Roll Attack"
                                                         >
+                                                            <Dices className="w-3.5 h-3.5 opacity-70" />
                                                             +{attackBonus}
                                                             {attackBonusFromActive !== 0 && (
                                                                 <span className="text-[10px] text-primary">(+{attackBonusFromActive})</span>
@@ -222,27 +228,43 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                             </>
                                         )
                                     })()}
-                                <div className="flex flex-col col-span-2">
+                                 <div className="flex flex-col col-span-2">
                                     <span className="text-xs uppercase font-bold text-red-500 leading-tight">
                                         Damage {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
                                     </span>
-                                    <button 
-                                        onClick={handleDamageRoll}
-                                        className={`text-left font-mono font-bold hover:text-primary transition-colors ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-primary" : ""}`}
-                                    >
-                                        {upcastedDamage} {spell.damageType}
-                                    </button>
+                                    {upcastedDamage && (
+                                        <button 
+                                            onClick={handleDamageRoll}
+                                            className={`text-left font-mono font-bold hover:text-primary transition-all flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/10 shadow-sm mt-0.5 ${
+                                                (spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level 
+                                                    ? "text-primary bg-primary/10 border-primary/20" 
+                                                    : "bg-primary/5 hover:bg-primary/10"
+                                            }`}
+                                            title="Roll Damage"
+                                        >
+                                            <Dices className="w-3.5 h-3.5" />
+                                            {upcastedDamage} {spell.damageType}
+                                        </button>
+                                    )}
                                 </div>
                                 <div className="flex flex-col col-span-2">
                                     <span className="text-xs uppercase font-bold text-green-500 leading-tight">
                                         Healing {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
                                     </span>
-                                    <button 
-                                        onClick={handleHealRoll}
-                                        className={`text-left font-mono font-bold hover:text-primary transition-colors ${(spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level ? "text-primary" : ""}`}
-                                    >
-                                        {upcastedHealing}
-                                    </button>
+                                    {upcastedHealing && (
+                                        <button 
+                                            onClick={handleHealRoll}
+                                            className={`text-left font-mono font-bold hover:text-primary transition-all flex items-center gap-2 px-2.5 py-1 rounded-full border border-green-500/10 shadow-sm mt-0.5 ${
+                                                (spell.level === 0 && spell.scalesWithCharacterLevel && totalLevel >= 5) || castLevel > spell.level 
+                                                    ? "text-green-600 bg-green-500/10 border-green-500/20" 
+                                                    : "bg-green-500/5 hover:bg-green-500/10 text-green-600"
+                                            }`}
+                                            title="Roll Healing"
+                                        >
+                                            <Dices className="w-3.5 h-3.5" />
+                                            {upcastedHealing}
+                                        </button>
+                                    )}
                                 </div>
                         </div>
 
