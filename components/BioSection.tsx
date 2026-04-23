@@ -1,6 +1,6 @@
-import React from "react";
 import { Bio } from "../types/character";
 import { Card, CardContent } from "./ui/card";
+import { Camera, Trash2, Image as ImageIcon } from "lucide-react";
 
 interface BioSectionProps {
   bio: Bio;
@@ -19,6 +19,53 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
     <div className="space-y-6">
       <Card>
         <CardContent className="p-6">
+          {/* Crest Image Section */}
+          <div className="flex flex-col items-center justify-center mb-8 pb-8 border-b border-gray-100 dark:border-gray-800">
+            <div className="relative group">
+              <div className="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-900/50 hover:border-blue-500 transition-colors shadow-inner">
+                {bio.crestImageUrl ? (
+                  <img src={bio.crestImageUrl} alt="Crest" className="w-full h-full object-contain" />
+                ) : (
+                  <div className="flex flex-col items-center gap-1 text-gray-400">
+                    <ImageIcon size={32} />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-center">No Crest<br/>Uploaded</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                <label className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full cursor-pointer shadow-lg transition-transform hover:scale-110 active:scale-95">
+                  <Camera size={16} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          onUpdate("crestImageUrl", reader.result as string);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+                {bio.crestImageUrl && (
+                  <button
+                    onClick={() => onUpdate("crestImageUrl", "")}
+                    className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg transition-transform hover:scale-110 active:scale-95"
+                    title="Remove Crest"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+            <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Family / Organization Crest</p>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <div>
               <label className={labelClass}>Alignment</label>

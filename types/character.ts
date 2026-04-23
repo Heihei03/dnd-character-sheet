@@ -327,6 +327,7 @@ export interface Bio {
   alliesAndOrganizations?: string;
   appearance?: string;
   treasure?: string;
+  crestImageUrl?: string;
 }
 
 export interface SummonTrait {
