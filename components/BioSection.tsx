@@ -1,13 +1,17 @@
-import { Bio } from "../types/character";
+import React, { useState } from "react";
+import { Bio, AllyOrganization } from "../types/character";
 import { Card, CardContent } from "./ui/card";
-import { Camera, Trash2, Image as ImageIcon } from "lucide-react";
+import { Camera, Trash2, Image as ImageIcon, Plus } from "lucide-react";
+import ConfirmationModal from "./ui/ConfirmationModal";
 
 interface BioSectionProps {
   bio: Bio;
-  onUpdate: (field: keyof Bio, value: string) => void;
+  onUpdate: (field: keyof Bio, value: any) => void;
 }
 
 const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
+  const [allyToDelete, setAllyToDelete] = useState<number | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Bio) => {
     onUpdate(field, e.target.value);
   };
@@ -145,7 +149,7 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
               <textarea
                 value={bio.appearance || ""}
                 onChange={(e) => handleChange(e, "appearance")}
-                className={`${inputClass} min-h-[100px] resize-y`}
+                className={`${inputClass} min-h-[100px] resize-y custom-scrollbar`}
                 placeholder="Describe your character's physical appearance..."
               />
             </div>
@@ -156,7 +160,7 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
                 <textarea
                   value={bio.personalityTraits || ""}
                   onChange={(e) => handleChange(e, "personalityTraits")}
-                  className={`${inputClass} min-h-[100px] resize-y`}
+                  className={`${inputClass} min-h-[100px] resize-y custom-scrollbar`}
                   placeholder="What are your character's prominent traits?"
                 />
               </div>
@@ -165,7 +169,7 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
                 <textarea
                   value={bio.ideals || ""}
                   onChange={(e) => handleChange(e, "ideals")}
-                  className={`${inputClass} min-h-[100px] resize-y`}
+                  className={`${inputClass} min-h-[100px] resize-y custom-scrollbar`}
                   placeholder="What does your character believe in?"
                 />
               </div>
@@ -174,7 +178,7 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
                 <textarea
                   value={bio.bonds || ""}
                   onChange={(e) => handleChange(e, "bonds")}
-                  className={`${inputClass} min-h-[100px] resize-y`}
+                  className={`${inputClass} min-h-[100px] resize-y custom-scrollbar`}
                   placeholder="Who or what is your character closely tied to?"
                 />
               </div>
@@ -183,7 +187,7 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
                 <textarea
                   value={bio.flaws || ""}
                   onChange={(e) => handleChange(e, "flaws")}
-                  className={`${inputClass} min-h-[100px] resize-y`}
+                  className={`${inputClass} min-h-[100px] resize-y custom-scrollbar`}
                   placeholder="What are your character's weaknesses or vices?"
                 />
               </div>
@@ -194,19 +198,72 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
               <textarea
                 value={bio.backstory || ""}
                 onChange={(e) => handleChange(e, "backstory")}
-                className={`${inputClass} min-h-[200px] resize-y`}
+                className={`${inputClass} min-h-[200px] resize-y custom-scrollbar`}
                 placeholder="Write your character's history here..."
               />
             </div>
 
-            <div>
-              <label className={labelClass}>Allies & Organizations</label>
-              <textarea
-                value={bio.alliesAndOrganizations || ""}
-                onChange={(e) => handleChange(e, "alliesAndOrganizations")}
-                className={`${inputClass} min-h-[150px] resize-y`}
-                placeholder="List any allies, friends, or organizations your character is affiliated with..."
-              />
+            {/* Allies & Organizations Section */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <label className={labelClass}>Allies & Organizations</label>
+                <button
+                  onClick={() => {
+                    const current = bio.alliesAndOrganizations || [];
+                    onUpdate("alliesAndOrganizations", [
+                      ...current,
+                      { id: Math.random().toString(36).substring(2, 9), name: "", description: "" }
+                    ]);
+                  }}
+                  className="flex items-center gap-1 text-xs font-black uppercase tracking-widest text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <Plus size={14} /> Add Ally
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-4">
+                {(bio.alliesAndOrganizations || []).map((ally, index) => (
+                  <div key={ally.id} className="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-xl border border-gray-100 dark:border-gray-800 relative group animate-in slide-in-from-top-2 duration-200">
+                    <button
+                      onClick={() => setAllyToDelete(index)}
+                      className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                      title="Remove"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                    
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        value={ally.name}
+                        onChange={(e) => {
+                          const updated = [...(bio.alliesAndOrganizations || [])];
+                          updated[index] = { ...updated[index], name: e.target.value };
+                          onUpdate("alliesAndOrganizations", updated);
+                        }}
+                        className="w-full bg-transparent border-b border-gray-200 dark:border-gray-700 focus:border-blue-500 outline-none text-sm font-bold py-1 transition-colors"
+                        placeholder="Organization or Ally Name..."
+                      />
+                      <textarea
+                        value={ally.description}
+                        onChange={(e) => {
+                          const updated = [...(bio.alliesAndOrganizations || [])];
+                          updated[index] = { ...updated[index], description: e.target.value };
+                          onUpdate("alliesAndOrganizations", updated);
+                        }}
+                        className="w-full bg-transparent text-sm text-gray-600 dark:text-gray-400 focus:outline-none resize-y min-h-[120px] custom-scrollbar"
+                        placeholder="Description of the relationship or organization..."
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {(!bio.alliesAndOrganizations || bio.alliesAndOrganizations.length === 0) && (
+                <div className="text-center py-8 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-xl">
+                  <p className="text-sm text-gray-400 italic">No allies or organizations listed yet.</p>
+                </div>
+              )}
             </div>
 
             <div>
@@ -214,13 +271,28 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
               <textarea
                 value={bio.treasure || ""}
                 onChange={(e) => handleChange(e, "treasure")}
-                className={`${inputClass} min-h-[150px] resize-y`}
+                className={`${inputClass} min-h-[150px] resize-y custom-scrollbar`}
                 placeholder="List any extra traits, notes, or accumulated non-mechanical treasure..."
               />
             </div>
           </div>
         </CardContent>
       </Card>
+
+      <ConfirmationModal
+        isOpen={allyToDelete !== null}
+        onClose={() => setAllyToDelete(null)}
+        onConfirm={() => {
+          if (allyToDelete !== null) {
+            const updated = (bio.alliesAndOrganizations || []).filter((_, i) => i !== allyToDelete);
+            onUpdate("alliesAndOrganizations", updated);
+            setAllyToDelete(null);
+          }
+        }}
+        title="Remove Ally/Organization"
+        message={`Are you sure you want to remove "${(bio.alliesAndOrganizations || [])[allyToDelete ?? 0]?.name || "this ally"}"? This action cannot be undone.`}
+        confirmText="Remove"
+      />
     </div>
   );
 };

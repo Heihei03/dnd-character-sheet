@@ -438,7 +438,7 @@ export const useCharacterSheet = (
     });
   };
 
-  const handleUpdateBio = (field: keyof Bio, value: string) => {
+  const handleUpdateBio = (field: keyof Bio, value: any) => {
     setCharacter(prev => {
       if (!prev) return null;
       return { ...prev, bio: { ...(prev.bio || {}), [field]: value } };

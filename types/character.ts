@@ -311,6 +311,12 @@ export interface ActiveBonus {
   damageType?: string;
 }
 
+export interface AllyOrganization {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export interface Bio {
   alignment?: string;
   age?: string;
@@ -324,7 +330,7 @@ export interface Bio {
   bonds?: string;
   flaws?: string;
   backstory?: string;
-  alliesAndOrganizations?: string;
+  alliesAndOrganizations?: AllyOrganization[];
   appearance?: string;
   treasure?: string;
   crestImageUrl?: string;
