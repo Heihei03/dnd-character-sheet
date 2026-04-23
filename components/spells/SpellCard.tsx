@@ -235,11 +235,11 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                             </>
                                         )
                                     })()}
-                                 <div className="flex flex-col col-span-2">
-                                    <span className="text-xs uppercase font-bold text-red-500 leading-tight">
-                                        Damage {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
-                                    </span>
-                                    {upcastedDamage && (
+                                 {upcastedDamage && (
+                                    <div className="flex flex-col col-span-2">
+                                        <span className="text-xs uppercase font-bold text-red-500 leading-tight">
+                                            Damage {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
+                                        </span>
                                         <button 
                                             onClick={handleDamageRoll}
                                             className={`text-left font-mono font-bold hover:text-primary transition-all flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/10 shadow-sm mt-0.5 ${
@@ -252,13 +252,13 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                             <Dices className="w-3.5 h-3.5" />
                                             {upcastedDamage} {spell.damageType}
                                         </button>
-                                    )}
-                                </div>
-                                <div className="flex flex-col col-span-2">
-                                    <span className="text-xs uppercase font-bold text-green-500 leading-tight">
-                                        Healing {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
-                                    </span>
-                                    {upcastedHealing && (
+                                    </div>
+                                )}
+                                {upcastedHealing && (
+                                    <div className="flex flex-col col-span-2">
+                                        <span className="text-xs uppercase font-bold text-green-500 leading-tight">
+                                            Healing {spell.level === 0 && spell.scalesWithCharacterLevel ? `(Scaled to Lvl ${totalLevel})` : (castLevel > spell.level ? `(Upcasted to Lvl ${castLevel})` : "")}
+                                        </span>
                                         <button 
                                             onClick={handleHealRoll}
                                             className={`text-left font-mono font-bold hover:text-primary transition-all flex items-center gap-2 px-2.5 py-1 rounded-full border border-green-500/10 shadow-sm mt-0.5 ${
@@ -271,8 +271,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                             <Dices className="w-3.5 h-3.5" />
                                             {upcastedHealing}
                                         </button>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                         </div>
 
                         {isExpanded && (
