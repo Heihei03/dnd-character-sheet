@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { InventoryItem, Resource } from "../types/character";
 import { Card, CardContent } from "./ui/card";
 import AddItemForm from "./inventory/AddItemForm";
 import InventoryTable from "./inventory/InventoryTable";
@@ -7,7 +6,10 @@ import AttunementSection from "./inventory/AttunementSection";
 import SectionHeader from "./ui/SectionHeader";
 import LoadSummary from "./inventory/LoadSummary";
 import SearchFilterBar from "./ui/SearchFilterBar";
-import { Lock, Unlock, GripVertical } from "lucide-react";
+import { Lock, Unlock, GripVertical, Settings, Scale, AlertCircle, X } from "lucide-react";
+import SettingsButton from "./ui/SettingsButton";
+import ModalScrollLock from "./ui/ModalScrollLock";
+import { calculateTotalWeight } from "../utils/character-utils";
 import {
     DndContext,
     closestCenter,
@@ -24,27 +26,33 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
+import { InventoryItem, Resource, NormalizedCharacter } from "../types/character";
+
 interface InventorySectionProps {
-    inventory: InventoryItem[];
+    character: NormalizedCharacter;
     setInventory: (inventory: InventoryItem[]) => void;
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
+    onChange: (field: keyof NormalizedCharacter, value: any) => void;
 }
 
 const INVENTORY_ITEM_TYPES = ["weapon", "armor", "shield", "container", "tool", "other"] as const;
 
 const InventorySection: React.FC<InventorySectionProps> = ({
-    inventory,
+    character,
     setInventory,
     resources = [],
-    onUpdateResources
+    onUpdateResources,
+    onChange
 }) => {
+    const inventory = character.inventory || [];
     const [expandedItemIds, setExpandedItemIds] = useState<string[]>([]);
     const [isAdding, setIsAdding] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [isEquipmentReorderMode, setIsEquipmentReorderMode] = useState(false);
     const [isInventoryReorderMode, setIsInventoryReorderMode] = useState(false);
+    const [showEncumbranceSettings, setShowEncumbranceSettings] = useState(false);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -154,19 +162,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
         }
     };
 
-    const calculateItemTotalWeight = (item: InventoryItem): number => {
-        let total = item.weight * item.quantity;
-        if (item.isContainer && item.containerDetails) {
-            const contents = inventory.filter(i => i.parentId === item.id);
-            const contentsWeight = contents.reduce((acc, curr) => acc + calculateItemTotalWeight(curr), 0);
-            total += contentsWeight * item.containerDetails.contentsWeightMultiplier;
-        }
-        return total;
-    };
-
-    const totalWeight = inventory
-        .filter(item => !item.parentId)
-        .reduce((acc, item) => acc + calculateItemTotalWeight(item), 0);
+    const totalWeight = calculateTotalWeight(character);
 
     const sortItemsHierarchically = (items: InventoryItem[]): InventoryItem[] => {
         const result: InventoryItem[] = [];
@@ -206,8 +202,92 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                 onAdd={() => setIsAdding(true)} 
                 isAdding={isAdding}
             >
-                <LoadSummary totalWeight={totalWeight} />
+                <div className="flex items-center gap-2">
+                    <LoadSummary 
+                        totalWeight={totalWeight} 
+                        strength={character.abilityScores.strength}
+                        enabled={character.encumbranceEnabled}
+                        rule={character.encumbranceRule}
+                    />
+                    <SettingsButton 
+                        onClick={() => setShowEncumbranceSettings(true)}
+                        title="Encumbrance Settings"
+                        className="ml-2"
+                    />
+                </div>
             </SectionHeader>
+
+            {/* Encumbrance Settings Modal */}
+            {showEncumbranceSettings && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 p-4">
+                    <ModalScrollLock isOpen={showEncumbranceSettings} />
+                    <div className="bg-background w-full max-w-md rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-border bg-secondary/30 flex justify-between items-center">
+                            <h3 className="font-black uppercase tracking-wider flex items-center gap-2">
+                                <Scale size={18} className="text-primary" />
+                                Encumbrance Rules
+                            </h3>
+                            <button onClick={() => setShowEncumbranceSettings(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-0.5">
+                                    <label className="text-sm font-bold uppercase tracking-tight">Enable Tracking</label>
+                                    <p className="text-[10px] text-muted-foreground uppercase font-medium">Toggle encumbrance calculations</p>
+                                </div>
+                                <button
+                                    onClick={() => onChange("encumbranceEnabled", !character.encumbranceEnabled)}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${character.encumbranceEnabled ? 'bg-primary' : 'bg-secondary'}`}
+                                >
+                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${character.encumbranceEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                                </button>
+                            </div>
+
+                            {character.encumbranceEnabled && (
+                                <div className="space-y-4 animate-in slide-in-from-top-2 duration-200">
+                                    <div className="space-y-3">
+                                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Rule Variation</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {[
+                                                { id: 'standard', label: 'Standard', desc: 'STR × 15' },
+                                                { id: 'variant', label: 'Variant', desc: 'Thresholds at 5x/10x/15x' }
+                                            ].map((r) => (
+                                                <button
+                                                    key={r.id}
+                                                    onClick={() => onChange("encumbranceRule", r.id)}
+                                                    className={`p-3 rounded-xl border-2 text-left transition-all ${character.encumbranceRule === r.id ? 'border-primary bg-primary/5' : 'border-border bg-secondary/20 hover:border-primary/30'}`}
+                                                >
+                                                    <div className="font-black uppercase text-xs tracking-tighter mb-0.5">{r.label}</div>
+                                                    <div className="text-[10px] text-muted-foreground font-bold">{r.desc}</div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 flex gap-3 italic">
+                                        <AlertCircle size={16} className="text-primary shrink-0 mt-0.5" />
+                                        <div className="text-[10px] text-muted-foreground leading-relaxed">
+                                            {character.encumbranceRule === 'variant' 
+                                                ? "Variant rules apply speed penalties at different weight thresholds and disadvantage on physical rolls when heavily encumbered."
+                                                : "Standard rules only track your maximum carrying capacity (STR × 15 lbs)."}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="px-6 py-4 bg-secondary/30 border-t border-border flex justify-end">
+                            <button
+                                onClick={() => setShowEncumbranceSettings(false)}
+                                className="px-8 py-2 bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest rounded-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            >
+                                Done
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <SearchFilterBar
                 searchQuery={searchQuery}

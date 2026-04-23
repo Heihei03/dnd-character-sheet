@@ -1,4 +1,4 @@
-import { Character, Sense, Speed, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency, AbilityScores, NormalizedCharacter, ProficiencyArray } from "../types/character";
+import { Character, Sense, Speed, Defenses, DefenseEntry, Feature, ProficiencyLevel, Action, Spell, Resource, Condition, Skills, ToolProficiency, AbilityScores, NormalizedCharacter, ProficiencyArray, InventoryItem } from "../types/character";
 import { FeatureModifier } from "../types/modifiers";
 import { STANDARD_ACTIONS } from "../data/standard-actions";
 import { SKILL_LIST, LANGUAGES } from "./constants";
@@ -426,7 +426,67 @@ export const getEffectiveSpeed = (character: Character): Speed => {
         }
     });
 
+    // Apply Encumbrance penalties if enabled
+    if (character.encumbranceEnabled) {
+        const totalWeight = calculateTotalWeight(character);
+        const strength = getEffectiveAbilityScores(character).strength;
+        const rule = character.encumbranceRule || 'standard';
+
+        if (rule === 'variant') {
+            const encumberedThreshold = strength * 5;
+            const heavilyEncumberedThreshold = strength * 10;
+            const capacity = strength * 15;
+
+            let penalty = 0;
+            if (totalWeight > capacity) {
+                // If over capacity, speed is 0 or heavily reduced. 
+                // Rules say "cannot carry more than capacity", but for UI we'll treat it as 0 speed.
+                penalty = 999; 
+            } else if (totalWeight > heavilyEncumberedThreshold) {
+                penalty = 20;
+            } else if (totalWeight > encumberedThreshold) {
+                penalty = 10;
+            }
+
+            if (penalty > 0) {
+                Object.keys(effective).forEach(t => {
+                    const current = effective[t];
+                    if (current) {
+                        current.value = Math.max(0, current.value - penalty);
+                    }
+                });
+            }
+        } else {
+            // Standard rule: Speed is 0 if over capacity
+            const capacity = strength * 15;
+            if (totalWeight > capacity) {
+                Object.keys(effective).forEach(t => {
+                    const current = effective[t];
+                    if (current) current.value = 0;
+                });
+            }
+        }
+    }
+
     return effective;
+};
+
+export const calculateTotalWeight = (character: Character): number => {
+    const inventory = character.inventory || [];
+    
+    const calculateItemWeight = (item: InventoryItem): number => {
+        let total = (item.weight || 0) * (item.quantity || 1);
+        if (item.isContainer && item.containerDetails) {
+            const contents = inventory.filter(i => i.parentId === item.id);
+            const contentsWeight = contents.reduce((acc, curr) => acc + calculateItemWeight(curr), 0);
+            total += contentsWeight * (item.containerDetails.contentsWeightMultiplier || 1);
+        }
+        return total;
+    };
+
+    return inventory
+        .filter(item => !item.parentId)
+        .reduce((acc, item) => acc + calculateItemWeight(item), 0);
 };
 
 export const getEffectiveActions = (character: Character): Action[] => {
@@ -842,9 +902,31 @@ export const getAdvantageDisadvantage = (character: Character, key: string, abil
         })
         .map(m => `${m.type === "Advantage" ? "ADV" : m.type === "Extra Advantage" ? "EXTRA ADV" : "DIS"}: ${m.subType}${m.value ? ` (${m.value})` : ""}`);
 
+    let disadvantage = relevantDis.length > 0;
+
+    // Apply Variant Encumbrance penalties
+    if (character.encumbranceEnabled && character.encumbranceRule === 'variant') {
+        const totalWeight = calculateTotalWeight(character);
+        const strength = getEffectiveAbilityScores(character).strength;
+        const heavilyEncumberedThreshold = strength * 10;
+        
+        if (totalWeight > heavilyEncumberedThreshold) {
+            const targetLower = (key || "").toLowerCase();
+            const isStrDexCon = targetLower.includes("strength") || targetLower.includes("dexterity") || targetLower.includes("constitution") ||
+                              (ability && ["strength", "dexterity", "constitution"].includes(ability.toLowerCase()));
+            
+            if (targetLower.includes("attack") || (isStrDexCon && (targetLower.includes("save") || targetLower.includes("check") || targetLower.includes("skill")))) {
+                disadvantage = true;
+                if (!notes.some(n => n.includes("Heavily Encumbered"))) {
+                    notes.push("DIS: Heavily Encumbered");
+                }
+            }
+        }
+    }
+
     return {
         advantage: relevantAdv.length > 0,
-        disadvantage: relevantDis.length > 0,
+        disadvantage,
         extraAdvantage: relevantExtraAdv.reduce((sum, m) => sum + (Number(m.value) || 0), 0),
         notes: notes
     };
@@ -1124,6 +1206,8 @@ export const normalizeCharacter = (character: any): NormalizedCharacter => {
         tempHp: character.tempHp ?? 0,
         hp: character.hp ?? 10,
         maxHp: character.maxHp ?? 10,
+        encumbranceEnabled: character.encumbranceEnabled ?? false,
+        encumbranceRule: character.encumbranceRule ?? 'standard',
     };
 };
 

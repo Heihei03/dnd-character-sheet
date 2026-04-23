@@ -72,6 +72,7 @@ interface CharacterTabsProps {
   onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
   handleUpdateSummons: (summons: Summon[]) => void;
   handleAdjustSummonHP: (summonId: string, amount: number, isDamage: boolean) => void;
+  onChange: (field: any, value: any) => void;
 }
 
 const CharacterTabs: React.FC<CharacterTabsProps> = ({
@@ -104,6 +105,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
   onUpdateActiveBonuses,
   handleUpdateSummons,
   handleAdjustSummonHP,
+  onChange,
 }) => {
   const handleNavigateToFeature = (featureId: string) => {
     setActiveTab("features");
@@ -155,10 +157,11 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
             setCurrency={handleCurrencyChange}
           />
           <InventorySection
-            inventory={character.inventory}
+            character={character}
             setInventory={handleInventoryChange}
             resources={effectiveResources}
             onUpdateResources={handleUpdateResources}
+            onChange={onChange}
           />
         </div>
       )}

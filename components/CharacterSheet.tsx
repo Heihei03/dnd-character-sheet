@@ -204,6 +204,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               onUpdateActiveBonuses={handleUpdateActiveBonuses}
               handleUpdateSummons={handleUpdateSummons}
               handleAdjustSummonHP={handleAdjustSummonHP}
+              onChange={handleChange}
             />
           </div>
 

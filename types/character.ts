@@ -417,6 +417,8 @@ export interface Character {
   critRange?: number;
   activeBonuses?: ActiveBonus[];
   summons?: Summon[];
+  encumbranceEnabled?: boolean;
+  encumbranceRule?: 'standard' | 'variant';
 }
 
 export type CritRule = 'double-dice' | 'max-plus-roll' | 'double-total';
@@ -451,6 +453,8 @@ export interface NormalizedCharacter extends Character {
   critRange: number;
   activeBonuses: ActiveBonus[];
   summons: Summon[];
+  encumbranceEnabled: boolean;
+  encumbranceRule: 'standard' | 'variant';
 }
 export interface RollEntry {
   id: string;
