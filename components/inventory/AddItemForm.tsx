@@ -30,7 +30,8 @@ import {
   Feature, 
   InventoryItem, 
   ToolDetails, 
-  WeaponDetails 
+  WeaponDetails,
+  AmmunitionDetails
 } from "../../types/character";
 
 interface AddItemFormProps {
@@ -45,12 +46,13 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
     const [newItemQuantity, setNewItemQuantity] = useState(1);
     const [newItemEquippable, setNewItemEquippable] = useState(false);
     const [newItemAttunable, setNewItemAttunable] = useState(false);
-    const [newItemType, setNewItemType] = useState<"weapon" | "armor" | "shield" | "container" | "tool" | "other">("other");
+    const [newItemType, setNewItemType] = useState<"weapon" | "armor" | "shield" | "container" | "tool" | "ammunition" | "other">("other");
     const [newItemWondrous, setNewItemWondrous] = useState(false);
     const [newItemWeaponDetails, setNewItemWeaponDetails] = useState<WeaponDetails | undefined>(undefined);
     const [newItemArmorDetails, setNewItemArmorDetails] = useState<ArmorDetails | undefined>(undefined);
     const [newItemContainerDetails, setNewItemContainerDetails] = useState<ContainerDetails | undefined>(undefined);
     const [newItemToolDetails, setNewItemToolDetails] = useState<ToolDetails | undefined>(undefined);
+    const [newItemAmmunitionDetails, setNewItemAmmunitionDetails] = useState<AmmunitionDetails | undefined>(undefined);
     const [newItemFeatures, setNewItemFeatures] = useState<Feature[]>([]);
     const [newItemDescription, setNewItemDescription] = useState("");
 
@@ -159,6 +161,17 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
         }
     };
 
+    const handleBaseAmmunitionSelect = (baseName: string) => {
+        if (baseName === "Custom") {
+            setNewItemName("Custom Ammunition");
+            setNewItemAmmunitionDetails({
+                baseAmmunition: "Custom",
+                category: "Arrows"
+            });
+        }
+        // Add predefined ammunition data here if available in the future
+    };
+
     const addItem = () => {
         if (newItemName.trim() === "") return;
 
@@ -177,6 +190,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
             armorDetails: newItemArmorDetails,
             containerDetails: newItemContainerDetails,
             toolDetails: newItemToolDetails,
+            ammunitionDetails: newItemAmmunitionDetails,
             isContainer: newItemType === "container",
             isWondrous: newItemWondrous,
             description: newItemDescription,
@@ -196,6 +210,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
         setNewItemArmorDetails(undefined);
         setNewItemContainerDetails(undefined);
         setNewItemToolDetails(undefined);
+        setNewItemAmmunitionDetails(undefined);
         setNewItemDescription("");
         setNewItemFeatures([]);
         setNewItemWondrous(false);
@@ -263,6 +278,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                 else if (type === "armor" || type === "shield") handleBaseArmorSelect("Custom", type);
                                 else if (type === "container") handleBaseContainerSelect("Custom");
                                 else if (type === "tool") handleBaseToolSelect("Custom");
+                                else if (type === "ammunition") handleBaseAmmunitionSelect("Custom");
                             }}
                             options={[
                                 { label: "Other", value: "other" },
@@ -271,6 +287,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                 { label: "Shield", value: "shield" },
                                 { label: "Container", value: "container" },
                                 { label: "Tool", value: "tool" },
+                                { label: "Ammunition", value: "ammunition" },
                             ]}
                             className="min-w-[120px]"
                         />
@@ -572,6 +589,29 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                                             onChange={(e) => setNewItemToolDetails({ ...newItemToolDetails, craft: e.target.value })}
                                             placeholder="Crafting details..."
                                             className="text-xs border border-border bg-background rounded-md p-2 w-full focus:ring-1 focus:ring-primary outline-none min-h-[60px]"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {newItemType === "ammunition" && newItemAmmunitionDetails && (
+                            <div className="flex flex-col gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20">
+                                <label className="text-[10px] font-black text-primary uppercase tracking-widest">Ammunition Selection</label>
+                                <Select
+                                    value={newItemAmmunitionDetails.baseAmmunition || "Custom"}
+                                    onValueChange={(val) => handleBaseAmmunitionSelect(val)}
+                                    options={[
+                                        { label: "Custom Ammunition", value: "Custom" },
+                                    ]}
+                                />
+                                <div className="grid grid-cols-1 gap-3 mt-1">
+                                    <div>
+                                        <label className="text-[10px] text-muted-foreground font-black uppercase tracking-tight mb-1">Category</label>
+                                        <ThemedAutocomplete
+                                            value={newItemAmmunitionDetails.category}
+                                            onChange={(val: string) => setNewItemAmmunitionDetails({ ...newItemAmmunitionDetails, category: val })}
+                                            options={["Arrows", "Bolts", "Bullets", "Needles", "Sling Bullets"]}
+                                            placeholder="Arrows"
                                         />
                                     </div>
                                 </div>

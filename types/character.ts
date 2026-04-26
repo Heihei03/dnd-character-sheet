@@ -89,6 +89,11 @@ export interface ToolDetails {
   craft: string;   // Crafting descriptions from 2024 rules
 }
 
+export interface AmmunitionDetails {
+  baseAmmunition?: string;
+  category: string; // e.g., "Arrows", "Bolts", "Needles", "Bullets"
+}
+
 export interface ToolProficiency {
   id?: string;
   name: string;
@@ -108,11 +113,12 @@ export interface InventoryItem {
   attuned?: boolean;
   equippable?: boolean;
   attunable?: boolean;
-  itemType?: "weapon" | "armor" | "shield" | "container" | "tool" | "other";
+  itemType?: "weapon" | "armor" | "shield" | "container" | "tool" | "ammunition" | "other";
   weaponDetails?: WeaponDetails;
   armorDetails?: ArmorDetails;
   containerDetails?: ContainerDetails;
   toolDetails?: ToolDetails;
+  ammunitionDetails?: AmmunitionDetails;
   isContainer?: boolean;
   parentId?: string;
   isWondrous?: boolean;

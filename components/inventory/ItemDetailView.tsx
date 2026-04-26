@@ -63,6 +63,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             { label: "Shield", value: "shield" },
                             { label: "Container", value: "container" },
                             { label: "Tool", value: "tool" },
+                            { label: "Ammunition", value: "ammunition" },
                         ]}
                         className="min-w-[120px]"
                     />
@@ -339,6 +340,23 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                                     rows={2}
                                 />
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {item.itemType === "ammunition" && item.ammunitionDetails && (
+                <div className="md:col-span-2 mt-2 p-3 bg-primary/5 rounded border border-primary/20 space-y-3">
+                    <label className="block text-[10px] font-black text-primary uppercase tracking-widest mb-1">Ammunition Stats</label>
+                    <div className="grid grid-cols-1 gap-4">
+                        <div>
+                            <label className="block text-[10px] text-muted-foreground font-bold uppercase tracking-tight mb-1">Category</label>
+                            <ThemedAutocomplete
+                                value={item.ammunitionDetails.category}
+                                onChange={val => updateItem(item.id, "ammunitionDetails", { ...item.ammunitionDetails, category: val })}
+                                options={["Arrows", "Bolts", "Bullets", "Needles", "Sling Bullets"]}
+                                placeholder="Arrows"
+                            />
                         </div>
                     </div>
                 </div>
