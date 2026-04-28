@@ -423,6 +423,7 @@ export interface Character {
   critRange?: number;
   activeBonuses?: ActiveBonus[];
   summons?: Summon[];
+  summonStatblocks?: Summon[];
   encumbranceEnabled?: boolean;
   encumbranceRule?: 'standard' | 'variant';
 }
@@ -459,6 +460,7 @@ export interface NormalizedCharacter extends Character {
   critRange: number;
   activeBonuses: ActiveBonus[];
   summons: Summon[];
+  summonStatblocks: Summon[];
   encumbranceEnabled: boolean;
   encumbranceRule: 'standard' | 'variant';
 }

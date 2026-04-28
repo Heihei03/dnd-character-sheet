@@ -673,6 +673,10 @@ export const useCharacterSheet = (
     setCharacter(prev => (prev ? { ...prev, summons } : null));
   };
 
+  const handleUpdateSummonStatblocks = (summonStatblocks: Summon[]) => {
+    setCharacter(prev => (prev ? { ...prev, summonStatblocks } : null));
+  };
+
   return {
     characterWithDefaults,
     activeTab,
@@ -729,6 +733,7 @@ export const useCharacterSheet = (
     handleUpdateResources,
     handleUpdateActiveBonuses,
     handleUpdateSummons,
+    handleUpdateSummonStatblocks,
     handleAdjustHP,
     handleAdjustSummonHP,
   };

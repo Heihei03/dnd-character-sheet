@@ -9,7 +9,8 @@ import {
   Shield, 
   Wind,
   Pencil,
-  Power
+  Power,
+  Plus
 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import NumericInput from "../ui/NumericInput";
@@ -26,7 +27,9 @@ interface SummonCardProps {
   rollDamage: RollDamageFunc;
   character: any; // characterWithDefaults
   proficiencyBonus: number;
-  onAdjustHP: (amount: number, isDamage: boolean) => void;
+  onAdjustHP?: (amount: number, isDamage: boolean) => void;
+  isStatblock?: boolean;
+  onSummon?: () => void;
 }
 
 const SummonCard: React.FC<SummonCardProps> = ({
@@ -38,7 +41,9 @@ const SummonCard: React.FC<SummonCardProps> = ({
   rollDamage,
   character,
   proficiencyBonus,
-  onAdjustHP
+  onAdjustHP,
+  isStatblock = false,
+  onSummon
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null);
@@ -46,7 +51,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
   const handleUpdateHP = (val: number) => {
     const diff = val - summon.hp.current;
     if (diff === 0) return;
-    onAdjustHP(Math.abs(diff), diff < 0);
+    onAdjustHP?.(Math.abs(diff), diff < 0);
   };
 
   const handleUpdateTempHP = (val: number) => {
@@ -148,22 +153,24 @@ const SummonCard: React.FC<SummonCardProps> = ({
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center gap-4">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdate({ ...summon, active: !isActive });
-              }}
-              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                isActive ? 'bg-primary' : 'bg-secondary-foreground/20'
-              }`}
-              title={isActive ? "Dismiss Summon" : "Activate Summon"}
-            >
-              <span
-                className={`pointer-events-none block h-3.5 w-3.5 rounded-full bg-background shadow-lg ring-0 transition-transform duration-200 ease-in-out ${
-                  isActive ? 'translate-x-4.5' : 'translate-x-1'
+            {!isStatblock && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUpdate({ ...summon, active: !isActive });
+                }}
+                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                  isActive ? 'bg-primary' : 'bg-secondary-foreground/20'
                 }`}
-              />
-            </button>
+                title={isActive ? "Dismiss Summon" : "Activate Summon"}
+              >
+                <span
+                  className={`pointer-events-none block h-3.5 w-3.5 rounded-full bg-background shadow-lg ring-0 transition-transform duration-200 ease-in-out ${
+                    isActive ? 'translate-x-4.5' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            )}
 
             <div>
               <div className="flex items-center gap-2">
@@ -183,8 +190,8 @@ const SummonCard: React.FC<SummonCardProps> = ({
                 <div className="flex items-center gap-1">
                    <Heart className={`w-3 h-3 ${isActive ? "text-red-500" : "text-muted-foreground"}`} />
                    <span className={`font-bold ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
-                     {summon.hp.current} / {summon.hp.max}
-                     {summon.hp.temp > 0 && <span className="text-primary ml-1"> (+{summon.hp.temp})</span>}
+                     {isStatblock ? summon.hp.max : `${summon.hp.current} / ${summon.hp.max}`}
+                     {!isStatblock && summon.hp.temp > 0 && <span className="text-primary ml-1"> (+{summon.hp.temp})</span>}
                    </span> HP
                 </div>
                 <div className="flex items-center gap-1">
@@ -202,6 +209,18 @@ const SummonCard: React.FC<SummonCardProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {isStatblock && onSummon && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSummon();
+                }}
+                className="flex items-center gap-1 px-2.5 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold transition-all shadow-sm"
+                title="Summon Instance"
+              >
+                <Plus className="w-3.5 h-3.5" /> Summon
+              </button>
+            )}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -229,30 +248,36 @@ const SummonCard: React.FC<SummonCardProps> = ({
              </div>
 
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+               {!isStatblock && (
+                 <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Current HP</label>
+                    <NumericInput 
+                      value={summon.hp.current} 
+                      onChange={handleUpdateHP}
+                      className="h-8 min-w-0"
+                    />
+                 </div>
+               )}
                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Current HP</label>
-                  <NumericInput 
-                    value={summon.hp.current} 
-                    onChange={handleUpdateHP}
-                    className="h-8 min-w-0"
-                  />
-               </div>
-               <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Max HP</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">
+                    {isStatblock ? "HP" : "Max HP"}
+                  </label>
                   <NumericInput 
                     value={summon.hp.max} 
                     onChange={handleUpdateMaxHP}
                     className="h-8 min-w-0"
                   />
                </div>
-               <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Temp HP</label>
-                  <NumericInput 
-                    value={summon.hp.temp || 0} 
-                    onChange={handleUpdateTempHP}
-                    className="h-8 min-w-0 text-primary"
-                  />
-               </div>
+               {!isStatblock && (
+                 <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Temp HP</label>
+                    <NumericInput 
+                      value={summon.hp.temp || 0} 
+                      onChange={handleUpdateTempHP}
+                      className="h-8 min-w-0 text-primary"
+                    />
+                 </div>
+               )}
                <div>
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">AC</label>
                   <NumericInput 

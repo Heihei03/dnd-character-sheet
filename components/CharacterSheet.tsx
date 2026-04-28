@@ -80,6 +80,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     handleUpdateResources,
     handleUpdateActiveBonuses,
     handleUpdateSummons,
+    handleUpdateSummonStatblocks,
     handleAdjustHP,
     handleAdjustSummonHP,
   } = useCharacterSheet(character, setCharacter);
@@ -203,6 +204,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               onCritRangeChange={(range) => handleChange("critRange", range)}
               onUpdateActiveBonuses={handleUpdateActiveBonuses}
               handleUpdateSummons={handleUpdateSummons}
+              handleUpdateSummonStatblocks={handleUpdateSummonStatblocks}
               handleAdjustSummonHP={handleAdjustSummonHP}
               onChange={handleChange}
             />
