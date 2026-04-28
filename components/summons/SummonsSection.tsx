@@ -96,7 +96,6 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
 
   const handleEditSummon = (id: string) => {
     setEditingSummonId(id);
-    setShowAddForm(true);
   };
 
   const handleSummon = (statblock: Summon) => {
@@ -226,7 +225,6 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
                   <AddSummonForm 
                     onAdd={handleAddSummon}
                     onCancel={() => {
-                      setShowAddForm(false);
                       setEditingSummonId(null);
                     }}
                     initialSummon={summon}
