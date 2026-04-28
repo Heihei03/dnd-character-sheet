@@ -208,6 +208,16 @@ const SummonCard: React.FC<SummonCardProps> = ({
             >
               <Pencil className="w-4 h-4" />
             </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="p-1.5 rounded-full hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
+              title="Delete"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
             <button 
               onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
               className={`p-1.5 rounded-full hover:bg-secondary/20 transition-all ${isExpanded ? "rotate-180" : ""}`}
