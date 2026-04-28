@@ -370,7 +370,7 @@ export interface Summon {
   alignment?: string;
   cr?: string;
   xp?: number;
-  senses?: string;
+  senses?: Sense[];
   languages?: string;
   vulnerabilities?: string;
   resistances?: string;

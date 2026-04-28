@@ -6,7 +6,7 @@ import NumericInput from "../ui/NumericInput";
 import Select from "../ui/Select";
 import MultiSelect from "../ui/MultiSelect";
 import ThemedAutocomplete from "../ui/ThemedAutocomplete";
-import { Summon, AbilityScores, SummonTrait, Action } from "../../types/character";
+import { Summon, AbilityScores, SummonTrait, Action, Sense } from "../../types/character";
 import { Plus, Trash2, Pencil, Link } from "lucide-react";
 import ActionForm from "../actions/ActionForm";
 import ConfirmationModal from "../ui/ConfirmationModal";
@@ -51,7 +51,24 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({
   const [xp, setXp] = useState(initialSummon?.xp || 0);
   const [pb, setPb] = useState(initialSummon?.pb || 2);
   const [useCharacterPB, setUseCharacterPB] = useState(initialSummon?.useCharacterPB || false);
-  const [senses, setSenses] = useState(initialSummon?.senses || "");
+  const [senses, setSenses] = useState<Sense[]>(() => {
+    if (Array.isArray(initialSummon?.senses)) {
+      return initialSummon.senses;
+    }
+    const rawSenses = initialSummon?.senses as unknown;
+    if (typeof rawSenses === 'string' && rawSenses.trim()) {
+      return rawSenses.split(',').map(s => {
+        const trimmed = s.trim();
+        const match = trimmed.match(/^(.*?)\s+(\d+\s*ft|\d+\s*feet|\d+)$/i);
+        if (match) {
+          return { name: match[1].trim(), value: match[2].trim() };
+        }
+        return { name: trimmed, value: "" };
+      });
+    }
+    return [];
+  });
+  const [newSense, setNewSense] = useState({ name: "", value: "" });
   const [languages, setLanguages] = useState(initialSummon?.languages || "");
   const [vulnerabilities, setVulnerabilities] = useState(initialSummon?.vulnerabilities || "");
   const [resistances, setResistances] = useState(initialSummon?.resistances || "");
@@ -369,9 +386,55 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Skills</label>
                 <MultiSelect value={skills} onChange={setSkills} options={SKILL_LIST.map(s => s.name)} placeholder="e.g. Perception +4" />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Senses</label>
-                <MultiSelect value={senses} onChange={setSenses} options={SENSES_LIST} placeholder="Add sense..." />
+                
+                {senses.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {senses.map((sense, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1 bg-secondary text-foreground text-xs px-2 py-1 rounded-md border border-border font-medium">
+                        <strong className="text-primary">{sense.name}</strong> {sense.value}
+                        <button 
+                          type="button" 
+                          onClick={() => setSenses(senses.filter((_, i) => i !== idx))}
+                          className="text-muted-foreground hover:text-red-500 ml-1 font-bold text-sm"
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex gap-2 items-center">
+                  <div className="flex-1 relative">
+                    <ThemedAutocomplete
+                      value={newSense.name}
+                      onChange={(val) => setNewSense({ ...newSense, name: val })}
+                      options={SENSES_LIST}
+                      placeholder="Sense..."
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    value={newSense.value}
+                    onChange={(e) => setNewSense({ ...newSense, value: e.target.value })}
+                    placeholder="Range (e.g. 60 ft)"
+                    className="w-32 text-xs p-2 bg-background border border-border rounded focus:ring-1 focus:ring-primary outline-none h-9"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (newSense.name && newSense.value) {
+                        setSenses([...senses, { name: newSense.name, value: newSense.value }]);
+                        setNewSense({ name: "", value: "" });
+                      }
+                    }}
+                    className="px-3 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded font-bold text-xs h-9 transition-colors"
+                  >
+                    Add
+                  </button>
+                </div>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Languages</label>

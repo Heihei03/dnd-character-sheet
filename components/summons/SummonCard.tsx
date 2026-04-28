@@ -354,7 +354,12 @@ const SummonCard: React.FC<SummonCardProps> = ({
                   <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Condition Immunities</strong> {summon.conditionImmunities}</div>
                 )}
                 {summon.senses && (
-                  <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Senses</strong> {summon.senses}</div>
+                  <div>
+                    <strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Senses</strong> 
+                    {Array.isArray(summon.senses) 
+                      ? summon.senses.map(s => `${s.name} ${s.value}`).join(', ') 
+                      : summon.senses}
+                  </div>
                 )}
                 {summon.languages && (
                   <div><strong className="text-primary uppercase text-[10px] tracking-widest mr-2">Languages</strong> {summon.languages}</div>
