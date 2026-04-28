@@ -143,41 +143,18 @@ const SummonCard: React.FC<SummonCardProps> = ({
     );
   };
 
-  const isActive = summon.active !== false;
-
   return (
-    <Card className={`group border-l-4 transition-all duration-300 ${isActive ? "border-l-primary shadow-md" : "border-l-muted-foreground/30 opacity-60 grayscale-[0.5] shadow-none"}`}>
+    <Card className="group border-l-4 transition-all duration-300 border-l-primary shadow-md">
       <CardContent className="p-0">
         <div 
           className={`p-4 flex justify-between items-center cursor-pointer hover:bg-secondary/10 transition-colors ${isExpanded ? "border-b border-border bg-secondary/5" : ""}`}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center gap-4">
-            {!isStatblock && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onUpdate({ ...summon, active: !isActive });
-                }}
-                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                  isActive ? 'bg-primary' : 'bg-secondary-foreground/20'
-                }`}
-                title={isActive ? "Dismiss Summon" : "Activate Summon"}
-              >
-                <span
-                  className={`pointer-events-none block h-3.5 w-3.5 rounded-full bg-background shadow-lg ring-0 transition-transform duration-200 ease-in-out ${
-                    isActive ? 'translate-x-4.5' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            )}
-
             <div>
               <div className="flex items-center gap-2">
-                <h3 className={`font-bold text-lg transition-all ${isActive ? "" : "text-muted-foreground"}`}>{summon.name}</h3>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-widest border transition-all ${
-                  isActive ? "bg-primary/10 text-primary border-primary/20" : "bg-secondary text-muted-foreground border-border"
-                }`}>
+                <h3 className="font-bold text-lg transition-all">{summon.name}</h3>
+                <span className="text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-widest border transition-all bg-primary/10 text-primary border-primary/20">
                   {summon.type}
                 </span>
                 {summon.cr && (
@@ -188,20 +165,20 @@ const SummonCard: React.FC<SummonCardProps> = ({
               </div>
               <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
-                   <Heart className={`w-3 h-3 ${isActive ? "text-red-500" : "text-muted-foreground"}`} />
-                   <span className={`font-bold ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+                   <Heart className="w-3 h-3 text-red-500" />
+                   <span className="font-bold text-foreground">
                      {isStatblock ? summon.hp.max : `${summon.hp.current} / ${summon.hp.max}`}
                      {!isStatblock && summon.hp.temp > 0 && <span className="text-primary ml-1"> (+{summon.hp.temp})</span>}
                    </span> HP
                 </div>
                 <div className="flex items-center gap-1">
-                   <Shield className={`w-3 h-3 ${isActive ? "text-blue-500" : "text-muted-foreground"}`} />
-                   <span className={`font-bold ${isActive ? "text-foreground" : "text-muted-foreground"}`}>{summon.ac}</span> AC
+                   <Shield className="w-3 h-3 text-blue-500" />
+                   <span className="font-bold text-foreground">{summon.ac}</span> AC
                 </div>
                 {summon.speed && (
                   <div className="flex items-center gap-1">
-                    <Wind className={`w-3 h-3 ${isActive ? "text-teal-500" : "text-muted-foreground"}`} />
-                    <span className={`font-bold ${isActive ? "text-foreground" : "text-muted-foreground"}`}>{summon.speed}</span>
+                    <Wind className="w-3 h-3 text-teal-500" />
+                    <span className="font-bold text-foreground">{summon.speed}</span>
                   </div>
                 )}
               </div>
@@ -241,7 +218,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
         </div>
 
         {isExpanded && (
-           <div className={`p-4 space-y-6 bg-secondary/5 animate-in slide-in-from-top-2 duration-200 ${isActive ? "" : "opacity-70"}`}>
+           <div className="p-4 space-y-6 bg-secondary/5 animate-in slide-in-from-top-2 duration-200">
              {/* NPC Style Header Info */}
              <div className="border-b-2 border-primary/30 pb-1 mb-4 italic text-sm text-muted-foreground">
                 {summon.size} {summon.type}, {summon.alignment}
