@@ -382,6 +382,7 @@ export interface Summon {
   pb?: number;
   useCharacterPB?: boolean;
   active?: boolean;
+  overrideInitiative?: boolean;
 }
 
 export interface Character {

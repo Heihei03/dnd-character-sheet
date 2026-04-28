@@ -69,6 +69,8 @@ const SummonCard: React.FC<SummonCardProps> = ({
   const formatModifier = (mod: number) => (mod >= 0 ? `+${mod}` : mod);
 
   const effectivePB = summon.useCharacterPB ? (proficiencyBonus || 2) : (summon.pb || 2);
+  const dexMod = getAbilityModifier(summon.abilityScores?.dexterity || 10);
+  const initiativeBonus = summon.initiative !== undefined ? summon.initiative : dexMod;
 
   const handleAbilityRoll = (abilityName: string, score: number) => {
     const mod = getAbilityModifier(score);
@@ -273,26 +275,40 @@ const SummonCard: React.FC<SummonCardProps> = ({
                     className="h-8 min-w-0"
                   />
                </div>
-               <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Initiative</label>
-                  <div className="flex items-center gap-2">
-                    <NumericInput 
-                      value={summon.initiative || 0} 
-                      onChange={(val) => onUpdate({ ...summon, initiative: val })}
-                      className="h-8 flex-1 min-w-0"
-                    />
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        rollDice(20, 1, summon.initiative || 0, `${summon.name} Initiative`);
-                      }}
-                      className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                      title="Roll Initiative"
-                    >
-                      <Dices className="w-4 h-4" />
-                    </button>
-                  </div>
-               </div>
+                <div>
+                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex justify-between items-center mb-1">
+                     <span>Initiative ({formatModifier(dexMod)})</span>
+                     <label className="flex items-center gap-1 cursor-pointer lowercase font-normal normal-case text-primary hover:opacity-80 transition-opacity">
+                       <input 
+                         type="checkbox" 
+                         checked={summon.overrideInitiative || false} 
+                         onChange={(e) => onUpdate({ ...summon, overrideInitiative: e.target.checked })}
+                         className="w-3 h-3 accent-primary"
+                       />
+                       <span>override?</span>
+                     </label>
+                   </label>
+                   <div className="flex items-center gap-2">
+                     <NumericInput 
+                       value={summon.overrideInitiative ? (summon.initiative || 0) : dexMod} 
+                       onChange={(val) => onUpdate({ ...summon, initiative: val })}
+                       className="h-8 flex-1 min-w-0"
+                       disabled={!summon.overrideInitiative}
+                       inputClassName={!summon.overrideInitiative ? "opacity-50" : ""}
+                     />
+                     <button 
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         const bonus = summon.overrideInitiative ? (summon.initiative || 0) : dexMod;
+                         rollDice(20, 1, bonus, `${summon.name} Initiative`);
+                       }}
+                       className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                       title="Roll Initiative"
+                     >
+                       <Dices className="w-4 h-4" />
+                     </button>
+                   </div>
+                </div>
              </div>
 
              {/* Ability Scores Table */}

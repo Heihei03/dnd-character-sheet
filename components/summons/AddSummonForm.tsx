@@ -30,7 +30,12 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
   const [hp, setHp] = useState(initialSummon?.hp || { current: 10, max: 10, temp: 0 });
   const [ac, setAc] = useState(initialSummon?.ac || 10);
   const [speed, setSpeed] = useState(initialSummon?.speed || "30 ft");
+  const [abilityScores, setAbilityScores] = useState<AbilityScores>(initialSummon?.abilityScores || {
+    strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10
+  });
+  
   const [initiative, setInitiative] = useState(initialSummon?.initiative || 0);
+  const [overrideInitiative, setOverrideInitiative] = useState(initialSummon?.overrideInitiative || false);
   const [notes, setNotes] = useState(initialSummon?.notes || "");
   
   // MM fields
@@ -48,9 +53,6 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
   const [conditionImmunities, setConditionImmunities] = useState(initialSummon?.conditionImmunities || "");
   const [savingThrows, setSavingThrows] = useState(initialSummon?.savingThrows || "");
   const [skills, setSkills] = useState(initialSummon?.skills || "");
-  const [abilityScores, setAbilityScores] = useState<AbilityScores>(initialSummon?.abilityScores || {
-    strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10
-  });
   const [traits, setTraits] = useState<SummonTrait[]>(initialSummon?.traits || []);
   const [actions, setActions] = useState<Action[]>(initialSummon?.actions || []);
 
@@ -140,6 +142,7 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
       skills,
       traits,
       actions,
+      overrideInitiative,
     };
 
     onAdd(summon);
@@ -302,8 +305,25 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
                 <input type="text" value={speed} onChange={(e) => setSpeed(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none h-9 text-sm" placeholder="30 ft" />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Initiative</label>
-                <NumericInput value={initiative} onChange={setInitiative} variant="horizontal" />
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex justify-between items-center">
+                  <span>Initiative ({Math.floor((abilityScores.dexterity - 10) / 2) >= 0 ? `+${Math.floor((abilityScores.dexterity - 10) / 2)}` : Math.floor((abilityScores.dexterity - 10) / 2)})</span>
+                  <label className="flex items-center gap-1 cursor-pointer lowercase font-normal normal-case text-primary hover:opacity-80 transition-opacity">
+                    <input 
+                      type="checkbox" 
+                      checked={overrideInitiative} 
+                      onChange={(e) => setOverrideInitiative(e.target.checked)}
+                      className="w-3 h-3 accent-primary"
+                    />
+                    <span>override?</span>
+                  </label>
+                </label>
+                <NumericInput 
+                  value={overrideInitiative ? initiative : Math.floor((abilityScores.dexterity - 10) / 2)} 
+                  onChange={setInitiative} 
+                  variant="horizontal" 
+                  disabled={!overrideInitiative}
+                  className={!overrideInitiative ? "opacity-50" : ""}
+                />
               </div>
             </div>
 
