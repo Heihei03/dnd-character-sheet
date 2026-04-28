@@ -149,6 +149,8 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           abilityScores={effectiveAbilityScores}
           onUpdateClasses={handleUpdateClasses}
           rollDice={rollDice}
+          inventory={character.inventory || []}
+          onUpdateInventory={handleInventoryChange}
         />
       )}
 

@@ -13,8 +13,10 @@ import {
     AbilityScores, 
     Resource, 
     SpellSlot, 
-    RollDiceFunc 
+    RollDiceFunc,
+    InventoryItem 
 } from "../types/character";
+import AmmunitionSection from "./AmmunitionSection";
 
 interface ResourceTrackersTabProps {
     resources: Resource[];
@@ -25,6 +27,8 @@ interface ResourceTrackersTabProps {
     abilityScores: AbilityScores;
     onUpdateClasses: (classes: CharacterClass[]) => void;
     rollDice?: RollDiceFunc;
+    inventory?: InventoryItem[];
+    onUpdateInventory?: (inventory: InventoryItem[]) => void;
 }
 
 const ResourceTrackersTab: React.FC<ResourceTrackersTabProps> = ({
@@ -35,8 +39,12 @@ const ResourceTrackersTab: React.FC<ResourceTrackersTabProps> = ({
     classes,
     abilityScores,
     onUpdateClasses,
-    rollDice
+    rollDice,
+    inventory = [],
+    onUpdateInventory
 }) => {
+    const ammunitionItems = inventory.filter(item => item.itemType === "ammunition");
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Class / General Resources */}
@@ -44,6 +52,15 @@ const ResourceTrackersTab: React.FC<ResourceTrackersTabProps> = ({
                 resources={resources} 
                 onUpdateResources={onUpdateResources} 
             />
+
+            {/* Ammunition */}
+            {ammunitionItems.length > 0 && (
+                <AmmunitionSection 
+                    ammunitionItems={ammunitionItems} 
+                    onUpdateInventory={onUpdateInventory} 
+                    allInventory={inventory}
+                />
+            )}
 
             {/* Spell Slots */}
             <SpellSlotsTracker 
