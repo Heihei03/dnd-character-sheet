@@ -22,9 +22,15 @@ interface AddSummonFormProps {
   onAdd: (summon: Summon) => void;
   onCancel: () => void;
   initialSummon?: Summon;
+  isStatblock?: boolean;
 }
 
-const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialSummon }) => {
+const AddSummonForm: React.FC<AddSummonFormProps> = ({ 
+  onAdd, 
+  onCancel, 
+  initialSummon,
+  isStatblock = false
+}) => {
   const [name, setName] = useState(initialSummon?.name || "");
   const [type, setType] = useState(initialSummon?.type || "Summon");
   const [hp, setHp] = useState(initialSummon?.hp || { current: 10, max: 10, temp: 0 });
@@ -284,18 +290,22 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({ onAdd, onCancel, initialS
           <section className="space-y-4">
             <h3 className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Stats & Defenses</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {!isStatblock && (
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current HP</label>
+                  <NumericInput value={hp.current} onChange={(val) => setHp({ ...hp, current: val })} variant="horizontal" />
+                </div>
+              )}
               <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current HP</label>
-                <NumericInput value={hp.current} onChange={(val) => setHp({ ...hp, current: val })} variant="horizontal" />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Max HP</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{isStatblock ? "HP" : "Max HP"}</label>
                 <NumericInput value={hp.max} onChange={(val) => setHp({ ...hp, max: val })} variant="horizontal" />
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Temp HP</label>
-                <NumericInput value={hp.temp} onChange={(val) => setHp({ ...hp, temp: val })} variant="horizontal" />
-              </div>
+              {!isStatblock && (
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Temp HP</label>
+                  <NumericInput value={hp.temp} onChange={(val) => setHp({ ...hp, temp: val })} variant="horizontal" />
+                </div>
+              )}
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">AC</label>
                 <NumericInput value={ac} onChange={setAc} variant="horizontal" />

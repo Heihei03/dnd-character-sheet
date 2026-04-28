@@ -146,6 +146,7 @@ const SummonsSection: React.FC<SummonsSectionProps> = ({
                 setEditingStatblockId(null);
               }}
               initialSummon={summonStatblocks.find(s => s.id === editingStatblockId)}
+              isStatblock={true}
             />
           </div>
         )}
