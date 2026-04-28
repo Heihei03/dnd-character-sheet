@@ -6,7 +6,7 @@ import NumericInput from "../ui/NumericInput";
 import Select from "../ui/Select";
 import MultiSelect from "../ui/MultiSelect";
 import ThemedAutocomplete from "../ui/ThemedAutocomplete";
-import { Summon, AbilityScores, SummonTrait, Action, Sense } from "../../types/character";
+import { Summon, AbilityScores, SummonTrait, Action, Sense, Speed } from "../../types/character";
 import { Plus, Trash2, Pencil, Link } from "lucide-react";
 import ActionForm from "../actions/ActionForm";
 import ConfirmationModal from "../ui/ConfirmationModal";
@@ -35,7 +35,45 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({
   const [type, setType] = useState(initialSummon?.type || "Summon");
   const [hp, setHp] = useState(initialSummon?.hp || { current: 10, max: 10, temp: 0 });
   const [ac, setAc] = useState(initialSummon?.ac || 10);
-  const [speed, setSpeed] = useState(initialSummon?.speed || "30 ft");
+  const [walkSpeed, setWalkSpeed] = useState<number>(() => {
+    const rawSpeed = initialSummon?.speed as unknown;
+    if (typeof rawSpeed === 'object' && rawSpeed !== null && 'walk' in rawSpeed) {
+      return (rawSpeed as any).walk?.value || 30;
+    }
+    if (typeof rawSpeed === 'string') {
+      const match = rawSpeed.match(/(\d+)/);
+      if (match) return parseInt(match[1]);
+    }
+    return 30;
+  });
+  const [flySpeed, setFlySpeed] = useState<number | "">(() => {
+    const rawSpeed = initialSummon?.speed as unknown;
+    if (typeof rawSpeed === 'object' && rawSpeed !== null && 'fly' in rawSpeed) {
+      return (rawSpeed as any).fly?.value || "";
+    }
+    return "";
+  });
+  const [swimSpeed, setSwimSpeed] = useState<number | "">(() => {
+    const rawSpeed = initialSummon?.speed as unknown;
+    if (typeof rawSpeed === 'object' && rawSpeed !== null && 'swim' in rawSpeed) {
+      return (rawSpeed as any).swim?.value || "";
+    }
+    return "";
+  });
+  const [climbSpeed, setClimbSpeed] = useState<number | "">(() => {
+    const rawSpeed = initialSummon?.speed as unknown;
+    if (typeof rawSpeed === 'object' && rawSpeed !== null && 'climb' in rawSpeed) {
+      return (rawSpeed as any).climb?.value || "";
+    }
+    return "";
+  });
+  const [burrowSpeed, setBurrowSpeed] = useState<number | "">(() => {
+    const rawSpeed = initialSummon?.speed as unknown;
+    if (typeof rawSpeed === 'object' && rawSpeed !== null && 'burrow' in rawSpeed) {
+      return (rawSpeed as any).burrow?.value || "";
+    }
+    return "";
+  });
   const [abilityScores, setAbilityScores] = useState<AbilityScores>(initialSummon?.abilityScores || {
     strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10
   });
@@ -139,13 +177,21 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({
   const handleSubmit = () => {
     if (!name.trim()) return;
 
+    const speedObj: Speed = {
+      walk: { value: walkSpeed },
+      ...(flySpeed !== "" && { fly: { value: flySpeed } }),
+      ...(swimSpeed !== "" && { swim: { value: swimSpeed } }),
+      ...(climbSpeed !== "" && { climb: { value: climbSpeed } }),
+      ...(burrowSpeed !== "" && { burrow: { value: burrowSpeed } }),
+    };
+
     const summon: Summon = {
       id: initialSummon?.id || Date.now().toString(),
       name,
       type,
       hp,
       ac,
-      speed,
+      speed: speedObj,
       initiative,
       notes,
       abilityScores,
@@ -327,9 +373,51 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">AC</label>
                 <NumericInput value={ac} onChange={setAc} variant="horizontal" />
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Speed</label>
-                <input type="text" value={speed} onChange={(e) => setSpeed(e.target.value)} className="w-full p-2 border border-border bg-background rounded focus:ring-1 focus:ring-primary outline-none h-9 text-sm" placeholder="30 ft" />
+              <div className="col-span-1 sm:col-span-3 lg:col-span-5 grid grid-cols-2 sm:grid-cols-5 gap-2 border-t border-border/20 pt-2 mt-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block">Walk (ft)</label>
+                  <NumericInput value={walkSpeed} onChange={setWalkSpeed} variant="horizontal" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block">Fly (ft)</label>
+                  <NumericInput 
+                    value={flySpeed} 
+                    onChange={setFlySpeed as any}
+                    onInputChange={(e) => setFlySpeed(e.target.value === "" ? "" : parseInt(e.target.value))}
+                    variant="horizontal"
+                    placeholder="—"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block">Swim (ft)</label>
+                  <NumericInput 
+                    value={swimSpeed} 
+                    onChange={setSwimSpeed as any}
+                    onInputChange={(e) => setSwimSpeed(e.target.value === "" ? "" : parseInt(e.target.value))}
+                    variant="horizontal"
+                    placeholder="—"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block">Climb (ft)</label>
+                  <NumericInput 
+                    value={climbSpeed} 
+                    onChange={setClimbSpeed as any}
+                    onInputChange={(e) => setClimbSpeed(e.target.value === "" ? "" : parseInt(e.target.value))}
+                    variant="horizontal"
+                    placeholder="—"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block">Burrow (ft)</label>
+                  <NumericInput 
+                    value={burrowSpeed} 
+                    onChange={setBurrowSpeed as any}
+                    onInputChange={(e) => setBurrowSpeed(e.target.value === "" ? "" : parseInt(e.target.value))}
+                    variant="horizontal"
+                    placeholder="—"
+                  />
+                </div>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex justify-between items-center">

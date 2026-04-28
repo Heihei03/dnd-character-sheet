@@ -359,7 +359,7 @@ export interface Summon {
     temp: number;
   };
   ac: number;
-  speed?: string;
+  speed?: Speed;
   initiative?: number;
   abilityScores?: AbilityScores;
   actions: Action[];

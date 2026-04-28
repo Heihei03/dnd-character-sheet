@@ -180,7 +180,18 @@ const SummonCard: React.FC<SummonCardProps> = ({
                 {summon.speed && (
                   <div className="flex items-center gap-1">
                     <Wind className="w-3 h-3 text-teal-500" />
-                    <span className="font-bold text-foreground">{summon.speed}</span>
+                    <span className="font-bold text-foreground">
+                      {typeof summon.speed === 'string' 
+                        ? summon.speed 
+                        : [
+                            summon.speed.walk?.value && `${summon.speed.walk.value} ft`,
+                            summon.speed.fly?.value && `fly ${summon.speed.fly.value} ft`,
+                            summon.speed.swim?.value && `swim ${summon.speed.swim.value} ft`,
+                            summon.speed.climb?.value && `climb ${summon.speed.climb.value} ft`,
+                            summon.speed.burrow?.value && `burrow ${summon.speed.burrow.value} ft`
+                          ].filter(Boolean).join(', ') || '—'
+                      }
+                    </span>
                   </div>
                 )}
               </div>
