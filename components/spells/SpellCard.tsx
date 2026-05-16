@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Edit2, Trash2, Zap, ChevronDown, Dices } from "lucide-react";
+import { Edit2, Trash2, Zap, ChevronDown, Dices, Users } from "lucide-react";
 import { Spell, AbilityScores, CharacterClass, RollDiceFunc, RollDamageFunc, ActiveBonus } from "../../types/character";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../../utils/dice-utils";
 import { getAbilityModifier, getAdvantageDisadvantage, getEffectiveBonuses } from "../../utils/character-utils";
@@ -21,6 +21,7 @@ interface SpellCardProps {
     rollDice?: RollDiceFunc;
     rollDamage?: RollDamageFunc;
     character?: any;
+    onSummonFromStatblock?: (statblockId: string) => void;
     className?: string;
 }
 
@@ -38,6 +39,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
     rollDice,
     rollDamage,
     character,
+    onSummonFromStatblock,
     className = ""
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
@@ -319,6 +321,20 @@ const SpellCard: React.FC<SpellCardProps> = ({
                     <ChevronDown className={`w-5 h-5 text-muted-foreground transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                 </div>
             </div>
+            {spell.linkedSummonStatblockId && onSummonFromStatblock && (
+                <div className="mt-4 px-4 pb-2">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onSummonFromStatblock(spell.linkedSummonStatblockId!);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold py-2 px-4 rounded-xl border border-primary/20 transition-all active:scale-95"
+                    >
+                        <Users className="w-4 h-4" />
+                        Summon Creature
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

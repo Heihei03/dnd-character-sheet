@@ -34,6 +34,8 @@ interface InventorySectionProps {
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
     onChange: (field: keyof NormalizedCharacter, value: any) => void;
+    summonStatblocks?: any[];
+    onSummonFromStatblock?: (statblockId: string) => void;
 }
 
 const INVENTORY_ITEM_TYPES = ["weapon", "armor", "shield", "container", "tool", "other"] as const;
@@ -43,7 +45,9 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     setInventory,
     resources = [],
     onUpdateResources,
-    onChange
+    onChange,
+    summonStatblocks = [],
+    onSummonFromStatblock
 }) => {
     const inventory = character.inventory || [];
     const [expandedItemIds, setExpandedItemIds] = useState<string[]>([]);
@@ -361,6 +365,8 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                 resources={resources}
                                 onUpdateResources={onUpdateResources}
                                 isReorderMode={isEquipmentReorderMode}
+                                summonStatblocks={summonStatblocks}
+                                onSummonFromStatblock={onSummonFromStatblock}
                             />
                         </SortableContext>
                     </DndContext>
@@ -402,6 +408,8 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                 resources={resources}
                                 onUpdateResources={onUpdateResources}
                                 isReorderMode={isInventoryReorderMode}
+                                summonStatblocks={summonStatblocks}
+                                onSummonFromStatblock={onSummonFromStatblock}
                             />
                         </SortableContext>
                     </DndContext>

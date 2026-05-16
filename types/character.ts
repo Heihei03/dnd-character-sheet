@@ -124,6 +124,7 @@ export interface InventoryItem {
   isWondrous?: boolean;
   description?: string;
   features?: Feature[];
+  linkedSummonStatblockId?: string;
 }
 
 export interface Currency {
@@ -306,6 +307,7 @@ export interface Spell {
   fromFeatureId?: string;
   scalesWithCharacterLevel?: boolean;
   classSource?: string;
+  linkedSummonStatblockId?: string;
 }
 
 export type BonusTarget = 'attack' | 'damage' | 'save' | 'skill' | 'ability' | 'initiative' | 'ac' | 'healing' | 'spell-dc';

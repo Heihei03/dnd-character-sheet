@@ -38,6 +38,7 @@ interface SpellFormProps {
     totalLevel: number;
     classes: CharacterClass[];
     isEditing: boolean;
+    summonStatblocks: any[];
 }
 
 const SpellForm: React.FC<SpellFormProps> = ({
@@ -48,7 +49,8 @@ const SpellForm: React.FC<SpellFormProps> = ({
     proficiencyBonus,
     totalLevel,
     classes,
-    isEditing
+    isEditing,
+    summonStatblocks
 }) => {
     const [localSpell, setLocalSpell] = useState<Spell>(spell);
 
@@ -344,6 +346,21 @@ const SpellForm: React.FC<SpellFormProps> = ({
                         value={localSpell.description || ""} 
                         onChange={(e) => handleLocalUpdate("description", e.target.value)} 
                     />
+                </div>
+
+                <div className="bg-secondary/30 p-3 rounded-lg border border-border space-y-2">
+                    <label className="block text-sm font-bold text-gray-500 uppercase text-xs">Linked Summon Statblock</label>
+                    <Select
+                        value={localSpell.linkedSummonStatblockId || ""}
+                        onValueChange={(val) => handleLocalUpdate("linkedSummonStatblockId", val || undefined)}
+                        options={[
+                            { label: "None", value: "" },
+                            ...summonStatblocks.map(s => ({ label: s.name, value: s.id }))
+                        ]}
+                    />
+                    <p className="text-[10px] text-gray-500 italic leading-tight">
+                        Link a creature template to add a quick "Summon" button to this spell.
+                    </p>
                 </div>
                 
                 <div className="bg-primary/10 p-3 rounded-lg border border-primary/20 space-y-2">

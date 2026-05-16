@@ -73,6 +73,7 @@ interface CharacterTabsProps {
   handleUpdateSummons: (summons: Summon[]) => void;
   handleUpdateSummonStatblocks: (summonStatblocks: Summon[]) => void;
   handleAdjustSummonHP: (summonId: string, amount: number, isDamage: boolean) => void;
+  onSummonFromStatblock: (statblockId: string) => void;
   onChange: (field: any, value: any) => void;
 }
 
@@ -107,6 +108,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
   handleUpdateSummons,
   handleUpdateSummonStatblocks,
   handleAdjustSummonHP,
+  onSummonFromStatblock,
   onChange,
 }) => {
   const handleNavigateToFeature = (featureId: string) => {
@@ -166,6 +168,8 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
             resources={effectiveResources}
             onUpdateResources={handleUpdateResources}
             onChange={onChange}
+            summonStatblocks={character.summonStatblocks}
+            onSummonFromStatblock={onSummonFromStatblock}
           />
         </div>
       )}
@@ -184,6 +188,8 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           character={character}
           rollDice={rollDice}
           rollDamage={rollDamage}
+          summonStatblocks={character.summonStatblocks}
+          onSummonFromStatblock={onSummonFromStatblock}
         />
       )}
 

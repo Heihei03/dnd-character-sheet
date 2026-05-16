@@ -1,7 +1,7 @@
 import React from "react";
 import { InventoryItem, Resource } from "../../types/character";
 import ItemDetailView from "./ItemDetailView";
-import { ChevronDown, ChevronRight, Trash2, CornerDownRight, GripVertical } from "lucide-react";
+import { ChevronDown, ChevronRight, Trash2, CornerDownRight, GripVertical, Users } from "lucide-react";
 import NumericInput from "../ui/NumericInput";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -17,6 +17,8 @@ interface InventoryRowProps {
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
     isReorderMode?: boolean;
+    summonStatblocks?: any[];
+    onSummonFromStatblock?: (statblockId: string) => void;
 }
 
 const InventoryRow: React.FC<InventoryRowProps> = ({
@@ -29,7 +31,9 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
     onToggleExpand,
     resources = [],
     onUpdateResources,
-    isReorderMode = false
+    isReorderMode = false,
+    summonStatblocks = [],
+    onSummonFromStatblock
 }) => {
     const {
         attributes,
@@ -174,6 +178,20 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                     </button>
                 </td>
                 <td className="p-2">
+                    {item.linkedSummonStatblockId && onSummonFromStatblock && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onSummonFromStatblock(item.linkedSummonStatblockId!);
+                            }}
+                            className="text-primary/40 hover:text-primary transition-colors flex items-center justify-center w-full"
+                            title="Summon Creature"
+                        >
+                            <Users className="w-4 h-4" />
+                        </button>
+                    )}
+                </td>
+                <td className="p-2">
                     <button
                         onClick={onToggleExpand}
                         className="text-muted-foreground/40 hover:text-primary transition-colors w-full flex items-center justify-center"
@@ -191,6 +209,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                             updateItem={updateItem}
                             resources={resources}
                             onUpdateResources={onUpdateResources}
+                            summonStatblocks={summonStatblocks}
                         />
                     </td>
                 </tr>

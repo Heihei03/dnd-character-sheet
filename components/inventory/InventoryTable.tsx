@@ -15,6 +15,8 @@ interface InventoryTableProps {
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
     isReorderMode?: boolean;
+    summonStatblocks?: any[];
+    onSummonFromStatblock?: (statblockId: string) => void;
 }
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
@@ -27,7 +29,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     expandedItemIds,
     resources = [],
     onUpdateResources,
-    isReorderMode = false
+    isReorderMode = false,
+    summonStatblocks = [],
+    onSummonFromStatblock
 }) => {
     const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null);
 
@@ -65,6 +69,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                             resources={resources}
                             onUpdateResources={onUpdateResources}
                             isReorderMode={isReorderMode}
+                            summonStatblocks={summonStatblocks}
+                            onSummonFromStatblock={onSummonFromStatblock}
                         />
                     ))}
                 </tbody>

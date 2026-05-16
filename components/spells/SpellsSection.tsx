@@ -37,6 +37,8 @@ interface SpellsSectionProps {
     character: any;
     rollDice?: RollDiceFunc;
     rollDamage?: RollDamageFunc;
+    summonStatblocks?: any[];
+    onSummonFromStatblock?: (statblockId: string) => void;
 }
 
 const SpellsSection: React.FC<SpellsSectionProps> = ({
@@ -51,7 +53,9 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     onUpdateActiveBonuses,
     character,
     rollDice,
-    rollDamage
+    rollDamage,
+    summonStatblocks = [],
+    onSummonFromStatblock
 }) => {
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
     const [newSpellDraft, setNewSpellDraft] = useState<Spell | null>(null);
@@ -299,6 +303,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                         proficiencyBonus={proficiencyBonus}
                         totalLevel={classes.reduce((sum, cls) => sum + cls.level, 0)}
                         classes={classes}
+                        summonStatblocks={summonStatblocks}
                     />
                 </div>
             )}
@@ -329,6 +334,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                                     proficiencyBonus={proficiencyBonus}
                                                     totalLevel={totalLevel}
                                                     classes={classes}
+                                                    summonStatblocks={summonStatblocks}
                                                 />
                                             </div>
                                         );
@@ -349,6 +355,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                             rollDamage={rollDamage}
                                             handleUpdateSpell={handleUpdateSpell}
                                             character={character}
+                                            onSummonFromStatblock={onSummonFromStatblock}
                                             className={index === levelSpells.length - 1 ? "rounded-b-lg" : ""}
                                         />
                                     );

@@ -16,6 +16,7 @@ interface ItemDetailViewProps {
     updateItem: (id: string, field: keyof InventoryItem, value: any) => void;
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
+    summonStatblocks?: any[];
 }
 
 const ItemDetailView: React.FC<ItemDetailViewProps> = ({
@@ -23,7 +24,8 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
     containers,
     updateItem,
     resources = [],
-    onUpdateResources
+    onUpdateResources,
+    summonStatblocks = []
 }) => {
     const handleUpdateResourceValue = (id: string, newValue: number) => {
         if (!onUpdateResources) return;
@@ -148,6 +150,21 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                         </div>
                     </div>
                 )}
+            </div>
+
+            <div className="md:col-span-2 p-3 bg-secondary/30 rounded-lg border border-border space-y-2 mt-2">
+                <label className="block text-[10px] font-bold text-muted-foreground uppercase">Linked Summon Statblock</label>
+                <Select
+                    value={item.linkedSummonStatblockId || ""}
+                    onValueChange={(val) => updateItem(item.id, "linkedSummonStatblockId", val || undefined)}
+                    options={[
+                        { label: "None", value: "" },
+                        ...summonStatblocks.map(s => ({ label: s.name, value: s.id }))
+                    ]}
+                />
+                <p className="text-[10px] text-gray-500 italic leading-tight">
+                    Link a creature template to add a quick "Summon" button to this item.
+                </p>
             </div>
 
             {/* Nested Specific Detail Editors */}

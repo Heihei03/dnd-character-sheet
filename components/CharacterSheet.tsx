@@ -85,6 +85,19 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     handleAdjustSummonHP,
   } = useCharacterSheet(character, setCharacter);
 
+  const handleSummonFromStatblock = (statblockId: string) => {
+    const statblock = (characterWithDefaults?.summonStatblocks || []).find(s => s.id === statblockId);
+    if (statblock) {
+      const newInstance = {
+        ...statblock,
+        id: Date.now().toString(),
+        hp: { ...statblock.hp, current: statblock.hp.max, temp: 0 },
+        active: true
+      };
+      handleUpdateSummons([...(characterWithDefaults?.summons || []), newInstance]);
+    }
+  };
+
   const localHandleChange = (field: keyof Character, value: any) => {
     setCharacter((prev) => {
       if (!prev) return null;
@@ -206,6 +219,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
               handleUpdateSummons={handleUpdateSummons}
               handleUpdateSummonStatblocks={handleUpdateSummonStatblocks}
               handleAdjustSummonHP={handleAdjustSummonHP}
+              onSummonFromStatblock={handleSummonFromStatblock}
               onChange={handleChange}
             />
           </div>
