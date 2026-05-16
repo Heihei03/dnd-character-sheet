@@ -23,6 +23,7 @@ import { AbilityScores, CharacterClass, Resource, Spell, SpellSlot, ActiveBonus,
 
 // Utils
 import { calculateSpellSlots } from "../../utils/spell-utils";
+import { getAbilityModifier, getEffectiveBonuses } from "../../utils/character-utils";
 
 interface SpellsSectionProps {
     classes: CharacterClass[];
@@ -184,8 +185,89 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
         return acc;
     }, {} as Record<number, Spell[]>);
 
+    const getPrimaryAbility = () => {
+        // 1. Check if any spell has an ability assigned
+        const spellsWithAbility = spells.filter(s => s.spellcastingAbility);
+        if (spellsWithAbility.length > 0) {
+            const counts: Record<string, number> = {};
+            spellsWithAbility.forEach(s => {
+                counts[s.spellcastingAbility!] = (counts[s.spellcastingAbility!] || 0) + 1;
+            });
+            return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0] as keyof AbilityScores;
+        }
+
+        // 2. Guess from classes
+        const classNames = classes.map(c => c.name.toLowerCase());
+        if (classNames.some(c => ["wizard", "artificer"].includes(c))) return "intelligence";
+        if (classNames.some(c => ["cleric", "druid", "ranger"].includes(c))) return "wisdom";
+        if (classNames.some(c => ["bard", "paladin", "sorcerer", "warlock"].includes(c))) return "charisma";
+
+        // 3. Fallback to highest mental stat
+        const mentalStats: (keyof AbilityScores)[] = ["intelligence", "wisdom", "charisma"];
+        return mentalStats.reduce((a, b) => (abilityScores[a] || 10) > (abilityScores[b] || 10) ? a : b);
+    };
+
+    const primaryAbility = getPrimaryAbility();
+    const abilityScore = abilityScores[primaryAbility] || 10;
+    const abilityModifier = getAbilityModifier(abilityScore);
+    
+    let attackBonusFromActive = 0;
+    let attackBonusDice: string[] = [];
+    getEffectiveBonuses(character, 'attack').forEach(b => {
+        const dice = b.bonus.match(/(\d+d\d+)/);
+        if (dice) {
+            attackBonusDice.push(dice[0]);
+        } else {
+            const val = parseInt(b.bonus) || 0;
+            attackBonusFromActive += val;
+        }
+    });
+
+    let saveDcBonusFromActive = 0;
+    let saveDcBonusDice: string[] = [];
+    getEffectiveBonuses(character, 'spell-dc').forEach(b => {
+        const dice = b.bonus.match(/(\d+d\d+)/);
+        if (dice) {
+            saveDcBonusDice.push(dice[0]);
+        } else {
+            const val = parseInt(b.bonus) || 0;
+            saveDcBonusFromActive += val;
+        }
+    });
+
+    const baseAttackBonus = abilityModifier + proficiencyBonus + attackBonusFromActive;
+    const baseSaveDC = 8 + abilityModifier + proficiencyBonus + saveDcBonusFromActive;
+
+    const displayAttackBonus = `+${baseAttackBonus}${attackBonusDice.length > 0 ? ` + ${attackBonusDice.join(" + ")}` : ""}`;
+    const displaySaveDC = `${baseSaveDC}${saveDcBonusDice.length > 0 ? ` + ${saveDcBonusDice.join(" + ")}` : ""}`;
+
     return (
         <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-3">
+                <Card className="bg-primary/5 border-primary/20 shadow-none">
+                    <CardContent className="p-2 px-3 flex items-center justify-between">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] uppercase font-black text-primary/60 tracking-widest">Spell Attack</span>
+                            <span className="text-[9px] font-bold text-muted-foreground uppercase leading-tight">{String(primaryAbility).charAt(0).toUpperCase() + String(primaryAbility).slice(1)} + prof</span>
+                        </div>
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-black text-primary">{displayAttackBonus}</span>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-orange-500/5 border-orange-500/20 shadow-none">
+                    <CardContent className="p-2 px-3 flex items-center justify-between">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] uppercase font-black text-orange-500/60 tracking-widest">Spell Save DC</span>
+                            <span className="text-[9px] font-bold text-muted-foreground uppercase leading-tight">8 + {String(primaryAbility).charAt(0).toUpperCase() + String(primaryAbility).slice(1)} + prof</span>
+                        </div>
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-black text-orange-600">{displaySaveDC}</span>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
             <SpellSlotsTracker 
                 classes={classes}
                 spellSlots={spellSlots}
