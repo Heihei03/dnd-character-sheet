@@ -8,6 +8,7 @@ import {
     getAbilityModifier,
     resolveRollExpression,
     getAdvantageDisadvantage,
+    getEffectiveAbilityScores,
 } from "../../utils/character-utils";
 import {
     calculateScaledCantripValue,
@@ -77,20 +78,26 @@ const ActionCard: React.FC<ActionCardProps> = ({
     const handleAttackRoll = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (rollDice) {
+            const isProficient = action.useSpellAttack || action.proficient;
+            const scoresToUse = action.useSpellAttack ? getEffectiveAbilityScores(character) : abilityScores;
+            const charLevel = (character.classes || []).reduce((sum, cls: any) => sum + cls.level, 0);
+            const charPB = Math.ceil(charLevel / 4) + 1;
+            const pbToUse = action.useSpellAttack ? charPB : proficiencyBonus;
+
             const atkAbilityMod = getAbilityModifier(
-                abilityScores[(action.attackAbility as keyof AbilityScores)] || 10
+                scoresToUse[((action.attackAbility as string)?.toLowerCase() as keyof AbilityScores)] || 10
             );
             const total =
-                (action.proficient ? proficiencyBonus : 0) +
+                (isProficient ? pbToUse : 0) +
                 atkAbilityMod +
                 (action.attackBonus || 0);
 
             const expr = upcastedDamage || upcastedHealing || "";
             const resolvedDamage = resolveRollExpression(
                 expr,
-                abilityScores,
-                totalLevel,
-                proficiencyBonus
+                scoresToUse,
+                action.useSpellAttack ? charLevel : totalLevel,
+                pbToUse
             );
 
             const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, `${action.name} Attack`, action.attackAbility as string);
@@ -139,14 +146,20 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                     >
                                         <Dices className="w-3.5 h-3.5 opacity-70" />
                                         {(() => {
+                                            const isProficient = action.useSpellAttack || action.proficient;
+                                            const scoresToUse = action.useSpellAttack ? getEffectiveAbilityScores(character) : abilityScores;
+                                            const charLevel = (character.classes || []).reduce((sum, cls: any) => sum + cls.level, 0);
+                                            const charPB = Math.ceil(charLevel / 4) + 1;
+                                            const pbToUse = action.useSpellAttack ? charPB : proficiencyBonus;
+
                                             const atkAbilityMod = getAbilityModifier(
-                                                abilityScores[
-                                                    (action.attackAbility as keyof AbilityScores)
+                                                scoresToUse[
+                                                    ((action.attackAbility as string)?.toLowerCase() as keyof AbilityScores)
                                                 ] || 10
                                             );
                                             const total =
-                                                (action.proficient
-                                                    ? proficiencyBonus
+                                                (isProficient
+                                                    ? pbToUse
                                                     : 0) +
                                                 atkAbilityMod +
                                                 (action.attackBonus || 0);

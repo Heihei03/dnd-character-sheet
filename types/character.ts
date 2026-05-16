@@ -252,6 +252,7 @@ export interface Action {
   scalesWithCharacterLevel?: boolean;
   resourceId?: string;
   isAttack?: boolean;
+  useSpellAttack?: boolean;
   critRange?: number;
   critExtraDamage?: string;
   critRule?: CritRule;

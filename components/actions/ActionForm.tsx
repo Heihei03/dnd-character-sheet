@@ -92,11 +92,11 @@ const ActionForm: React.FC<ActionFormProps> = ({
         if (!data.isAttack) return data;
 
         const attackAbilityMod = getAbilityModifier(
-            abilityScores[(data.attackAbility as keyof AbilityScores)] || 10
+            abilityScores[((data.attackAbility as string)?.toLowerCase() as keyof AbilityScores)] || 10
         );
         const damageAbilityMod = data.damageAbility
             ? getAbilityModifier(
-                  abilityScores[(data.damageAbility as keyof AbilityScores)] || 10
+                  abilityScores[((data.damageAbility as string)?.toLowerCase() as keyof AbilityScores)] || 10
               )
             : 0;
 
@@ -225,6 +225,27 @@ const ActionForm: React.FC<ActionFormProps> = ({
                                     }
                                     options={ABILITY_OPTIONS}
                                 />
+                            </div>
+                            <div className="flex items-center gap-2 pt-6">
+                                <input
+                                    type="checkbox"
+                                    id="useSpellAttack"
+                                    checked={!!formData.useSpellAttack}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            useSpellAttack: e.target.checked,
+                                        })
+                                    }
+                                    className="w-4 h-4 cursor-pointer accent-primary"
+                                />
+                                <label
+                                    htmlFor="useSpellAttack"
+                                    className="text-xs font-bold uppercase text-gray-500 cursor-pointer flex items-center gap-1"
+                                    title="Uses character ability scores and proficiency bonus"
+                                >
+                                    Use Char Spell Attack
+                                </label>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-xs font-bold uppercase text-gray-500">
