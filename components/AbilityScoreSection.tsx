@@ -82,15 +82,15 @@ const AbilityScoreSection = ({
         return (
           <div
             key={key}
-            className={`flex flex-col items-center h-[110px] w-32 border rounded-lg p-2 shadow-sm transition-all hover:shadow-lg relative ${isOverridden
+            className={`flex flex-col items-center h-24 w-24 md:h-[110px] md:w-32 border rounded-lg p-1.5 md:p-2 shadow-sm transition-all hover:shadow-lg relative ${isOverridden
               ? "bg-primary/10 border-primary/30"
               : "bg-secondary/30 border-border"
               }`}
           >
             {/* Ability Name Slot - Fixed Height */}
-            <div className="h-8 flex items-center justify-center w-full px-2">
+            <div className="h-6 md:h-8 flex items-center justify-center w-full px-1 md:px-2">
               <div
-                className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${isOverridden ? "text-primary dark:text-primary" : "text-muted-foreground hover:text-primary"
+                className={`uppercase font-black text-[9px] md:text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${isOverridden ? "text-primary dark:text-primary" : "text-muted-foreground hover:text-primary"
                   }`}
                 onClick={() => rollDice?.(20, 1, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'ability')}
                 title={isOverridden ? "Overridden by item/feature" : ""}
@@ -103,21 +103,21 @@ const AbilityScoreSection = ({
             <div className="flex-1 flex items-center justify-center w-full">
               <button
                 onClick={() => rollDice?.(20, 1, modifier, key, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'ability')}
-                className="text-4xl font-black text-primary hover:opacity-80 transition-all hover:scale-110"
+                className="text-xl md:text-4xl font-black text-primary hover:opacity-80 transition-all hover:scale-110"
               >
                 {formattedModifier}
               </button>
             </div>
 
             {/* Score Input Slot - Fixed Height */}
-            <div className="h-8 flex items-center justify-center w-full mt-1">
-              <div className="relative flex items-center justify-center bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-full px-2 py-0.5 min-w-[2.75rem] shadow-sm">
+            <div className="h-6 md:h-8 flex items-center justify-center w-full mt-0.5">
+              <div className="relative flex items-center justify-center bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-full px-1.5 py-px min-w-[2.25rem] md:min-w-[2.75rem] shadow-sm">
                 {isOverridden ? (
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm font-bold text-primary">
+                  <div className="flex items-center gap-0.5">
+                    <span className="text-xs font-bold text-primary">
                       {effectiveScore}
                     </span>
-                    <span className="text-xs text-muted-foreground line-through decoration-primary/50" title={`Base Score: ${score}`}>
+                    <span className="text-[10px] text-muted-foreground line-through decoration-primary/50" title={`Base Score: ${score}`}>
                       ({score})
                     </span>
                   </div>
@@ -130,7 +130,7 @@ const AbilityScoreSection = ({
                     variant="horizontal"
                     min={0}
                     className="border-none bg-transparent shadow-none"
-                    inputClassName="w-7 text-sm font-bold text-center p-0 h-5"
+                    inputClassName="w-6 md:w-7 text-xs md:text-sm font-bold text-center p-0 h-4 md:h-5"
                   />
                   </div>
                 )}

@@ -68,14 +68,14 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                 notes.forEach(n => { if (!allNotes.includes(n)) allNotes.push(n); });
 
                 return (
-                    <div key={key} className="flex flex-col items-center h-[110px] w-32 border border-border rounded-lg p-2 shadow-sm transition-all hover:shadow-lg relative bg-secondary/30">
+                    <div key={key} className="flex flex-col items-center h-24 w-24 md:h-[110px] md:w-32 border border-border rounded-lg p-1.5 md:p-2 shadow-sm transition-all hover:shadow-lg relative bg-secondary/30">
                         {/* Name & Conc Button Integration Slot - Fixed Height */}
-                        <div className="h-8 flex items-center justify-center w-full relative px-2">
+                        <div className="h-6 md:h-8 flex items-center justify-center w-full relative px-1 md:px-2">
                             <div
-                                className={`uppercase font-black text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                                className={`uppercase font-black text-[9px] md:text-xs tracking-wider cursor-pointer transition-colors leading-none text-center ${showConc ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
                                 onClick={() => rollDice?.(20, 1, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save')}
                             >
-                                {showConc ? "Concentration" : `${key.slice(0, 3)} Save`}
+                                {showConc ? "Conc" : `${key.slice(0, 3)} Save`}
                             </div>
                         </div>
 
@@ -83,17 +83,17 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         <div className="flex-1 flex items-center justify-center w-full">
                             <button 
                                 onClick={() => rollDice?.(20, 1, modifier, label, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save')}
-                                className={`text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-primary hover:opacity-80' : 'text-primary hover:opacity-90'}`}
+                                className={`text-xl md:text-4xl font-black transition-all hover:scale-110 ${showConc ? 'text-primary hover:opacity-80' : 'text-primary hover:opacity-90'}`}
                             >
                                 {displayModifier}
                             </button>
                         </div>
 
                         {/* Proficiency Toggle Slot - Centered */}
-                        <div className="h-8 flex items-center justify-center w-full mt-1">
+                        <div className="h-6 md:h-8 flex items-center justify-center w-full mt-0.5">
                             {showConc ? (
                                 <div className="flex items-center justify-center opacity-60">
-                                    <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-2.5 h-2.5" />
+                                    <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-2 md:w-2.5 h-2 md:h-2.5" />
                                 </div>
                             ) : (
                                 <button
@@ -101,7 +101,7 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                                     className="flex items-center justify-center transition-transform active:scale-95"
                                     title={isProficient ? "Proficient" : "Not Proficient"}
                                 >
-                                    <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-4 h-4" />
+                                    <ProficiencyIcon level={isProficient ? "proficient" : "none"} className="w-3 h-3 md:w-4 md:h-4" />
                                 </button>
                             )}
                         </div>
@@ -110,17 +110,17 @@ const SavingThrowsSection: React.FC<SavingThrowsSectionProps> = ({
                         {isConstitution && (
                             <button
                                 onClick={() => setIsConcMode(!isConcMode)}
-                                className={`absolute bottom-1 right-1 p-1 rounded-md transition-all z-10 ${isConcMode ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground/40 hover:text-primary hover:bg-primary/5'}`}
+                                className={`absolute bottom-0.5 right-0.5 p-0.5 rounded-md transition-all z-10 ${isConcMode ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground/40 hover:text-primary hover:bg-primary/5'}`}
                                 title={isConcMode ? "Switch to Saving Throw" : "Switch to Concentration"}
                             >
-                                <Target className="w-4 h-4" />
+                                <Target className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
                         )}
 
                         {/* ADV/DIS Badges - Bottom Left */}
-                        <div className="absolute bottom-1 left-1 flex flex-col gap-1 pointer-events-none">
-                            {advantage && <span className="text-[11px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1 rounded border border-green-200 dark:border-green-800 uppercase leading-tight">ADV{extraAdvantage > 0 ? `+${extraAdvantage}` : ''}</span>}
-                            {disadvantage && <span className="text-[11px] font-black bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-1 rounded border border-red-200 dark:border-red-800 uppercase leading-tight">DIS</span>}
+                        <div className="absolute bottom-0.5 left-0.5 flex flex-col gap-0.5 pointer-events-none">
+                            {advantage && <span className="text-[8px] md:text-[11px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-0.5 rounded border border-green-200 dark:border-green-800 uppercase leading-none">ADV{extraAdvantage > 0 ? `+${extraAdvantage}` : ''}</span>}
+                            {disadvantage && <span className="text-[8px] md:text-[11px] font-black bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-0.5 rounded border border-red-200 dark:border-red-800 uppercase leading-none">DIS</span>}
                         </div>
                     </div>
                 );
