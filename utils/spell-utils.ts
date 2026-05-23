@@ -8,19 +8,6 @@ export const CASTER_TYPES = {
 } as const;
 
 export function calculateCasterLevel(classes: CharacterClass[]): number {
-    let rawLevel = 0;
-
-    for (const cls of classes) {
-        if ((CASTER_TYPES.FULL as readonly string[]).includes(cls.name)) {
-            rawLevel += cls.level;
-        } else if ((CASTER_TYPES.HALF as readonly string[]).includes(cls.name)) {
-            rawLevel += Math.ceil(cls.level / 2);
-        } else if ((CASTER_TYPES.THIRD as readonly string[]).includes(cls.name)) {
-            rawLevel += Math.floor(cls.level / 3);
-        }
-    }
-
-
     let totalLevel = 0;
 
     for (const cls of classes) {

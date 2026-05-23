@@ -15,21 +15,13 @@ const CharacterPage = () => {
   const router = useRouter();
   const id = params?.id ? Number(params.id) : null; // Ensure it's a number
 
-  console.log("Inside the [id] route!");
-  console.log("params:", params);
-  console.log("params.id:", params.id);
-  console.log("parsed id:", id);
-
-
   // Load character data
   useEffect(() => {
     const loadCharacterData = async () => {
-      console.log("Attempting to load character with id:", id);
       if (id) {
         setIsLoading(true);
         try {
           const fetchedCharacter = await loadCharacter(id);
-          console.log("Fetched character:", fetchedCharacter);
           setCharacter(fetchedCharacter);
         } catch (error) {
           console.error("Error loading character:", error);
