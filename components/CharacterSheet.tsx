@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { useTheme } from "./providers/ThemeProvider";
+import { Shield, BookOpen, Heart } from "lucide-react";
 
 // UI Components
 import DiceRoller from "./DiceRoller";
@@ -85,6 +87,14 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     handleAdjustSummonHP,
   } = useCharacterSheet(character, setCharacter);
 
+  const { mobileLayout } = useTheme();
+  const [mobileColumn, setMobileColumn] = useState<"stats" | "sheet" | "status">("sheet");
+
+  const customNavigateToFeature = (featureId: string) => {
+    handleNavigateToFeature(featureId);
+    setMobileColumn("sheet");
+  };
+
   const handleSummonFromStatblock = (statblockId: string) => {
     const statblock = (characterWithDefaults?.summonStatblocks || []).find(s => s.id === statblockId);
     if (statblock) {
@@ -161,33 +171,75 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         />
       </div>
 
-      <div className="space-y-4">
+      <div className="w-full space-y-4">
+        {/* Mobile Tab Switcher */}
+        {mobileLayout === "tabs" && (
+          <div className="flex md:hidden w-full max-w-screen-2xl mx-auto bg-gray-50 dark:bg-gray-900/50 p-1.5 rounded-xl border border-gray-100 dark:border-gray-800 gap-1 shadow-sm">
+            {[
+              { id: "stats", label: "Stats", icon: Shield },
+              { id: "sheet", label: "Sheet", icon: BookOpen },
+              { id: "status", label: "Status", icon: Heart },
+            ].map((col) => (
+              <button
+                key={col.id}
+                onClick={() => setMobileColumn(col.id as any)}
+                className={`flex-1 py-2 px-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+                  mobileColumn === col.id
+                    ? "bg-primary text-primary-foreground shadow-md scale-[1.02]"
+                    : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-400"
+                }`}
+              >
+                <col.icon size={14} />
+                {col.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full max-w-screen-2xl mx-auto">
           
           {/* Left Column */}
-          <StatsSidebar
-            characterWithDefaults={characterWithDefaults}
-            effectiveAbilityScores={effectiveAbilityScores}
-            handleAbilityScoreChange={handleAbilityScoreChange}
-            rollDice={rollDice}
-            proficiencyBonus={proficiencyBonus}
-            handleSavingThrowChange={handleSavingThrowChange}
-            effectiveSkills={effectiveSkills}
-            skillSources={skillSources}
-            handleSkillChange={handleSkillChange}
-            effectiveToolProficiencies={effectiveToolProficiencies}
-            handleToolProficiencyChange={(value) => handleChange("toolProficiencies", value)}
-            effectiveWeaponProficiencies={effectiveWeaponProficiencies}
-            effectiveArmorProficiencies={effectiveArmorProficiencies}
-            effectiveWeaponMasteries={effectiveWeaponMasteries}
-            effectiveLanguages={effectiveLanguages}
-            handleProficiencyChange={handleChange}
-            handleNavigateToFeature={handleNavigateToFeature}
-            onUpdateActiveBonuses={handleUpdateActiveBonuses}
-          />
+          <div
+            className={`${
+              mobileLayout === "tabs"
+                ? mobileColumn === "stats"
+                  ? "block animate-in fade-in duration-200"
+                  : "hidden md:block"
+                : "block"
+            } md:col-span-3`}
+          >
+            <StatsSidebar
+              characterWithDefaults={characterWithDefaults}
+              effectiveAbilityScores={effectiveAbilityScores}
+              handleAbilityScoreChange={handleAbilityScoreChange}
+              rollDice={rollDice}
+              proficiencyBonus={proficiencyBonus}
+              handleSavingThrowChange={handleSavingThrowChange}
+              effectiveSkills={effectiveSkills}
+              skillSources={skillSources}
+              handleSkillChange={handleSkillChange}
+              effectiveToolProficiencies={effectiveToolProficiencies}
+              handleToolProficiencyChange={(value) => handleChange("toolProficiencies", value)}
+              effectiveWeaponProficiencies={effectiveWeaponProficiencies}
+              effectiveArmorProficiencies={effectiveArmorProficiencies}
+              effectiveWeaponMasteries={effectiveWeaponMasteries}
+              effectiveLanguages={effectiveLanguages}
+              handleProficiencyChange={handleChange}
+              handleNavigateToFeature={customNavigateToFeature}
+              onUpdateActiveBonuses={handleUpdateActiveBonuses}
+            />
+          </div>
 
           {/* Center Column - Functional Tabs */}
-          <div className="md:col-span-6">
+          <div
+            className={`${
+              mobileLayout === "tabs"
+                ? mobileColumn === "sheet"
+                  ? "block animate-in fade-in duration-200"
+                  : "hidden md:block"
+                : "block"
+            } md:col-span-6`}
+          >
             <CharacterTabs
               character={characterWithDefaults}
               activeTab={activeTab}
@@ -225,27 +277,37 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           </div>
 
           {/* Right Column */}
-          <StatusSidebar
-            characterWithDefaults={characterWithDefaults}
-            effectiveAbilityScores={effectiveAbilityScores}
-            proficiencyBonus={proficiencyBonus}
-            handleInitiativeChange={handleInitiativeChange}
-            handleArmorClassChange={handleArmorClassChange}
-            handleHPChange={localHandleChange}
-            handleDeathSavesChange={handleDeathSavesChange}
-            handleSpeedChange={handleSpeedChange}
-            handleUpdateSenses={handleUpdateSenses}
-            handleUpdateDefenses={handleUpdateDefenses}
-            handleUpdateConditions={handleUpdateConditions}
-            handleNavigateToFeature={handleNavigateToFeature}
-            rollDice={rollDice}
-            effectiveSpeed={effectiveSpeed}
-            effectiveSenses={effectiveSenses}
-            effectiveDefenses={effectiveDefenses}
-            effectiveConditions={effectiveConditions}
-            onUpdateActiveBonuses={handleUpdateActiveBonuses}
-            handleAdjustHP={handleAdjustHP}
-          />
+          <div
+            className={`${
+              mobileLayout === "tabs"
+                ? mobileColumn === "status"
+                  ? "block animate-in fade-in duration-200"
+                  : "hidden md:block"
+                : "block"
+            } md:col-span-3`}
+          >
+            <StatusSidebar
+              characterWithDefaults={characterWithDefaults}
+              effectiveAbilityScores={effectiveAbilityScores}
+              proficiencyBonus={proficiencyBonus}
+              handleInitiativeChange={handleInitiativeChange}
+              handleArmorClassChange={handleArmorClassChange}
+              handleHPChange={localHandleChange}
+              handleDeathSavesChange={handleDeathSavesChange}
+              handleSpeedChange={handleSpeedChange}
+              handleUpdateSenses={handleUpdateSenses}
+              handleUpdateDefenses={handleUpdateDefenses}
+              handleUpdateConditions={handleUpdateConditions}
+              handleNavigateToFeature={customNavigateToFeature}
+              rollDice={rollDice}
+              effectiveSpeed={effectiveSpeed}
+              effectiveSenses={effectiveSenses}
+              effectiveDefenses={effectiveDefenses}
+              effectiveConditions={effectiveConditions}
+              onUpdateActiveBonuses={handleUpdateActiveBonuses}
+              handleAdjustHP={handleAdjustHP}
+            />
+          </div>
         </div>
       </div>
 

@@ -3,12 +3,15 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark" | "system";
+type MobileLayout = "tabs" | "stacked";
 
 interface ThemeContextType {
     theme: Theme;
     setTheme: (theme: Theme) => void;
     primaryColor: string;
     setPrimaryColor: (color: string) => void;
+    mobileLayout: MobileLayout;
+    setMobileLayout: (layout: MobileLayout) => void;
     resetToDefaults: () => void;
 }
 
@@ -19,15 +22,18 @@ const DEFAULT_PRIMARY = "#3b82f6"; // A nice blue default
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [theme, setThemeState] = useState<Theme>("system");
     const [primaryColor, setPrimaryColorState] = useState<string>(DEFAULT_PRIMARY);
+    const [mobileLayout, setMobileLayoutState] = useState<MobileLayout>("tabs");
     const [mounted, setMounted] = useState(false);
 
     // Initial load from localStorage
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme") as Theme | null;
         const savedColor = localStorage.getItem("primary-color");
+        const savedMobileLayout = localStorage.getItem("mobile-layout") as MobileLayout | null;
 
         if (savedTheme) setThemeState(savedTheme);
         if (savedColor) setPrimaryColorState(savedColor);
+        if (savedMobileLayout) setMobileLayoutState(savedMobileLayout);
         
         setMounted(true);
     }, []);
@@ -62,6 +68,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     }, [theme, primaryColor, mounted]);
 
+    // Handle Mobile Layout persistence
+    useEffect(() => {
+        if (!mounted) return;
+        localStorage.setItem("mobile-layout", mobileLayout);
+    }, [mobileLayout, mounted]);
+
     // Listen for system theme changes
     useEffect(() => {
         if (theme !== "system") return;
@@ -79,13 +91,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const setTheme = (t: Theme) => setThemeState(t);
     const setPrimaryColor = (c: string) => setPrimaryColorState(c);
+    const setMobileLayout = (l: MobileLayout) => setMobileLayoutState(l);
     const resetToDefaults = () => {
         setThemeState("system");
         setPrimaryColorState(DEFAULT_PRIMARY);
+        setMobileLayoutState("tabs");
     };
 
     return (
-        <ThemeContext.Provider value={{ theme, setTheme, primaryColor, setPrimaryColor, resetToDefaults }}>
+        <ThemeContext.Provider value={{ theme, setTheme, primaryColor, setPrimaryColor, mobileLayout, setMobileLayout, resetToDefaults }}>
             {children}
         </ThemeContext.Provider>
     );

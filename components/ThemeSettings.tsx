@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useTheme } from "./providers/ThemeProvider";
-import { Moon, Sun, Monitor, RotateCcw, X, Check } from "lucide-react";
+import { Moon, Sun, Monitor, RotateCcw, X, Check, Smartphone, Columns } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ModalScrollLock from "./ui/ModalScrollLock";
 
@@ -26,7 +26,7 @@ const CLASS_PRESETS = [
 ];
 
 const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
-    const { theme, setTheme, primaryColor, setPrimaryColor, resetToDefaults } = useTheme();
+    const { theme, setTheme, primaryColor, setPrimaryColor, mobileLayout, setMobileLayout, resetToDefaults } = useTheme();
     const [tempColor, setTempColor] = useState(primaryColor);
 
     const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +81,53 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
                                 >
                                     <item.icon size={24} />
                                     <span className="text-sm font-bold uppercase tracking-tighter">{item.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Mobile Layout Toggle */}
+                    <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                            Mobile Layout Style
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {[
+                                {
+                                    id: "tabs",
+                                    icon: Smartphone,
+                                    label: "Tabbed Panels (Modern)",
+                                    desc: "Optimized. Switch between Stats, Sheet, and Status as tabs on mobile screens."
+                                },
+                                {
+                                    id: "stacked",
+                                    icon: Columns,
+                                    label: "Classic Column Stack",
+                                    desc: "Traditional. Renders everything in one long vertical scrolling page."
+                                },
+                            ].map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => setMobileLayout(item.id as any)}
+                                    className={cn(
+                                        "flex flex-col items-start gap-2 p-3.5 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer relative group w-full",
+                                        mobileLayout === item.id
+                                            ? "border-primary bg-primary/5 text-primary shadow-sm"
+                                            : "border-border bg-secondary/20 text-muted-foreground hover:border-primary/30"
+                                    )}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <item.icon size={18} className={mobileLayout === item.id ? "text-primary" : "text-muted-foreground"} />
+                                        <span className="text-sm font-bold uppercase tracking-tight">{item.label}</span>
+                                    </div>
+                                    <p className="text-[11px] font-semibold leading-relaxed opacity-80 mt-1">
+                                        {item.desc}
+                                    </p>
+                                    {mobileLayout === item.id && (
+                                        <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-0.5 shadow-sm">
+                                            <Check size={8} strokeWidth={4} />
+                                        </div>
+                                    )}
                                 </button>
                             ))}
                         </div>
