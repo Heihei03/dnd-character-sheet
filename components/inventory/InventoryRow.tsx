@@ -5,6 +5,7 @@ import { ChevronDown, ChevronRight, Trash2, CornerDownRight, GripVertical, Users
 import NumericInput from "../ui/NumericInput";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { cn } from "../../lib/utils";
 
 interface InventoryRowProps {
     item: InventoryItem;
@@ -61,27 +62,32 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
             <tr 
                 ref={setNodeRef}
                 style={style}
-                className={`border-b border-border hover:bg-secondary/50 transition-colors ${isNested ? "bg-secondary/20" : ""} ${isDragging ? "bg-primary/10 shadow-inner" : ""}`}
+                className={cn(
+                    "border-b border-border hover:bg-secondary/50 transition-colors md:table-row flex flex-wrap gap-y-2 p-3 pb-4 relative md:p-0",
+                    isNested ? "bg-secondary/20 pl-6 md:pl-0" : "",
+                    isDragging ? "bg-primary/10 shadow-inner" : ""
+                )}
             >
                 {isReorderMode && (
-                    <td className="p-2 cursor-grab active:cursor-grabbing text-muted-foreground/40 hover:text-primary transition-colors" {...attributes} {...listeners}>
-                        <div className="flex items-center justify-center w-full">
+                    <td className="p-0 md:p-2 cursor-grab active:cursor-grabbing text-muted-foreground/40 hover:text-primary transition-colors block md:table-cell self-center" {...attributes} {...listeners}>
+                        <div className="flex items-center justify-center h-8 w-8">
                             <GripVertical className="w-4 h-4" />
                         </div>
                     </td>
                 )}
-                <td className="p-2">
+                <td className="p-0 md:p-2 block md:table-cell flex-1 min-w-[45px] max-w-[60px] md:min-w-0 md:max-w-none">
+                    <span className="block md:hidden text-[9px] font-black uppercase text-muted-foreground mb-1 ml-1">Qty</span>
                      <NumericInput
                         value={item.quantity}
                         onChange={(val) => updateItem(item.id, "quantity", val)}
                         variant="horizontal"
-                        className="w-20 h-8"
+                        className="w-full md:w-20 h-8"
                         inputClassName="text-xs text-center p-0"
                         showArrows="hover"
                         min={0}
                     />
                 </td>
-                <td className="p-2">
+                <td className="p-0 md:p-2 block md:table-cell flex-1 min-w-[200px] md:w-auto pr-24 md:pr-0">
                     <div className="flex items-center gap-1">
                         {isNested && <CornerDownRight className="w-3.5 h-3.5 text-muted-foreground/30 ml-2" />}
                         <div className="flex-1">
@@ -89,7 +95,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                                 type="text"
                                 value={item.name}
                                 onChange={(e) => updateItem(item.id, "name", e.target.value)}
-                                className="w-full p-1 border border-transparent hover:border-border rounded text-sm font-medium focus:bg-background focus:ring-1 focus:ring-primary outline-none"
+                                className="w-full p-1 border border-transparent hover:border-border rounded text-base md:text-sm font-bold md:font-medium focus:bg-background focus:ring-1 focus:ring-primary outline-none text-foreground"
                             />
                             {/* Item Metadata Summary */}
                             <div className="px-1 text-[10px] text-muted-foreground font-medium uppercase tracking-tight flex flex-wrap gap-x-2 gap-y-0.5">
@@ -137,72 +143,79 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                         </div>
                     </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0 md:p-2 block md:table-cell flex-1 min-w-[60px] max-w-[75px] md:min-w-0 md:max-w-none">
+                    <span className="block md:hidden text-[9px] font-black uppercase text-muted-foreground mb-1 ml-1">Cost (gp)</span>
                      <NumericInput
                         value={item.costGP ?? 0}
                         onChange={(val) => updateItem(item.id, "costGP", val)}
                         variant="horizontal"
-                        className="w-24 h-8"
+                        className="w-full md:w-24 h-8"
                         inputClassName="text-xs text-center p-0"
                         showArrows="hover"
                         min={0}
                     />
                 </td>
-                <td className="p-2">
+                <td className="p-0 md:p-2 block md:table-cell flex-1 min-w-[60px] max-w-[75px] md:min-w-0 md:max-w-none">
+                    <span className="block md:hidden text-[9px] font-black uppercase text-muted-foreground mb-1 ml-1">Weight (lbs)</span>
                      <NumericInput
                         value={item.weight}
                         onChange={(val) => updateItem(item.id, "weight", val)}
                         variant="horizontal"
-                        className="w-24 h-8"
+                        className="w-full md:w-24 h-8"
                         inputClassName="text-xs text-center p-0"
                         showArrows="hover"
                         min={0}
                     />
                 </td>
                 {section === "equipment" && (
-                    <td className="p-2 text-center">
-                        <input
-                            type="checkbox"
-                            checked={item.equipped ?? false}
-                            onChange={(e) => updateItem(item.id, "equipped", e.target.checked)}
-                            className="w-4 h-4 cursor-pointer accent-primary"
-                        />
+                    <td className="p-0 md:p-2 block md:table-cell flex-1 min-w-[50px] max-w-[65px] md:min-w-0 md:max-w-none text-center flex flex-col items-center">
+                        <span className="block md:hidden text-[9px] font-black uppercase text-muted-foreground mb-1">Equipped</span>
+                        <div className="flex items-center justify-center h-8 w-full">
+                            <input
+                                type="checkbox"
+                                checked={item.equipped ?? false}
+                                onChange={(e) => updateItem(item.id, "equipped", e.target.checked)}
+                                className="w-4 h-4 cursor-pointer accent-primary"
+                            />
+                        </div>
                     </td>
                 )}
-                <td className="p-2">
+                <td className="p-0 md:p-2 block md:table-cell absolute top-3.5 right-11 w-8 h-8 md:static md:w-auto md:h-auto">
                     <button
                         onClick={() => removeItem(item.id)}
-                        className="text-muted-foreground/30 hover:text-red-500 transition-colors flex items-center justify-center w-full"
+                        className="text-muted-foreground/30 hover:text-red-500 transition-colors flex items-center justify-center h-8 w-8"
+                        title="Delete Item"
                     >
                         <Trash2 className="w-4 h-4" />
                     </button>
                 </td>
-                <td className="p-2">
+                <td className="p-0 md:p-2 block md:table-cell absolute top-3.5 right-19 w-8 h-8 md:static md:w-auto md:h-auto">
                     {item.linkedSummonStatblockId && onSummonFromStatblock && (
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onSummonFromStatblock(item.linkedSummonStatblockId!);
                             }}
-                            className="text-primary/40 hover:text-primary transition-colors flex items-center justify-center w-full"
+                            className="text-primary/40 hover:text-primary transition-colors flex items-center justify-center h-8 w-8"
                             title="Summon Creature"
                         >
                             <Users className="w-4 h-4" />
                         </button>
                     )}
                 </td>
-                <td className="p-2">
+                <td className="p-0 md:p-2 block md:table-cell absolute top-3.5 right-3 w-8 h-8 md:static md:w-auto md:h-auto">
                     <button
                         onClick={onToggleExpand}
-                        className="text-muted-foreground/40 hover:text-primary transition-colors w-full flex items-center justify-center"
+                        className="text-muted-foreground/40 hover:text-primary transition-colors w-8 h-8 flex items-center justify-center"
+                        title="Expand details"
                     >
                         <ChevronDown className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                     </button>
                 </td>
             </tr>
             {isExpanded && (
-                <tr className="bg-secondary/10">
-                    <td colSpan={(section === "equipment" ? 7 : 6) + (isReorderMode ? 1 : 0)} className="p-4 pt-2">
+                <tr className="bg-secondary/10 block md:table-row w-full">
+                    <td colSpan={(section === "equipment" ? 7 : 6) + (isReorderMode ? 1 : 0)} className="p-4 pt-2 block md:table-cell w-full">
                         <ItemDetailView
                             item={item}
                             containers={containers}

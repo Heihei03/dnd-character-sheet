@@ -88,6 +88,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   } = useCharacterSheet(character, setCharacter);
 
   const { mobileLayout } = useTheme();
+
   const [mobileColumn, setMobileColumn] = useState<"stats" | "sheet" | "status">("sheet");
   const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
 
@@ -221,7 +222,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
   return (
     <div className="flex flex-col items-center pt-1 px-2.5 sm:px-4 md:px-8 pb-8 w-full">
-      <div className="w-full z-40 transition-all duration-300 sticky top-0 bg-background/95 backdrop-blur-md py-2 px-2.5 sm:px-4 md:px-8 -mx-2.5 sm:-mx-4 md:-mx-8 border-b border-border/60 shadow-xs mb-4">
+      {/* Sticky header container for mobile only; static container on desktop */}
+      <div className="w-full z-40 transition-all duration-300 sticky md:static top-0 bg-background/95 md:bg-transparent backdrop-blur-md md:backdrop-blur-none py-2 md:py-0 px-2.5 sm:px-4 md:px-0 -mx-2.5 sm:-mx-4 md:mx-0 border-b md:border-b-0 border-border/60 shadow-xs md:shadow-none mb-4 md:mb-6">
         <CharacterHeader
           name={characterWithDefaults.name}
           species={characterWithDefaults.species}

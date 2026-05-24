@@ -12,6 +12,7 @@ import NumericInput from "./ui/NumericInput";
 import ConfirmationModal from "./ui/ConfirmationModal";
 import ThemeSettings from "./ThemeSettings";
 import ModalScrollLock from "./ui/ModalScrollLock";
+import { cn } from "../lib/utils";
 
 interface CharacterHeaderProps {
     name: string;
@@ -34,6 +35,7 @@ interface CharacterHeaderProps {
     onImageUrlChange: (value: string) => void;
     onDelete?: () => void;
     onReturn?: () => void;
+    collapsed?: boolean;
 }
 
 const EXP_THRESHOLDS = [
@@ -62,6 +64,7 @@ const CharacterHeader = ({
     onImageUrlChange,
     onDelete,
     onReturn,
+    collapsed = false,
 }: CharacterHeaderProps) => {
     const [isEditingClasses, setIsEditingClasses] = useState(false);
     const [isEditingSettings, setIsEditingSettings] = useState(false);
@@ -78,12 +81,12 @@ const CharacterHeader = ({
 
     return (
         <>
-            {/* Inline Sticky Header - Always Compact */}
-            <Card className="w-full max-w-screen-2xl mx-auto shadow-md border-t-4 border-primary overflow-hidden">
+            {/* Inline Header for Mobile/Sticky - Sleek & Compact Sticky Bar */}
+            <Card className={cn("w-full max-w-screen-2xl mx-auto shadow-md border-t-4 border-primary overflow-hidden", collapsed ? "block" : "block md:hidden")}>
                 <CardContent className="p-0">
                     <div 
                         onClick={() => setIsExpandedModalOpen(true)}
-                        className="flex items-center justify-between p-3 px-4 md:px-6 bg-secondary/20 hover:bg-secondary/30 transition-all cursor-pointer group"
+                        className="flex items-center justify-between p-3 px-4 bg-secondary/20 hover:bg-secondary/30 transition-all cursor-pointer group"
                     >
                         <div className="flex items-center gap-3 sm:gap-4 overflow-hidden min-w-0">
                             {/* Compact Avatar */}
@@ -120,6 +123,200 @@ const CharacterHeader = ({
                             >
                                 <Settings size={18} />
                             </button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Inline Header for Desktop - Full Expanded Card */}
+            <Card className={cn("w-full max-w-screen-2xl mx-auto shadow-md border-t-4 border-primary overflow-hidden", collapsed ? "hidden" : "hidden md:block")}>
+                <CardContent className="p-6">
+                    {/* Navigation & Action Toolbar */}
+                    <div className="flex justify-between items-center px-4 py-3 bg-secondary/20 border border-border rounded-xl shadow-xs mb-6">
+                        {onReturn ? (
+                            <button
+                                onClick={onReturn}
+                                title="Return to Selection"
+                                className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95 animate-in"
+                            >
+                                <Home size={18} />
+                            </button>
+                        ) : <div />}
+
+                        <div className="flex items-center gap-1.5">
+                            <button
+                                onClick={() => setIsEditingSettings(true)}
+                                title="Display Settings"
+                                className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                            >
+                                <Settings size={18} />
+                            </button>
+                            {onDelete && (
+                                <button
+                                    onClick={() => setIsDeletingCharacter(true)}
+                                    title="Delete Character"
+                                    className="p-2 bg-background hover:bg-red-500/10 text-red-500 rounded-lg border border-border hover:border-red-500/30 transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Desktop 3-Column Grid */}
+                    <div className="grid grid-cols-12 gap-6">
+                        {/* Character Name and Basics */}
+                        <div className="col-span-4 p-5 sm:p-6 bg-secondary/10 border border-border rounded-2xl flex items-center gap-4 sm:gap-6">
+                            {/* Image Upload/Display */}
+                            <div className="relative group shrink-0">
+                                <div className="w-20 h-20 sm:w-24 md:w-32 md:h-32 rounded-full border-4 border-card bg-background flex items-center justify-center overflow-hidden shadow-md">
+                                    {imageUrl ? (
+                                        <img src={imageUrl} alt="Character" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <ImageIcon size={24} className="text-gray-300 md:size-8" />
+                                    )}
+                                </div>
+                                <label className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                                    <Camera size={16} className="md:size-5" />
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onloadend = () => {
+                                                    onImageUrlChange(reader.result as string);
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    />
+                                </label>
+                            </div>
+
+                            <div className="space-y-1 flex-1 min-w-0">
+                                <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                    <User size={12} className="md:size-3.5" /> Character Name
+                                </label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => onNameChange(e.target.value)}
+                                    className="w-full text-xl sm:text-2xl font-black bg-transparent border-b-2 border-transparent hover:border-border focus:border-primary focus:outline-none transition-all py-0.5 truncate"
+                                    placeholder="Enter Name..."
+                                />
+                            </div>
+                        </div>
+
+                        {/* Classes and Levels */}
+                        <div className="col-span-4 p-5 bg-secondary/10 border border-border rounded-2xl space-y-2 relative group min-h-[140px]">
+                            <div className="flex justify-between items-center mb-1">
+                                <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                    <GraduationCap size={12} className="md:size-3.5" /> Class & Level
+                                </label>
+                                <SettingsButton
+                                    onClick={() => setIsEditingClasses(true)}
+                                    title="Edit Classes"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                {classes.map((cls, index) => (
+                                    <div key={index} className="flex flex-col">
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-lg font-black italic">
+                                                {cls.subclass ? `${cls.subclass} ` : ""}{cls.name}
+                                            </span>
+                                            <span className="text-[10px] sm:text-xs font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded border border-primary/20">
+                                                LV {cls.level}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="absolute bottom-3 left-5 flex items-center gap-1 pointer-events-none">
+                                <span className="text-[10px] sm:text-xs uppercase font-black text-gray-400">Total Lv</span>
+                                <span className="text-[10px] sm:text-xs font-black text-primary">{totalLevel}</span>
+                            </div>
+                        </div>
+
+                        {/* Meta Info (Species, Background, EXP) */}
+                        <div className="col-span-4 p-5 bg-secondary/10 border border-border rounded-2xl flex flex-col gap-4 relative">
+                            {/* Top row: Species & Subspecies */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                        <BookOpen size={10} className="md:size-3" /> Species
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={species}
+                                        onChange={(e) => onSpeciesChange(e.target.value)}
+                                        className="w-full text-xs sm:text-sm font-medium bg-transparent border-b border-border hover:border-primary/50 focus:border-primary focus:outline-none transition-all py-0.5"
+                                        placeholder="Human..."
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                        <BookOpen size={10} className="md:size-3" /> Sub Species
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={subSpecies || ""}
+                                        onChange={(e) => onSubSpeciesChange(e.target.value)}
+                                        className="w-full text-xs sm:text-sm font-medium bg-transparent border-b border-border hover:border-primary/50 focus:border-primary focus:outline-none transition-all py-0.5"
+                                        placeholder="Wood Elf..."
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Bottom layout: Background/Experience + Proficiency Badge */}
+                            <div className="flex gap-4">
+                                <div className="flex-1 flex flex-col justify-between py-px gap-3 sm:gap-1.5">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                            <Trophy size={10} className="md:size-3" /> Background
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={background}
+                                            onChange={(e) => onBackgroundChange(e.target.value)}
+                                            className="w-full text-xs sm:text-sm font-medium bg-transparent border-b border-border hover:border-primary/50 focus:border-primary focus:outline-none transition-all py-0.5"
+                                            placeholder="Soldier..."
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                            <Star size={10} className="md:size-3" /> Experience
+                                        </label>
+                                        <div className="flex items-center gap-1 border-b border-border hover:border-primary/50 focus-within:border-primary transition-all">
+                                            <NumericInput
+                                                value={exp ?? ""}
+                                                onChange={(val) => onExpChange(val === 0 ? undefined : val)}
+                                                variant="horizontal"
+                                                className="flex-1 border-none bg-transparent shadow-none"
+                                                inputClassName="text-xs sm:text-sm font-medium p-0 pr-5"
+                                                placeholder="Current..."
+                                            />
+                                            {nextLevelExp !== null && (
+                                                <div className="flex items-center text-muted-foreground text-[10px] sm:text-xs font-bold">
+                                                    <span>/</span>
+                                                    <span className="ml-1">{nextLevelExp.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Proficiency Bonus Badge */}
+                                <div className="flex flex-col items-center justify-center bg-primary text-primary-foreground rounded-xl p-4 min-w-[100px] shadow-lg border border-primary/30 shrink-0">
+                                    <span className="text-[10px] uppercase font-black tracking-widest leading-none opacity-90 text-primary-foreground/80 mb-2">Proficiency</span>
+                                    <span className="text-3xl font-black leading-none">+{proficiencyBonus}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </CardContent>

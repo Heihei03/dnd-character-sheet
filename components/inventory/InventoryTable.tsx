@@ -39,8 +39,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
 
     return (
         <>
-            <table className="w-full text-left border-collapse">
-                <thead>
+            <table className="w-full text-left border-collapse block md:table">
+                <thead className="hidden md:table-header-group">
                     <tr className="border-b text-xs text-gray-400 uppercase tracking-tighter">
                         {isReorderMode && <th className="p-1 w-6"></th>}
                         <th className="p-2 w-10">Qty</th>
@@ -52,7 +52,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                         <th className="p-2 w-6"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="block md:table-row-group">
                     {items.map((item) => (
                         <InventoryRow
                             key={item.id}

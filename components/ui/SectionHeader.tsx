@@ -19,13 +19,13 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
 }) => {
     const hasChildren = !!children;
     return (
-        <div className="flex flex-wrap justify-between items-center gap-3 w-full">
+        <div className="flex flex-wrap md:flex-nowrap justify-between items-center gap-3 md:gap-0 w-full">
             <h2 className="text-2xl font-bold">{title}</h2>
-            <div className={`flex flex-wrap items-center gap-2 sm:gap-4 ${hasChildren ? "w-full sm:w-auto justify-between sm:justify-end" : "w-auto justify-end"}`}>
+            <div className={`flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-4 ${hasChildren ? "w-full md:w-auto justify-between md:justify-start" : "w-auto md:justify-start"}`}>
                 {children}
                 {onAdd && !isAdding && (
-                    <Button onClick={onAdd} className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-4 sm:py-2">
-                        <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> {buttonLabel || "Add"}
+                    <Button onClick={onAdd} className="flex items-center gap-1.5 md:gap-2 whitespace-nowrap text-xs md:text-sm px-2.5 py-1.5 md:px-4 md:py-2">
+                        <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" /> {buttonLabel || "Add"}
                     </Button>
                 )}
             </div>
