@@ -1,7 +1,7 @@
 // components/DiceRoller.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "./ui/button";
 import { Dices, History, ChevronLeft, Play, X } from "lucide-react";
 import NumericInput from "./ui/NumericInput";
@@ -19,6 +19,25 @@ const DiceRoller = ({ rollResult, rollDice, onToggleHistory, globalRollMode, set
   const [selectedDie, setSelectedDie] = useState<number | null>(null);
   const [diceCount, setDiceCount] = useState<number>(1);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [lastSeenResult, setLastSeenResult] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (rollResult) {
+      if (rollResult !== lastSeenResult) {
+        if (isMobileOpen) {
+          setLastSeenResult(rollResult);
+          setShowNotification(false);
+        } else {
+          setShowNotification(true);
+        }
+      } else if (isMobileOpen) {
+        setShowNotification(false);
+      }
+    } else {
+      setShowNotification(false);
+    }
+  }, [rollResult, isMobileOpen, lastSeenResult]);
 
   // Swipe-to-dismiss states
   const [startY, setStartY] = useState<number | null>(null);
@@ -176,7 +195,7 @@ const DiceRoller = ({ rollResult, rollDice, onToggleHistory, globalRollMode, set
         title="Open Dice Roller"
       >
         <Dices className="w-6 h-6 animate-pulse group-hover:rotate-12 transition-transform duration-300" />
-        {rollResult && (
+        {showNotification && (
           <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-4.5 w-4.5 bg-red-500 text-[8px] font-black items-center justify-center text-white border border-white/20">!</span>
