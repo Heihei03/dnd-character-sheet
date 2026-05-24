@@ -145,7 +145,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   const handleUpdateClasses = (value: CharacterClass[]) => localHandleChange("classes", value);
 
   return (
-    <div className="flex flex-col items-center pt-1 px-8 pb-8">
+    <div className="flex flex-col items-center pt-1 px-2.5 sm:px-4 md:px-8 pb-8 w-full">
       <div className="w-full mb-4">
         <CharacterHeader
           name={characterWithDefaults.name}

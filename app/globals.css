@@ -113,6 +113,9 @@
 }
 
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
   * {
     @apply border-border transition-colors duration-200;
   }

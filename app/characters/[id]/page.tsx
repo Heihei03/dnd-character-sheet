@@ -68,7 +68,7 @@ const CharacterPage = () => {
   if (!character) return <p>Character not found.</p>;
 
   return (
-    <div className="flex flex-col items-center p-8 overflow-x-hidden">
+    <div className="flex flex-col items-center py-4 md:py-8 px-0 overflow-x-hidden w-full">
       <CharacterSheet 
         character={character} 
         setCharacter={setCharacter} 

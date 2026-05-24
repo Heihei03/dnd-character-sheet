@@ -5,7 +5,7 @@ import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import Select from "./ui/Select";
 import { Card, CardContent } from "./ui/card";
-import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Shield, Camera, Image as ImageIcon, Home, Settings } from "lucide-react";
+import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Shield, Camera, Image as ImageIcon, Home, Settings, ChevronUp, ChevronDown } from "lucide-react";
 import SettingsButton from "./ui/SettingsButton";
 import NumericInput from "./ui/NumericInput";
 import ConfirmationModal from "./ui/ConfirmationModal";
@@ -66,43 +66,95 @@ const CharacterHeader = ({
     const [isEditingSettings, setIsEditingSettings] = useState(false);
     const [isDeletingCharacter, setIsDeletingCharacter] = useState(false);
     const [classIndexToRemove, setClassIndexToRemove] = useState<number | null>(null);
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const nextLevelExp = totalLevel < 20 ? EXP_THRESHOLDS[totalLevel] : null;
 
     return (
         <>
             <Card className="w-full max-w-screen-2xl mx-auto shadow-md border-t-4 border-primary overflow-hidden">
                 <CardContent className="p-0">
-                    {/* Sleek Mobile Navigation / Actions Toolbar (Hidden on Desktop) */}
-                    <div className="flex md:hidden justify-between items-center px-4 py-3 bg-secondary/40 border-b border-border shadow-xs">
-                        {onReturn ? (
-                            <button
-                                onClick={onReturn}
-                                title="Return to Selection"
-                                className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
-                            >
-                                <Home size={18} />
-                            </button>
-                        ) : <div />}
-
-                        <div className="flex items-center gap-1.5">
-                            <button
-                                onClick={() => setIsEditingSettings(true)}
-                                title="Display Settings"
-                                className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
-                            >
-                                <Settings size={18} />
-                            </button>
-                            {onDelete && (
+                    {isCollapsed ? (
+                        <div 
+                            onClick={() => setIsCollapsed(false)}
+                            className="flex items-center justify-between p-3 px-4 md:px-6 bg-secondary/20 hover:bg-secondary/30 transition-all cursor-pointer group"
+                        >
+                            <div className="flex items-center gap-3 sm:gap-4 overflow-hidden min-w-0">
+                                {/* Compact Avatar */}
+                                <div className="w-9 h-9 rounded-full border-2 border-primary bg-background flex items-center justify-center overflow-hidden shrink-0 shadow-xs transition-transform group-hover:scale-105">
+                                    {imageUrl ? (
+                                        <img src={imageUrl} alt="Character" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <ImageIcon size={14} className="text-gray-300" />
+                                    )}
+                                </div>
+                                {/* Name and Classes */}
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
+                                    <h2 className="text-base sm:text-lg font-black truncate text-foreground leading-none">{name}</h2>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded border border-primary/20 leading-none whitespace-nowrap">
+                                            LV {totalLevel}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground font-bold italic truncate leading-none">
+                                            {classes.map(c => `${c.subclass ? c.subclass + ' ' : ''}${c.name} ${c.level}`).join(' / ')}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                                {/* Proficiency bonus indicator */}
+                                <div className="flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded shadow-xs">
+                                    <span>Prof:</span>
+                                    <span>+{proficiencyBonus}</span>
+                                </div>
                                 <button
-                                    onClick={() => setIsDeletingCharacter(true)}
-                                    title="Delete Character"
-                                    className="p-2 bg-background hover:bg-red-500/10 text-red-500 rounded-lg border border-border hover:border-red-500/30 transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                                    onClick={(e) => { e.stopPropagation(); setIsCollapsed(false); }}
+                                    className="p-1.5 hover:bg-secondary rounded-full transition-all text-muted-foreground hover:text-foreground active:scale-95"
+                                    title="Expand Header"
                                 >
-                                    <Trash2 size={18} />
+                                    <ChevronDown size={18} />
                                 </button>
-                            )}
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                            {/* Sleek Mobile Navigation / Actions Toolbar (Hidden on Desktop) */}
+                            <div className="flex md:hidden justify-between items-center px-4 py-3 bg-secondary/40 border-b border-border shadow-xs">
+                                {onReturn ? (
+                                    <button
+                                        onClick={onReturn}
+                                        title="Return to Selection"
+                                        className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                                    >
+                                        <Home size={18} />
+                                    </button>
+                                ) : <div />}
+
+                                <div className="flex items-center gap-1.5">
+                                    <button
+                                        onClick={() => setIsCollapsed(true)}
+                                        title="Collapse Header"
+                                        className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                                    >
+                                        <ChevronUp size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() => setIsEditingSettings(true)}
+                                        title="Display Settings"
+                                        className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                                    >
+                                        <Settings size={18} />
+                                    </button>
+                                    {onDelete && (
+                                        <button
+                                            onClick={() => setIsDeletingCharacter(true)}
+                                            title="Delete Character"
+                                            className="p-2 bg-background hover:bg-red-500/10 text-red-500 rounded-lg border border-border hover:border-red-500/30 transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-12">
                         {/* Character Name and Basics */}
@@ -188,6 +240,13 @@ const CharacterHeader = ({
                             {/* Desktop Global Actions Overlay (Hidden on Mobile) */}
                             <div className="absolute top-3 right-3 z-10 hidden md:block">
                                 <div className="flex items-center gap-1.5 p-1.5 bg-green-500/20 backdrop-blur-sm rounded-full border border-green-500/40 shadow-sm">
+                                    <button
+                                        onClick={() => setIsCollapsed(true)}
+                                        title="Collapse Header"
+                                        className="p-2 rounded-full transition-colors text-green-800 dark:text-green-200 hover:text-primary hover:bg-green-500/20"
+                                    >
+                                        <ChevronUp size={20} />
+                                    </button>
                                     {onReturn && (
                                         <button
                                             onClick={onReturn}
@@ -291,7 +350,8 @@ const CharacterHeader = ({
                             </div>
                         </div>
                     </div>
-
+                        </>
+                    )}
                 </CardContent>
 
                 <ConfirmationModal
