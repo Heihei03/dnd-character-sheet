@@ -89,6 +89,17 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
   const { mobileLayout } = useTheme();
   const [mobileColumn, setMobileColumn] = useState<"stats" | "sheet" | "status">("sheet");
+  const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
+
+  const changeMobileColumn = (newCol: "stats" | "sheet" | "status") => {
+    const columns: ("stats" | "sheet" | "status")[] = ["stats", "sheet", "status"];
+    const currentIndex = columns.indexOf(mobileColumn);
+    const newIndex = columns.indexOf(newCol);
+    if (newIndex !== currentIndex) {
+      setSlideDirection(newIndex > currentIndex ? "right" : "left");
+      setMobileColumn(newCol);
+    }
+  };
 
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
@@ -136,16 +147,16 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       if (diffX > 0) {
         // Swiped right -> Go to tab on the left (status -> sheet -> stats)
         if (mobileColumn === "status") {
-          setMobileColumn("sheet");
+          changeMobileColumn("sheet");
         } else if (mobileColumn === "sheet") {
-          setMobileColumn("stats");
+          changeMobileColumn("stats");
         }
       } else {
         // Swiped left -> Go to tab on the right (stats -> sheet -> status)
         if (mobileColumn === "stats") {
-          setMobileColumn("sheet");
+          changeMobileColumn("sheet");
         } else if (mobileColumn === "sheet") {
-          setMobileColumn("status");
+          changeMobileColumn("status");
         }
       }
     }
@@ -156,7 +167,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
   const customNavigateToFeature = (featureId: string) => {
     handleNavigateToFeature(featureId);
-    setMobileColumn("sheet");
+    changeMobileColumn("sheet");
   };
 
   const handleSummonFromStatblock = (statblockId: string) => {
@@ -242,7 +253,20 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
       >
         {/* Mobile Tab Switcher */}
         {mobileLayout === "tabs" && (
-          <div className="flex md:hidden w-full max-w-screen-2xl mx-auto bg-gray-50 dark:bg-gray-900/50 p-1.5 rounded-xl border border-gray-100 dark:border-gray-800 gap-1 shadow-sm">
+          <div className="relative flex md:hidden w-full max-w-screen-2xl mx-auto bg-gray-50 dark:bg-gray-900/50 p-1 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+            {/* Sliding backdrop indicator */}
+            <div
+              className="absolute top-1 bottom-1 rounded-lg bg-primary shadow-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] z-0"
+              style={{
+                width: "calc(100% / 3 - 8px)",
+                left:
+                  mobileColumn === "stats"
+                    ? "4px"
+                    : mobileColumn === "sheet"
+                    ? "calc(100% / 3 + 4px)"
+                    : "calc(200% / 3 + 4px)",
+              }}
+            />
             {[
               { id: "stats", label: "Stats", icon: Shield },
               { id: "sheet", label: "Sheet", icon: BookOpen },
@@ -250,15 +274,22 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             ].map((col) => (
               <button
                 key={col.id}
-                onClick={() => setMobileColumn(col.id as any)}
-                className={`flex-1 py-2 px-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+                onClick={() => changeMobileColumn(col.id as any)}
+                className={`flex-1 py-2 px-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all z-10 relative ${
                   mobileColumn === col.id
-                    ? "bg-primary text-primary-foreground shadow-md scale-[1.02]"
-                    : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-400"
+                    ? "text-primary-foreground scale-[1.02]"
+                    : "text-gray-500 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 dark:text-gray-400"
                 }`}
               >
-                <col.icon size={14} />
-                {col.label}
+                <col.icon
+                  size={14}
+                  className={`transition-transform duration-300 ${
+                    mobileColumn === col.id ? "scale-110 rotate-3 text-primary-foreground" : "text-gray-400"
+                  }`}
+                />
+                <span className="transition-colors duration-300">
+                  {col.label}
+                </span>
               </button>
             ))}
           </div>
@@ -271,7 +302,9 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             className={`${
               mobileLayout === "tabs"
                 ? mobileColumn === "stats"
-                  ? "block animate-in fade-in duration-200"
+                  ? slideDirection === "right"
+                    ? "block animate-slide-in-right"
+                    : "block animate-slide-in-left"
                   : "hidden md:block"
                 : "block"
             } md:col-span-3`}
@@ -303,7 +336,9 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             className={`${
               mobileLayout === "tabs"
                 ? mobileColumn === "sheet"
-                  ? "block animate-in fade-in duration-200"
+                  ? slideDirection === "right"
+                    ? "block animate-slide-in-right"
+                    : "block animate-slide-in-left"
                   : "hidden md:block"
                 : "block"
             } md:col-span-6`}
@@ -349,7 +384,9 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
             className={`${
               mobileLayout === "tabs"
                 ? mobileColumn === "status"
-                  ? "block animate-in fade-in duration-200"
+                  ? slideDirection === "right"
+                    ? "block animate-slide-in-right"
+                    : "block animate-slide-in-left"
                   : "hidden md:block"
                 : "block"
             } md:col-span-3`}
