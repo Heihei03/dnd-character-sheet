@@ -50,7 +50,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
         transition,
         opacity: isDragging ? 0.5 : 1,
         zIndex: isDragging ? 100 : "auto",
-        position: (isDragging ? "relative" : "static") as any,
+        position: (isDragging ? "relative" : undefined) as any,
     };
 
     const isParentValidContainer = item.parentId ? allInventory.some(i => i.id === item.parentId && Boolean(i.isContainer)) : false;
@@ -87,7 +87,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                         min={0}
                     />
                 </td>
-                <td className="p-0 md:p-2 block md:table-cell flex-1 min-w-[200px] md:w-auto pr-24 md:pr-0">
+                <td className="p-0 md:p-2 block md:table-cell flex-1 min-w-[200px] md:w-auto pr-28 md:pr-0">
                     <div className="flex items-center gap-1">
                         {isNested && <CornerDownRight className="w-3.5 h-3.5 text-muted-foreground/30 ml-2" />}
                         <div className="flex-1">
@@ -189,7 +189,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
                         <Trash2 className="w-4 h-4" />
                     </button>
                 </td>
-                <td className="p-0 md:p-2 block md:table-cell absolute top-3.5 right-19 w-8 h-8 md:static md:w-auto md:h-auto">
+                <td className="p-0 md:p-2 block md:table-cell absolute top-3.5 right-[76px] w-8 h-8 md:static md:w-auto md:h-auto">
                     {item.linkedSummonStatblockId && onSummonFromStatblock && (
                         <button
                             onClick={(e) => {
