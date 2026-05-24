@@ -52,7 +52,7 @@ const ProficienciesLanguagesSection: React.FC<ProficienciesLanguagesSectionProps
         <Card className="w-full h-fit">
             <CardContent className="p-6">
                 <h2 className="text-2xl font-bold text-center mb-4">Proficiencies & Languages</h2>
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4 space-y-0">
                     <ProficiencyList
                         title="Weapon Proficiencies"
                         items={weaponProficiencies}

@@ -216,7 +216,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
                 e.stopPropagation();
                 onEdit();
               }}
-              className="p-1.5 rounded-full hover:bg-secondary/20 text-muted-foreground hover:text-primary transition-all opacity-0 group-hover:opacity-100"
+              className="p-1.5 rounded-full hover:bg-secondary/20 text-muted-foreground hover:text-primary transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
               title="Edit Summon"
             >
               <Pencil className="w-4 h-4" />
@@ -226,7 +226,7 @@ const SummonCard: React.FC<SummonCardProps> = ({
                 e.stopPropagation();
                 onDelete();
               }}
-              className="p-1.5 rounded-full hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
+              className="p-1.5 rounded-full hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
               title="Delete"
             >
               <Trash2 className="w-4 h-4" />

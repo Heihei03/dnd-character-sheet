@@ -29,9 +29,9 @@ const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
   return (
     <Card className="w-full">
       <CardContent className="p-4 space-y-6">
-        {/* Side-by-side Stats Section */}
-        <div className="flex items-start w-full overflow-hidden">
-          <div className="flex-1 pr-2 border-r border-gray-100 dark:border-gray-800 flex flex-col items-center">
+        {/* Side-by-side Stats Section - Stacks on Mobile */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-start w-full gap-6 md:gap-0 overflow-hidden">
+          <div className="flex-1 md:pr-2 md:border-r border-gray-100 dark:border-gray-800 flex flex-col items-center">
             <div className="flex items-center justify-center border-b pb-2 mb-4 w-full">
               <h2 className="text-xs sm:text-sm font-bold text-gray-400 uppercase tracking-widest text-center">Ability Scores</h2>
             </div>
@@ -44,7 +44,7 @@ const AbilityAndSavingThrows: React.FC<AbilityAndSavingThrowsProps> = ({
               onUpdateActiveBonuses={onUpdateActiveBonuses}
             />
           </div>
-          <div className="flex-1 pl-2 flex flex-col items-center">
+          <div className="flex-1 md:pl-2 flex flex-col items-center">
             <div className="flex items-center justify-center border-b pb-2 mb-4 w-full">
               <h2 className="text-xs sm:text-sm font-bold text-gray-400 uppercase tracking-widest text-center">Saving Throws</h2>
             </div>

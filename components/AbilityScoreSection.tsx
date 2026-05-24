@@ -58,7 +58,7 @@ const AbilityScoreSection = ({
   };
 
   return (
-    <div className="flex flex-col gap-2 w-full items-center">
+    <div className="grid grid-cols-3 md:grid-cols-1 gap-2 w-full justify-items-center">
       {Object.keys(abilityScores).map((key) => {
         const score = abilityScores[key];
         const effectiveScore = effectiveAbilityScores[key];
@@ -82,7 +82,7 @@ const AbilityScoreSection = ({
         return (
           <div
             key={key}
-            className={`flex flex-col items-center h-24 w-24 md:h-[110px] md:w-32 border rounded-lg p-1.5 md:p-2 shadow-sm transition-all hover:shadow-lg relative ${isOverridden
+            className={`flex flex-col items-center h-24 w-full max-w-[96px] md:max-w-none md:h-[110px] md:w-32 border rounded-lg p-1.5 md:p-2 shadow-sm transition-all hover:shadow-lg relative ${isOverridden
               ? "bg-primary/10 border-primary/30"
               : "bg-secondary/30 border-border"
               }`}

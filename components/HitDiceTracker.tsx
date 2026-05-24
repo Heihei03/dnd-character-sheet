@@ -84,7 +84,7 @@ const HitDiceTracker: React.FC<HitDiceTrackerProps> = ({
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap justify-end">
                                     <div className="flex items-center bg-background rounded-lg border border-border overflow-hidden">
                                         <NumericInput
                                             value={available}
@@ -92,7 +92,7 @@ const HitDiceTracker: React.FC<HitDiceTrackerProps> = ({
                                             variant="horizontal"
                                             min={0}
                                             max={cls.level}
-                                            className="border-none shadow-none w-20"
+                                            className="border-none shadow-none w-14 sm:w-20"
                                             inputClassName="text-sm font-black text-primary p-0 h-8"
                                             showArrows="none"
                                         />
@@ -103,7 +103,7 @@ const HitDiceTracker: React.FC<HitDiceTrackerProps> = ({
                                         onClick={() => handleRollHitDice(index)}
                                         disabled={available <= 0}
                                         variant="primary"
-                                        className="text-[10px] font-black uppercase px-3 py-1.5 h-8 rounded-lg shadow-sm tracking-widest"
+                                        className="text-[10px] font-black uppercase px-2 sm:px-3 py-1.5 h-8 rounded-lg shadow-sm tracking-widest"
                                         title="Roll Hit Die to Heal"
                                     >
                                         Roll

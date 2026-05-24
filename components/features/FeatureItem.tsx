@@ -194,7 +194,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
                             </div>
                         )}
 
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <div className="flex items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all">
                         <button
                             onClick={(e) => { e.stopPropagation(); onStartEdit(); }}
                             className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-all"

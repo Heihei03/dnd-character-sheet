@@ -137,7 +137,7 @@ const DefensesSection: React.FC<DefensesSectionProps> = ({
                 <span className="font-bold text-lg">Defenses</span>
             </div>
 
-            <div className="space-y-5 px-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 gap-6 md:gap-5 space-y-0 md:space-y-5 px-1">
                 <DefenseList
                     title="Resistances"
                     items={defenses.resistances}

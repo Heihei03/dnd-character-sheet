@@ -226,7 +226,7 @@ const BioSection: React.FC<BioSectionProps> = ({ bio, onUpdate }) => {
                   <div key={ally.id} className="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-xl border border-gray-100 dark:border-gray-800 relative group animate-in slide-in-from-top-2 duration-200">
                     <button
                       onClick={() => setAllyToDelete(index)}
-                      className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                      className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"
                       title="Remove"
                     >
                       <Trash2 size={14} />

@@ -546,7 +546,7 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({
                     <span className="font-bold text-sm">{action.name}</span>
                     <span className="text-[10px] uppercase text-muted-foreground">{action.type}</span>
                   </div>
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button type="button" onClick={() => handleOpenActionForm(action.id)} className="p-1 hover:text-primary"><Pencil className="w-3.5 h-3.5" /></button>
                     <button type="button" onClick={() => setActionToDelete(action.id)} className="p-1 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
@@ -571,7 +571,7 @@ const AddSummonForm: React.FC<AddSummonFormProps> = ({
             <div className="space-y-4">
               {traits.map(trait => (
                 <div key={trait.id} className="p-3 border border-border rounded-lg bg-secondary/5 space-y-2 relative group">
-                  <button type="button" onClick={() => setTraitToDelete(trait.id)} className="absolute top-2 right-2 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button type="button" onClick={() => setTraitToDelete(trait.id)} className="absolute top-2 right-2 text-muted-foreground hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <Trash2 className="w-4 h-4" />
                   </button>
                   <div className="space-y-1 pr-8">
