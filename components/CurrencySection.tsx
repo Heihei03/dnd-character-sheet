@@ -110,10 +110,10 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
             {/* Conversion Modal */}
             {
                 isModalOpen && (
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-200">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-background md:bg-black/50 md:backdrop-blur-sm animate-in fade-in duration-200">
                         <ModalScrollLock isOpen={isModalOpen} />
-                        <div className="bg-background rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-border relative animate-in zoom-in-95 duration-200">
-                            <div className="p-4 border-b border-border flex justify-between items-center bg-secondary/30">
+                        <div className="bg-background w-full h-full md:h-auto max-w-lg rounded-none md:rounded-2xl shadow-none md:shadow-2xl border-0 md:border border-border overflow-hidden animate-in md:zoom-in-95 duration-200 flex flex-col justify-between">
+                            <div className="p-4 border-b border-border flex justify-between items-center bg-secondary/30 shrink-0">
                                 <h3 className="font-black text-sm uppercase tracking-[0.2em] text-foreground">Currency Tools</h3>
                                 <button
                                     onClick={() => setIsModalOpen(false)}
@@ -124,7 +124,7 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                                 </button>
                             </div>
 
-                            <div className="p-5 space-y-6">
+                            <div className="p-5 space-y-6 flex-1 md:flex-initial md:max-h-[60vh] overflow-y-auto custom-scrollbar">
                                 {/* Current Balances */}
                                 <div className="bg-secondary/20 p-4 rounded-xl border border-border/50 shadow-inner">
                                     <label className="block text-xs font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 text-center">Your Vault</label>

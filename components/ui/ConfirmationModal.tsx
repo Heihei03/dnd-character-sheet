@@ -39,9 +39,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     if (!isOpen || !mounted) return null;
 
     const modalContent = (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <Card className="w-full max-w-xl shadow-2xl border-none overflow-hidden animate-in zoom-in-95 duration-200">
-                <CardContent className="p-0">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-background md:bg-black/50 md:backdrop-blur-sm animate-in fade-in duration-200">
+            <Card className="w-full h-full md:h-auto max-w-xl shadow-none md:shadow-2xl border-0 md:border border-border rounded-none md:rounded-lg overflow-hidden animate-in md:zoom-in-95 duration-200">
+                <CardContent className="p-0 h-full flex flex-col justify-between">
                     <div className="flex justify-between items-center p-4 border-b border-border">
                         <div className="flex items-center gap-2">
                             {confirmVariant === "danger" && <AlertTriangle className="w-5 h-5 text-red-500" />}
@@ -54,7 +54,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                             <X size={18} />
                         </button>
                     </div>
-                    <div className="p-6">
+                    <div className="p-6 flex-1">
                         <p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">
                             {message}
                         </p>

@@ -146,7 +146,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
 
   return (
     <div className="flex flex-col items-center pt-1 px-2.5 sm:px-4 md:px-8 pb-8 w-full">
-      <div className="w-full mb-4">
+      <div className="w-full z-40 transition-all duration-300 sticky top-0 bg-background/95 backdrop-blur-md py-2 px-2.5 sm:px-4 md:px-8 -mx-2.5 sm:-mx-4 md:-mx-8 border-b border-border/60 shadow-xs mb-4">
         <CharacterHeader
           name={characterWithDefaults.name}
           species={characterWithDefaults.species}

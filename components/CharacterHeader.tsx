@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import Select from "./ui/Select";
 import { Card, CardContent } from "./ui/card";
-import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Shield, Camera, Image as ImageIcon, Home, Settings, ChevronUp, ChevronDown } from "lucide-react";
+import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Camera, Image as ImageIcon, Home, Settings } from "lucide-react";
 import SettingsButton from "./ui/SettingsButton";
 import NumericInput from "./ui/NumericInput";
 import ConfirmationModal from "./ui/ConfirmationModal";
@@ -66,62 +67,93 @@ const CharacterHeader = ({
     const [isEditingSettings, setIsEditingSettings] = useState(false);
     const [isDeletingCharacter, setIsDeletingCharacter] = useState(false);
     const [classIndexToRemove, setClassIndexToRemove] = useState<number | null>(null);
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isExpandedModalOpen, setIsExpandedModalOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const nextLevelExp = totalLevel < 20 ? EXP_THRESHOLDS[totalLevel] : null;
 
     return (
         <>
+            {/* Inline Sticky Header - Always Compact */}
             <Card className="w-full max-w-screen-2xl mx-auto shadow-md border-t-4 border-primary overflow-hidden">
                 <CardContent className="p-0">
-                    {isCollapsed ? (
-                        <div 
-                            onClick={() => setIsCollapsed(false)}
-                            className="flex items-center justify-between p-3 px-4 md:px-6 bg-secondary/20 hover:bg-secondary/30 transition-all cursor-pointer group"
-                        >
-                            <div className="flex items-center gap-3 sm:gap-4 overflow-hidden min-w-0">
-                                {/* Compact Avatar */}
-                                <div className="w-9 h-9 rounded-full border-2 border-primary bg-background flex items-center justify-center overflow-hidden shrink-0 shadow-xs transition-transform group-hover:scale-105">
-                                    {imageUrl ? (
-                                        <img src={imageUrl} alt="Character" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <ImageIcon size={14} className="text-gray-300" />
-                                    )}
-                                </div>
-                                {/* Name and Classes */}
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
-                                    <h2 className="text-base sm:text-lg font-black truncate text-foreground leading-none">{name}</h2>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[10px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded border border-primary/20 leading-none whitespace-nowrap">
-                                            LV {totalLevel}
-                                        </span>
-                                        <span className="text-xs text-muted-foreground font-bold italic truncate leading-none">
-                                            {classes.map(c => `${c.subclass ? c.subclass + ' ' : ''}${c.name} ${c.level}`).join(' / ')}
-                                        </span>
-                                    </div>
-                                </div>
+                    <div 
+                        onClick={() => setIsExpandedModalOpen(true)}
+                        className="flex items-center justify-between p-3 px-4 md:px-6 bg-secondary/20 hover:bg-secondary/30 transition-all cursor-pointer group"
+                    >
+                        <div className="flex items-center gap-3 sm:gap-4 overflow-hidden min-w-0">
+                            {/* Compact Avatar */}
+                            <div className="w-9 h-9 rounded-full border-2 border-primary bg-background flex items-center justify-center overflow-hidden shrink-0 shadow-xs transition-transform group-hover:scale-105">
+                                {imageUrl ? (
+                                    <img src={imageUrl} alt="Character" className="w-full h-full object-cover" />
+                                ) : (
+                                    <ImageIcon size={14} className="text-gray-300" />
+                                )}
                             </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                                {/* Proficiency bonus indicator */}
-                                <div className="flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded shadow-xs">
-                                    <span>Prof:</span>
-                                    <span>+{proficiencyBonus}</span>
+                            {/* Name and Classes */}
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
+                                <h2 className="text-base sm:text-lg font-black truncate text-foreground leading-none">{name}</h2>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded border border-primary/20 leading-none whitespace-nowrap">
+                                        LV {totalLevel}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground font-bold italic truncate leading-none">
+                                        {classes.map(c => `${c.subclass ? c.subclass + ' ' : ''}${c.name} ${c.level}`).join(' / ')}
+                                    </span>
                                 </div>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); setIsCollapsed(false); }}
-                                    className="p-1.5 hover:bg-secondary rounded-full transition-all text-muted-foreground hover:text-foreground active:scale-95"
-                                    title="Expand Header"
-                                >
-                                    <ChevronDown size={18} />
-                                </button>
                             </div>
                         </div>
-                    ) : (
-                        <>
-                            {/* Sleek Mobile Navigation / Actions Toolbar (Hidden on Desktop) */}
-                            <div className="flex md:hidden justify-between items-center px-4 py-3 bg-secondary/40 border-b border-border shadow-xs">
+                        <div className="flex items-center gap-2 shrink-0">
+                            {/* Proficiency bonus indicator */}
+                            <div className="flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded shadow-xs">
+                                <span>Prof:</span>
+                                <span>+{proficiencyBonus}</span>
+                            </div>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setIsExpandedModalOpen(true); }}
+                                className="p-1.5 hover:bg-secondary rounded-full transition-all text-muted-foreground hover:text-foreground active:scale-95 flex items-center justify-center"
+                                title="Edit Profile"
+                            >
+                                <Settings size={18} />
+                            </button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Premium Character Profile Editor Modal */}
+            {mounted && isExpandedModalOpen && createPortal(
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-0 md:p-4 bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in duration-200">
+                    <ModalScrollLock isOpen={isExpandedModalOpen} />
+                    <div className="bg-background w-full h-full md:h-auto max-w-5xl rounded-none md:rounded-2xl shadow-none md:shadow-2xl border-0 md:border border-border overflow-hidden animate-in md:zoom-in-95 duration-200 flex flex-col justify-between md:max-h-[90vh]">
+                        {/* Modal Header */}
+                        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/30 shrink-0">
+                            <div className="flex items-center gap-2">
+                                <User className="text-primary" size={20} />
+                                <h2 className="text-xl font-black uppercase tracking-wider text-foreground">Character Profile</h2>
+                            </div>
+                            <button
+                                onClick={() => setIsExpandedModalOpen(false)}
+                                className="p-2 hover:bg-secondary rounded-full transition-colors text-muted-foreground hover:text-foreground"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="flex-1 md:flex-initial md:max-h-[65vh] overflow-y-auto custom-scrollbar p-6 space-y-6">
+                            {/* Navigation & Action Toolbar */}
+                            <div className="flex justify-between items-center px-4 py-3 bg-secondary/20 border border-border rounded-xl shadow-xs">
                                 {onReturn ? (
                                     <button
-                                        onClick={onReturn}
+                                        onClick={() => {
+                                            setIsExpandedModalOpen(false);
+                                            onReturn();
+                                        }}
                                         title="Return to Selection"
                                         className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
                                     >
@@ -130,13 +162,6 @@ const CharacterHeader = ({
                                 ) : <div />}
 
                                 <div className="flex items-center gap-1.5">
-                                    <button
-                                        onClick={() => setIsCollapsed(true)}
-                                        title="Collapse Header"
-                                        className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
-                                    >
-                                        <ChevronUp size={18} />
-                                    </button>
                                     <button
                                         onClick={() => setIsEditingSettings(true)}
                                         title="Display Settings"
@@ -156,237 +181,212 @@ const CharacterHeader = ({
                                 </div>
                             </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-12">
-                        {/* Character Name and Basics */}
-                        <div className="md:col-span-4 p-5 sm:p-6 bg-secondary/30 border-b md:border-b-0 md:border-r border-border flex items-center gap-4 sm:gap-6">
-                            {/* Image Upload/Display (Responsive sizing) */}
-                            <div className="relative group shrink-0">
-                                <div className="w-20 h-20 sm:w-24 md:w-40 md:h-40 rounded-full border-4 border-card bg-background flex items-center justify-center overflow-hidden shadow-md">
-                                    {imageUrl ? (
-                                        <img src={imageUrl} alt="Character" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <ImageIcon size={24} className="text-gray-300 md:size-8" />
-                                    )}
-                                </div>
-                                <label className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-                                    <Camera size={16} className="md:size-5" />
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onloadend = () => {
-                                                    onImageUrlChange(reader.result as string);
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
-                                    />
-                                </label>
-                            </div>
-
-                            <div className="space-y-1 flex-1 min-w-0">
-                                <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                    <User size={12} className="md:size-3.5" /> Character Name
-                                </label>
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => onNameChange(e.target.value)}
-                                    className="w-full text-xl sm:text-2xl md:text-3xl font-black bg-transparent border-b-2 border-transparent hover:border-border focus:border-primary focus:outline-none transition-all py-0.5 truncate"
-                                    placeholder="Enter Name..."
-                                />
-                            </div>
-                        </div>
-
-                        {/* Classes and Levels */}
-                        <div className="md:col-span-4 p-5 border-b md:border-b-0 md:border-r border-border space-y-2 relative group min-h-[100px] md:min-h-[140px]">
-                            <div className="flex justify-between items-center mb-1">
-                                <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                    <GraduationCap size={12} className="md:size-3.5" /> Class & Level
-                                </label>
-                                <SettingsButton
-                                    onClick={() => setIsEditingClasses(true)}
-                                    title="Edit Classes"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                {classes.map((cls, index) => (
-                                    <div key={index} className="flex flex-col">
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-lg md:text-xl font-black italic">
-                                                {cls.subclass ? `${cls.subclass} ` : ""}{cls.name}
-                                            </span>
-                                            <span className="text-[10px] sm:text-xs font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded border border-primary/20">
-                                                LV {cls.level}
-                                            </span>
+                            {/* Responsive Columns */}
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                                {/* Character Name and Basics */}
+                                <div className="md:col-span-4 p-5 sm:p-6 bg-secondary/10 border border-border rounded-2xl flex items-center gap-4 sm:gap-6">
+                                    {/* Image Upload/Display */}
+                                    <div className="relative group shrink-0">
+                                        <div className="w-20 h-20 sm:w-24 md:w-32 md:h-32 rounded-full border-4 border-card bg-background flex items-center justify-center overflow-hidden shadow-md">
+                                            {imageUrl ? (
+                                                <img src={imageUrl} alt="Character" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <ImageIcon size={24} className="text-gray-300 md:size-8" />
+                                            )}
                                         </div>
+                                        <label className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                                            <Camera size={16} className="md:size-5" />
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onloadend = () => {
+                                                            onImageUrlChange(reader.result as string);
+                                                        };
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                }}
+                                            />
+                                        </label>
                                     </div>
-                                ))}
-                            </div>
 
-                            <div className="absolute bottom-3 left-5 flex items-center gap-1 pointer-events-none">
-                                <span className="text-[10px] sm:text-xs uppercase font-black text-gray-400">Total Lv</span>
-                                <span className="text-[10px] sm:text-xs font-black text-primary">{totalLevel}</span>
-                            </div>
-
-                        </div>
-
-                        {/* Meta Info (Species, Background, EXP) */}
-                        <div className="md:col-span-4 p-5 bg-secondary/30 flex flex-col gap-4 relative">
-                            {/* Desktop Global Actions Overlay (Hidden on Mobile) */}
-                            <div className="absolute top-3 right-3 z-10 hidden md:block">
-                                <div className="flex items-center gap-1.5 p-1.5 bg-green-500/20 backdrop-blur-sm rounded-full border border-green-500/40 shadow-sm">
-                                    <button
-                                        onClick={() => setIsCollapsed(true)}
-                                        title="Collapse Header"
-                                        className="p-2 rounded-full transition-colors text-green-800 dark:text-green-200 hover:text-primary hover:bg-green-500/20"
-                                    >
-                                        <ChevronUp size={20} />
-                                    </button>
-                                    {onReturn && (
-                                        <button
-                                            onClick={onReturn}
-                                            title="Return to Selection"
-                                            className="p-2 rounded-full transition-colors text-green-800 dark:text-green-200 hover:text-primary hover:bg-green-500/20"
-                                        >
-                                            <Home size={20} />
-                                        </button>
-                                    )}
-                                    <SettingsButton
-                                        onClick={() => setIsEditingSettings(true)}
-                                        title="Display Settings"
-                                        className="p-2 text-green-800 dark:text-green-200 hover:bg-green-500/20"
-                                        iconSize={20}
-                                    />
-                                    {onDelete && (
-                                        <button
-                                            onClick={() => setIsDeletingCharacter(true)}
-                                            title="Delete Character"
-                                            className="p-2 rounded-full transition-colors text-green-800 dark:text-green-200 hover:text-red-500 hover:bg-red-500/20"
-                                        >
-                                            <Trash2 size={20} />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Top row: Species & Subspecies */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-1">
-                                    <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                        <BookOpen size={10} className="md:size-3" /> Species
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={species}
-                                        onChange={(e) => onSpeciesChange(e.target.value)}
-                                        className="w-full text-xs sm:text-sm font-medium bg-transparent border-b border-border hover:border-primary/50 focus:border-primary focus:outline-none transition-all py-0.5"
-                                        placeholder="Human..."
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                        <BookOpen size={10} className="md:size-3" /> Sub Species
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={subSpecies || ""}
-                                        onChange={(e) => onSubSpeciesChange(e.target.value)}
-                                        className="w-full text-xs sm:text-sm font-medium bg-transparent border-b border-border hover:border-primary/50 focus:border-primary focus:outline-none transition-all py-0.5"
-                                        placeholder="Wood Elf..."
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Bottom responsive layout: Background/Experience + Proficiency Badge */}
-                            <div className="flex flex-col sm:flex-row items-stretch gap-4">
-                                <div className="flex-1 flex flex-col justify-between py-px gap-3 sm:gap-1.5">
-                                    <div className="space-y-1">
+                                    <div className="space-y-1 flex-1 min-w-0">
                                         <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                            <Trophy size={10} className="md:size-3" /> Background
+                                            <User size={12} className="md:size-3.5" /> Character Name
                                         </label>
                                         <input
                                             type="text"
-                                            value={background}
-                                            onChange={(e) => onBackgroundChange(e.target.value)}
-                                            className="w-full text-xs sm:text-sm font-medium bg-transparent border-b border-border hover:border-primary/50 focus:border-primary focus:outline-none transition-all py-0.5"
-                                            placeholder="Soldier..."
+                                            value={name}
+                                            onChange={(e) => onNameChange(e.target.value)}
+                                            className="w-full text-xl sm:text-2xl font-black bg-transparent border-b-2 border-transparent hover:border-border focus:border-primary focus:outline-none transition-all py-0.5 truncate"
+                                            placeholder="Enter Name..."
                                         />
                                     </div>
+                                </div>
 
-                                    <div className="space-y-1">
+                                {/* Classes and Levels */}
+                                <div className="md:col-span-4 p-5 bg-secondary/10 border border-border rounded-2xl space-y-2 relative group min-h-[140px]">
+                                    <div className="flex justify-between items-center mb-1">
                                         <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
-                                            <Star size={10} className="md:size-3" /> Experience
+                                            <GraduationCap size={12} className="md:size-3.5" /> Class & Level
                                         </label>
-                                        <div className="flex items-center gap-1 border-b border-border hover:border-primary/50 focus-within:border-primary transition-all">
-                                            <NumericInput
-                                                value={exp ?? ""}
-                                                onChange={(val) => onExpChange(val === 0 ? undefined : val)}
-                                                variant="horizontal"
-                                                className="flex-1 border-none bg-transparent shadow-none"
-                                                inputClassName="text-xs sm:text-sm font-medium p-0 pr-5"
-                                                placeholder="Current..."
-                                            />
-                                            {nextLevelExp !== null && (
-                                                <div className="flex items-center text-muted-foreground text-[10px] sm:text-xs font-bold">
-                                                    <span>/</span>
-                                                    <span className="ml-1">{nextLevelExp.toLocaleString()}</span>
+                                        <SettingsButton
+                                            onClick={() => setIsEditingClasses(true)}
+                                            title="Edit Classes"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        {classes.map((cls, index) => (
+                                            <div key={index} className="flex flex-col">
+                                                <div className="flex items-baseline gap-2">
+                                                    <span className="text-lg font-black italic">
+                                                        {cls.subclass ? `${cls.subclass} ` : ""}{cls.name}
+                                                    </span>
+                                                    <span className="text-[10px] sm:text-xs font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded border border-primary/20">
+                                                        LV {cls.level}
+                                                    </span>
                                                 </div>
-                                            )}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="absolute bottom-3 left-5 flex items-center gap-1 pointer-events-none">
+                                        <span className="text-[10px] sm:text-xs uppercase font-black text-gray-400">Total Lv</span>
+                                        <span className="text-[10px] sm:text-xs font-black text-primary">{totalLevel}</span>
+                                    </div>
+                                </div>
+
+                                {/* Meta Info (Species, Background, EXP) */}
+                                <div className="md:col-span-4 p-5 bg-secondary/10 border border-border rounded-2xl flex flex-col gap-4 relative">
+                                    {/* Top row: Species & Subspecies */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                                <BookOpen size={10} className="md:size-3" /> Species
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={species}
+                                                onChange={(e) => onSpeciesChange(e.target.value)}
+                                                className="w-full text-xs sm:text-sm font-medium bg-transparent border-b border-border hover:border-primary/50 focus:border-primary focus:outline-none transition-all py-0.5"
+                                                placeholder="Human..."
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                                <BookOpen size={10} className="md:size-3" /> Sub Species
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={subSpecies || ""}
+                                                onChange={(e) => onSubSpeciesChange(e.target.value)}
+                                                className="w-full text-xs sm:text-sm font-medium bg-transparent border-b border-border hover:border-primary/50 focus:border-primary focus:outline-none transition-all py-0.5"
+                                                placeholder="Wood Elf..."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Bottom responsive layout: Background/Experience + Proficiency Badge */}
+                                    <div className="flex flex-col sm:flex-row items-stretch gap-4">
+                                        <div className="flex-1 flex flex-col justify-between py-px gap-3 sm:gap-1.5">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                                    <Trophy size={10} className="md:size-3" /> Background
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={background}
+                                                    onChange={(e) => onBackgroundChange(e.target.value)}
+                                                    className="w-full text-xs sm:text-sm font-medium bg-transparent border-b border-border hover:border-primary/50 focus:border-primary focus:outline-none transition-all py-0.5"
+                                                    placeholder="Soldier..."
+                                                />
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-gray-400 flex items-center gap-1">
+                                                    <Star size={10} className="md:size-3" /> Experience
+                                                </label>
+                                                <div className="flex items-center gap-1 border-b border-border hover:border-primary/50 focus-within:border-primary transition-all">
+                                                    <NumericInput
+                                                        value={exp ?? ""}
+                                                        onChange={(val) => onExpChange(val === 0 ? undefined : val)}
+                                                        variant="horizontal"
+                                                        className="flex-1 border-none bg-transparent shadow-none"
+                                                        inputClassName="text-xs sm:text-sm font-medium p-0 pr-5"
+                                                        placeholder="Current..."
+                                                    />
+                                                    {nextLevelExp !== null && (
+                                                        <div className="flex items-center text-muted-foreground text-[10px] sm:text-xs font-bold">
+                                                            <span>/</span>
+                                                            <span className="ml-1">{nextLevelExp.toLocaleString()}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Proficiency Bonus Badge */}
+                                        <div className="flex sm:flex-col items-center justify-between sm:justify-center bg-primary text-primary-foreground rounded-xl px-5 py-3 sm:p-4 min-w-full sm:min-w-[100px] shadow-lg border border-primary/30 shrink-0">
+                                            <span className="text-[10px] uppercase font-black tracking-widest leading-none opacity-90 text-primary-foreground/80 sm:mb-2">Proficiency</span>
+                                            <span className="text-xl sm:text-3xl font-black leading-none">+{proficiencyBonus}</span>
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Proficiency Bonus Badge (Responsive wide row on mobile, tall column on larger screens) */}
-                                <div className="flex sm:flex-col items-center justify-between sm:justify-center bg-primary text-primary-foreground rounded-xl px-5 py-3 sm:p-4 min-w-full sm:min-w-[128px] shadow-lg border-2 border-primary/30">
-                                    <span className="text-[10px] sm:text-xs uppercase font-black tracking-widest leading-none opacity-90 text-primary-foreground/80 sm:mb-2">Proficiency</span>
-                                    <span className="text-2xl sm:text-5xl font-black leading-none animate-in zoom-in duration-500">+{proficiencyBonus}</span>
-                                </div>
-
                             </div>
                         </div>
+
+                        {/* Modal Footer */}
+                        <div className="px-6 py-4 bg-secondary/30 border-t border-border flex justify-end shrink-0">
+                            <button
+                                onClick={() => setIsExpandedModalOpen(false)}
+                                className="px-10 py-3 bg-primary text-primary-foreground text-sm font-black uppercase tracking-[0.2em] rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            >
+                                Done
+                            </button>
+                        </div>
                     </div>
-                        </>
-                    )}
-                </CardContent>
+                </div>,
+                document.body
+            )}
 
-                <ConfirmationModal
-                    isOpen={classIndexToRemove !== null}
-                    onClose={() => setClassIndexToRemove(null)}
-                    onConfirm={() => {
-                        if (classIndexToRemove !== null) {
-                            onRemoveClass(classIndexToRemove);
-                            setClassIndexToRemove(null);
-                        }
-                    }}
-                    title="Remove Class"
-                    message={`Are you sure you want to remove the ${classes[classIndexToRemove ?? 0]?.name} class?`}
-                    confirmText="Remove"
-                />
+            {/* Remove Class Modal */}
+            <ConfirmationModal
+                isOpen={classIndexToRemove !== null}
+                onClose={() => setClassIndexToRemove(null)}
+                onConfirm={() => {
+                    if (classIndexToRemove !== null) {
+                        onRemoveClass(classIndexToRemove);
+                        setClassIndexToRemove(null);
+                    }
+                }}
+                title="Remove Class"
+                message={`Are you sure you want to remove the ${classes[classIndexToRemove ?? 0]?.name} class?`}
+                confirmText="Remove"
+            />
 
-                <ConfirmationModal
-                    isOpen={isDeletingCharacter}
-                    onClose={() => setIsDeletingCharacter(false)}
-                    onConfirm={() => {
-                        if (onDelete) onDelete();
-                        setIsDeletingCharacter(false);
-                    }}
-                    title="Delete Character"
-                    message={`Are you sure you want to delete ${name}? This action is final and all character data will be lost forever.`}
-                    confirmText="Delete"
-                />
-            </Card>
+            {/* Delete Character Modal */}
+            <ConfirmationModal
+                isOpen={isDeletingCharacter}
+                onClose={() => setIsDeletingCharacter(false)}
+                onConfirm={() => {
+                    if (onDelete) onDelete();
+                    setIsDeletingCharacter(false);
+                }}
+                title="Delete Character"
+                message={`Are you sure you want to delete ${name}? This action is final and all character data will be lost forever.`}
+                confirmText="Delete"
+            />
 
-            {isEditingClasses && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+            {mounted && isEditingClasses && createPortal(
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-background md:bg-black/50 md:backdrop-blur-sm animate-in fade-in duration-200">
                     <ModalScrollLock isOpen={isEditingClasses} />
-                    <div className="bg-background w-full max-w-2xl rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="bg-background w-full h-full md:h-auto max-w-2xl rounded-none md:rounded-2xl shadow-none md:shadow-2xl border-0 md:border border-border overflow-hidden animate-in md:zoom-in-95 duration-200 flex flex-col justify-between">
                         {/* Header */}
-                        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/30">
+                        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/30 shrink-0">
                             <div>
                                 <h2 className="text-xl font-black uppercase tracking-wider text-foreground">Class & Level</h2>
                             </div>
@@ -398,7 +398,7 @@ const CharacterHeader = ({
                             </button>
                         </div>
 
-                        <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                        <div className="p-6 space-y-4 flex-1 md:flex-initial md:max-h-[60vh] overflow-y-auto custom-scrollbar">
                             {classes.map((cls, index) => (
                                 <div key={index} className="space-y-3 p-4 bg-secondary/20 border border-border rounded-xl group relative">
                                     <div className="flex items-center gap-2">
@@ -460,7 +460,8 @@ const CharacterHeader = ({
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {isEditingSettings && (

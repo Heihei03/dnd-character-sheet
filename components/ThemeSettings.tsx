@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useTheme } from "./providers/ThemeProvider";
 import { Moon, Sun, Monitor, RotateCcw, X, Check, Smartphone, Columns } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,11 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
     const { theme, setTheme, primaryColor, setPrimaryColor, mobileLayout, setMobileLayout, resetToDefaults } = useTheme();
     const [tempColor, setTempColor] = useState(primaryColor);
 
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTempColor(e.target.value);
         setPrimaryColor(e.target.value);
@@ -39,10 +45,12 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
         setPrimaryColor(hex);
     };
 
-    return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+    if (!mounted) return null;
+
+    return createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-background md:bg-black/50 md:backdrop-blur-sm animate-in fade-in duration-200">
             <ModalScrollLock isOpen={true} />
-            <div className="bg-background w-full max-w-xl rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-background w-full h-full md:h-auto max-w-xl rounded-none md:rounded-2xl shadow-none md:shadow-2xl border-0 md:border border-border overflow-hidden animate-in md:zoom-in-95 duration-200 flex flex-col justify-between">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/30">
                     <div>
@@ -57,7 +65,7 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
                     </button>
                 </div>
 
-                <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div className="p-6 space-y-6 flex-1 md:flex-initial md:max-h-[60vh] overflow-y-auto custom-scrollbar">
                     {/* Theme Toggle */}
                     <div className="space-y-3">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -213,7 +221,8 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ onClose }) => {
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

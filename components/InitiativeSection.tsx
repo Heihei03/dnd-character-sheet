@@ -109,13 +109,12 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                 </div>
             </div>
 
-            {/* Settings Modal */}
             {showSettings && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-background md:bg-black/50 md:backdrop-blur-sm animate-in fade-in duration-200">
                     <ModalScrollLock isOpen={showSettings} />
-                    <div className="bg-background w-full max-w-lg rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="bg-background w-full h-full md:h-auto max-w-lg rounded-none md:rounded-2xl shadow-none md:shadow-2xl border-0 md:border border-border overflow-hidden animate-in md:zoom-in-95 duration-200 flex flex-col justify-between">
                         {/* Header */}
-                        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/30">
+                        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/30 shrink-0">
                             <div>
                                 <h2 className="text-xl font-black uppercase tracking-wider text-foreground">Initiative</h2>
                                 <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Tactical Settings</p>
@@ -128,7 +127,7 @@ const InitiativeSection: React.FC<InitiativeSectionProps> = ({
                             </button>
                         </div>
 
-                        <div className="p-6 space-y-5">
+                        <div className="p-6 space-y-5 flex-1 md:flex-initial md:max-h-[50vh] overflow-y-auto custom-scrollbar">
                             <div className="flex items-center justify-between p-4 bg-secondary/20 rounded-xl border border-border">
                                 <span className="text-sm font-bold uppercase tracking-tight text-foreground">Misc Bonus</span>
                                 <NumericInput
