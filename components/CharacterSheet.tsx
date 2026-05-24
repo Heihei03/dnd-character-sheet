@@ -90,6 +90,70 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
   const { mobileLayout } = useTheme();
   const [mobileColumn, setMobileColumn] = useState<"stats" | "sheet" | "status">("sheet");
 
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (mobileLayout !== "tabs") return;
+    
+    // Ignore multi-touch gestures
+    if (e.touches.length > 1) return;
+
+    // Ignore swipe if we start touch in a scrollable / input / draggable widget
+    const target = e.target as HTMLElement;
+    if (
+      target.closest("input") ||
+      target.closest("textarea") ||
+      target.closest("select") ||
+      target.closest("button") ||
+      target.closest('[role="button"]') ||
+      target.closest('[role="slider"]') ||
+      target.closest(".no-swipe") ||
+      target.closest(".fixed") ||
+      target.closest(".sticky")
+    ) {
+      return;
+    }
+
+    setTouchStartX(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null || touchStartY === null) return;
+    if (showHistory) return; // Don't swipe if Roll History overlay is open
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+
+    const minSwipeDistance = 60; // in pixels
+    const minHorizontalRatio = 1.8; // diffX must be at least this factor greater than diffY
+
+    if (Math.abs(diffX) > minSwipeDistance && Math.abs(diffX) > Math.abs(diffY) * minHorizontalRatio) {
+      if (diffX > 0) {
+        // Swiped right -> Go to tab on the left (status -> sheet -> stats)
+        if (mobileColumn === "status") {
+          setMobileColumn("sheet");
+        } else if (mobileColumn === "sheet") {
+          setMobileColumn("stats");
+        }
+      } else {
+        // Swiped left -> Go to tab on the right (stats -> sheet -> status)
+        if (mobileColumn === "stats") {
+          setMobileColumn("sheet");
+        } else if (mobileColumn === "sheet") {
+          setMobileColumn("status");
+        }
+      }
+    }
+
+    setTouchStartX(null);
+    setTouchStartY(null);
+  };
+
   const customNavigateToFeature = (featureId: string) => {
     handleNavigateToFeature(featureId);
     setMobileColumn("sheet");
@@ -171,7 +235,11 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
         />
       </div>
 
-      <div className="w-full space-y-4">
+      <div 
+        className="w-full space-y-4"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {/* Mobile Tab Switcher */}
         {mobileLayout === "tabs" && (
           <div className="flex md:hidden w-full max-w-screen-2xl mx-auto bg-gray-50 dark:bg-gray-900/50 p-1.5 rounded-xl border border-gray-100 dark:border-gray-800 gap-1 shadow-sm">
