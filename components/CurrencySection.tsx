@@ -80,7 +80,7 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
 
     return (
         <Card className="relative overflow-hidden group">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
                 <div className="flex justify-between items-center mb-5">
                     <div className="w-10"></div> {/* Spacer for symmetry */}
                     <h2 className="text-xl font-black uppercase tracking-widest text-primary">Currency</h2>
@@ -90,16 +90,16 @@ const CurrencySection: React.FC<CurrencySectionProps> = ({
                         title="Currency Converter"
                     />
                 </div>
-                <div className="grid grid-cols-5 gap-3">
+                <div className="grid grid-cols-5 gap-1.5 sm:gap-3">
                     {["cp", "sp", "ep", "gp", "pp"].map((key) => (
                         <div key={key} className="flex flex-col items-center">
-                            <label className="text-sm font-black uppercase text-muted-foreground mb-1.5 tracking-tight">{key}</label>
+                            <label className="text-xs sm:text-sm font-black uppercase text-muted-foreground mb-1 sm:mb-1.5 tracking-tight">{key}</label>
                              <NumericInput
                                 value={currency[key as keyof Currency]}
                                 onChange={(val) => handleCurrencyChange(key as keyof Currency, val)}
                                 min={0}
                                 className="w-full"
-                                inputClassName="text-center text-base font-bold px-1 py-1.5 pr-6"
+                                inputClassName="text-center text-sm sm:text-base font-bold px-1 py-1 sm:py-1.5 md:pr-6"
                                 showArrows="hover"
                             />
                         </div>

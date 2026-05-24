@@ -178,14 +178,15 @@ const NumericInput: React.FC<NumericInputProps> = ({
                 disabled={disabled}
                 className={cn(
                     "flex-1 min-w-0 bg-transparent py-2 font-medium focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                    showArrows !== "none" ? "pl-3 pr-1" : "px-3",
+                    showArrows === "hover" ? "px-3 md:pl-3 md:pr-1" : (showArrows !== "none" ? "pl-3 pr-1" : "px-3"),
                     inputClassName
                 )}
             />
             
             {showArrows !== "none" && (
                 <div className={cn(
-                    "flex flex-col w-6 border-l border-border/10 transition-opacity duration-200",
+                    "flex-col w-6 border-l border-border/10 transition-opacity duration-200",
+                    showArrows === "hover" ? "hidden md:flex" : "flex",
                     showControls ? "opacity-100" : "opacity-0"
                 )}>
                     <button
