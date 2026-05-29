@@ -505,6 +505,7 @@ export const useCharacterSheet = (
             description: update.description ? update.description.replace(/^Level:[\s\S]*?\nRange:[\s\S]*?\nDuration:[\s\S]*?\n\n/, "") : spell.description,
             spellcastingAbility: update.attackAbility || spell.spellcastingAbility,
             attackBonus: update.attackBonus !== undefined ? update.attackBonus : spell.attackBonus,
+            addSpellcastingModifier: update.addSpellcastingModifier !== undefined ? update.addSpellcastingModifier : spell.addSpellcastingModifier,
           };
         }
         return spell;

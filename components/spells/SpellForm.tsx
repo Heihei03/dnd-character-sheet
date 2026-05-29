@@ -5,7 +5,7 @@ import { DAMAGE_TYPES, SPELL_SCHOOLS, SPELL_AOE_SHAPES } from "../../utils/const
 import EntityForm from "../ui/EntityForm";
 import Select from "../ui/Select";
 import ThemedAutocomplete from "../ui/ThemedAutocomplete";
-import { ABILITY_NAMES } from "../../utils/character-utils";
+import { ABILITY_NAMES, getCharacterSpellcastingAbility } from "../../utils/character-utils";
 
 const LEVEL_OPTIONS = [
     { label: "Cantrip", value: "0" },
@@ -324,6 +324,29 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                             onChange={(e) => handleLocalUpdate("higherLevelHealing", e.target.value)}
                                         />
                                     </div>
+                                    {(() => {
+                                        const deducedAbility = getCharacterSpellcastingAbility({ classes, abilityScores } as any, localSpell);
+                                        const deducedAbilityName = deducedAbility.charAt(0).toUpperCase() + deducedAbility.slice(1);
+                                        return (
+                                            <div className="col-span-2 mt-2 bg-green-500/5 dark:bg-green-500/10 p-3 rounded-lg border border-green-500/20 space-y-1">
+                                                <div className="flex items-center justify-between">
+                                                    <label className="text-xs font-bold text-green-700 dark:text-green-400 cursor-pointer select-none" htmlFor="add-spellcasting-mod">
+                                                        Add Spellcasting Ability Modifier
+                                                    </label>
+                                                    <input
+                                                        id="add-spellcasting-mod"
+                                                        type="checkbox"
+                                                        checked={localSpell.addSpellcastingModifier || false}
+                                                        onChange={(e) => handleLocalUpdate("addSpellcastingModifier", e.target.checked)}
+                                                        className="w-5 h-5 cursor-pointer accent-green-600 rounded border-green-500/20"
+                                                    />
+                                                </div>
+                                                <p className="text-[10px] text-green-600/70 dark:text-green-400/70 italic leading-tight">
+                                                    Adds your spellcasting modifier ({deducedAbilityName}) to healing rolls.
+                                                </p>
+                                            </div>
+                                        );
+                                    })()}
                                 </>
                             )}
                         </div>

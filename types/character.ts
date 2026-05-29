@@ -254,6 +254,7 @@ export interface Action {
   resourceId?: string;
   isAttack?: boolean;
   useSpellAttack?: boolean;
+  addSpellcastingModifier?: boolean;
   critRange?: number;
   critExtraDamage?: string;
   critRule?: CritRule;
@@ -308,6 +309,7 @@ export interface Spell {
   scalesWithCharacterLevel?: boolean;
   classSource?: string;
   linkedSummonStatblockId?: string;
+  addSpellcastingModifier?: boolean;
 }
 
 export type BonusTarget = 'attack' | 'damage' | 'save' | 'skill' | 'ability' | 'initiative' | 'ac' | 'healing' | 'spell-dc';

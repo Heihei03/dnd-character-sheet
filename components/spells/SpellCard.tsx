@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Zap, ChevronDown, Dices, Users } from "lucide-react";
 import { Spell, AbilityScores, CharacterClass, RollDiceFunc, RollDamageFunc, ActiveBonus } from "../../types/character";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../../utils/dice-utils";
-import { getAbilityModifier, getAdvantageDisadvantage, getEffectiveBonuses, getCharacterSpellcastingAbility } from "../../utils/character-utils";
+import { getAbilityModifier, getAdvantageDisadvantage, getEffectiveBonuses, getCharacterSpellcastingAbility, resolveRollExpression } from "../../utils/character-utils";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import FeatureNavigationBadge from "../features/FeatureNavigationBadge";
 import Select from "../ui/Select";
@@ -57,11 +57,20 @@ const SpellCard: React.FC<SpellCardProps> = ({
             : calculateUpcastedValue(spell.damage, spell.higherLevelDamage || "", castLevel, spell.level))
         : "";
 
-    const upcastedHealing = spell.healing
+    let upcastedHealing = spell.healing
         ? (spell.level === 0 && spell.scalesWithCharacterLevel
             ? calculateScaledCantripValue(spell.healing, totalLevel)
             : calculateUpcastedValue(spell.healing, spell.higherLevelHealing || "", castLevel, spell.level))
         : "";
+
+    if (upcastedHealing && spell.addSpellcastingModifier) {
+        const ability = getCharacterSpellcastingAbility(character, spell);
+        const abilityScore = abilityScores[ability] || 10;
+        const abilityModifier = getAbilityModifier(abilityScore);
+        const combinedFormula = `${upcastedHealing}${abilityModifier >= 0 ? " + " : " - "}${Math.abs(abilityModifier)}`;
+        const resolved = resolveRollExpression(combinedFormula, abilityScores, totalLevel, proficiencyBonus);
+        upcastedHealing = resolved.replace(/\s*([-+])\s*/g, ' $1 ');
+    }
 
     const handleAttackRoll = (e: React.MouseEvent) => {
         e.stopPropagation();

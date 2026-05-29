@@ -686,6 +686,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 damageBonus: 0,
                 scalesWithCharacterLevel: spell.scalesWithCharacterLevel,
                 useSpellAttack: true,
+                addSpellcastingModifier: spell.addSpellcastingModifier,
             } as Action;
         });
 

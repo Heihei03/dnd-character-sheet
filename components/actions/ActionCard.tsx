@@ -66,7 +66,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
               )
             : action.damage;
 
-    const upcastedHealing =
+    let upcastedHealing =
         action.higherLevelHealing && action.baseLevel !== undefined
             ? calculateUpcastedValue(
                   action.healing || "",
@@ -75,6 +75,15 @@ const ActionCard: React.FC<ActionCardProps> = ({
                   action.baseLevel
               )
             : action.healing;
+
+    if (upcastedHealing && action.addSpellcastingModifier) {
+        const ability = action.attackAbility || getCharacterSpellcastingAbility(character);
+        const abilityScore = abilityScores[((ability as string)?.toLowerCase() as keyof AbilityScores)] || 10;
+        const abilityModifier = getAbilityModifier(abilityScore);
+        const combinedFormula = `${upcastedHealing}${abilityModifier >= 0 ? " + " : " - "}${Math.abs(abilityModifier)}`;
+        const resolved = resolveRollExpression(combinedFormula, abilityScores, totalLevel, proficiencyBonus);
+        upcastedHealing = resolved.replace(/\s*([-+])\s*/g, ' $1 ');
+    }
 
     const handleAttackRoll = (e: React.MouseEvent) => {
         e.stopPropagation();
