@@ -23,9 +23,10 @@ interface CharacterSheetProps {
   setCharacter: React.Dispatch<React.SetStateAction<Character | null>>;
   onDelete?: () => void;
   onReturn?: () => void;
+  onExport?: () => void;
 }
 
-const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter, onDelete, onReturn }) => {
+const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter, onDelete, onReturn, onExport }) => {
   const {
     characterWithDefaults,
     activeTab,
@@ -245,6 +246,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           onImageUrlChange={handleImageUrlChange}
           onDelete={onDelete}
           onReturn={onReturn}
+          onExport={onExport}
         />
       </div>
 

@@ -53,6 +53,24 @@ const CharacterPage = () => {
   }, [character]);
 
 
+  const handleExport = () => {
+    if (!character) return;
+    try {
+      const data = JSON.stringify(character, null, 2);
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${character.name.toLowerCase().replace(/\s+/g, "-")}-sheet.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error exporting character:", error);
+    }
+  };
+
   const handleDelete = async () => {
     if (character) {
       try {
@@ -74,6 +92,7 @@ const CharacterPage = () => {
         setCharacter={setCharacter} 
         onDelete={handleDelete}
         onReturn={() => router.push("/")}
+        onExport={handleExport}
       />
     </div>
   );

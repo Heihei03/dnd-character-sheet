@@ -6,7 +6,7 @@ import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import Select from "./ui/Select";
 import { Card, CardContent } from "./ui/card";
-import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Camera, Image as ImageIcon, Home, Settings } from "lucide-react";
+import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Camera, Image as ImageIcon, Home, Settings, Download } from "lucide-react";
 import SettingsButton from "./ui/SettingsButton";
 import NumericInput from "./ui/NumericInput";
 import ConfirmationModal from "./ui/ConfirmationModal";
@@ -35,6 +35,7 @@ interface CharacterHeaderProps {
     onImageUrlChange: (value: string) => void;
     onDelete?: () => void;
     onReturn?: () => void;
+    onExport?: () => void;
     collapsed?: boolean;
 }
 
@@ -64,6 +65,7 @@ const CharacterHeader = ({
     onImageUrlChange,
     onDelete,
     onReturn,
+    onExport,
     collapsed = false,
 }: CharacterHeaderProps) => {
     const [isEditingClasses, setIsEditingClasses] = useState(false);
@@ -151,6 +153,15 @@ const CharacterHeader = ({
                             >
                                 <Settings size={18} />
                             </button>
+                            {onExport && (
+                                <button
+                                    onClick={onExport}
+                                    title="Export Character Sheet"
+                                    className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                                >
+                                    <Download size={18} />
+                                </button>
+                            )}
                             {onDelete && (
                                 <button
                                     onClick={() => setIsDeletingCharacter(true)}
@@ -366,6 +377,15 @@ const CharacterHeader = ({
                                     >
                                         <Settings size={18} />
                                     </button>
+                                    {onExport && (
+                                        <button
+                                            onClick={onExport}
+                                            title="Export Character Sheet"
+                                            className="p-2 bg-background hover:bg-secondary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95"
+                                        >
+                                            <Download size={18} />
+                                        </button>
+                                    )}
                                     {onDelete && (
                                         <button
                                             onClick={() => setIsDeletingCharacter(true)}

@@ -143,28 +143,39 @@ export const exportAllCharacters = async (): Promise<string> => {
     return JSON.stringify(characters, null, 2);
 };
 
-// Import characters from a JSON string or array
-export const importCharacters = async (data: string | Character[]): Promise<void> => {
-    let characters: Character[];
+// Import characters from a JSON string, a single character object, or an array of characters
+export const importCharacters = async (data: string | Character | Character[]): Promise<void> => {
+    let parsed: any;
     if (typeof data === "string") {
         try {
-            characters = JSON.parse(data);
+            parsed = JSON.parse(data);
         } catch (error) {
             console.error("Failed to parse character data:", error);
             throw new Error("Invalid character data format");
         }
     } else {
-        characters = data;
+        parsed = data;
     }
 
-    if (!Array.isArray(characters)) {
-        throw new Error("Character data must be an array");
-    }
+    // Convert single character object to an array of one character
+    const characters: Character[] = Array.isArray(parsed) ? parsed : [parsed];
 
     for (const character of characters) {
-        // Ensure character has an ID, or generate one if missing (though the backup should have them)
+        // Basic validation: must be an object with at least a name
+        if (!character || typeof character !== "object" || !character.name) {
+            throw new Error("Invalid character data format: 'name' is required");
+        }
+
+        // Ensure character has an ID, or generate one if missing
         if (!character.id) {
             character.id = Date.now() + Math.floor(Math.random() * 1000);
+        } else {
+            // ID conflict protection: if a character with this ID already exists,
+            // generate a new ID to import it as a duplicate rather than overwriting.
+            const existing = await loadCharacter(character.id);
+            if (existing) {
+                character.id = Date.now() + Math.floor(Math.random() * 1000);
+            }
         }
         await saveCharacter(character);
     }

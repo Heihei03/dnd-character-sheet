@@ -90,6 +90,23 @@ const HomePage = () => {
         }
     };
 
+    const handleExportSingleCharacter = (character: Character) => {
+        try {
+            const data = JSON.stringify(character, null, 2);
+            const blob = new Blob([data], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `${character.name.toLowerCase().replace(/\s+/g, "-")}-sheet.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error exporting character:", error);
+        }
+    };
+
     const handleImportData = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
@@ -223,16 +240,29 @@ const HomePage = () => {
                                         <div className="flex items-center gap-1.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity font-black text-[10px] uppercase tracking-widest">
                                             Character Sheet <ChevronRight size={14} className="animate-pulse" />
                                         </div>
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                setCharacterToDelete(character);
-                                            }}
-                                            className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all relative z-20"
-                                            title="Delete Hero"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        <div className="flex items-center gap-1 relative z-20">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleExportSingleCharacter(character);
+                                                }}
+                                                className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+                                                title="Export Character"
+                                            >
+                                                <Download size={16} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setCharacterToDelete(character);
+                                                }}
+                                                className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                                                title="Delete Hero"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
