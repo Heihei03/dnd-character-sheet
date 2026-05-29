@@ -489,6 +489,51 @@ export const calculateTotalWeight = (character: Character): number => {
         .reduce((acc, item) => acc + calculateItemWeight(item), 0);
 };
 
+export const getCharacterSpellcastingAbility = (character?: Character, spell?: Spell): keyof AbilityScores => {
+    let resolvedAbility: string | undefined = undefined;
+
+    // 1. If spell has it, use it
+    if (spell?.spellcastingAbility && spell.spellcastingAbility !== "") {
+        resolvedAbility = spell.spellcastingAbility as string;
+    }
+
+    // 2. Check if any spell has an ability assigned
+    if (!resolvedAbility) {
+        const spells = character?.spells || [];
+        const spellsWithAbility = spells.filter(s => s.spellcastingAbility && s.spellcastingAbility !== "");
+        if (spellsWithAbility.length > 0) {
+            const counts: Record<string, number> = {};
+            spellsWithAbility.forEach(s => {
+                const abilityStr = String(s.spellcastingAbility);
+                counts[abilityStr] = (counts[abilityStr] || 0) + 1;
+            });
+            resolvedAbility = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+        }
+    }
+
+    // 3. Guess from classes
+    if (!resolvedAbility) {
+        const classes = character?.classes || [];
+        const classNames = classes.map(c => c.name.toLowerCase());
+        if (classNames.some(c => ["wizard", "artificer"].includes(c))) resolvedAbility = "intelligence";
+        else if (classNames.some(c => ["cleric", "druid", "ranger"].includes(c))) resolvedAbility = "wisdom";
+        else if (classNames.some(c => ["bard", "paladin", "sorcerer", "warlock"].includes(c))) resolvedAbility = "charisma";
+    }
+
+    // 4. Fallback to highest mental stat
+    if (!resolvedAbility) {
+        const abilityScores: AbilityScores = character?.abilityScores || {
+            strength: 10, dexterity: 10, constitution: 10,
+            intelligence: 10, wisdom: 10, charisma: 10
+        };
+        const mentalStats: (keyof AbilityScores)[] = ["intelligence", "wisdom", "charisma"];
+        resolvedAbility = mentalStats.reduce((a, b) => (abilityScores[a] || 10) > (abilityScores[b] || 10) ? a : b) as string;
+    }
+
+    // ALWAYS return lowercase to match AbilityScores interface keys perfectly!
+    return (resolvedAbility.toLowerCase() as keyof AbilityScores);
+};
+
 export const getEffectiveActions = (character: Character): Action[] => {
     const effectiveAbilityScores = getEffectiveAbilityScores(character);
     const activeFeatures = getAllActiveFeatures(character);
@@ -635,11 +680,12 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 higherLevelHealing: spell.higherLevelHealing,
                 baseLevel: spell.level,
                 proficient: true,
-                attackAbility: spell.spellcastingAbility as any,
+                attackAbility: getCharacterSpellcastingAbility(character, spell),
                 damageDice: spell.damage,
                 attackBonus: 0,
                 damageBonus: 0,
                 scalesWithCharacterLevel: spell.scalesWithCharacterLevel,
+                useSpellAttack: true,
             } as Action;
         });
 

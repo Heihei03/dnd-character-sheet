@@ -23,7 +23,7 @@ import { AbilityScores, CharacterClass, Resource, Spell, SpellSlot, ActiveBonus,
 
 // Utils
 import { calculateSpellSlots } from "../../utils/spell-utils";
-import { getAbilityModifier, getEffectiveBonuses } from "../../utils/character-utils";
+import { getAbilityModifier, getEffectiveBonuses, getCharacterSpellcastingAbility } from "../../utils/character-utils";
 
 interface SpellsSectionProps {
     classes: CharacterClass[];
@@ -185,29 +185,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
         return acc;
     }, {} as Record<number, Spell[]>);
 
-    const getPrimaryAbility = () => {
-        // 1. Check if any spell has an ability assigned
-        const spellsWithAbility = spells.filter(s => s.spellcastingAbility);
-        if (spellsWithAbility.length > 0) {
-            const counts: Record<string, number> = {};
-            spellsWithAbility.forEach(s => {
-                counts[s.spellcastingAbility!] = (counts[s.spellcastingAbility!] || 0) + 1;
-            });
-            return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0] as keyof AbilityScores;
-        }
-
-        // 2. Guess from classes
-        const classNames = classes.map(c => c.name.toLowerCase());
-        if (classNames.some(c => ["wizard", "artificer"].includes(c))) return "intelligence";
-        if (classNames.some(c => ["cleric", "druid", "ranger"].includes(c))) return "wisdom";
-        if (classNames.some(c => ["bard", "paladin", "sorcerer", "warlock"].includes(c))) return "charisma";
-
-        // 3. Fallback to highest mental stat
-        const mentalStats: (keyof AbilityScores)[] = ["intelligence", "wisdom", "charisma"];
-        return mentalStats.reduce((a, b) => (abilityScores[a] || 10) > (abilityScores[b] || 10) ? a : b);
-    };
-
-    const primaryAbility = getPrimaryAbility();
+    const primaryAbility = getCharacterSpellcastingAbility(character);
     const abilityScore = abilityScores[primaryAbility] || 10;
     const abilityModifier = getAbilityModifier(abilityScore);
     

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Zap, ChevronDown, Dices, Users } from "lucide-react";
 import { Spell, AbilityScores, CharacterClass, RollDiceFunc, RollDamageFunc, ActiveBonus } from "../../types/character";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../../utils/dice-utils";
-import { getAbilityModifier, getAdvantageDisadvantage, getEffectiveBonuses } from "../../utils/character-utils";
+import { getAbilityModifier, getAdvantageDisadvantage, getEffectiveBonuses, getCharacterSpellcastingAbility } from "../../utils/character-utils";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import FeatureNavigationBadge from "../features/FeatureNavigationBadge";
 import Select from "../ui/Select";
@@ -66,7 +66,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
     const handleAttackRoll = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (rollDice) {
-            const ability = spell.spellcastingAbility || 'intelligence'; // Fallback
+            const ability = getCharacterSpellcastingAbility(character, spell);
             const abilityScore = abilityScores[ability] || 10;
             const abilityModifier = getAbilityModifier(abilityScore);
             let attackBonusFromActive = 0;
@@ -186,7 +186,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 <div className="flex flex-col"><span className="text-xs uppercase font-bold text-primary opacity-60 leading-tight">AoE</span>{spell.aoeSize} {spell.aoeShape}</div>
                             )}
                                     {(() => {
-                                        const abilityScore = abilityScores[spell.spellcastingAbility!] || 10;
+                                        const ability = getCharacterSpellcastingAbility(character, spell);
+                                        const abilityScore = abilityScores[ability] || 10;
                                         const abilityModifier = Math.floor((abilityScore - 10) / 2);
                                         
                                         // Calculate bonuses

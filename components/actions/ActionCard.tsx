@@ -9,6 +9,7 @@ import {
     resolveRollExpression,
     getAdvantageDisadvantage,
     getEffectiveAbilityScores,
+    getCharacterSpellcastingAbility,
 } from "../../utils/character-utils";
 import {
     calculateScaledCantripValue,
@@ -84,8 +85,9 @@ const ActionCard: React.FC<ActionCardProps> = ({
             const charPB = Math.ceil(charLevel / 4) + 1;
             const pbToUse = action.useSpellAttack ? charPB : proficiencyBonus;
 
+            const attackAbility = action.attackAbility || (action.useSpellAttack ? getCharacterSpellcastingAbility(character) : undefined);
             const atkAbilityMod = getAbilityModifier(
-                scoresToUse[((action.attackAbility as string)?.toLowerCase() as keyof AbilityScores)] || 10
+                scoresToUse[((attackAbility as string)?.toLowerCase() as keyof AbilityScores)] || 10
             );
             const total =
                 (isProficient ? pbToUse : 0) +
@@ -152,9 +154,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                             const charPB = Math.ceil(charLevel / 4) + 1;
                                             const pbToUse = action.useSpellAttack ? charPB : proficiencyBonus;
 
+                                            const attackAbility = action.attackAbility || (action.useSpellAttack ? getCharacterSpellcastingAbility(character) : undefined);
                                             const atkAbilityMod = getAbilityModifier(
                                                 scoresToUse[
-                                                    ((action.attackAbility as string)?.toLowerCase() as keyof AbilityScores)
+                                                    ((attackAbility as string)?.toLowerCase() as keyof AbilityScores)
                                                 ] || 10
                                             );
                                             const total =

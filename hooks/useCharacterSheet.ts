@@ -429,9 +429,11 @@ export const useCharacterSheet = (
     setCharacter(prev => {
       if (!prev) return null;
       const manualActions = allActions.filter(a =>
-        !a.fromWeapon && !a.fromFeature && !a.id.startsWith("weapon-") && !a.id.startsWith("feature-")
+        !a.fromWeapon && !a.fromFeature && !a.id.startsWith("weapon-") && !a.id.startsWith("feature-") && !a.id.startsWith("spell-")
       );
       const weaponUpdates = allActions.filter(a => a.fromWeapon && a.id.startsWith("weapon-"));
+      const spellUpdates = allActions.filter(a => a.id.startsWith("spell-"));
+      
       let newInventory = [...(prev.inventory || [])];
       let inventoryChanged = false;
 
@@ -475,9 +477,43 @@ export const useCharacterSheet = (
           return item;
         });
       });
+
+      let updatedSpells = [...(prev.spells || [])];
+      
+      // Handle deleted spells
+      const existingSpellIds = (prev.spells || []).map(s => `spell-${s.id}`);
+      const remainingSpellIds = new Set(spellUpdates.map(a => a.id));
+      const spellsToDelete = existingSpellIds.filter(id => !remainingSpellIds.has(id));
+      
+      if (spellsToDelete.length > 0) {
+        const toDeleteIds = new Set(spellsToDelete.map(id => id.replace("spell-", "")));
+        updatedSpells = updatedSpells.filter(s => !toDeleteIds.has(s.id));
+      }
+
+      // Handle modified spells
+      updatedSpells = updatedSpells.map(spell => {
+        const update = spellUpdates.find(u => u.id === `spell-${spell.id}`);
+        if (update) {
+          return {
+            ...spell,
+            name: update.name,
+            castingTime: update.activation || spell.castingTime,
+            range: update.range || spell.range,
+            damage: update.damageDice || update.damage || spell.damage,
+            damageType: update.damageType || spell.damageType,
+            healing: update.healing || spell.healing,
+            description: update.description ? update.description.replace(/^Level:[\s\S]*?\nRange:[\s\S]*?\nDuration:[\s\S]*?\n\n/, "") : spell.description,
+            spellcastingAbility: update.attackAbility || spell.spellcastingAbility,
+            attackBonus: update.attackBonus !== undefined ? update.attackBonus : spell.attackBonus,
+          };
+        }
+        return spell;
+      });
+
       return {
         ...prev,
         actions: manualActions,
+        spells: updatedSpells,
         inventory: inventoryChanged ? newInventory : prev.inventory
       };
     });
