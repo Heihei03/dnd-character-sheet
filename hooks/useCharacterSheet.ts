@@ -506,6 +506,8 @@ export const useCharacterSheet = (
             spellcastingAbility: update.attackAbility || spell.spellcastingAbility,
             attackBonus: update.attackBonus !== undefined ? update.attackBonus : spell.attackBonus,
             addSpellcastingModifier: update.addSpellcastingModifier !== undefined ? update.addSpellcastingModifier : spell.addSpellcastingModifier,
+            effect: update.effect !== undefined ? update.effect : spell.effect,
+            passEffect: update.passEffect !== undefined ? update.passEffect : spell.passEffect,
           };
         }
         return spell;

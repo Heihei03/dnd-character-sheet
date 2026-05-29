@@ -326,7 +326,8 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                     </div>
                                     {(() => {
                                         const deducedAbility = getCharacterSpellcastingAbility({ classes, abilityScores } as any, localSpell);
-                                        const deducedAbilityName = deducedAbility.charAt(0).toUpperCase() + deducedAbility.slice(1);
+                                        const deducedAbilityStr = String(deducedAbility);
+                                        const deducedAbilityName = deducedAbilityStr.charAt(0).toUpperCase() + deducedAbilityStr.slice(1);
                                         return (
                                             <div className="col-span-2 mt-2 bg-green-500/5 dark:bg-green-500/10 p-3 rounded-lg border border-green-500/20 space-y-1">
                                                 <div className="flex items-center justify-between">
@@ -359,6 +360,28 @@ const SpellForm: React.FC<SpellFormProps> = ({
                                 onChange={(e) => handleLocalUpdate("atHigherLevels", e.target.value)}
                             />
                         </div>
+                        {(localSpell.hasAttack || localSpell.hasSave) && (
+                            <div className="space-y-1">
+                                <label className="block text-xs font-bold uppercase text-gray-400">Additional Effect (in addition to damage)</label>
+                                <input
+                                    className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none"
+                                    placeholder="e.g. Target is knocked prone, poisoned, etc."
+                                    value={localSpell.effect || ""}
+                                    onChange={(e) => handleLocalUpdate("effect", e.target.value)}
+                                />
+                            </div>
+                        )}
+                        {localSpell.hasSave && (
+                            <div className="space-y-1">
+                                <label className="block text-xs font-bold uppercase text-gray-400">On Successful Save</label>
+                                <input
+                                    className="border border-border rounded px-3 py-2 w-full text-sm bg-background focus:ring-1 focus:ring-primary outline-none"
+                                    placeholder="e.g. Half damage, Negates effect"
+                                    value={localSpell.passEffect || ""}
+                                    onChange={(e) => handleLocalUpdate("passEffect", e.target.value)}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
 

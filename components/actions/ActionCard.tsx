@@ -382,6 +382,20 @@ const ActionCard: React.FC<ActionCardProps> = ({
                             {action.description}
                         </div>
 
+                        {action.effect && (
+                            <div className="mt-3 p-2 px-3 bg-blue-500/5 dark:bg-blue-500/10 rounded-lg border border-blue-500/10 text-xs text-foreground leading-normal">
+                                <strong className="text-blue-600 dark:text-blue-400 uppercase font-black tracking-tight text-[10px] block mb-0.5">Additional Effect</strong>
+                                {action.effect}
+                            </div>
+                        )}
+
+                        {(action.isAttack || action.attackAbility || action.useSpellAttack) && action.passEffect && (
+                            <div className="mt-2 p-2 px-3 bg-orange-500/5 dark:bg-orange-500/10 rounded-lg border border-orange-500/10 text-xs text-foreground leading-normal">
+                                <strong className="text-orange-600 dark:text-orange-400 uppercase font-black tracking-tight text-[10px] block mb-0.5">On Successful Save</strong>
+                                {action.passEffect}
+                            </div>
+                        )}
+
                         {action.atHigherLevels && (
                             <div className="mt-2 p-2 bg-primary/5 rounded border border-primary/10 italic text-xs text-gray-600 dark:text-gray-400">
                                 <strong className="text-primary text-xs uppercase not-italic font-bold">

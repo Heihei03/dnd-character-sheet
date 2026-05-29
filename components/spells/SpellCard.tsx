@@ -291,6 +291,20 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             <>
                                 <p className="text-sm text-foreground/90 leading-relaxed font-serif whitespace-pre-wrap mt-2">{spell.description}</p>
 
+                                {spell.effect && (
+                                    <div className="mt-3 p-2 px-3 bg-blue-500/5 dark:bg-blue-500/10 rounded-lg border border-blue-500/10 text-xs text-foreground leading-normal">
+                                        <strong className="text-blue-600 dark:text-blue-400 uppercase font-black tracking-tight text-[10px] block mb-0.5">Additional Effect</strong>
+                                        {spell.effect}
+                                    </div>
+                                )}
+
+                                {spell.hasSave && spell.passEffect && (
+                                    <div className="mt-2 p-2 px-3 bg-orange-500/5 dark:bg-orange-500/10 rounded-lg border border-orange-500/10 text-xs text-foreground leading-normal">
+                                        <strong className="text-orange-600 dark:text-orange-400 uppercase font-black tracking-tight text-[10px] block mb-0.5">On Successful Save</strong>
+                                        {spell.passEffect}
+                                    </div>
+                                )}
+
                                 {spell.atHigherLevels && (
                                     <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/10 italic text-sm text-muted-foreground">
                                         <strong className="text-primary text-xs uppercase not-italic">At Higher Levels: </strong>

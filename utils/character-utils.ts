@@ -687,6 +687,8 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 scalesWithCharacterLevel: spell.scalesWithCharacterLevel,
                 useSpellAttack: true,
                 addSpellcastingModifier: spell.addSpellcastingModifier,
+                effect: spell.effect,
+                passEffect: spell.passEffect,
             } as Action;
         });
 

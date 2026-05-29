@@ -123,7 +123,9 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
             aoeSize: "",
             hasAoe: false,
             spellcastingAbility: undefined,
-            addSpellcastingModifier: false
+            addSpellcastingModifier: false,
+            effect: "",
+            passEffect: ""
         };
         setNewSpellDraft(newSpell);
         setEditingSpellId(newSpell.id);
