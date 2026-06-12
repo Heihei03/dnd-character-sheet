@@ -92,7 +92,12 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
             case "Extra Advantage":
                 return <RollTargetModifier {...commonProps} />;
             case "Save":
-                return <SaveModifier {...commonProps} />;
+                return (
+                    <SaveModifier 
+                        {...commonProps} 
+                        availableModifiers={modifiers} 
+                    />
+                );
             default:
                 return <ValueModifier {...commonProps} />;
         }

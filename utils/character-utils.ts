@@ -708,6 +708,11 @@ export const getEffectiveActions = (character: Character): Action[] => {
                     const data = JSON.parse(m.value);
                     const actionName = data.name || f.name;
 
+                    // Skip if linked to a New Action modifier in the same feature
+                    if (data.actionModifierId && actionModifiers.some(am => am.id === data.actionModifierId)) {
+                        return;
+                    }
+
                     // Try to link to a resource in the same feature
                     let resourceName = data.resourceName;
                     if (!resourceName && resourceModifiers.length > 0) {
@@ -746,9 +751,9 @@ export const getEffectiveActions = (character: Character): Action[] => {
                     extraActions.push({
                         id: `feature-save-${m.id}-${idx}`,
                         name: actionName,
-                        type: m.subType as any || "Action",
+                        type: "No Action",
                         description: description || `Forced save granted by feature: ${f.name}`,
-                        activation: data.activation || "1 Action",
+                        activation: "No Action",
                         damage: damage,
                         damageType: data.damageType,
                         hasSave: true,
@@ -768,6 +773,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 }
             }
         });
+
 
         actionModifiers.forEach((m, idx) => {
             if (m.value && typeof m.value === 'string') {
@@ -800,6 +806,42 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         description = description ? `${description}\n\nFeature Description:\n${f.description}` : f.description;
                     }
 
+                    // Find if any Save modifier is linked to this Action modifier
+                    const linkedSave = saveModifiers.find(sm => {
+                        try {
+                            const smData = JSON.parse(sm.value as string || "{}");
+                            return smData.actionModifierId === m.id;
+                        } catch { return false; }
+                    });
+                    let saveProps = {};
+                    if (linkedSave) {
+                        try {
+                            const smData = JSON.parse(linkedSave.value as string || "{}");
+                            let saveDc = 0;
+                            let saveDcFlat = false;
+                            if (smData.dcCalculation === "flat") {
+                                saveDc = smData.flatDc !== undefined ? smData.flatDc : 10;
+                                saveDcFlat = true;
+                            }
+                            const saveAttackAbility = smData.dcCalculation === "ability"
+                                ? (smData.dcAbility || "strength")
+                                : getCharacterSpellcastingAbility(character, undefined);
+
+                            saveProps = {
+                                hasSave: true,
+                                saveType: linkedSave.subType || "Strength",
+                                saveDc: saveDc,
+                                saveDcFlat: saveDcFlat,
+                                attackAbility: saveAttackAbility as any,
+                                effect: smData.effect,
+                                passEffect: smData.passEffect,
+                                damage: data.damageDice ? damage : (smData.damageDice ? `${smData.damageDice}${data.damageAbility ? (getAbilityModifier(effectiveAbilityScores[data.damageAbility] || 10) >= 0 ? "+" : "") + getAbilityModifier(effectiveAbilityScores[data.damageAbility] || 10) : ""}` : undefined),
+                                damageDice: data.damageDice || smData.damageDice,
+                                damageType: data.damageType || smData.damageType
+                            };
+                        } catch {}
+                    }
+
                     action = {
                         name: actionName,
                         type: (data.type || m.subType) as any || "Action",
@@ -810,7 +852,8 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         resourceName,
                         resourceId: data.resourceId || m.id, // Link to resource with ID
                         id: `feature-action-${m.id}-${idx}`,
-                        fromFeature: true
+                        fromFeature: true,
+                        ...saveProps
                     };
                 } catch (e) {
                     // Try to link to a resource in the same feature even for simple actions
@@ -824,6 +867,32 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         }
                     }
 
+                    // Find if any Save modifier is linked to this Action modifier
+                    const linkedSave = saveModifiers.find(sm => {
+                        try {
+                            const smData = JSON.parse(sm.value as string || "{}");
+                            return smData.actionModifierId === m.id;
+                        } catch { return false; }
+                    });
+                    let saveProps = {};
+                    if (linkedSave) {
+                        try {
+                            const smData = JSON.parse(linkedSave.value as string || "{}");
+                            let saveDc = smData.dcCalculation === "flat" ? (smData.flatDc || 10) : 0;
+                            let saveDcFlat = smData.dcCalculation === "flat";
+                            saveProps = {
+                                hasSave: true,
+                                saveType: linkedSave.subType || "Strength",
+                                saveDc: saveDc,
+                                saveDcFlat: saveDcFlat,
+                                effect: smData.effect,
+                                passEffect: smData.passEffect,
+                                damage: smData.damageDice,
+                                damageType: smData.damageType
+                            };
+                        } catch {}
+                    }
+
                     action = {
                         id: `feature-action-${m.id}-${idx}`,
                         name: m.value || f.name,
@@ -832,7 +901,8 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         activation: "1 Action",
                         fromFeature: true,
                         resourceName,
-                        resourceId: m.id // Link to resource with the same ID
+                        resourceId: m.id, // Link to resource with the same ID
+                        ...saveProps
                     } as Action;
                 }
                 extraActions.push(action);

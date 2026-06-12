@@ -36,7 +36,7 @@ interface ActionsSectionProps {
     onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
 }
 
-const ACTION_TYPES: ActionType[] = ["Action", "Bonus Action", "Reaction", "Free Action"];
+const ACTION_TYPES: ActionType[] = ["Action", "Bonus Action", "Reaction", "Free Action", "No Action"];
 
 const ActionsSection: React.FC<ActionsSectionProps> = ({
     actions = [],

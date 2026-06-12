@@ -9,6 +9,7 @@ import ThemedAutocomplete from "../../ui/ThemedAutocomplete";
 interface SaveModifierProps {
     modifier: FeatureModifier;
     onUpdate: (updates: Partial<FeatureModifier>) => void;
+    availableModifiers?: FeatureModifier[];
 }
 
 const ABILITY_OPTIONS = [
@@ -26,7 +27,7 @@ const DC_CALCULATION_OPTIONS = [
     { label: "Flat DC", value: "flat" },
 ];
 
-const SaveModifier: React.FC<SaveModifierProps> = ({ modifier, onUpdate }) => {
+const SaveModifier: React.FC<SaveModifierProps> = ({ modifier, onUpdate, availableModifiers }) => {
     const data = (() => {
         try {
             return JSON.parse(modifier.value as string || "{}");
@@ -41,6 +42,31 @@ const SaveModifier: React.FC<SaveModifierProps> = ({ modifier, onUpdate }) => {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 mt-1 bg-secondary/50 rounded-lg border border-border animate-in fade-in slide-in-from-top-1">
+            {/* Link to Action Modifier */}
+            <div className="md:col-span-2 space-y-1">
+                <label className="text-xs uppercase font-bold text-gray-400">Link to Action Modifier</label>
+                <Select
+                    value={data.actionModifierId || ""}
+                    onValueChange={(val) => {
+                        updateData({ actionModifierId: val || undefined });
+                    }}
+                    options={[
+                        { label: "No Action", value: "" },
+                        ...((availableModifiers || [])
+                            .filter(m => m.type === "New Action")
+                            .map(m => {
+                                let name = "";
+                                try {
+                                    name = JSON.parse(m.value as string).name || "Unnamed Action";
+                                } catch {
+                                    name = m.value as string || "Unnamed Action";
+                                }
+                                return { label: name, value: m.id };
+                            }))
+                    ]}
+                />
+            </div>
+
             {/* Save Type (Ability scores the target rolls) */}
             <div className="space-y-1">
                 <label className="text-xs uppercase font-bold text-gray-400">Save Type</label>

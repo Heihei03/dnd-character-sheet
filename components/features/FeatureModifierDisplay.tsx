@@ -76,6 +76,18 @@ const FeatureModifierDisplay: React.FC<FeatureModifierDisplayProps> = ({
                             ? (data.flatDc !== undefined ? data.flatDc : 10)
                             : (8 + abilityModifier + (proficiencyBonus || 2) + saveDcBonusFromActive);
 
+                        let linkedActionName = "";
+                        if (data.actionModifierId) {
+                            const linkedActionMod = modifiers.find(m => m.id === data.actionModifierId);
+                            if (linkedActionMod) {
+                                try {
+                                    linkedActionName = JSON.parse(linkedActionMod.value as string).name || "";
+                                } catch {
+                                    linkedActionName = linkedActionMod.value as string || "";
+                                }
+                            }
+                        }
+
                         saveDetails = {
                             dc: calculatedDC,
                             saveType: mod.subType || "Strength",
@@ -83,7 +95,8 @@ const FeatureModifierDisplay: React.FC<FeatureModifierDisplayProps> = ({
                             damageType: data.damageType || "",
                             effect: data.effect || "",
                             passEffect: data.passEffect || "",
-                            saveDcBonusFromActive
+                            saveDcBonusFromActive,
+                            linkedActionName
                         };
                     } catch {
                         // Fallback in case of parse error
@@ -95,7 +108,14 @@ const FeatureModifierDisplay: React.FC<FeatureModifierDisplayProps> = ({
                         <div key={mod.id} className="flex flex-col border-b border-gray-100 dark:border-gray-800 pb-2 sm:col-span-2">
                             <div className="flex items-center justify-between mb-1">
                                 <div className="flex flex-col">
-                                    <span className="text-xs uppercase font-bold text-gray-400 leading-tight">Forced Save</span>
+                                    <span className="text-xs uppercase font-bold text-gray-400 leading-tight">
+                                        Forced Save
+                                        {saveDetails.linkedActionName && (
+                                            <span className="text-[10px] text-muted-foreground ml-1.5 font-semibold normal-case italic">
+                                                (Linked to Action: {saveDetails.linkedActionName})
+                                            </span>
+                                        )}
+                                    </span>
                                     <span className="font-semibold text-gray-700 dark:text-gray-200">
                                         DC {saveDetails.dc} {saveDetails.saveType} Save
                                         {saveDetails.saveDcBonusFromActive > 0 && (
