@@ -30,6 +30,7 @@ interface FeatureItemProps {
     species: string;
     subSpecies?: string;
     background: string;
+    character?: any;
 }
 
 const FeatureItem: React.FC<FeatureItemProps> = ({
@@ -51,28 +52,41 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
     classes,
     species,
     subSpecies,
-    background
+    background,
+    character
 }) => {
     const handleRoll = (mod: FeatureModifier, featureName: string) => {
         if (!rollDamage) return;
 
         let expr = "";
         let label = featureName;
+        let damageType = undefined;
 
         if (mod.type === "Roll") {
             expr = mod.value as string;
-            if (mod.subType && mod.subType !== "all") label = `${featureName} (${mod.subType})`;
+            if (mod.subType && mod.subType !== "all") {
+                label = `${featureName} (${mod.subType})`;
+                damageType = mod.subType;
+            }
         } else if (mod.type === "New Action") {
             try {
                 const data = JSON.parse(mod.value as string || "{}");
                 expr = data.damageDice;
                 label = data.name || featureName;
+                damageType = data.damageType;
+            } catch { return; }
+        } else if (mod.type === "Save") {
+            try {
+                const data = JSON.parse(mod.value as string || "{}");
+                expr = data.damageDice;
+                label = data.name || featureName;
+                damageType = data.damageType;
             } catch { return; }
         }
 
         if (expr) {
             const resolved = resolveRollExpression(expr, abilityScores, totalLevel, proficiencyBonus);
-            rollDamage(resolved, label);
+            rollDamage(resolved, label, damageType);
         }
     };
 
@@ -121,6 +135,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
                                         mod.type === "Sense" ? "bg-amber-500/10 text-amber-600" :
                                         mod.type === "Speed" ? "bg-emerald-500/10 text-emerald-600" :
                                         mod.type === "Bonus" ? "bg-rose-500/10 text-rose-600" :
+                                        mod.type === "Save" ? "bg-orange-500/10 text-orange-600" :
                                         "bg-primary/5 text-primary"
                                     }`}>
                                         {mod.subType || mod.type}
@@ -140,6 +155,12 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
                                         return !!data.damageDice;
                                     } catch { return false; }
                                 }
+                                if (m.type === "Save") {
+                                    try {
+                                        const data = JSON.parse(m.value as string || "{}");
+                                        return !!data.damageDice;
+                                    } catch { return false; }
+                                }
                                 return false;
                             });
 
@@ -152,7 +173,17 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
                                     title="Quick Roll"
                                 >
                                     <Dices className="w-4 h-4" />
-                                    {rollableMod.type === "Roll" && <span className="text-xs font-bold font-mono">{rollableMod.value}</span>}
+                                    {(rollableMod.type === "Roll" || rollableMod.type === "Save") && (() => {
+                                        let dice = "";
+                                        if (rollableMod.type === "Roll") {
+                                            dice = rollableMod.value as string;
+                                        } else {
+                                            try {
+                                                dice = JSON.parse(rollableMod.value as string).damageDice || "";
+                                            } catch {}
+                                        }
+                                        return dice ? <span className="text-xs font-bold font-mono">{dice}</span> : null;
+                                    })()}
                                 </button>
                             );
                         })()}
@@ -227,6 +258,10 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
                                 resources={resources}
                                 onUpdateResourceValue={onUpdateResourceValue}
                                 onRoll={handleRoll}
+                                abilityScores={abilityScores}
+                                proficiencyBonus={proficiencyBonus}
+                                classes={classes}
+                                character={character}
                             />
                         </div>
 

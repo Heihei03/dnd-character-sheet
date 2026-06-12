@@ -14,6 +14,7 @@ import ActionModifier from "./modifiers/ActionModifier";
 import ProficiencyModifier from "./modifiers/ProficiencyModifier";
 import RollTargetModifier from "./modifiers/RollTargetModifier";
 import ValueModifier from "./modifiers/ValueModifier";
+import SaveModifier from "./modifiers/SaveModifier";
 
 interface FeatureModifierEditorProps {
     modifiers: FeatureModifier[];
@@ -37,6 +38,11 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
             if (m.id === id) {
                 const updated = { ...m, ...updates };
                 
+                if (updates.type === "Save" && (!updated.value || updated.value === "{}")) {
+                    updated.subType = "Strength";
+                    updated.value = JSON.stringify({ dcCalculation: "spellcasting", dcAbility: "strength", flatDc: 10, damageDice: "", damageType: "", effect: "", passEffect: "" });
+                }
+
                 // Autopopulate name from feature name (parentName) if empty
                 if (parentName) {
                     if (updates.type === "New Action" && !updated.value) {
@@ -85,6 +91,8 @@ const FeatureModifierEditor: React.FC<FeatureModifierEditorProps> = ({ modifiers
             case "Disadvantage":
             case "Extra Advantage":
                 return <RollTargetModifier {...commonProps} />;
+            case "Save":
+                return <SaveModifier {...commonProps} />;
             default:
                 return <ValueModifier {...commonProps} />;
         }

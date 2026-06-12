@@ -10,6 +10,7 @@ import {
     getAdvantageDisadvantage,
     getEffectiveAbilityScores,
     getCharacterSpellcastingAbility,
+    getEffectiveBonuses,
 } from "../../utils/character-utils";
 import {
     calculateScaledCantripValue,
@@ -200,17 +201,40 @@ const ActionCard: React.FC<ActionCardProps> = ({
                         {(action.isAttack ||
                             action.baseLevel !== undefined ||
                             upcastedDamage ||
-                            upcastedHealing) &&
+                            upcastedHealing ||
+                            action.hasSave) &&
                             (upcastedDamage ||
                                 upcastedHealing ||
                                 action.range ||
-                                action.activation) && (
+                                action.activation ||
+                                action.hasSave) && (
                                 <div className="hidden sm:flex items-center gap-3 text-xs text-gray-500">
                                     {action.activation && (
                                         <span className="bg-secondary/50 dark:bg-secondary/30 px-2 py-0.5 rounded font-bold">
                                             {action.activation}
                                         </span>
                                     )}
+                                    {action.hasSave && (() => {
+                                        const attackAbility = action.attackAbility || (action.useSpellAttack ? getCharacterSpellcastingAbility(character) : undefined) || "strength";
+                                        const abilityScore = abilityScores[((attackAbility as string)?.toLowerCase() as keyof AbilityScores)] || 10;
+                                        const abilityModifier = getAbilityModifier(abilityScore);
+                                        
+                                        let saveDcBonusFromActive = 0;
+                                        getEffectiveBonuses(character, 'spell-dc').forEach(b => {
+                                            const val = parseInt(b.bonus) || 0;
+                                            saveDcBonusFromActive += val;
+                                        });
+
+                                        const saveDC = action.saveDcFlat
+                                            ? (action.saveDc || 10)
+                                            : (8 + abilityModifier + proficiencyBonus + (action.saveDc || 0) + saveDcBonusFromActive);
+
+                                        return (
+                                            <span className="bg-orange-500/10 text-orange-600 px-2 py-0.5 rounded font-bold">
+                                                DC {saveDC} {action.saveType ? action.saveType.slice(0, 3).toUpperCase() : ""} Save
+                                            </span>
+                                        );
+                                    })()}
                                     {(upcastedDamage || upcastedHealing) && (
                                         <button
                                             type="button"
@@ -306,7 +330,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
                 {isExpanded && (
                     <div className="p-4 pt-0 border-t border-border space-y-4 bg-secondary/10 dark:bg-secondary/5 text-sm animate-in slide-in-from-bottom-2 duration-200 rounded-b-lg">
                         {(action.isAttack ||
-                            action.baseLevel !== undefined) && (
+                            action.baseLevel !== undefined ||
+                            action.hasSave) && (
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3">
                                 {action.activation && (
                                     <div>
@@ -318,6 +343,35 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                         </div>
                                     </div>
                                 )}
+                                {action.hasSave && (() => {
+                                    const attackAbility = action.attackAbility || (action.useSpellAttack ? getCharacterSpellcastingAbility(character) : undefined) || "strength";
+                                    const abilityScore = abilityScores[((attackAbility as string)?.toLowerCase() as keyof AbilityScores)] || 10;
+                                    const abilityModifier = getAbilityModifier(abilityScore);
+                                    
+                                    let saveDcBonusFromActive = 0;
+                                    getEffectiveBonuses(character, 'spell-dc').forEach(b => {
+                                        const val = parseInt(b.bonus) || 0;
+                                        saveDcBonusFromActive += val;
+                                    });
+
+                                    const saveDC = action.saveDcFlat
+                                        ? (action.saveDc || 10)
+                                        : (8 + abilityModifier + proficiencyBonus + (action.saveDc || 0) + saveDcBonusFromActive);
+
+                                    return (
+                                        <div>
+                                            <div className="text-xs font-bold uppercase text-gray-400">
+                                                Saving Throw
+                                            </div>
+                                            <div className="font-medium">
+                                                DC {saveDC} {action.saveType ? action.saveType : ""}
+                                                {saveDcBonusFromActive > 0 && (
+                                                    <span className="text-[10px] text-primary ml-1">(+{saveDcBonusFromActive})</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                                 {(upcastedDamage || upcastedHealing) && (
                                     <div>
                                         <div className="text-xs font-bold uppercase text-gray-400">

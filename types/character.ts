@@ -260,6 +260,10 @@ export interface Action {
   critRange?: number;
   critExtraDamage?: string;
   critRule?: CritRule;
+  hasSave?: boolean;
+  saveType?: string;
+  saveDc?: number;
+  saveDcFlat?: boolean;
 }
 
 export interface SpellSlot {

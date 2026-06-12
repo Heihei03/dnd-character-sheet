@@ -213,6 +213,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           background={character.background}
           focusedId={focusedFeatureId}
           onFocusedIdChange={setFocusedFeatureId}
+          character={character}
         />
       )}
 

@@ -45,6 +45,7 @@ interface FeaturesSectionProps {
     background?: string;
     focusedId?: string | null;
     onFocusedIdChange?: (id: string | null) => void;
+    character?: any;
 }
 
 const FILTER_OPTIONS = ["All", "Class", "Subclass", "Species", "Background", "Feat", "Item", "Other"];
@@ -67,7 +68,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     subSpecies = "",
     background = "",
     focusedId = null,
-    onFocusedIdChange
+    onFocusedIdChange,
+    character
 }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -272,6 +274,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                             species={species}
                             subSpecies={subSpecies}
                             background={background}
+                            character={character}
                         />
                     ))
                 )}

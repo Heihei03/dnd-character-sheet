@@ -689,6 +689,9 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 addSpellcastingModifier: spell.addSpellcastingModifier,
                 effect: spell.effect,
                 passEffect: spell.passEffect,
+                hasSave: spell.hasSave,
+                saveType: spell.saveType,
+                saveDc: spell.saveDc,
             } as Action;
         });
 
@@ -697,6 +700,74 @@ export const getEffectiveActions = (character: Character): Action[] => {
     activeFeatures.forEach(f => {
         const actionModifiers = (f.modifiers || []).filter(m => m.type === "New Action");
         const resourceModifiers = (f.modifiers || []).filter(m => m.type === "Resource");
+        const saveModifiers = (f.modifiers || []).filter(m => m.type === "Save");
+
+        saveModifiers.forEach((m, idx) => {
+            if (m.value && typeof m.value === 'string') {
+                try {
+                    const data = JSON.parse(m.value);
+                    const actionName = data.name || f.name;
+
+                    // Try to link to a resource in the same feature
+                    let resourceName = data.resourceName;
+                    if (!resourceName && resourceModifiers.length > 0) {
+                        try {
+                            const firstRes = JSON.parse(resourceModifiers[0].value as string);
+                            resourceName = firstRes.name || f.name;
+                        } catch {
+                            resourceName = resourceModifiers[0].value || f.name;
+                        }
+                    }
+
+                    // Calculate damage string if dice and ability are provided
+                    let damage = data.damage;
+                    if (data.damageDice) {
+                        const abilityMod = data.damageAbility ? getAbilityModifier(effectiveAbilityScores[data.damageAbility] || 10) : 0;
+                        damage = `${data.damageDice}${abilityMod >= 0 ? "+" : ""}${abilityMod}`;
+                    }
+
+                    let description = data.description || "";
+                    if (f.description) {
+                        description = description ? `${description}\n\nFeature Description:\n${f.description}` : f.description;
+                    }
+
+                    // Calculate DC details to pass to Action
+                    let saveDc = 0;
+                    let saveDcFlat = false;
+                    if (data.dcCalculation === "flat") {
+                        saveDc = data.flatDc !== undefined ? data.flatDc : 10;
+                        saveDcFlat = true;
+                    }
+
+                    const attackAbility = data.dcCalculation === "ability" 
+                        ? (data.dcAbility || "strength") 
+                        : getCharacterSpellcastingAbility(character, undefined);
+
+                    extraActions.push({
+                        id: `feature-save-${m.id}-${idx}`,
+                        name: actionName,
+                        type: m.subType as any || "Action",
+                        description: description || `Forced save granted by feature: ${f.name}`,
+                        activation: data.activation || "1 Action",
+                        damage: damage,
+                        damageType: data.damageType,
+                        hasSave: true,
+                        saveType: m.subType || "Strength",
+                        saveDc: saveDc,
+                        saveDcFlat: saveDcFlat,
+                        attackAbility: attackAbility as any,
+                        effect: data.effect,
+                        passEffect: data.passEffect,
+                        fromFeature: true,
+                        fromFeatureId: f.id,
+                        resourceName,
+                        resourceId: data.resourceId || m.id
+                    } as Action);
+                } catch (e) {
+                    // Fallback
+                }
+            }
+        });
 
         actionModifiers.forEach((m, idx) => {
             if (m.value && typeof m.value === 'string') {
