@@ -158,12 +158,15 @@ const HPSection = ({
 
       {/* Visual HP Bar */}
       <div className="space-y-1.5">
-        <div className="h-4 w-full bg-gray-100 dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-800 p-0.5 flex items-center overflow-hidden shadow-inner">
+        <div className="h-4 w-full bg-gray-100 dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-800 p-0.5 relative flex items-center overflow-hidden shadow-inner">
           <div 
             className={cn("h-full rounded-full transition-all duration-700 ease-out flex items-center justify-center shadow-sm", barColor)}
             style={{ width: `${Math.min(100, hpPercentage)}%` }}
-          >
-            {hpPercentage > 30 && <span className="text-[11px] font-black text-white drop-shadow-sm">{Math.round(hpPercentage)}%</span>}
+          />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span className="text-[11px] font-black text-gray-900 dark:text-gray-100 drop-shadow-sm">
+              {Math.round(hpPercentage)}%
+            </span>
           </div>
         </div>
         {tempHp > 0 && (
