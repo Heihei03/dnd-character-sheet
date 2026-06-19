@@ -6,7 +6,7 @@ import { CharacterClass } from "../types/character";
 import { classOptions } from "../utils/constants";
 import Select from "./ui/Select";
 import { Card, CardContent } from "./ui/card";
-import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Camera, Image as ImageIcon, Home, Settings, Download } from "lucide-react";
+import { Trophy, GraduationCap, User, BookOpen, Star, Plus, Trash2, X, Camera, Image as ImageIcon, Home, Settings, Download, Coffee } from "lucide-react";
 import SettingsButton from "./ui/SettingsButton";
 import NumericInput from "./ui/NumericInput";
 import ConfirmationModal from "./ui/ConfirmationModal";
@@ -37,6 +37,7 @@ interface CharacterHeaderProps {
     onReturn?: () => void;
     onExport?: () => void;
     collapsed?: boolean;
+    onRestClick?: () => void;
 }
 
 const EXP_THRESHOLDS = [
@@ -67,6 +68,7 @@ const CharacterHeader = ({
     onReturn,
     onExport,
     collapsed = false,
+    onRestClick,
 }: CharacterHeaderProps) => {
     const [isEditingClasses, setIsEditingClasses] = useState(false);
     const [isEditingSettings, setIsEditingSettings] = useState(false);
@@ -146,6 +148,16 @@ const CharacterHeader = ({
                         ) : <div />}
 
                         <div className="flex items-center gap-1.5">
+                            {onRestClick && (
+                                <button
+                                    onClick={onRestClick}
+                                    title="Take a Rest"
+                                    className="p-2 bg-background hover:bg-primary/10 hover:text-primary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95 gap-1.5"
+                                >
+                                    <Coffee size={18} className="text-primary" />
+                                    <span className="text-xs font-black uppercase tracking-wider">Rest</span>
+                                </button>
+                            )}
                             <button
                                 onClick={() => setIsEditingSettings(true)}
                                 title="Display Settings"
@@ -370,6 +382,19 @@ const CharacterHeader = ({
                                 ) : <div />}
 
                                 <div className="flex items-center gap-1.5">
+                                    {onRestClick && (
+                                        <button
+                                            onClick={() => {
+                                                setIsExpandedModalOpen(false);
+                                                onRestClick();
+                                            }}
+                                            title="Take a Rest"
+                                            className="p-2 bg-background hover:bg-primary/10 hover:text-primary rounded-lg border border-border text-foreground transition-all flex items-center justify-center cursor-pointer shadow-xs active:scale-95 gap-1.5"
+                                        >
+                                            <Coffee size={18} className="text-primary" />
+                                            <span className="text-xs font-black uppercase tracking-wider">Rest</span>
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => setIsEditingSettings(true)}
                                         title="Display Settings"

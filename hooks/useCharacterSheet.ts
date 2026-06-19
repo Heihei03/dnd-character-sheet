@@ -45,6 +45,8 @@ import {
   resolveRollExpression,
   evaluateRoll
 } from "../utils/character-utils";
+import { WARLOCK_SPELL_SLOTS } from "../utils/spell-utils";
+import { classHitDice } from "../utils/constants";
 
 
 export const useCharacterSheet = (
@@ -126,6 +128,8 @@ export const useCharacterSheet = (
       handleUpdateSummonStatblocks: () => {},
       handleAdjustHP: () => {},
       handleAdjustSummonHP: () => {},
+      handleShortRestComplete: () => {},
+      handleLongRest: () => {},
     };
   }
 
@@ -761,6 +765,116 @@ export const useCharacterSheet = (
     setCharacter(prev => (prev ? { ...prev, summonStatblocks } : null));
   };
 
+  const handleShortRestComplete = useCallback(() => {
+    setCharacter((prev) => {
+      if (!prev) return null;
+
+      // 1. Regain Short Rest resources
+      const nextResources = (prev.resources || []).map((r) => {
+        if (r.regain === "Short Rest" || r.regain === "Short or Long Rest") {
+          return { ...r, value: r.max };
+        }
+        return r;
+      });
+
+      // 2. Regain Pact Magic spell slots if Warlock
+      let nextSpellSlots = prev.spellSlots ? [...prev.spellSlots] : [];
+      const warlockClass = prev.classes?.find(c => c.name === "Warlock");
+      if (warlockClass) {
+        const level = warlockClass.level;
+        const pactMagic = WARLOCK_SPELL_SLOTS[level];
+        if (pactMagic && pactMagic.slots > 0) {
+          nextSpellSlots = nextSpellSlots.map(slot => {
+            if (slot.level === pactMagic.level) {
+              return {
+                ...slot,
+                expended: Math.max(0, slot.expended - pactMagic.slots)
+              };
+            }
+            return slot;
+          });
+        }
+      }
+
+      return {
+        ...prev,
+        resources: nextResources,
+        spellSlots: nextSpellSlots
+      };
+    });
+  }, [setCharacter]);
+
+  const handleLongRest = useCallback(() => {
+    setCharacter((prev) => {
+      if (!prev) return null;
+
+      const maxHp = Number(prev.maxHp ?? 0);
+      const totalLevel = (prev.classes || []).reduce((sum, cls) => sum + cls.level, 0);
+
+      // 1. Restore HP & reset temp HP
+      const nextHp = maxHp;
+      const nextTempHp = 0;
+
+      // 2. Reset Death Saves
+      const nextDeathSaves = { successes: 0, failures: 0 };
+
+      // 3. Regain Hit Dice: up to half total level (min 1)
+      let remainingRegain = Math.max(1, Math.floor(totalLevel / 2));
+      
+      // Sort class indices by hit die size descending so larger dice regain first
+      const sortedClassIndices = (prev.classes || [])
+        .map((c, i) => ({ c, i }))
+        .sort((a, b) => {
+          const sizeA = classHitDice[a.c.name.toLowerCase()] || 8;
+          const sizeB = classHitDice[b.c.name.toLowerCase()] || 8;
+          return sizeB - sizeA;
+        });
+
+      const newClasses = prev.classes ? [...prev.classes] : [];
+      for (const { c, i } of sortedClassIndices) {
+        if (remainingRegain <= 0) break;
+        const spent = c.usedHitDice || 0;
+        if (spent > 0) {
+          const regainAmount = Math.min(spent, remainingRegain);
+          newClasses[i] = {
+            ...c,
+            usedHitDice: spent - regainAmount
+          };
+          remainingRegain -= regainAmount;
+        }
+      }
+
+      // 4. Regain ALL spell slots
+      const nextSpellSlots = (prev.spellSlots || []).map((slot) => ({
+        ...slot,
+        expended: 0
+      }));
+
+      // 5. Regain resources (Short Rest, Long Rest, Dawn)
+      const nextResources = (prev.resources || []).map((r) => {
+        if (
+          r.regain === "Short Rest" ||
+          r.regain === "Long Rest" ||
+          r.regain === "Short or Long Rest" ||
+          r.regain === "Dawn"
+        ) {
+          return { ...r, value: r.max };
+        }
+        return r;
+      });
+
+      return {
+        ...prev,
+        hp: nextHp,
+        tempHp: nextTempHp,
+        deathSaves: nextDeathSaves,
+        classes: newClasses,
+        spellSlots: nextSpellSlots,
+        resources: nextResources
+      };
+    });
+  }, [setCharacter]);
+
   return {
     characterWithDefaults,
     activeTab,
@@ -820,5 +934,7 @@ export const useCharacterSheet = (
     handleUpdateSummonStatblocks,
     handleAdjustHP,
     handleAdjustSummonHP,
+    handleShortRestComplete,
+    handleLongRest,
   };
 };

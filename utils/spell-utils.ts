@@ -47,7 +47,7 @@ const SPELL_SLOTS_TABLE: Record<number, number[]> = {
     20: [4, 3, 3, 3, 3, 2, 2, 1, 1],
 };
 
-const WARLOCK_SPELL_SLOTS: Record<number, { level: number, slots: number }> = {
+export const WARLOCK_SPELL_SLOTS: Record<number, { level: number, slots: number }> = {
     0: { level: 0, slots: 0 },
     1: { level: 1, slots: 1 },
     2: { level: 1, slots: 2 },

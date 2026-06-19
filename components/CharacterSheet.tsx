@@ -7,6 +7,7 @@ import { Shield, BookOpen, Heart } from "lucide-react";
 // UI Components
 import DiceRoller from "./DiceRoller";
 import RollHistory from "./RollHistory";
+import RestModal from "./RestModal";
 import CharacterHeader from "./CharacterHeader";
 import CharacterTabs from "./CharacterTabs";
 import StatsSidebar from "./layout/StatsSidebar";
@@ -86,12 +87,15 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
     handleUpdateSummonStatblocks,
     handleAdjustHP,
     handleAdjustSummonHP,
+    handleShortRestComplete,
+    handleLongRest,
   } = useCharacterSheet(character, setCharacter);
 
   const { mobileLayout } = useTheme();
 
   const [mobileColumn, setMobileColumn] = useState<"stats" | "sheet" | "status">("sheet");
   const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
+  const [isRestModalOpen, setIsRestModalOpen] = useState(false);
 
   const changeMobileColumn = (newCol: "stats" | "sheet" | "status") => {
     const columns: ("stats" | "sheet" | "status")[] = ["stats", "sheet", "status"];
@@ -247,6 +251,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           onDelete={onDelete}
           onReturn={onReturn}
           onExport={onExport}
+          onRestClick={() => setIsRestModalOpen(true)}
         />
       </div>
 
@@ -434,6 +439,19 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           onClear={clearHistory}
           onClose={() => setShowHistory(false)}
           onRollDamage={rollDamage}
+        />
+      )}
+
+      {isRestModalOpen && characterWithDefaults && (
+        <RestModal
+          isOpen={isRestModalOpen}
+          onClose={() => setIsRestModalOpen(false)}
+          character={characterWithDefaults}
+          rollDice={rollDice}
+          handleAdjustHP={handleAdjustHP}
+          handleClassChange={handleClassChange}
+          handleShortRestComplete={handleShortRestComplete}
+          handleLongRest={handleLongRest}
         />
       )}
     </div>
