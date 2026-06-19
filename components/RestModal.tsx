@@ -9,7 +9,7 @@ import { Card, CardContent } from "./ui/card";
 import Button from "./ui/button";
 
 // Types
-import { NormalizedCharacter, CharacterClass, RollDiceFunc } from "../types/character";
+import { NormalizedCharacter, CharacterClass, RollDiceFunc, AbilityScores } from "../types/character";
 
 // Utils
 import { classHitDice } from "../utils/constants";
@@ -18,6 +18,7 @@ interface RestModalProps {
   isOpen: boolean;
   onClose: () => void;
   character: NormalizedCharacter;
+  effectiveAbilityScores: AbilityScores;
   rollDice: RollDiceFunc;
   handleAdjustHP: (amount: number, isDamage: boolean) => void;
   handleClassChange: (index: number, field: keyof CharacterClass, value: any) => void;
@@ -29,6 +30,7 @@ const RestModal: React.FC<RestModalProps> = ({
   isOpen,
   onClose,
   character,
+  effectiveAbilityScores,
   rollDice,
   handleAdjustHP,
   handleClassChange,
@@ -52,7 +54,7 @@ const RestModal: React.FC<RestModalProps> = ({
   if (!isOpen || !mounted) return null;
 
   const getConModifier = () => {
-    const con = character.abilityScores.constitution ?? 10;
+    const con = effectiveAbilityScores.constitution ?? 10;
     return Math.floor((con - 10) / 2);
   };
 
@@ -77,9 +79,11 @@ const RestModal: React.FC<RestModalProps> = ({
     rollDice(sides, 1, conModifier, `Hit Die (${cls.name})`, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "healing");
 
     // Display localized feedback in the modal
+    const sign = conModifier >= 0 ? "+" : "-";
+    const absoluteModifier = Math.abs(conModifier);
     setRollFeedback((prev) => ({
       ...prev,
-      [index]: `Rolled a d${sides}: ${dieRoll} + ${conModifier >= 0 ? "+" : ""}${conModifier} (Con) = ${totalHealed} HP!`,
+      [index]: `Rolled a d${sides}: ${dieRoll} ${sign} ${absoluteModifier} (Con) = ${totalHealed} HP!`,
     }));
   };
 

@@ -447,6 +447,7 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ character, setCharacter
           isOpen={isRestModalOpen}
           onClose={() => setIsRestModalOpen(false)}
           character={characterWithDefaults}
+          effectiveAbilityScores={effectiveAbilityScores}
           rollDice={rollDice}
           handleAdjustHP={handleAdjustHP}
           handleClassChange={handleClassChange}
