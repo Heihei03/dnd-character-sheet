@@ -440,7 +440,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                         value={weapon.weaponDetails.baseWeapon || ""}
                                         onValueChange={(val) => {
                                             const baseWeapon = WEAPON_DATA[val];
-                                            if (baseWeapon) {
+                                            if (baseWeapon && weapon.weaponDetails) {
+                                                const currentDamageType = weapon.weaponDetails.damageType || "";
+                                                const isPactSpecialType = ["necrotic", "psychic", "radiant"].includes(currentDamageType.toLowerCase());
+
                                                 const newInventory = (character.inventory || []).map(invItem => {
                                                     if (invItem.id === weapon.id) {
                                                         return {
@@ -453,7 +456,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                                                 category: baseWeapon.category,
                                                                 rangeType: baseWeapon.rangeType,
                                                                 damageDice: baseWeapon.damageDice,
-                                                                damageType: baseWeapon.damageType,
+                                                                damageType: isPactSpecialType ? currentDamageType : baseWeapon.damageType,
                                                                 properties: [...baseWeapon.properties],
                                                                 mastery: baseWeapon.mastery
                                                             }
@@ -502,7 +505,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                                                     return {
                                                                         ...invItem,
                                                                         weaponDetails: {
-                                                                            ...invItem.weaponDetails,
+                                                                            ...invItem.weaponDetails!,
                                                                             damageType: opt.value
                                                                         }
                                                                     };

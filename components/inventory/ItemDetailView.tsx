@@ -257,7 +257,10 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                                     value={item.weaponDetails.baseWeapon || ""}
                                     onValueChange={(val) => {
                                         const baseWeapon = WEAPON_DATA[val];
-                                        if (baseWeapon) {
+                                        if (baseWeapon && item.weaponDetails) {
+                                            const currentDamageType = item.weaponDetails.damageType || "";
+                                            const isPactSpecialType = ["necrotic", "psychic", "radiant"].includes(currentDamageType.toLowerCase());
+                                            
                                             updateItem(item.id, "name", `Pact Weapon (${baseWeapon.name})`);
                                             updateItem(item.id, "weight", baseWeapon.weight);
                                             updateItem(item.id, "weaponDetails", {
@@ -266,7 +269,7 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                                                 category: baseWeapon.category,
                                                 rangeType: baseWeapon.rangeType,
                                                 damageDice: baseWeapon.damageDice,
-                                                damageType: baseWeapon.damageType,
+                                                damageType: isPactSpecialType ? currentDamageType : baseWeapon.damageType,
                                                 properties: [...baseWeapon.properties],
                                                 mastery: baseWeapon.mastery
                                             });
