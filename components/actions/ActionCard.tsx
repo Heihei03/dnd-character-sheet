@@ -431,7 +431,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                             </div>
                         )}
                         {weapon && weapon.weaponDetails?.isPactWeapon && onUpdateInventory && (
-                            <div className="flex items-center gap-2 pt-3 border-t border-purple-500/20 mt-1">
+                            <div className="flex flex-col gap-2 pt-3 border-t border-purple-500/20 mt-1">
                                 <div className="flex flex-col gap-1 w-full max-w-[240px]">
                                     <span className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider">
                                         Pact Weapon Form (Bonus Action)
@@ -467,6 +467,61 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                         options={Object.keys(WEAPON_DATA).sort().map(name => ({ label: name, value: name }))}
                                         className="border-purple-500/30 text-xs text-purple-700 dark:text-purple-300"
                                     />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider">
+                                        Pact Damage Type
+                                    </span>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {(() => {
+                                            const baseName = weapon.weaponDetails.baseWeapon || "Custom";
+                                            const normalType = (baseName !== "Custom" && WEAPON_DATA[baseName])
+                                                ? WEAPON_DATA[baseName].damageType
+                                                : (weapon.weaponDetails.damageType || "slashing");
+                                            const capitalizedNormal = normalType.charAt(0).toUpperCase() + normalType.slice(1).toLowerCase();
+
+                                            const options = [
+                                                { label: `Normal (${capitalizedNormal})`, value: capitalizedNormal },
+                                                { label: "Necrotic", value: "Necrotic" },
+                                                { label: "Psychic", value: "Psychic" },
+                                                { label: "Radiant", value: "Radiant" }
+                                            ];
+
+                                            const currentType = weapon.weaponDetails.damageType || capitalizedNormal;
+                                            const normalizedCurrent = currentType.charAt(0).toUpperCase() + currentType.slice(1).toLowerCase();
+
+                                            return options.map(opt => {
+                                                const isActive = normalizedCurrent === opt.value;
+                                                return (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newInventory = (character.inventory || []).map(invItem => {
+                                                                if (invItem.id === weapon.id) {
+                                                                    return {
+                                                                        ...invItem,
+                                                                        weaponDetails: {
+                                                                            ...invItem.weaponDetails,
+                                                                            damageType: opt.value
+                                                                        }
+                                                                    };
+                                                                }
+                                                                return invItem;
+                                                            });
+                                                            onUpdateInventory(newInventory);
+                                                        }}
+                                                        className={`text-[11px] font-bold px-2.5 py-1 rounded transition-all border ${isActive
+                                                            ? "bg-purple-600 text-white border-purple-600 shadow-sm"
+                                                            : "bg-background text-muted-foreground border-border hover:bg-secondary/50"
+                                                        }`}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                );
+                                            });
+                                        })()}
+                                    </div>
                                 </div>
                             </div>
                         )}

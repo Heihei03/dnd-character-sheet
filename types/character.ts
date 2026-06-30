@@ -65,6 +65,10 @@ export interface WeaponDetails {
   damageDice?: string;
   damageType?: string;
   isPactWeapon?: boolean;
+  attackAbility?: string;
+  attackBonus?: number;
+  damageAbility?: string;
+  damageBonus?: number;
 }
 
 export interface ArmorDetails {

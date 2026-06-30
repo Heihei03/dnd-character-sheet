@@ -470,11 +470,16 @@ export const useCharacterSheet = (
             return {
               ...item,
               name: update.name,
+              description: update.description ? update.description.replace(/^\[Pact Weapon\]\s*/, "") : item.description,
               weaponDetails: {
                 ...item.weaponDetails,
                 damageDice: update.damageDice || item.weaponDetails.damageDice,
                 damageType: update.damageType || item.weaponDetails.damageType,
-                properties: newProperties
+                properties: newProperties,
+                attackAbility: update.attackAbility || item.weaponDetails.attackAbility,
+                attackBonus: update.attackBonus !== undefined ? update.attackBonus : item.weaponDetails.attackBonus,
+                damageAbility: update.damageAbility || item.weaponDetails.damageAbility,
+                damageBonus: update.damageBonus !== undefined ? update.damageBonus : item.weaponDetails.damageBonus
               }
             };
           }

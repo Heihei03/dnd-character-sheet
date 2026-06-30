@@ -250,33 +250,74 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                         </label>
                     </div>
                     {item.weaponDetails.isPactWeapon && (
-                        <div className="flex items-center gap-2 pt-2 animate-in fade-in duration-200">
-                            <label className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase whitespace-nowrap tracking-wider">Pact Form:</label>
-                            <Select
-                                value={item.weaponDetails.baseWeapon || ""}
-                                onValueChange={(val) => {
-                                    const baseWeapon = WEAPON_DATA[val];
-                                    if (baseWeapon) {
-                                        updateItem(item.id, "name", `Pact Weapon (${baseWeapon.name})`);
-                                        updateItem(item.id, "weight", baseWeapon.weight);
-                                        updateItem(item.id, "weaponDetails", {
-                                            ...item.weaponDetails,
-                                            baseWeapon: baseWeapon.name,
-                                            category: baseWeapon.category,
-                                            rangeType: baseWeapon.rangeType,
-                                            damageDice: baseWeapon.damageDice,
-                                            damageType: baseWeapon.damageType,
-                                            properties: [...baseWeapon.properties],
-                                            mastery: baseWeapon.mastery
+                        <div className="flex flex-col gap-2 pt-2 animate-in fade-in duration-200">
+                            <div className="flex items-center gap-2">
+                                <label className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase whitespace-nowrap tracking-wider">Pact Form:</label>
+                                <Select
+                                    value={item.weaponDetails.baseWeapon || ""}
+                                    onValueChange={(val) => {
+                                        const baseWeapon = WEAPON_DATA[val];
+                                        if (baseWeapon) {
+                                            updateItem(item.id, "name", `Pact Weapon (${baseWeapon.name})`);
+                                            updateItem(item.id, "weight", baseWeapon.weight);
+                                            updateItem(item.id, "weaponDetails", {
+                                                ...item.weaponDetails,
+                                                baseWeapon: baseWeapon.name,
+                                                category: baseWeapon.category,
+                                                rangeType: baseWeapon.rangeType,
+                                                damageDice: baseWeapon.damageDice,
+                                                damageType: baseWeapon.damageType,
+                                                properties: [...baseWeapon.properties],
+                                                mastery: baseWeapon.mastery
+                                            });
+                                        }
+                                    }}
+                                    options={[
+                                        { label: "-- Select Form --", value: "" },
+                                        ...Object.keys(WEAPON_DATA).sort().map(name => ({ label: name, value: name }))
+                                    ]}
+                                    className="min-w-[160px] border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs"
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-wider">Pact Damage Type:</label>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {(() => {
+                                        const baseName = item.weaponDetails.baseWeapon || "Custom";
+                                        const normalType = (baseName !== "Custom" && WEAPON_DATA[baseName]) 
+                                            ? WEAPON_DATA[baseName].damageType 
+                                            : (item.weaponDetails.damageType || "slashing");
+                                        const capitalizedNormal = normalType.charAt(0).toUpperCase() + normalType.slice(1).toLowerCase();
+                                        
+                                        const options = [
+                                            { label: `Normal (${capitalizedNormal})`, value: capitalizedNormal },
+                                            { label: "Necrotic", value: "Necrotic" },
+                                            { label: "Psychic", value: "Psychic" },
+                                            { label: "Radiant", value: "Radiant" }
+                                        ];
+                                        
+                                        const currentType = item.weaponDetails.damageType || capitalizedNormal;
+                                        const normalizedCurrent = currentType.charAt(0).toUpperCase() + currentType.slice(1).toLowerCase();
+
+                                        return options.map(opt => {
+                                            const isActive = normalizedCurrent === opt.value;
+                                            return (
+                                                <button
+                                                    key={opt.value}
+                                                    type="button"
+                                                    onClick={() => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, damageType: opt.value })}
+                                                    className={`text-[11px] font-bold px-2.5 py-1 rounded transition-all border ${isActive 
+                                                        ? "bg-purple-600 text-white border-purple-600 shadow-sm" 
+                                                        : "bg-background text-muted-foreground border-border hover:bg-secondary/50"
+                                                    }`}
+                                                >
+                                                    {opt.label}
+                                                </button>
+                                            );
                                         });
-                                    }
-                                }}
-                                options={[
-                                    { label: "-- Select Form --", value: "" },
-                                    ...Object.keys(WEAPON_DATA).sort().map(name => ({ label: name, value: name }))
-                                ]}
-                                className="min-w-[160px] border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs"
-                            />
+                                    })()}
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

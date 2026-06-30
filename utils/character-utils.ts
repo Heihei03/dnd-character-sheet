@@ -553,7 +553,6 @@ export const getEffectiveActions = (character: Character): Action[] => {
         .filter(item => item.equipped && item.itemType === "weapon" && item.weaponDetails)
         .map(weapon => {
             const details = weapon.weaponDetails!;
-
             // Determine which ability to use (Finesse logic simplified for now)
             const isFinesse = details.properties?.includes("Finesse");
             const strMod = getAbilityModifier(effectiveAbilityScores.strength ?? 10);
@@ -563,10 +562,22 @@ export const getEffectiveActions = (character: Character): Action[] => {
             if (isFinesse && dexMod > strMod) {
                 ability = "dexterity";
             }
+            if (details.isPactWeapon) {
+                ability = "charisma";
+            }
+            if (details.attackAbility) {
+                ability = details.attackAbility.toLowerCase();
+            }
 
             const abilityModifier = getAbilityModifier(effectiveAbilityScores[ability] ?? 10);
-            const attackBonus = proficiencyBonus + abilityModifier;
-            const damageBonus = abilityModifier;
+            const attackBonus = proficiencyBonus + abilityModifier + (details.attackBonus || 0);
+
+            let damageAbility = ability;
+            if (details.damageAbility) {
+                damageAbility = details.damageAbility.toLowerCase();
+            }
+            const damageAbilityModifier = getAbilityModifier(effectiveAbilityScores[damageAbility] ?? 10);
+            const damageBonus = damageAbilityModifier + (details.damageBonus || 0);
 
             // Handle Versatile property
             const versatileProp = details.properties?.find(p => p.startsWith("Versatile"));
@@ -604,17 +615,14 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 range = undefined;
             }
 
-            // Normalize damage type and check for magical status
+            // Normalize damage type
             let damageType = details.damageType || "Slashing";
             // Capitalize (e.g. "slashing" -> "Slashing")
             damageType = damageType.charAt(0).toUpperCase() + damageType.slice(1).toLowerCase();
 
-            const isMagical = weapon.name.includes("+") ||
-                details.properties?.some(p => p?.toLowerCase().includes("magical")) ||
-                weapon.description?.toLowerCase().includes("magical");
-
-            if (isMagical && ["Bludgeoning", "Piercing", "Slashing"].includes(damageType)) {
-                damageType = `Magical ${damageType}`;
+            let description = weapon.description || `A ${(details.category || "").toLowerCase()} ${(details.rangeType || "").toLowerCase()} weapon attack. Properties: ${details.properties?.join(", ") || "None"}.`;
+            if (details.isPactWeapon && !description.includes("[Pact Weapon]")) {
+                description = `[Pact Weapon] ${description}`;
             }
 
             return {
@@ -622,7 +630,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 name: weapon.name,
                 type: "Action",
                 isAttack: true,
-                description: `A ${(details.category || "").toLowerCase()} ${(details.rangeType || "").toLowerCase()} weapon attack. Properties: ${details.properties?.join(", ") || "None"}.`,
+                description: description,
                 damage: `${details.damageDice}${damageBonus >= 0 ? "+" : ""}${damageBonus}`,
                 damageType: damageType,
                 versatileDamage: versatileDamage,
@@ -634,12 +642,12 @@ export const getEffectiveActions = (character: Character): Action[] => {
                 // Structured fields
                 proficient: true,
                 attackAbility: ability as any,
-                attackBonus: 0,
+                attackBonus: details.attackBonus || 0,
                 damageDice: details.damageDice,
-                damageAbility: ability as any,
-                damageBonus: 0,
+                damageAbility: damageAbility as any,
+                damageBonus: details.damageBonus || 0,
                 versatileDice: versatileDice
-            };
+            };;
         });
 
     // 3. Spell actions (dynamic from effective spells)
