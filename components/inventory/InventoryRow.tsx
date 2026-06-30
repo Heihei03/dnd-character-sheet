@@ -11,7 +11,7 @@ interface InventoryRowProps {
     item: InventoryItem;
     allInventory: InventoryItem[];
     section: "equipment" | "inventory";
-    updateItem: (id: string, field: keyof InventoryItem, value: any) => void;
+    updateItem: (id: string, field: keyof InventoryItem | Partial<InventoryItem>, value?: any) => void;
     removeItem: (id: string) => void;
     isExpanded: boolean;
     onToggleExpand: () => void;

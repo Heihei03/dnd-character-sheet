@@ -5,7 +5,7 @@ import ExpandableSection from "../ui/ExpandableSection";
 interface AttunementSectionProps {
     attunedItems: InventoryItem[];
     attunableItems: InventoryItem[];
-    updateItem: (id: string, field: keyof InventoryItem, value: any) => void;
+    updateItem: (id: string, field: keyof InventoryItem | Partial<InventoryItem>, value?: any) => void;
 }
 
 const AttunementSection: React.FC<AttunementSectionProps> = ({
