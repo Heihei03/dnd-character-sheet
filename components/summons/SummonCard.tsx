@@ -17,6 +17,7 @@ import NumericInput from "../ui/NumericInput";
 import { Summon, RollDiceFunc, RollDamageFunc, AbilityScores } from "../../types/character";
 import ActionCard from "../actions/ActionCard";
 import { getAbilityModifier } from "../../utils/character-utils";
+import { cn } from "../../lib/utils";
 
 interface SummonCardProps {
   summon: Summon;
@@ -71,6 +72,9 @@ const SummonCard: React.FC<SummonCardProps> = ({
   const effectivePB = summon.useCharacterPB ? (proficiencyBonus || 2) : (summon.pb || 2);
   const dexMod = getAbilityModifier(summon.abilityScores?.dexterity || 10);
   const initiativeBonus = summon.initiative !== undefined ? summon.initiative : dexMod;
+
+  const hpPercentage = summon.hp.max > 0 ? (summon.hp.current / summon.hp.max) * 100 : 0;
+  const barColor = hpPercentage > 50 ? "bg-green-500" : hpPercentage > 25 ? "bg-amber-500" : "bg-red-500";
 
   const handleAbilityRoll = (abilityName: string, score: number) => {
     const mod = getAbilityModifier(score);
@@ -195,6 +199,21 @@ const SummonCard: React.FC<SummonCardProps> = ({
                   </div>
                 )}
               </div>
+              {!isStatblock && (
+                <div className="mt-2 w-48 sm:w-64 space-y-1">
+                  <div className="h-2 w-full bg-secondary dark:bg-gray-800 rounded-full overflow-hidden relative border border-border/40">
+                    <div 
+                      className={cn("h-full rounded-full transition-all duration-500 ease-out", barColor)}
+                      style={{ width: `${Math.min(100, hpPercentage)}%` }}
+                    />
+                  </div>
+                  {summon.hp.temp > 0 && (
+                    <div className="h-1.5 w-full bg-primary/5 rounded-full overflow-hidden border border-primary/10">
+                      <div className="h-full bg-primary/40 w-full animate-pulse transition-all duration-500"></div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
