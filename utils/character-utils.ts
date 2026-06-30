@@ -620,8 +620,15 @@ export const getEffectiveActions = (character: Character): Action[] => {
             // Capitalize (e.g. "slashing" -> "Slashing")
             damageType = damageType.charAt(0).toUpperCase() + damageType.slice(1).toLowerCase();
 
-            let description = weapon.description || `A ${(details.category || "").toLowerCase()} ${(details.rangeType || "").toLowerCase()} weapon attack. Properties: ${details.properties?.join(", ") || "None"}.`;
-            if (details.isPactWeapon && !description.includes("[Pact Weapon]")) {
+            const defaultDesc = `A ${(details.category || "").toLowerCase()} ${(details.rangeType || "").toLowerCase()} weapon attack. Properties: ${details.properties?.join(", ") || "None"}.${details.mastery ? ` Mastery: ${details.mastery}.` : ""}`;
+            let description = defaultDesc;
+            if (weapon.description) {
+                const cleanUserDesc = weapon.description.replace(/^\[Pact Weapon\]\s*/, "").trim();
+                if (cleanUserDesc && !/^A (simple|martial) (melee|ranged) weapon attack/i.test(cleanUserDesc)) {
+                    description = `${cleanUserDesc}\n\n${defaultDesc}`;
+                }
+            }
+            if (details.isPactWeapon) {
                 description = `[Pact Weapon] ${description}`;
             }
 
