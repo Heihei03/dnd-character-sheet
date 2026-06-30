@@ -221,6 +221,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
         <ActionsSection
           actions={getEffectiveActions(character)}
           onUpdate={handleUpdateActions}
+          onUpdateInventory={handleInventoryChange}
           abilityScores={effectiveAbilityScores}
           proficiencyBonus={proficiencyBonus}
           totalLevel={totalLevel}

@@ -2,13 +2,14 @@ import { InventoryItem, Resource } from "../../types/character";
 import ItemFeaturesEditor from "./ItemFeaturesEditor";
 import ResourcePipTracker from "../ResourcePipTracker";
 import Select from "../ui/Select";
-import { 
-    DAMAGE_TYPES, 
-    WEAPON_PROPERTIES, 
-    WEAPON_MASTERY_TYPES 
+import {
+    DAMAGE_TYPES,
+    WEAPON_PROPERTIES,
+    WEAPON_MASTERY_TYPES
 } from "../../utils/constants";
 import { ABILITY_NAMES } from "../../utils/character-utils";
 import ThemedAutocomplete from "../ui/ThemedAutocomplete";
+import { WEAPON_DATA } from "../../data/weapons";
 
 interface ItemDetailViewProps {
     item: InventoryItem;
@@ -237,6 +238,47 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                             />
                         </div>
                     </div>
+                    <div className="flex items-center gap-2 pt-3 border-t border-purple-500/20 mt-2">
+                        <label className="flex items-center gap-2.5 text-xs font-bold text-purple-700 dark:text-purple-400 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                checked={item.weaponDetails.isPactWeapon || false}
+                                onChange={e => updateItem(item.id, "weaponDetails", { ...item.weaponDetails, isPactWeapon: e.target.checked })}
+                                className="w-4 h-4 rounded border-purple-300 dark:border-purple-900 text-purple-600 focus:ring-purple-500 bg-background accent-purple-600 cursor-pointer"
+                            />
+                            Pact Weapon (Uses Charisma)
+                        </label>
+                    </div>
+                    {item.weaponDetails.isPactWeapon && (
+                        <div className="flex items-center gap-2 pt-2 animate-in fade-in duration-200">
+                            <label className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase whitespace-nowrap tracking-wider">Pact Form:</label>
+                            <Select
+                                value={item.weaponDetails.baseWeapon || ""}
+                                onValueChange={(val) => {
+                                    const baseWeapon = WEAPON_DATA[val];
+                                    if (baseWeapon) {
+                                        updateItem(item.id, "name", `Pact Weapon (${baseWeapon.name})`);
+                                        updateItem(item.id, "weight", baseWeapon.weight);
+                                        updateItem(item.id, "weaponDetails", {
+                                            ...item.weaponDetails,
+                                            baseWeapon: baseWeapon.name,
+                                            category: baseWeapon.category,
+                                            rangeType: baseWeapon.rangeType,
+                                            damageDice: baseWeapon.damageDice,
+                                            damageType: baseWeapon.damageType,
+                                            properties: [...baseWeapon.properties],
+                                            mastery: baseWeapon.mastery
+                                        });
+                                    }
+                                }}
+                                options={[
+                                    { label: "-- Select Form --", value: "" },
+                                    ...Object.keys(WEAPON_DATA).sort().map(name => ({ label: name, value: name }))
+                                ]}
+                                className="min-w-[160px] border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs"
+                            />
+                        </div>
+                    )}
                 </div>
             )}
 

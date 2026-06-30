@@ -3,7 +3,7 @@ import { ChevronDown, Dices, Pencil, Trash2, Zap } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import ResourcePipTracker from "../ResourcePipTracker";
 import Select from "../ui/Select";
-import { Action, AbilityScores, Resource, CritRule, Character, RollDiceFunc, RollDamageFunc, ActiveBonus } from "../../types/character";
+import { Action, AbilityScores, Resource, CritRule, Character, RollDiceFunc, RollDamageFunc, ActiveBonus, InventoryItem } from "../../types/character";
 import {
     getAbilityModifier,
     resolveRollExpression,
@@ -16,6 +16,7 @@ import {
     calculateScaledCantripValue,
     calculateUpcastedValue,
 } from "../../utils/dice-utils";
+import { WEAPON_DATA } from "../../data/weapons";
 
 interface ActionCardProps {
     action: Action;
@@ -34,6 +35,7 @@ interface ActionCardProps {
     onCastLevelChange: (level: number) => void;
     character: Character;
     onUpdateActiveBonuses: (bonuses: ActiveBonus[]) => void;
+    onUpdateInventory?: (inventory: InventoryItem[]) => void;
 }
 
 const ActionCard: React.FC<ActionCardProps> = ({
@@ -53,7 +55,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
     onCastLevelChange,
     character,
     onUpdateActiveBonuses,
+    onUpdateInventory,
 }) => {
+    const weaponId = action.fromWeapon && action.id.startsWith("weapon-") ? action.id.replace("weapon-", "") : null;
+    const weapon = weaponId ? (character.inventory || []).find(item => item.id === weaponId) : null;
     const damageToUse = action.damage || "";
     const upcastedDamage =
         action.baseLevel === 0 && action.scalesWithCharacterLevel
@@ -423,6 +428,46 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                         </div>
                                     </div>
                                 )}
+                            </div>
+                        )}
+                        {weapon && weapon.weaponDetails?.isPactWeapon && onUpdateInventory && (
+                            <div className="flex items-center gap-2 pt-3 border-t border-purple-500/20 mt-1">
+                                <div className="flex flex-col gap-1 w-full max-w-[240px]">
+                                    <span className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider">
+                                        Pact Weapon Form (Bonus Action)
+                                    </span>
+                                    <Select
+                                        value={weapon.weaponDetails.baseWeapon || ""}
+                                        onValueChange={(val) => {
+                                            const baseWeapon = WEAPON_DATA[val];
+                                            if (baseWeapon) {
+                                                const newInventory = (character.inventory || []).map(invItem => {
+                                                    if (invItem.id === weapon.id) {
+                                                        return {
+                                                            ...invItem,
+                                                            name: `Pact Weapon (${baseWeapon.name})`,
+                                                            weight: baseWeapon.weight,
+                                                            weaponDetails: {
+                                                                ...invItem.weaponDetails,
+                                                                baseWeapon: baseWeapon.name,
+                                                                category: baseWeapon.category,
+                                                                rangeType: baseWeapon.rangeType,
+                                                                damageDice: baseWeapon.damageDice,
+                                                                damageType: baseWeapon.damageType,
+                                                                properties: [...baseWeapon.properties],
+                                                                mastery: baseWeapon.mastery
+                                                            }
+                                                        };
+                                                    }
+                                                    return invItem;
+                                                });
+                                                onUpdateInventory(newInventory);
+                                            }
+                                        }}
+                                        options={Object.keys(WEAPON_DATA).sort().map(name => ({ label: name, value: name }))}
+                                        className="border-purple-500/30 text-xs text-purple-700 dark:text-purple-300"
+                                    />
+                                </div>
                             </div>
                         )}
                         <div

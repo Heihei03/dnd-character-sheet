@@ -16,11 +16,12 @@ import CommonActionsGrid from "./actions/CommonActionsGrid";
 import ActiveBonusesList from "./ActiveBonusesList";
 
 // Types
-import { Action, Resource, AbilityScores, Character, RollDiceFunc, RollDamageFunc, CritRule, ActionType, ActiveBonus } from "../types/character";
+import { Action, Resource, AbilityScores, Character, RollDiceFunc, RollDamageFunc, CritRule, ActionType, ActiveBonus, InventoryItem } from "../types/character";
 
 interface ActionsSectionProps {
     actions: Action[];
     onUpdate: (actions: Action[]) => void;
+    onUpdateInventory?: (inventory: InventoryItem[]) => void;
     abilityScores: AbilityScores;
     proficiencyBonus: number;
     totalLevel: number;
@@ -41,6 +42,7 @@ const ACTION_TYPES: ActionType[] = ["Action", "Bonus Action", "Reaction", "Free 
 const ActionsSection: React.FC<ActionsSectionProps> = ({
     actions = [],
     onUpdate,
+    onUpdateInventory,
     abilityScores,
     proficiencyBonus,
     totalLevel,
@@ -290,6 +292,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                             onCastLevelChange={(level) => setCastLevels(prev => ({ ...prev, [action.id]: level }))}
                                             character={character}
                                             onUpdateActiveBonuses={onUpdateActiveBonuses}
+                                            onUpdateInventory={onUpdateInventory}
                                         />
                                     );
                                 })}
@@ -338,6 +341,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                         character={character}
                                         onUpdateActiveBonuses={onUpdateActiveBonuses}
                                         onUpdateResourceValue={handleUpdateResourceValue}
+                                        onUpdateInventory={onUpdateInventory}
                                     />
                                 );
                             })}

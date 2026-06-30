@@ -64,6 +64,7 @@ export interface WeaponDetails {
   mastery?: string;
   damageDice?: string;
   damageType?: string;
+  isPactWeapon?: boolean;
 }
 
 export interface ArmorDetails {

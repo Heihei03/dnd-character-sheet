@@ -15,23 +15,23 @@ import { ARMOR_DATA } from "../../data/armor";
 import { CONTAINER_DATA } from "../../data/containers";
 import { TOOL_DATA } from "../../data/tools";
 import { WEAPON_DATA } from "../../data/weapons";
-import { 
-    DAMAGE_TYPES, 
-    WEAPON_PROPERTIES, 
-    WEAPON_MASTERY_TYPES 
+import {
+    DAMAGE_TYPES,
+    WEAPON_PROPERTIES,
+    WEAPON_MASTERY_TYPES
 } from "../../utils/constants";
 import { ABILITY_NAMES } from "../../utils/character-utils";
 import ThemedAutocomplete from "../ui/ThemedAutocomplete";
 
 // Types
-import { 
-  ArmorDetails, 
-  ContainerDetails, 
-  Feature, 
-  InventoryItem, 
-  ToolDetails, 
-  WeaponDetails,
-  AmmunitionDetails
+import {
+    ArmorDetails,
+    ContainerDetails,
+    Feature,
+    InventoryItem,
+    ToolDetails,
+    WeaponDetails,
+    AmmunitionDetails
 } from "../../types/character";
 
 interface AddItemFormProps {
@@ -220,7 +220,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
         <EntityForm
             title="Inventory Management"
             onSave={addItem}
-            onCancel={onCancel || (() => {})}
+            onCancel={onCancel || (() => { })}
             saveLabel="Add"
             className="w-full"
         >
@@ -246,11 +246,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
 
                 <div>
                     <label className="block text-[10px] text-muted-foreground font-black mb-1 uppercase tracking-widest">Description</label>
-                    <textarea 
-                        value={newItemDescription} 
-                        onChange={(e) => setNewItemDescription(e.target.value)} 
-                        placeholder="Item description..." 
-                        className="w-full p-3 border border-border bg-background rounded text-sm min-h-[120px] focus:ring-1 focus:ring-primary outline-none transition-all" 
+                    <textarea
+                        value={newItemDescription}
+                        onChange={(e) => setNewItemDescription(e.target.value)}
+                        placeholder="Item description..."
+                        className="w-full p-3 border border-border bg-background rounded text-sm min-h-[120px] focus:ring-1 focus:ring-primary outline-none transition-all"
                     />
                 </div>
                 <div className="flex flex-wrap gap-4 items-center bg-secondary/30 p-3 rounded-lg border border-border">
@@ -269,8 +269,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, onCancel }) => {
                     <div className="flex-1 min-w-[20px]"></div>
                     <div className="flex items-center gap-2">
                         <label className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Type:</label>
-                        <Select 
-                            value={newItemType} 
+                        <Select
+                            value={newItemType}
                             onValueChange={(val) => {
                                 const type = val as any;
                                 setNewItemType(type);

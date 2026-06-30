@@ -136,13 +136,13 @@ export const evaluateRoll = (expr: string) => {
     const dice = parseDice(expr);
     if (!dice) {
         const val = parseInt(expr) || 0;
-        return { 
-            total: val, 
-            rolls: [], 
-            modifierTotal: val, 
-            sign: val >= 0 ? "+" : "-", 
-            mod: Math.abs(val), 
-            formula: expr 
+        return {
+            total: val,
+            rolls: [],
+            modifierTotal: val,
+            sign: val >= 0 ? "+" : "-",
+            mod: Math.abs(val),
+            formula: expr
         };
     }
     const { count, sides, sign, mod } = dice;
@@ -297,13 +297,13 @@ export const getEffectiveDefenses = (character: Character): Defenses => {
     const toEntry = (d: string | DefenseEntry): DefenseEntry =>
         typeof d === 'string' ? { name: d } : d;
 
-    const featureResistances = getFeatureModifiersWithSource(activeFeatures, "Resistance").flatMap(m => 
+    const featureResistances = getFeatureModifiersWithSource(activeFeatures, "Resistance").flatMap(m =>
         (m.subType || "").split(",").map(s => s.trim()).filter(Boolean).map(sub => ({ name: sub, fromFeature: true, fromFeatureId: m.fromFeatureId }))
     );
-    const featureImmunities = getFeatureModifiersWithSource(activeFeatures, "Immunity").flatMap(m => 
+    const featureImmunities = getFeatureModifiersWithSource(activeFeatures, "Immunity").flatMap(m =>
         (m.subType || "").split(",").map(s => s.trim()).filter(Boolean).map(sub => ({ name: sub, fromFeature: true, fromFeatureId: m.fromFeatureId }))
     );
-    const featureVulnerabilities = getFeatureModifiersWithSource(activeFeatures, "Vulnerability").flatMap(m => 
+    const featureVulnerabilities = getFeatureModifiersWithSource(activeFeatures, "Vulnerability").flatMap(m =>
         (m.subType || "").split(",").map(s => s.trim()).filter(Boolean).map(sub => ({ name: sub, fromFeature: true, fromFeatureId: m.fromFeatureId }))
     );
 
@@ -441,7 +441,7 @@ export const getEffectiveSpeed = (character: Character): Speed => {
             if (totalWeight > capacity) {
                 // If over capacity, speed is 0 or heavily reduced. 
                 // Rules say "cannot carry more than capacity", but for UI we'll treat it as 0 speed.
-                penalty = 999; 
+                penalty = 999;
             } else if (totalWeight > heavilyEncumberedThreshold) {
                 penalty = 20;
             } else if (totalWeight > encumberedThreshold) {
@@ -473,7 +473,7 @@ export const getEffectiveSpeed = (character: Character): Speed => {
 
 export const calculateTotalWeight = (character: Character): number => {
     const inventory = character.inventory || [];
-    
+
     const calculateItemWeight = (item: InventoryItem): number => {
         let total = (item.weight || 0) * (item.quantity || 1);
         if (item.isContainer && item.containerDetails) {
@@ -744,8 +744,8 @@ export const getEffectiveActions = (character: Character): Action[] => {
                         saveDcFlat = true;
                     }
 
-                    const attackAbility = data.dcCalculation === "ability" 
-                        ? (data.dcAbility || "strength") 
+                    const attackAbility = data.dcCalculation === "ability"
+                        ? (data.dcAbility || "strength")
                         : getCharacterSpellcastingAbility(character, undefined);
 
                     extraActions.push({
@@ -839,7 +839,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                                 damageDice: data.damageDice || smData.damageDice,
                                 damageType: data.damageType || smData.damageType
                             };
-                        } catch {}
+                        } catch { }
                     }
 
                     action = {
@@ -890,7 +890,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
                                 damage: smData.damageDice,
                                 damageType: smData.damageType
                             };
-                        } catch {}
+                        } catch { }
                     }
 
                     action = {
@@ -936,7 +936,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
             const name = feature?.name || "Roll";
             const typeLower = (mod.subType || "").toLowerCase();
             const isHealing = typeLower.includes("healing") || typeLower.includes("heal");
-            
+
             combined.push({
                 id: `roll-mod-${mod.id}`,
                 name: name,
@@ -1099,12 +1099,12 @@ export const getAdvantageDisadvantage = (character: Character, key: string, abil
         const totalWeight = calculateTotalWeight(character);
         const strength = getEffectiveAbilityScores(character).strength;
         const heavilyEncumberedThreshold = strength * 10;
-        
+
         if (totalWeight > heavilyEncumberedThreshold) {
             const targetLower = (key || "").toLowerCase();
             const isStrDexCon = targetLower.includes("strength") || targetLower.includes("dexterity") || targetLower.includes("constitution") ||
-                              (ability && ["strength", "dexterity", "constitution"].includes(ability.toLowerCase()));
-            
+                (ability && ["strength", "dexterity", "constitution"].includes(ability.toLowerCase()));
+
             if (targetLower.includes("attack") || (isStrDexCon && (targetLower.includes("save") || targetLower.includes("check") || targetLower.includes("skill")))) {
                 disadvantage = true;
                 if (!notes.some(n => n.includes("Heavily Encumbered"))) {
@@ -1153,7 +1153,7 @@ export const getEffectiveSkills = (character: Character): { skills: Skills, skil
 
     profMods.forEach(mod => {
         const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
-        
+
         subTypes.forEach(sub => {
             // Safer matching: find in SKILL_LIST by name or key
             const skill = SKILL_LIST.find(s =>
@@ -1194,7 +1194,7 @@ export const getEffectiveWeaponProficiencies = (character: Character): Proficien
 
     profMods.forEach(mod => {
         const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
-        
+
         subTypes.forEach(name => {
             const isWeapon = WEAPON_DATA[name] !== undefined || weaponCategories.some(c => c.toLowerCase() === name.toLowerCase());
             if (!isWeapon) return;
@@ -1226,7 +1226,7 @@ export const getEffectiveArmorProficiencies = (character: Character): Proficienc
 
     profMods.forEach(mod => {
         const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
-        
+
         subTypes.forEach(name => {
             const isArmor = ARMOR_DATA[name] !== undefined || armorCategories.some(c => c.toLowerCase() === name.toLowerCase());
             if (!isArmor) return;
@@ -1256,7 +1256,7 @@ export const getEffectiveLanguages = (character: Character): ProficiencyArray =>
 
     profMods.forEach(mod => {
         const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
-        
+
         subTypes.forEach(name => {
             const isLanguage = LANGUAGES.some(l => l.toLowerCase() === name.toLowerCase());
             if (!isLanguage) return;
@@ -1414,7 +1414,7 @@ export const getEffectiveToolProficiencies = (character: Character): ToolProfici
 
     profMods.forEach(mod => {
         const subTypes = (mod.subType || "").split(",").map(s => s.trim()).filter(Boolean);
-        
+
         subTypes.forEach(name => {
             const isSkill = skillNames.some(n => n.toLowerCase() === name.toLowerCase()) ||
                 skillKeys.some(k => k.toLowerCase() === name.toLowerCase());
@@ -1492,13 +1492,13 @@ export const normalizeProficiencyLevel = (value: string): ProficiencyLevel => {
 
 export const getEffectiveBonuses = (character: Character, target: string): { name: string, bonus: string, damageType?: string }[] => {
     const results: { name: string, bonus: string, damageType?: string }[] = [];
-    
+
     // 1. Manual Active Bonuses
     if (character.activeBonuses) {
         character.activeBonuses.forEach(b => {
             if (b.active && b.targets.includes(target as any)) {
-                results.push({ 
-                    name: b.name, 
+                results.push({
+                    name: b.name,
                     bonus: b.bonus,
                     damageType: b.damageType
                 });
@@ -1514,8 +1514,8 @@ export const getEffectiveBonuses = (character: Character, target: string): { nam
         const subTypes = (mod.subType || "").split(",").map(s => s.trim());
         if (subTypes.some(sub => isModifierMatch(sub, target, "Bonus"))) {
             const feature = activeFeatures.find(f => f.id === mod.fromFeatureId);
-            results.push({ 
-                name: feature?.name || "Feature Bonus", 
+            results.push({
+                name: feature?.name || "Feature Bonus",
                 bonus: String(mod.value || "0"),
                 damageType: mod.damageType
             });
