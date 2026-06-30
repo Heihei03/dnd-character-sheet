@@ -24,7 +24,7 @@ import { AbilityScores, CharacterClass, Resource, Spell, SpellSlot, ActiveBonus,
 
 // Utils
 import { calculateSpellSlots } from "../../utils/spell-utils";
-import { getAbilityModifier, getEffectiveBonuses, getCharacterSpellcastingAbility, getAdvantageDisadvantage } from "../../utils/character-utils";
+import { getAbilityModifier, getEffectiveBonuses, getCharacterSpellcastingAbility, getAdvantageDisadvantage, getAllActiveFeatures } from "../../utils/character-utils";
 
 interface SpellsSectionProps {
     classes: CharacterClass[];
@@ -70,6 +70,44 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     const activeConcentrationSpell = spells.find(s => s.id === character.concentrationSpellId);
     const calculatedDc = damageTaken === "" ? 10 : Math.max(10, Math.floor(Number(damageTaken) / 2));
 
+    const label = "Concentration";
+    const { advantage: hasAdvantage, disadvantage: hasDisadvantage, extraAdvantage } = getAdvantageDisadvantage(character, label, 'constitution');
+
+    const activeFeatures = getAllActiveFeatures(character);
+    const advantageSources = activeFeatures
+        .filter(f => 
+            (f.modifiers || []).some(m => {
+                if (m.type !== "Advantage") return false;
+                const subTypes = (m.subType || "").split(",").map(s => s.trim().toLowerCase());
+                return subTypes.some(sub => 
+                    sub === "concentration" || 
+                    sub === "saving throws" || 
+                    sub === "constitution saves"
+                );
+            })
+        )
+        .map(f => f.name);
+
+    const disadvantageSources = activeFeatures
+        .filter(f => 
+            (f.modifiers || []).some(m => {
+                if (m.type !== "Disadvantage") return false;
+                const subTypes = (m.subType || "").split(",").map(s => s.trim().toLowerCase());
+                return subTypes.some(sub => 
+                    sub === "concentration" || 
+                    sub === "saving throws" || 
+                    sub === "constitution saves"
+                );
+            })
+        )
+        .map(f => f.name);
+
+    if (hasDisadvantage && disadvantageSources.length === 0) {
+        if (character.encumbranceEnabled && character.encumbranceRule === 'variant') {
+            disadvantageSources.push("Heavy Encumbrance");
+        }
+    }
+
     const handleRollConcentrationSave = () => {
         if (!rollDice) return;
         
@@ -78,7 +116,6 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
         const hasConSaveProf = character.savingThrows?.constitution ?? false;
         const conSaveModifier = conMod + (hasConSaveProf ? proficiencyBonus : 0);
         
-        const label = "Concentration";
         const activeBonuses = getEffectiveBonuses(character, label);
         let bonusModifier = 0;
         activeBonuses.forEach(b => {
@@ -89,10 +126,8 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
         });
         
         const totalModifier = conSaveModifier + bonusModifier;
-        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, label, 'constitution');
-        
         const dcLabel = `Concentration Save (DC ${calculatedDc})`;
-        rollDice(20, 1, totalModifier, dcLabel, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save');
+        rollDice(20, 1, totalModifier, dcLabel, undefined, undefined, undefined, undefined, undefined, hasAdvantage, hasDisadvantage, extraAdvantage, 'save');
     };
 
     // Filters
@@ -321,36 +356,63 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                             </div>
 
                             {/* Right: Saving Throw Roller */}
-                            <div className="bg-secondary/40 p-3 rounded-xl border border-border flex flex-col md:flex-row items-center justify-between gap-4">
-                                <div className="w-full md:w-auto space-y-1.5 flex-1">
-                                    <div className="text-[10px] text-muted-foreground uppercase font-black tracking-wider leading-none">Concentration Save Helper</div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex flex-col">
-                                            <span className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Damage Taken</span>
-                                            <NumericInput
-                                                value={damageTaken}
-                                                onChange={(val) => setDamageTaken(val === null ? "" : val)}
-                                                placeholder="0"
-                                                min={0}
-                                                className="w-20 h-8 text-sm font-bold"
-                                            />
+                            <div className="bg-secondary/40 p-3 rounded-xl border border-border flex flex-col items-stretch gap-3">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div className="space-y-1.5 flex-1">
+                                        <div className="flex items-center justify-between">
+                                            <div className="text-[10px] text-muted-foreground uppercase font-black tracking-wider leading-none">Concentration Save Helper</div>
+                                            <div className="flex gap-1">
+                                                {hasAdvantage && (
+                                                    <span className="text-[8px] font-black bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1 py-0.5 rounded border border-green-200 dark:border-green-800 uppercase leading-none">ADV</span>
+                                                )}
+                                                {hasDisadvantage && (
+                                                    <span className="text-[8px] font-black bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-1 py-0.5 rounded border border-red-200 dark:border-red-800 uppercase leading-none">DIS</span>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col items-center justify-center bg-background px-3 py-1.5 rounded-lg border border-border h-[42px] mt-4">
-                                            <span className="text-[8px] text-muted-foreground uppercase font-bold leading-none mb-0.5">Required DC</span>
-                                            <span className="text-base font-black text-amber-600 dark:text-amber-400">{calculatedDc}</span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex flex-col">
+                                                <span className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Damage Taken</span>
+                                                <NumericInput
+                                                    value={damageTaken}
+                                                    onChange={(val) => setDamageTaken(val === null ? "" : val)}
+                                                    placeholder="0"
+                                                    min={0}
+                                                    className="w-20 h-8 text-sm font-bold"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col items-center justify-center bg-background px-3 py-1.5 rounded-lg border border-border h-[42px] mt-4">
+                                                <span className="text-[8px] text-muted-foreground uppercase font-bold leading-none mb-0.5">Required DC</span>
+                                                <span className="text-base font-black text-amber-600 dark:text-amber-400">{calculatedDc}</span>
+                                            </div>
                                         </div>
+                                    </div>
+
+                                    <div className="w-full md:w-auto mt-4 md:mt-0 flex items-end">
+                                        <Button
+                                            onClick={handleRollConcentrationSave}
+                                            className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold flex items-center justify-center gap-2 shadow-sm shadow-amber-500/10 transition-all active:scale-95 h-10"
+                                        >
+                                            <Dices className="w-4 h-4" />
+                                            Roll Save
+                                        </Button>
                                     </div>
                                 </div>
 
-                                <div className="w-full md:w-auto mt-4 md:mt-0">
-                                    <Button
-                                        onClick={handleRollConcentrationSave}
-                                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold flex items-center justify-center gap-2 shadow-sm shadow-amber-500/10 transition-all active:scale-95"
-                                    >
-                                        <Dices className="w-4 h-4" />
-                                        Roll Save
-                                    </Button>
-                                </div>
+                                {(advantageSources.length > 0 || disadvantageSources.length > 0) && (
+                                    <div className="text-[10px] text-muted-foreground italic leading-tight border-t border-border pt-2 space-y-1">
+                                        {advantageSources.length > 0 && (
+                                            <div>
+                                                <span className="font-bold text-green-600 dark:text-green-400">Advantage from:</span> {advantageSources.join(", ")}
+                                            </div>
+                                        )}
+                                        {disadvantageSources.length > 0 && (
+                                            <div>
+                                                <span className="font-bold text-red-600 dark:text-red-400">Disadvantage from:</span> {disadvantageSources.join(", ")}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ) : (
