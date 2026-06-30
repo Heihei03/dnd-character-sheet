@@ -444,12 +444,28 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                                 const currentDamageType = weapon.weaponDetails.damageType || "";
                                                 const isPactSpecialType = ["necrotic", "psychic", "radiant"].includes(currentDamageType.toLowerCase());
 
+                                                // Calculate new description while preserving custom lore
+                                                const defaultDesc = `A ${baseWeapon.category.toLowerCase()} ${baseWeapon.rangeType.toLowerCase()} weapon attack. Properties: ${baseWeapon.properties.join(", ") || "None"}.${baseWeapon.mastery ? ` Mastery: ${baseWeapon.mastery}.` : ""}`;
+                                                let newDesc = defaultDesc;
+                                                if (weapon.description) {
+                                                    const cleanDesc = weapon.description.replace(/^\[Pact Weapon\]\s*/, "").trim();
+                                                    const parts = cleanDesc.split(/\n\n/);
+                                                    const lastPart = parts[parts.length - 1];
+                                                    if (/^A (simple|martial) (melee|ranged) weapon attack/i.test(lastPart)) {
+                                                        const customPart = parts.slice(0, -1).join("\n\n");
+                                                        newDesc = customPart ? `${customPart}\n\n${defaultDesc}` : defaultDesc;
+                                                    } else if (!/^A (simple|martial) (melee|ranged) weapon attack/i.test(cleanDesc)) {
+                                                        newDesc = `${cleanDesc}\n\n${defaultDesc}`;
+                                                    }
+                                                }
+
                                                 const newInventory = (character.inventory || []).map(invItem => {
                                                     if (invItem.id === weapon.id) {
                                                         return {
                                                             ...invItem,
                                                             name: `Pact Weapon (${baseWeapon.name})`,
                                                             weight: baseWeapon.weight,
+                                                            description: newDesc,
                                                             weaponDetails: {
                                                                 ...invItem.weaponDetails,
                                                                 baseWeapon: baseWeapon.name,

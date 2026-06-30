@@ -14,7 +14,7 @@ import { WEAPON_DATA } from "../../data/weapons";
 interface ItemDetailViewProps {
     item: InventoryItem;
     containers: InventoryItem[];
-    updateItem: (id: string, field: keyof InventoryItem, value: any) => void;
+    updateItem: (id: string, field: keyof InventoryItem | Partial<InventoryItem>, value?: any) => void;
     resources?: Resource[];
     onUpdateResources?: (resources: Resource[]) => void;
     summonStatblocks?: any[];
@@ -261,17 +261,35 @@ const ItemDetailView: React.FC<ItemDetailViewProps> = ({
                                             const currentDamageType = item.weaponDetails.damageType || "";
                                             const isPactSpecialType = ["necrotic", "psychic", "radiant"].includes(currentDamageType.toLowerCase());
                                             
-                                            updateItem(item.id, "name", `Pact Weapon (${baseWeapon.name})`);
-                                            updateItem(item.id, "weight", baseWeapon.weight);
-                                            updateItem(item.id, "weaponDetails", {
-                                                ...item.weaponDetails,
-                                                baseWeapon: baseWeapon.name,
-                                                category: baseWeapon.category,
-                                                rangeType: baseWeapon.rangeType,
-                                                damageDice: baseWeapon.damageDice,
-                                                damageType: isPactSpecialType ? currentDamageType : baseWeapon.damageType,
-                                                properties: [...baseWeapon.properties],
-                                                mastery: baseWeapon.mastery
+                                            // Calculate new description while preserving custom lore
+                                            const defaultDesc = `A ${baseWeapon.category.toLowerCase()} ${baseWeapon.rangeType.toLowerCase()} weapon attack. Properties: ${baseWeapon.properties.join(", ") || "None"}.${baseWeapon.mastery ? ` Mastery: ${baseWeapon.mastery}.` : ""}`;
+                                            let newDesc = defaultDesc;
+                                            if (item.description) {
+                                                const cleanDesc = item.description.replace(/^\[Pact Weapon\]\s*/, "").trim();
+                                                const parts = cleanDesc.split(/\n\n/);
+                                                const lastPart = parts[parts.length - 1];
+                                                if (/^A (simple|martial) (melee|ranged) weapon attack/i.test(lastPart)) {
+                                                    const customPart = parts.slice(0, -1).join("\n\n");
+                                                    newDesc = customPart ? `${customPart}\n\n${defaultDesc}` : defaultDesc;
+                                                } else if (!/^A (simple|martial) (melee|ranged) weapon attack/i.test(cleanDesc)) {
+                                                    newDesc = `${cleanDesc}\n\n${defaultDesc}`;
+                                                }
+                                            }
+                                            
+                                            updateItem(item.id, {
+                                                name: `Pact Weapon (${baseWeapon.name})`,
+                                                weight: baseWeapon.weight,
+                                                description: newDesc,
+                                                weaponDetails: {
+                                                    ...item.weaponDetails,
+                                                    baseWeapon: baseWeapon.name,
+                                                    category: baseWeapon.category,
+                                                    rangeType: baseWeapon.rangeType,
+                                                    damageDice: baseWeapon.damageDice,
+                                                    damageType: isPactSpecialType ? currentDamageType : baseWeapon.damageType,
+                                                    properties: [...baseWeapon.properties],
+                                                    mastery: baseWeapon.mastery
+                                                }
                                             });
                                         }
                                     }}

@@ -141,8 +141,12 @@ const InventorySection: React.FC<InventorySectionProps> = ({
         setInventory(newInventory);
     };
 
-    const updateItem = (id: string, field: keyof InventoryItem, value: any) => {
-        updateItemBatch(id, { [field]: value });
+    const updateItem = (id: string, fieldOrUpdates: keyof InventoryItem | Partial<InventoryItem>, value?: any) => {
+        if (typeof fieldOrUpdates === "object" && fieldOrUpdates !== null) {
+            updateItemBatch(id, fieldOrUpdates);
+        } else {
+            updateItemBatch(id, { [fieldOrUpdates as keyof InventoryItem]: value });
+        }
     };
 
     const toggleExpand = (id: string) => {
