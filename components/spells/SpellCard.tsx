@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Zap, ChevronDown, Dices, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Spell, AbilityScores, CharacterClass, RollDiceFunc, RollDamageFunc, ActiveBonus } from "../../types/character";
 import { calculateUpcastedValue, calculateScaledCantripValue } from "../../utils/dice-utils";
 import { getAbilityModifier, getAdvantageDisadvantage, getEffectiveBonuses, getCharacterSpellcastingAbility, resolveRollExpression } from "../../utils/character-utils";
@@ -23,6 +24,7 @@ interface SpellCardProps {
     character?: any;
     onSummonFromStatblock?: (statblockId: string) => void;
     className?: string;
+    onChange?: (field: any, value: any) => void;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -40,7 +42,8 @@ const SpellCard: React.FC<SpellCardProps> = ({
     rollDamage,
     character,
     onSummonFromStatblock,
-    className = ""
+    className = "",
+    onChange
 }) => {
     const [castLevel, setCastLevel] = useState(spell.level);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -146,7 +149,27 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                 />
                             )}
                             {spell.isRitual && <span className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800 font-bold uppercase tracking-tight">Ritual</span>}
-                            {spell.requiresConcentration && <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 font-bold uppercase tracking-tight">Concentration</span>}
+                            {spell.requiresConcentration && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const isCurrent = character?.concentrationSpellId === spell.id;
+                                        onChange?.("concentrationSpellId", isCurrent ? null : spell.id);
+                                    }}
+                                    className={cn(
+                                        "text-xs px-2 py-0.5 rounded-full border font-bold uppercase tracking-tight transition-all active:scale-95 flex items-center gap-1.5",
+                                        character?.concentrationSpellId === spell.id
+                                            ? "bg-amber-500 text-white border-amber-600 hover:bg-amber-600 shadow-sm"
+                                            : "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800 hover:bg-amber-200 dark:hover:bg-amber-900/50"
+                                    )}
+                                    title={character?.concentrationSpellId === spell.id ? "Currently Concentrating. Click to end." : "Click to concentrate on this spell."}
+                                >
+                                    {character?.concentrationSpellId === spell.id && (
+                                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                                    )}
+                                    {character?.concentrationSpellId === spell.id ? "Concentrating" : "Concentration"}
+                                </button>
+                            )}
                             {spell.hasAttack && <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800 font-bold uppercase tracking-tight">Attack</span>}
                             {spell.hasSave && <span className="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded-full border border-orange-200 dark:border-orange-800 font-bold uppercase tracking-tight">Save</span>}
                             {spell.hasHeal && <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800 font-bold uppercase tracking-tight">Heal</span>}

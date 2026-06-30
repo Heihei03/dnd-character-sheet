@@ -445,6 +445,7 @@ export interface Character {
   summonStatblocks?: Summon[];
   encumbranceEnabled?: boolean;
   encumbranceRule?: 'standard' | 'variant';
+  concentrationSpellId?: string | null;
 }
 
 export type CritRule = 'double-dice' | 'max-plus-roll' | 'double-total';
@@ -482,6 +483,7 @@ export interface NormalizedCharacter extends Character {
   summonStatblocks: Summon[];
   encumbranceEnabled: boolean;
   encumbranceRule: 'standard' | 'variant';
+  concentrationSpellId?: string | null;
 }
 export interface RollEntry {
   id: string;

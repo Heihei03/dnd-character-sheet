@@ -190,6 +190,7 @@ const CharacterTabs: React.FC<CharacterTabsProps> = ({
           rollDamage={rollDamage}
           summonStatblocks={character.summonStatblocks}
           onSummonFromStatblock={onSummonFromStatblock}
+          onChange={onChange}
         />
       )}
 

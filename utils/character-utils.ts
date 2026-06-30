@@ -1414,6 +1414,7 @@ export const normalizeCharacter = (character: any): NormalizedCharacter => {
         maxHp: character.maxHp ?? 10,
         encumbranceEnabled: character.encumbranceEnabled ?? false,
         encumbranceRule: character.encumbranceRule ?? 'standard',
+        concentrationSpellId: character.concentrationSpellId ?? null,
     };
 };
 

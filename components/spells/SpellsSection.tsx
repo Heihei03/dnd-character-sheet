@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Calculator, Plus } from "lucide-react";
+import { Calculator, Plus, Brain, ZapOff, Dices } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 
@@ -10,6 +10,7 @@ import EntityForm from "../ui/EntityForm";
 import SectionHeader from "../ui/SectionHeader";
 import SearchFilterBar from "../ui/SearchFilterBar";
 import NumericInput from "../ui/NumericInput";
+import Select from "../ui/Select";
 
 // Components
 import ResourcePipTracker from "../ResourcePipTracker";
@@ -23,7 +24,7 @@ import { AbilityScores, CharacterClass, Resource, Spell, SpellSlot, ActiveBonus,
 
 // Utils
 import { calculateSpellSlots } from "../../utils/spell-utils";
-import { getAbilityModifier, getEffectiveBonuses, getCharacterSpellcastingAbility } from "../../utils/character-utils";
+import { getAbilityModifier, getEffectiveBonuses, getCharacterSpellcastingAbility, getAdvantageDisadvantage } from "../../utils/character-utils";
 
 interface SpellsSectionProps {
     classes: CharacterClass[];
@@ -40,6 +41,7 @@ interface SpellsSectionProps {
     rollDamage?: RollDamageFunc;
     summonStatblocks?: any[];
     onSummonFromStatblock?: (statblockId: string) => void;
+    onChange?: (field: any, value: any) => void;
 }
 
 const SpellsSection: React.FC<SpellsSectionProps> = ({
@@ -56,12 +58,42 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
     rollDice,
     rollDamage,
     summonStatblocks = [],
-    onSummonFromStatblock
+    onSummonFromStatblock,
+    onChange
 }) => {
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
     const [newSpellDraft, setNewSpellDraft] = useState<Spell | null>(null);
     const [autoCalculateSlots, setAutoCalculateSlots] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const [damageTaken, setDamageTaken] = useState<number | "">("");
+
+    const activeConcentrationSpell = spells.find(s => s.id === character.concentrationSpellId);
+    const calculatedDc = damageTaken === "" ? 10 : Math.max(10, Math.floor(Number(damageTaken) / 2));
+
+    const handleRollConcentrationSave = () => {
+        if (!rollDice) return;
+        
+        const conScore = abilityScores.constitution ?? 10;
+        const conMod = Math.floor((conScore - 10) / 2);
+        const hasConSaveProf = character.savingThrows?.constitution ?? false;
+        const conSaveModifier = conMod + (hasConSaveProf ? proficiencyBonus : 0);
+        
+        const label = "Concentration";
+        const activeBonuses = getEffectiveBonuses(character, label);
+        let bonusModifier = 0;
+        activeBonuses.forEach(b => {
+            const val = parseInt(b.bonus);
+            if (!isNaN(val) && !b.bonus.includes('d')) {
+                bonusModifier += val;
+            }
+        });
+        
+        const totalModifier = conSaveModifier + bonusModifier;
+        const { advantage, disadvantage, extraAdvantage } = getAdvantageDisadvantage(character, label, 'constitution');
+        
+        const dcLabel = `Concentration Save (DC ${calculatedDc})`;
+        rollDice(20, 1, totalModifier, dcLabel, undefined, undefined, undefined, undefined, undefined, advantage, disadvantage, extraAdvantage, 'save');
+    };
 
     // Filters
     const [selectedLevel, setSelectedLevel] = useState("All");
@@ -249,6 +281,112 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                 </Card>
             </div>
 
+            {/* Concentration Section */}
+            <Card className="border-amber-500/20 bg-amber-500/5 dark:bg-amber-500/10 shadow-none">
+                <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Brain className="w-5 h-5 text-amber-500 animate-pulse" />
+                        <h3 className="text-sm font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                            Spell Concentration
+                        </h3>
+                    </div>
+
+                    {activeConcentrationSpell ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                            {/* Left: Active Spell Info */}
+                            <div className="flex flex-col justify-between h-full space-y-2">
+                                <div>
+                                    <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Currently Concentrating On</div>
+                                    <div className="text-lg font-black text-foreground flex items-center gap-2 flex-wrap">
+                                        {activeConcentrationSpell.name}
+                                        <span className="text-xs bg-amber-500/20 text-amber-700 dark:text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-500/20 font-bold uppercase tracking-tight">
+                                            {activeConcentrationSpell.level === 0 ? "Cantrip" : `Lvl ${activeConcentrationSpell.level}`}
+                                        </span>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground italic mt-0.5">
+                                        {activeConcentrationSpell.school} • Duration: {activeConcentrationSpell.duration}
+                                    </div>
+                                </div>
+                                <div className="pt-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => onChange?.("concentrationSpellId", null)}
+                                        className="text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20 hover:border-red-500/30 flex items-center gap-1.5 font-bold"
+                                    >
+                                        <ZapOff className="w-4 h-4" />
+                                        End Concentration
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Right: Saving Throw Roller */}
+                            <div className="bg-secondary/40 p-3 rounded-xl border border-border flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div className="w-full md:w-auto space-y-1.5 flex-1">
+                                    <div className="text-[10px] text-muted-foreground uppercase font-black tracking-wider leading-none">Concentration Save Helper</div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Damage Taken</span>
+                                            <NumericInput
+                                                value={damageTaken}
+                                                onChange={(val) => setDamageTaken(val === null ? "" : val)}
+                                                placeholder="0"
+                                                min={0}
+                                                className="w-20 h-8 text-sm font-bold"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col items-center justify-center bg-background px-3 py-1.5 rounded-lg border border-border h-[42px] mt-4">
+                                            <span className="text-[8px] text-muted-foreground uppercase font-bold leading-none mb-0.5">Required DC</span>
+                                            <span className="text-base font-black text-amber-600 dark:text-amber-400">{calculatedDc}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="w-full md:w-auto mt-4 md:mt-0">
+                                    <Button
+                                        onClick={handleRollConcentrationSave}
+                                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold flex items-center justify-center gap-2 shadow-sm shadow-amber-500/10 transition-all active:scale-95"
+                                    >
+                                        <Dices className="w-4 h-4" />
+                                        Roll Save
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-2">
+                            <div className="text-sm text-muted-foreground italic text-center md:text-left">
+                                Not concentrating on any spell.
+                            </div>
+                            
+                            {/* Quick Start Selector if they have concentration spells */}
+                            {spells.filter(s => s.requiresConcentration).length > 0 && (
+                                <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                                    <label className="text-xs font-bold uppercase text-muted-foreground whitespace-nowrap">Start:</label>
+                                    <Select
+                                        value=""
+                                        onValueChange={(val) => {
+                                            if (val) onChange?.("concentrationSpellId", val);
+                                        }}
+                                        placeholder="Select a spell..."
+                                        options={[
+                                            { label: "Select a spell...", value: "" },
+                                            ...spells
+                                                .filter(s => s.requiresConcentration)
+                                                .map(s => ({
+                                                    label: `${s.name} (${s.level === 0 ? "Cantrip" : `Lvl ${s.level}`})`,
+                                                    value: s.id
+                                                }))
+                                        ]}
+                                        className="w-48 md:w-56 text-sm"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
             <SpellSlotsTracker 
                 classes={classes}
                 spellSlots={spellSlots}
@@ -419,6 +557,7 @@ const SpellsSection: React.FC<SpellsSectionProps> = ({
                                             handleUpdateSpell={handleUpdateSpell}
                                             character={character}
                                             onSummonFromStatblock={onSummonFromStatblock}
+                                            onChange={onChange}
                                             className={index === levelSpells.length - 1 ? "rounded-b-lg" : ""}
                                         />
                                     );
