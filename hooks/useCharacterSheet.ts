@@ -476,9 +476,9 @@ export const useCharacterSheet = (
                 damageDice: update.damageDice || item.weaponDetails.damageDice,
                 damageType: update.damageType || item.weaponDetails.damageType,
                 properties: newProperties,
-                attackAbility: update.attackAbility || item.weaponDetails.attackAbility,
+                attackAbility: (update.attackAbility as string) || item.weaponDetails.attackAbility,
                 attackBonus: update.attackBonus !== undefined ? update.attackBonus : item.weaponDetails.attackBonus,
-                damageAbility: update.damageAbility || item.weaponDetails.damageAbility,
+                damageAbility: (update.damageAbility as string) || item.weaponDetails.damageAbility,
                 damageBonus: update.damageBonus !== undefined ? update.damageBonus : item.weaponDetails.damageBonus
               }
             };
@@ -668,47 +668,140 @@ export const useCharacterSheet = (
       proficiencyBonus
     );
 
-    const { total, rolls, modifierTotal, sign, mod, formula: displayFormula } = evaluateRoll(resolvedFormula);
+    let { total, rolls, modifierTotal, sign, mod, formula: displayFormula } = evaluateRoll(resolvedFormula);
+    const dice = parseDice(resolvedFormula);
+
+    if (isCritical) {
+      if (dice) {
+        const { count, sides } = dice;
+        if (critRule === 'double-dice') {
+          // Roll twice as many dice (Standard 5e)
+          const critRolls: number[] = [];
+          let critSum = 0;
+          for (let i = 0; i < count; i++) {
+            const r = Math.floor(Math.random() * sides) + 1;
+            critRolls.push(r);
+            critSum += r;
+          }
+          rolls = [...rolls, ...critRolls];
+          total += critSum;
+          displayFormula = `${count * 2}d${sides}${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"}${mod}` : ""}`;
+        } else if (critRule === 'max-plus-roll') {
+          // Maximize the first set of dice, roll the second
+          const maxVal = count * sides;
+          total += maxVal;
+          displayFormula = `${count}d${sides} + ${maxVal}${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"}${mod}` : ""}`;
+        } else if (critRule === 'double-total') {
+          // Double the sum of the base weapon dice rolls, then add modifiers
+          const diceSum = rolls.reduce((a, b) => a + b, 0);
+          total = total - diceSum + (diceSum * 2);
+          displayFormula = `(${count}d${sides}) × 2${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"}${mod}` : ""}`;
+        }
+      } else {
+        // Fallback for non-dice damage (flat values)
+        if (critRule === 'double-total') {
+          total = total * 2;
+          displayFormula = `(${displayFormula}) × 2`;
+        }
+      }
+
+      // Handle additional critical damage (like Brutal Critical) - never doubled
+      if (critExtraDamage) {
+        const extraDice = parseDice(critExtraDamage);
+        if (extraDice) {
+          const extraRolls: number[] = [];
+          let extraSum = 0;
+          for (let i = 0; i < extraDice.count; i++) {
+            const r = Math.floor(Math.random() * extraDice.sides) + 1;
+            extraRolls.push(r);
+            extraSum += r;
+          }
+          rolls = [...rolls, ...extraRolls];
+          total += extraSum;
+          displayFormula = `${displayFormula} + ${critExtraDamage} (Brutal)`;
+        } else {
+          const flatExtra = parseInt(critExtraDamage) || 0;
+          total += flatExtra;
+          displayFormula = `${displayFormula} + ${flatExtra} (Brutal)`;
+        }
+      }
+    }
     
     // Apply Effective Bonuses for the specific roll type
     let bonusModifier = 0;
     let bonusBreakdown = "";
     const bonusDamageTypes: Record<string, number> = {};
 
-    const activeBonuses = getEffectiveBonuses(characterWithDefaults, rollType);
-    activeBonuses.forEach(b => {
-      const parsed = parseDice(b.bonus);
-      let totalWithMod = 0;
-      if (parsed) {
-          const bonusRolls: number[] = [];
-          let bonusTotal = 0;
-          for (let i = 0; i < parsed.count; i++) {
-            const r = Math.floor(Math.random() * parsed.sides) + 1;
-            bonusRolls.push(r);
-            bonusTotal += r;
-          }
-          totalWithMod = parsed.sign === "+" ? bonusTotal + parsed.mod : bonusTotal - parsed.mod;
-        } else {
-          // Flat bonus
-          totalWithMod = parseInt(b.bonus) || 0;
-        }
-
-        if (totalWithMod !== 0) {
-            bonusModifier += totalWithMod;
-            bonusBreakdown += ` + ${b.name}(${totalWithMod >= 0 ? "+" : ""}${totalWithMod}${b.damageType ? ` ${b.damageType}` : ""})`;
-            
-            if (b.damageType) {
-                bonusDamageTypes[b.damageType] = (bonusDamageTypes[b.damageType] || 0) + totalWithMod;
-            }
-        }
-      });
+     const activeBonuses = getEffectiveBonuses(characterWithDefaults, rollType);
+     activeBonuses.forEach(b => {
+       const parsed = parseDice(b.bonus);
+       let totalWithMod = 0;
+       if (parsed) {
+           const bonusRolls: number[] = [];
+           let bonusTotal = 0;
+           
+           // Apply critical hit rules to dice-based bonuses
+           let diceCount = parsed.count;
+           let critBonusAdd = 0;
+           let isDoubleTotal = false;
+           
+           if (isCritical) {
+             if (critRule === 'double-dice') {
+               diceCount = parsed.count * 2;
+             } else if (critRule === 'max-plus-roll') {
+               critBonusAdd = parsed.count * parsed.sides;
+             } else if (critRule === 'double-total') {
+               isDoubleTotal = true;
+             }
+           }
+           
+           for (let i = 0; i < diceCount; i++) {
+             const r = Math.floor(Math.random() * parsed.sides) + 1;
+             bonusRolls.push(r);
+             bonusTotal += r;
+           }
+           
+           if (isDoubleTotal) {
+             bonusTotal = bonusTotal * 2;
+           }
+           
+           totalWithMod = (parsed.sign === "+" ? bonusTotal + parsed.mod : bonusTotal - parsed.mod) + critBonusAdd;
+         } else {
+           // Flat bonus - never doubled on a critical hit
+           totalWithMod = parseInt(b.bonus) || 0;
+         }
+ 
+         if (totalWithMod !== 0) {
+             bonusModifier += totalWithMod;
+             bonusBreakdown += ` + ${b.name}(${totalWithMod >= 0 ? "+" : ""}${totalWithMod}${b.damageType ? ` ${b.damageType}` : ""})`;
+             
+             if (b.damageType) {
+                 bonusDamageTypes[b.damageType] = (bonusDamageTypes[b.damageType] || 0) + totalWithMod;
+             }
+         }
+       });
 
     let totalWithBonuses = total + bonusModifier;
 
     let breakdown = `(${rolls.join(" + ")})${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"} ${mod}` : ""}`;
-    if (isCritical && critRule === 'double-total') {
-      const diceSum = rolls.length > 1 ? `(${rolls.join(" + ")})` : rolls[0];
-      breakdown = `(${diceSum} × 2)${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"} ${mod}` : ""}`;
+    if (isCritical) {
+      if (critRule === 'max-plus-roll' && dice) {
+        const maxVal = dice.count * dice.sides;
+        breakdown = `(${rolls.join(" + ")} [rolled] + ${maxVal} [max])${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"} ${mod}` : ""}`;
+      } else if (critRule === 'double-total') {
+        const baseRolls = critExtraDamage ? rolls.slice(0, rolls.length - (parseDice(critExtraDamage)?.count || 0)) : rolls;
+        breakdown = `((${baseRolls.join(" + ")}) × 2)${modifierTotal !== 0 ? ` ${sign === "+" ? "+" : "-"} ${mod}` : ""}`;
+        if (critExtraDamage) {
+          const brutalCount = parseDice(critExtraDamage)?.count || 0;
+          if (brutalCount > 0) {
+            const brutalRolls = rolls.slice(rolls.length - brutalCount);
+            breakdown += ` + (${brutalRolls.join(" + ")} [Brutal])`;
+          } else {
+            const flatExtra = parseInt(critExtraDamage) || 0;
+            breakdown += ` + ${flatExtra} [Brutal]`;
+          }
+        }
+      }
     }
     if (bonusBreakdown) breakdown += bonusBreakdown;
 
