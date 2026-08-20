@@ -97,8 +97,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
             const isProficient = action.useSpellAttack || action.proficient;
             const scoresToUse = action.useSpellAttack ? getEffectiveAbilityScores(character) : abilityScores;
             const charLevel = (character.classes || []).reduce((sum, cls: any) => sum + cls.level, 0);
-            const charPB = Math.ceil(charLevel / 4) + 1;
-            const pbToUse = action.useSpellAttack ? charPB : proficiencyBonus;
+            const pbToUse = proficiencyBonus;
 
             const attackAbility = action.attackAbility || (action.useSpellAttack ? getCharacterSpellcastingAbility(character) : undefined);
             const atkAbilityMod = getAbilityModifier(
@@ -165,9 +164,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
                                         {(() => {
                                             const isProficient = action.useSpellAttack || action.proficient;
                                             const scoresToUse = action.useSpellAttack ? getEffectiveAbilityScores(character) : abilityScores;
-                                            const charLevel = (character.classes || []).reduce((sum, cls: any) => sum + cls.level, 0);
-                                            const charPB = Math.ceil(charLevel / 4) + 1;
-                                            const pbToUse = action.useSpellAttack ? charPB : proficiencyBonus;
+                                            const pbToUse = proficiencyBonus;
 
                                             const attackAbility = action.attackAbility || (action.useSpellAttack ? getCharacterSpellcastingAbility(character) : undefined);
                                             const atkAbilityMod = getAbilityModifier(

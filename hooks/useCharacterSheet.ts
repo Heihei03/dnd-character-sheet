@@ -39,6 +39,7 @@ import {
   getEffectiveWeaponProficiencies,
   getEffectiveWeaponMasteries,
   getEffectiveBonuses,
+  getEffectiveProficiencyBonus,
   normalizeCharacter,
   parseDice,
   getDisplayFormula,
@@ -141,12 +142,8 @@ export const useCharacterSheet = (
   const effectiveLanguages = getEffectiveLanguages(characterWithDefaults);
   const effectiveWeaponMasteries = getEffectiveWeaponMasteries(characterWithDefaults);
 
-  const getProficiencyBonus = (level: number): number => {
-    return Math.ceil((level) / 4) + 1;
-  };
-
   const totalLevel = characterWithDefaults.classes.reduce((sum, cls) => sum + cls.level, 0);
-  const proficiencyBonus = getProficiencyBonus(totalLevel);
+  const proficiencyBonus = getEffectiveProficiencyBonus(characterWithDefaults);
   const effectiveResources = getEffectiveResources(characterWithDefaults, proficiencyBonus);
   const effectiveSpeed = getEffectiveSpeed(characterWithDefaults);
   const effectiveSenses = getEffectiveSenses(characterWithDefaults);

@@ -203,6 +203,26 @@ export const isModifierMatch = (sub: string, target: string, type?: string, abil
     return false;
 };
 
+export const getEffectiveProficiencyBonus = (character: Character): number => {
+    if (!character) return 2;
+    const totalLevel = (character.classes || []).reduce((sum, cls) => sum + (cls.level || 0), 0);
+    const basePB = Math.ceil((totalLevel || 1) / 4) + 1;
+    const activeFeatures = getAllActiveFeatures(character);
+    const bonuses = getFeatureModifiersByType(activeFeatures, "Bonus");
+    let bonusPB = 0;
+    bonuses.forEach(mod => {
+        const subTypes = (mod.subType || "").toLowerCase().split(",").map(s => s.trim());
+        const isProfBonus = subTypes.some(s => s === "proficiency bonus" || s === "proficiency" || s === "pb");
+        if (isProfBonus) {
+            const val = parseInt(String(mod.value || "0"), 10);
+            if (!isNaN(val)) {
+                bonusPB += val;
+            }
+        }
+    });
+    return Math.max(1, basePB + bonusPB);
+};
+
 export const getEffectiveAbilityScores = (character: Character) => {
     const scores = { ...character.abilityScores };
     const activeFeatures = getAllActiveFeatures(character);
@@ -538,7 +558,7 @@ export const getEffectiveActions = (character: Character): Action[] => {
     const effectiveAbilityScores = getEffectiveAbilityScores(character);
     const activeFeatures = getAllActiveFeatures(character);
     const totalLevel = (character.classes || []).reduce((sum, cls) => sum + cls.level, 0);
-    const proficiencyBonus = Math.ceil(totalLevel / 4) + 1;
+    const proficiencyBonus = getEffectiveProficiencyBonus(character);
 
     // 1. Purely manual actions (no weapons, no features)
     const manualActions = (character.actions || []).filter(a =>

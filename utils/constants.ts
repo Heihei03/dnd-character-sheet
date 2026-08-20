@@ -164,6 +164,7 @@ export const ROLL_TYPES = [
   "Intelligence Checks",
   "Intelligence Saves",
   "Perception Checks",
+  "Proficiency Bonus",
   "Saves against Charms",
   "Saves against Frightened",
   "Saves against Poison",
