@@ -93,7 +93,7 @@ export const loadCharacter = (characterId: number): Promise<Character | null> =>
     });
 };
 
-// Load all characters from IndexedDB
+// Load all characters from IndexedDB (sorted by custom order if set, then ID)
 export const loadAllCharacters = (): Promise<Character[]> => {
     return new Promise((resolve, reject) => {
         openDatabase().then((db) => {
@@ -102,7 +102,14 @@ export const loadAllCharacters = (): Promise<Character[]> => {
             const getAllRequest = objectStore.getAll();
 
             getAllRequest.onsuccess = () => {
-                resolve(getAllRequest.result as Character[]);
+                const list = (getAllRequest.result as Character[]) || [];
+                list.sort((a, b) => {
+                    const orderA = typeof a.order === "number" ? a.order : Infinity;
+                    const orderB = typeof b.order === "number" ? b.order : Infinity;
+                    if (orderA !== orderB) return orderA - orderB;
+                    return (a.id || 0) - (b.id || 0);
+                });
+                resolve(list);
             };
 
             getAllRequest.onerror = (event) => {
@@ -114,6 +121,29 @@ export const loadAllCharacters = (): Promise<Character[]> => {
     });
 };
 
+// Save custom order for an array of characters
+export const saveCharactersOrder = async (characters: Character[]): Promise<void> => {
+    const db = await openDatabase();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(["characters"], "readwrite");
+        const objectStore = transaction.objectStore("characters");
+
+        transaction.oncomplete = () => {
+            resolve();
+        };
+
+        transaction.onerror = (event) => {
+            const target = event.target as IDBRequest;
+            console.error("Error saving characters order:", target?.error);
+            reject(target?.error || new Error("Failed to save characters order"));
+        };
+
+        characters.forEach((char, index) => {
+            const updatedChar = { ...char, order: index };
+            objectStore.put(updatedChar);
+        });
+    });
+};
 
 // Delete a character from IndexedDB by ID
 export const deleteCharacter = (characterId: number): Promise<void> => {
@@ -159,6 +189,8 @@ export const importCharacters = async (data: string | Character | Character[]): 
 
     // Convert single character object to an array of one character
     const characters: Character[] = Array.isArray(parsed) ? parsed : [parsed];
+    const existingCharacters = await loadAllCharacters();
+    let nextOrder = existingCharacters.length;
 
     for (const character of characters) {
         // Basic validation: must be an object with at least a name
@@ -177,6 +209,11 @@ export const importCharacters = async (data: string | Character | Character[]): 
                 character.id = Date.now() + Math.floor(Math.random() * 1000);
             }
         }
+
+        if (typeof character.order !== "number") {
+            character.order = nextOrder++;
+        }
+
         await saveCharacter(character);
     }
 };

@@ -407,6 +407,7 @@ export interface Character {
   id: number;
   name: string;
   imageUrl?: string;
+  order?: number;
   maxHp: number;
   hp: number;
   tempHp: number;
@@ -476,6 +477,7 @@ export interface NormalizedCharacter extends Character {
   conditions: Condition[];
   bio: Bio;
   imageUrl?: string;
+  order?: number;
   critRule: CritRule;
   critRange: number;
   activeBonuses: ActiveBonus[];
